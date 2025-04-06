@@ -1,13 +1,11 @@
-
 import React, { useRef, useState, useEffect } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import Book from './Book';
 import { toast } from 'sonner';
 import Lottie from 'lottie-react';
 import { Popover, PopoverTrigger } from '@/components/ui/popover';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
-// Import our new components
+// Import our components
 import SlotControls from './SlotControls';
 import StickerControls from './StickerControls';
 import BgImageDialog from './BgImageDialog';
@@ -18,14 +16,11 @@ type BookSlotProps = {
   position: number;
 };
 
-type SlotType = 'book' | 'sticker';
-
 const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const bgFileInputRef = useRef<HTMLInputElement>(null);
   
   // State
-  const [slotType, setSlotType] = useState<SlotType>('book');
   const [bgColor, setBgColor] = useState<string>('transparent');
   const [bgImage, setBgImage] = useState<string | null>(null);
   const [scale, setScale] = useState<number>(1);
@@ -61,9 +56,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
       if (storedBooks) {
         try {
           const booksData = JSON.parse(storedBooks);
-          // Only update books if there's actual data and it's different from the current state
           if (booksData && Object.keys(booksData).length > 0) {
-            // For each book in storage, check if it exists in state and add it if it doesn't
             Object.values(booksData).forEach((bookData: any) => {
               if (!books[bookData.id]) {
                 addBook({
@@ -100,9 +93,8 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     }
   }, [books]);
   
-  // Save slot preference to local storage
+  // Save background preferences to local storage
   useEffect(() => {
-    // Load saved background color and image if exists
     const savedBgColor = localStorage.getItem(`slot-${activeShelfId}-${position}-bg`);
     if (savedBgColor) {
       setBgColor(savedBgColor);
@@ -113,12 +105,6 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
       setBgImage(savedBgImage);
     }
     
-    const savedSlotType = localStorage.getItem(`slot-${activeShelfId}-${position}-type`);
-    if (savedSlotType === 'book' || savedSlotType === 'sticker') {
-      setSlotType(savedSlotType);
-    }
-    
-    // Load saved scale and position if exists
     const savedScale = localStorage.getItem(`slot-${activeShelfId}-${position}-scale`);
     if (savedScale) {
       setScale(parseFloat(savedScale));
@@ -133,17 +119,11 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
       });
     }
     
-    // Load saved rotation if exists
     const savedRotation = localStorage.getItem(`slot-${activeShelfId}-${position}-rotation`);
     if (savedRotation) {
       setRotation(parseFloat(savedRotation));
     }
   }, [activeShelfId, position]);
-  
-  // Save slot type to local storage when it changes
-  useEffect(() => {
-    localStorage.setItem(`slot-${activeShelfId}-${position}-type`, slotType);
-  }, [slotType, activeShelfId, position]);
   
   // Save background color when it changes
   useEffect(() => {
@@ -178,58 +158,27 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     const file = e.target.files?.[0];
     if (!file) return;
     
-    // For Lottie JSON files
-    if (file.type === 'application/json' && slotType === 'sticker') {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (typeof event.target?.result === 'string') {
-          try {
-            // Validate that it's a proper Lottie JSON
-            JSON.parse(event.target.result);
-            
-            const newBookId = addBook({
-              title: 'Sticker',
-              author: 'Decoration',
-              coverURL: event.target.result,
-              progress: 0,
-              rating: 0,
-              position,
-              shelfId: activeShelfId,
-              isSticker: true
-            });
-            
-            toast.success('Lottie sticker added successfully');
-          } catch (err) {
-            toast.error('Invalid Lottie JSON file');
-          }
-        }
-      };
-      reader.readAsText(file);
-    } 
-    // For image files
-    else {
+    if (file.type.startsWith('image/')) {
       const reader = new FileReader();
       reader.onload = (event) => {
         if (typeof event.target?.result === 'string') {
           const newBookId = addBook({
-            title: slotType === 'sticker' ? 'Sticker' : '',
-            author: slotType === 'sticker' ? 'Decoration' : '',
+            title: '',
+            author: '',
             coverURL: event.target.result,
             progress: 0,
             rating: 0,
             position,
             shelfId: activeShelfId,
-            isSticker: slotType === 'sticker'
+            isSticker: false
           });
           
-          if (slotType === 'book') {
-            openModal(newBookId);
-          } else {
-            toast.success('Sticker added successfully');
-          }
+          openModal(newBookId);
         }
       };
       reader.readAsDataURL(file);
+    } else {
+      toast.error('Only image files are supported for books');
     }
     
     if (fileInputRef.current) {
@@ -263,54 +212,21 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   const handleUrlSubmit = () => {
     if (!imageUrl) return;
     
-    // Check if URL ends with .json for Lottie
-    const isLottieUrl = imageUrl.toLowerCase().endsWith('.json');
+    // Regular image URL
+    const newBookId = addBook({
+      title: '',
+      author: '',
+      coverURL: imageUrl,
+      progress: 0,
+      rating: 0,
+      position,
+      shelfId: activeShelfId,
+      isSticker: false
+    });
     
-    if (isLottieUrl && slotType === 'sticker') {
-      // Fetch Lottie JSON file
-      fetch(imageUrl)
-        .then(response => response.json())
-        .then(data => {
-          const newBookId = addBook({
-            title: 'Sticker',
-            author: 'Decoration',
-            coverURL: JSON.stringify(data),
-            progress: 0,
-            rating: 0,
-            position,
-            shelfId: activeShelfId,
-            isSticker: true
-          });
-          toast.success('Lottie sticker added from URL');
-          setShowUrlDialog(false);
-          setImageUrl('');
-        })
-        .catch(error => {
-          toast.error('Failed to load Lottie file from URL');
-          console.error('Error loading Lottie:', error);
-        });
-    } else {
-      // Regular image URL
-      const newBookId = addBook({
-        title: slotType === 'sticker' ? 'Sticker' : '',
-        author: slotType === 'sticker' ? 'Decoration' : '',
-        coverURL: imageUrl,
-        progress: 0,
-        rating: 0,
-        position,
-        shelfId: activeShelfId,
-        isSticker: slotType === 'sticker'
-      });
-      
-      if (slotType === 'book') {
-        openModal(newBookId);
-      } else {
-        toast.success('Image added from URL');
-      }
-      
-      setShowUrlDialog(false);
-      setImageUrl('');
-    }
+    openModal(newBookId);
+    setShowUrlDialog(false);
+    setImageUrl('');
   };
   
   const handleBgImageUrlSubmit = () => {
@@ -332,23 +248,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     e.preventDefault();
     
     // For empty slot, show customization options
-    if (!book) {
-      // Show a menu with background options
-      const option = prompt('Choose an option:\n1. Change background color\n2. Set background image\n3. Remove background image', '1');
-      
-      if (option === '1') {
-        const color = prompt('Enter background color (hex, rgb, or name):', bgColor === 'transparent' ? '' : bgColor);
-        if (color !== null) {
-          setBgColor(color || 'transparent');
-        }
-      } else if (option === '2') {
-        // Show dialog for background image
-        setShowBgImageDialog(true);
-      } else if (option === '3') {
-        setBgImage(null);
-        toast.success('Background image removed');
-      }
-    }
+    setShowBgImageDialog(true);
     
     return false;
   };
@@ -369,56 +269,22 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
       
-      // For Lottie JSON files
-      if (file.type === 'application/json' && slotType === 'sticker') {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          if (typeof event.target?.result === 'string') {
-            try {
-              // Validate that it's a proper Lottie JSON
-              JSON.parse(event.target.result);
-              
-              const newBookId = addBook({
-                title: 'Sticker',
-                author: 'Decoration',
-                coverURL: event.target.result,
-                progress: 0,
-                rating: 0,
-                position,
-                shelfId: activeShelfId,
-                isSticker: true
-              });
-              
-              toast.success('Lottie sticker added successfully');
-            } catch (err) {
-              toast.error('Invalid Lottie JSON file');
-            }
-          }
-        };
-        reader.readAsText(file);
-        return;
-      } 
-      // For image files
-      else if (file.type.startsWith('image/')) {
+      if (file.type.startsWith('image/')) {
         const reader = new FileReader();
         reader.onload = (event) => {
           if (typeof event.target?.result === 'string') {
             const newBookId = addBook({
-              title: slotType === 'sticker' ? 'Sticker' : '',
-              author: slotType === 'sticker' ? 'Decoration' : '',
+              title: '',
+              author: '',
               coverURL: event.target.result,
               progress: 0,
               rating: 0,
               position,
               shelfId: activeShelfId,
-              isSticker: slotType === 'sticker'
+              isSticker: false
             });
             
-            if (slotType === 'book') {
-              openModal(newBookId);
-            } else {
-              toast.success('Sticker added successfully');
-            }
+            openModal(newBookId);
           }
         };
         reader.readAsDataURL(file);
@@ -489,19 +355,15 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     setScale(1);
     setPosition2D({ x: 0, y: 0 });
     setRotation(0);
-    toast.success('Sticker position, rotation, and scale reset');
+    toast.success('Position, rotation, and scale reset');
   };
   
   const handleDeleteSticker = () => {
     if (book) {
       deleteBook(book.id);
       setShowDeleteDialog(false);
-      toast.success('Sticker removed');
+      toast.success('Item removed');
     }
-  };
-  
-  const handleReplaceImage = () => {
-    fileInputRef.current?.click();
   };
   
   // Set up mouse move and up event listeners
@@ -575,8 +437,8 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
                 onScaleChange={handleScaleChange}
                 onRotate={handleRotate}
                 onResetTransform={handleResetTransform}
-                onReplaceImage={handleReplaceImage}
-                onShowUrlDialog={() => setShowUrlDialog(true)}
+                onReplaceImage={() => {}}
+                onShowUrlDialog={() => {}}
                 onShowDeleteDialog={() => setShowDeleteDialog(true)}
               />
             </Popover>
@@ -604,8 +466,8 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
                 onScaleChange={handleScaleChange}
                 onRotate={handleRotate}
                 onResetTransform={handleResetTransform}
-                onReplaceImage={handleReplaceImage}
-                onShowUrlDialog={() => setShowUrlDialog(true)}
+                onReplaceImage={() => {}}
+                onShowUrlDialog={() => {}}
                 onShowDeleteDialog={() => setShowDeleteDialog(true)}
               />
             </Popover>
@@ -653,28 +515,15 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
             <input
               ref={fileInputRef}
               type="file"
-              accept={slotType === 'book' ? 'image/*' : 'image/*, application/json'}
+              accept="image/*"
               onChange={handleFileChange}
               className="hidden"
             />
             
-            <SlotControls 
-              onShowBgImageDialog={() => setShowBgImageDialog(true)}
-              onSlotTypeChange={setSlotType}
-              slotType={slotType}
-            />
+            <SlotControls onShowBgImageDialog={() => setShowBgImageDialog(true)} />
           </>
         )}
       </div>
-      
-      {/* URL Input Dialog */}
-      <UrlDialog 
-        open={showUrlDialog}
-        onOpenChange={setShowUrlDialog}
-        imageUrl={imageUrl}
-        onImageUrlChange={setImageUrl}
-        onSubmit={handleUrlSubmit}
-      />
       
       {/* Background Image Dialog */}
       <BgImageDialog
@@ -693,7 +542,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
         open={showDeleteDialog}
         onOpenChange={setShowDeleteDialog}
         onConfirm={handleDeleteSticker}
-        title="Delete Sticker?"
+        title="Delete Item?"
         description="This action cannot be undone."
       />
 

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { RotateCcw, RotateCw, Image, Link, Trash2 } from 'lucide-react';
+import { RotateCcw, RotateCw, Trash2 } from 'lucide-react';
 import { PopoverContent, PopoverArrow } from '@/components/ui/popover';
 
 type StickerControlsProps = {
@@ -9,9 +9,9 @@ type StickerControlsProps = {
   onScaleChange: (scale: number) => void;
   onRotate: (direction: 'cw' | 'ccw') => void;
   onResetTransform: () => void;
+  onShowDeleteDialog: () => void;
   onReplaceImage: () => void;
   onShowUrlDialog: () => void;
-  onShowDeleteDialog: () => void;
 };
 
 const StickerControls: React.FC<StickerControlsProps> = ({
@@ -19,14 +19,12 @@ const StickerControls: React.FC<StickerControlsProps> = ({
   onScaleChange,
   onRotate,
   onResetTransform,
-  onReplaceImage,
-  onShowUrlDialog,
   onShowDeleteDialog
 }) => {
   return (
     <PopoverContent className="w-64" side="top">
       <div className="space-y-2">
-        <h4 className="font-medium">Sticker Controls</h4>
+        <h4 className="font-medium">Item Controls</h4>
         <div className="flex justify-between items-center">
           <span>Scale: {scale.toFixed(1)}x</span>
           <div className="flex items-center space-x-1">
@@ -62,14 +60,6 @@ const StickerControls: React.FC<StickerControlsProps> = ({
         <div className="grid grid-cols-2 gap-2 pt-2">
           <Button size="sm" variant="outline" onClick={onResetTransform}>
             Reset
-          </Button>
-          <Button size="sm" variant="outline" onClick={onReplaceImage}>
-            <Image className="h-4 w-4 mr-1" />
-            Replace
-          </Button>
-          <Button size="sm" variant="outline" onClick={onShowUrlDialog}>
-            <Link className="h-4 w-4 mr-1" />
-            URL
           </Button>
           <Button size="sm" variant="destructive" onClick={onShowDeleteDialog}>
             <Trash2 className="h-4 w-4 mr-1" />

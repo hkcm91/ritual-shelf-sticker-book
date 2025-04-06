@@ -25,7 +25,7 @@ const StorageUsage: React.FC = () => {
     setUsage(stats);
   };
   
-  // Format bytes to human-readable format
+  // Format bytes to human-readable format with additional clarity for larger sizes
   const formatSize = (bytes: number) => {
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -36,11 +36,14 @@ const StorageUsage: React.FC = () => {
     <div className="p-2 text-xs text-gray-500">
       <div className="flex justify-between mb-1">
         <span>Storage</span>
-        <span>
+        <span className={usage.percent > 80 ? "text-orange-500 font-medium" : ""}>
           {formatSize(usage.used)} / {formatSize(usage.total)}
         </span>
       </div>
-      <Progress value={usage.percent} className="h-1" />
+      <Progress 
+        value={usage.percent} 
+        className={`h-1 ${usage.percent > 80 ? "bg-orange-100" : ""}`} 
+      />
     </div>
   );
 };

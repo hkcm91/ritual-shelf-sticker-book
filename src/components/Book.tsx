@@ -9,8 +9,8 @@ type BookProps = {
 const Book: React.FC<BookProps> = ({ data }) => {
   const { openModal, setDraggedBook } = useBookshelfStore();
   
-  // Don't render hidden books
-  if (data.hidden) return null;
+  // Don't render hidden books or items that should be stickers
+  if (data.hidden || data.isSticker) return null;
   
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.setData('bookId', data.id);

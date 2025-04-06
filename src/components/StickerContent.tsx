@@ -18,7 +18,7 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
   rotation,
   handleStickerMouseDown
 }, ref) => {
-  if (!book) return null;
+  if (!book || !book.isSticker) return null;
   
   try {
     // Common style for all stickers

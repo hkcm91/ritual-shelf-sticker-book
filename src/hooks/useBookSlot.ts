@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import { useTransformControls } from './useTransformControls';
 import { useDragAndDrop } from './useDragAndDrop';
@@ -15,6 +15,7 @@ export const useBookSlot = ({ position, slotType = "book" }: UseBookSlotProps) =
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
   const [isAltKeyPressed, setIsAltKeyPressed] = useState<boolean>(false);
   const { books, activeShelfId, deleteBook } = useBookshelfStore();
+  const deleteInProgress = useRef(false);
   
   // Get the book from the store
   const book = Object.values(books).find(
@@ -81,13 +82,27 @@ export const useBookSlot = ({ position, slotType = "book" }: UseBookSlotProps) =
     slotType
   });
   
-  // Handle deletion
+  // Handle deletion with safety checks
   const handleDeleteSticker = () => {
-    if (book) {
-      deleteBook(book.id);
+    if (!book || deleteInProgress.current) return;
+    
+    try {
+      // Prevent multiple deletes
+      deleteInProgress.current = true;
+      
+      // Small timeout to ensure state updates have completed
+      setTimeout(() => {
+        deleteBook(book.id);
+        clearTransformData();
+        setShowDeleteDialog(false);
+        toast.success('Item removed');
+        deleteInProgress.current = false;
+      }, 10);
+    } catch (error) {
+      console.error("Error deleting book:", error);
+      deleteInProgress.current = false;
+      toast.error("Failed to delete. Please try again.");
       setShowDeleteDialog(false);
-      clearTransformData();
-      toast.success('Item removed');
     }
   };
 

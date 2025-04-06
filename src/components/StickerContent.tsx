@@ -25,6 +25,7 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
   const [containerSize, setContainerSize] = useState({ width: 150, height: 220 });
   const { updateBook } = useBookshelfStore();
   const [altKeyPressed, setAltKeyPressed] = useState(false);
+  const [lottieError, setLottieError] = useState(false);
 
   // Measure container on mount and resize
   useEffect(() => {
@@ -115,7 +116,7 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
           ...stickerStyle
         }}
       >
-        {isLottie && animationData && (
+        {isLottie && animationData && !lottieError && (
           <div className="w-full h-full flex items-center justify-center">
             <Lottie 
               animationData={animationData} 
@@ -126,7 +127,14 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
                 height: '100%',
                 pointerEvents: 'none' // Make Lottie ignore pointer events
               }}
+              onError={() => setLottieError(true)}
             />
+          </div>
+        )}
+        
+        {isLottie && lottieError && (
+          <div className="w-full h-full flex items-center justify-center text-red-500 text-xs">
+            Lottie error
           </div>
         )}
         

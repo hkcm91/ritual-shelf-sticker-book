@@ -17,6 +17,7 @@ import {
   ContextMenuSeparator
 } from "@/components/ui/context-menu";
 import { RotateCcw, RotateCw, RefreshCw, Trash2 } from "lucide-react";
+import { toast } from 'sonner';
 
 type BookSlotProps = {
   position: number;
@@ -58,6 +59,18 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   const handleEmptySlotClick = () => {
     if (!book) {
       handleClick();
+    }
+  };
+  
+  // Safe delete handler with error boundary
+  const safeDeleteHandler = () => {
+    try {
+      handleDeleteSticker();
+    } catch (error) {
+      console.error("Error deleting sticker:", error);
+      toast.error("Failed to delete the item. Please try again.");
+      // Force close the delete dialog in case of error
+      setShowDeleteDialog(false);
     }
   };
 
@@ -164,7 +177,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
       <DeleteDialog
         open={showDeleteDialog}
         onOpenChange={setShowDeleteDialog}
-        onConfirm={handleDeleteSticker}
+        onConfirm={safeDeleteHandler}
         title="Delete Item?"
         description="This action cannot be undone."
       />

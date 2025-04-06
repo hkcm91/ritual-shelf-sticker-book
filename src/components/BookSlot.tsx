@@ -1,14 +1,18 @@
+
 import React, { useRef, useState, useEffect } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import Book from './Book';
 import { toast } from 'sonner';
 import Lottie from 'lottie-react';
+import { Popover, PopoverTrigger } from '@/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Popover, PopoverContent, PopoverTrigger, PopoverArrow } from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
-import { Trash2, RotateCcw, RotateCw, Image, Upload, Link, FileImage } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+
+// Import our new components
+import SlotControls from './SlotControls';
+import StickerControls from './StickerControls';
+import BgImageDialog from './BgImageDialog';
+import UrlDialog from './UrlDialog';
+import DeleteDialog from './DeleteDialog';
 
 type BookSlotProps = {
   position: number;
@@ -18,8 +22,9 @@ type SlotType = 'book' | 'sticker';
 
 const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const urlInputRef = useRef<HTMLInputElement>(null);
   const bgFileInputRef = useRef<HTMLInputElement>(null);
+  
+  // State
   const [slotType, setSlotType] = useState<SlotType>('book');
   const [bgColor, setBgColor] = useState<string>('transparent');
   const [bgImage, setBgImage] = useState<string | null>(null);
@@ -34,13 +39,13 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   const [showBgImageDialog, setShowBgImageDialog] = useState<boolean>(false);
   const [bgImageUrl, setBgImageUrl] = useState<string>('');
   
+  // Store
   const { 
     books, 
     activeShelfId, 
     addBook, 
     openModal, 
     getDraggedBook, 
-    setDraggedBook,
     updateBook,
     deleteBook
   } = useBookshelfStore();
@@ -565,61 +570,15 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
                   />
                 </div>
               </PopoverTrigger>
-              <PopoverContent className="w-64" side="top">
-                <div className="space-y-2">
-                  <h4 className="font-medium">Sticker Controls</h4>
-                  <div className="flex justify-between items-center">
-                    <span>Scale: {scale.toFixed(1)}x</span>
-                    <div className="flex items-center space-x-1">
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        onClick={() => handleScaleChange(Math.max(0.5, scale - 0.1))}
-                        disabled={scale <= 0.5}
-                      >
-                        -
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        onClick={() => handleScaleChange(Math.min(3, scale + 0.1))}
-                        disabled={scale >= 3}
-                      >
-                        +
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Rotation</span>
-                    <div className="flex items-center space-x-1">
-                      <Button size="sm" variant="outline" onClick={() => handleRotate('ccw')}>
-                        <RotateCcw className="h-4 w-4" />
-                      </Button>
-                      <Button size="sm" variant="outline" onClick={() => handleRotate('cw')}>
-                        <RotateCw className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 pt-2">
-                    <Button size="sm" variant="outline" onClick={handleResetTransform}>
-                      Reset
-                    </Button>
-                    <Button size="sm" variant="outline" onClick={handleReplaceImage}>
-                      <Image className="h-4 w-4 mr-1" />
-                      Replace
-                    </Button>
-                    <Button size="sm" variant="outline" onClick={() => setShowUrlDialog(true)}>
-                      <Link className="h-4 w-4 mr-1" />
-                      URL
-                    </Button>
-                    <Button size="sm" variant="destructive" onClick={() => setShowDeleteDialog(true)}>
-                      <Trash2 className="h-4 w-4 mr-1" />
-                      Delete
-                    </Button>
-                  </div>
-                </div>
-                <PopoverArrow className="fill-background" />
-              </PopoverContent>
+              <StickerControls 
+                scale={scale}
+                onScaleChange={handleScaleChange}
+                onRotate={handleRotate}
+                onResetTransform={handleResetTransform}
+                onReplaceImage={handleReplaceImage}
+                onShowUrlDialog={() => setShowUrlDialog(true)}
+                onShowDeleteDialog={() => setShowDeleteDialog(true)}
+              />
             </Popover>
           );
         } else {
@@ -640,61 +599,15 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
                   }}
                 />
               </PopoverTrigger>
-              <PopoverContent className="w-64" side="top">
-                <div className="space-y-2">
-                  <h4 className="font-medium">Sticker Controls</h4>
-                  <div className="flex justify-between items-center">
-                    <span>Scale: {scale.toFixed(1)}x</span>
-                    <div className="flex items-center space-x-1">
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        onClick={() => handleScaleChange(Math.max(0.5, scale - 0.1))}
-                        disabled={scale <= 0.5}
-                      >
-                        -
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        onClick={() => handleScaleChange(Math.min(3, scale + 0.1))}
-                        disabled={scale >= 3}
-                      >
-                        +
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Rotation</span>
-                    <div className="flex items-center space-x-1">
-                      <Button size="sm" variant="outline" onClick={() => handleRotate('ccw')}>
-                        <RotateCcw className="h-4 w-4" />
-                      </Button>
-                      <Button size="sm" variant="outline" onClick={() => handleRotate('cw')}>
-                        <RotateCw className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 pt-2">
-                    <Button size="sm" variant="outline" onClick={handleResetTransform}>
-                      Reset
-                    </Button>
-                    <Button size="sm" variant="outline" onClick={handleReplaceImage}>
-                      <Image className="h-4 w-4 mr-1" />
-                      Replace
-                    </Button>
-                    <Button size="sm" variant="outline" onClick={() => setShowUrlDialog(true)}>
-                      <Link className="h-4 w-4 mr-1" />
-                      URL
-                    </Button>
-                    <Button size="sm" variant="destructive" onClick={() => setShowDeleteDialog(true)}>
-                      <Trash2 className="h-4 w-4 mr-1" />
-                      Delete
-                    </Button>
-                  </div>
-                </div>
-                <PopoverArrow className="fill-background" />
-              </PopoverContent>
+              <StickerControls 
+                scale={scale}
+                onScaleChange={handleScaleChange}
+                onRotate={handleRotate}
+                onResetTransform={handleResetTransform}
+                onReplaceImage={handleReplaceImage}
+                onShowUrlDialog={() => setShowUrlDialog(true)}
+                onShowDeleteDialog={() => setShowDeleteDialog(true)}
+              />
             </Popover>
           );
         }
@@ -745,173 +658,55 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
               className="hidden"
             />
             
-            {/* Background customization hint */}
-            <div className="absolute top-2 right-2">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-6 w-6 bg-black/30 hover:bg-black/50 text-white/70 opacity-40 hover:opacity-100"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowBgImageDialog(true);
-                      }}
-                    >
-                      <FileImage className="h-3 w-3" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Set background image</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-            
-            {/* Slot type toggle with circles */}
-            <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-3 opacity-60 hover:opacity-100">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div 
-                      className={`h-2.5 w-2.5 rounded-full cursor-pointer transition-all duration-200 ${slotType === 'book' ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/70'}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSlotType('book');
-                      }}
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Book Slot</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div 
-                      className={`h-2.5 w-2.5 rounded-full cursor-pointer transition-all duration-200 ${slotType === 'sticker' ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/70'}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSlotType('sticker');
-                      }}
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Sticker Slot (supports Lottie files)</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+            <SlotControls 
+              onShowBgImageDialog={() => setShowBgImageDialog(true)}
+              onSlotTypeChange={setSlotType}
+              slotType={slotType}
+            />
           </>
         )}
       </div>
       
       {/* URL Input Dialog */}
-      <Dialog open={showUrlDialog} onOpenChange={setShowUrlDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add Image from URL</DialogTitle>
-          </DialogHeader>
-          <div className="py-4">
-            <input
-              type="text"
-              className="w-full px-3 py-2 border rounded-md"
-              placeholder="Enter image or Lottie JSON URL"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-            />
-          </div>
-          <div className="flex justify-end space-x-2">
-            <Button variant="outline" onClick={() => setShowUrlDialog(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleUrlSubmit}>
-              Add
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <UrlDialog 
+        open={showUrlDialog}
+        onOpenChange={setShowUrlDialog}
+        imageUrl={imageUrl}
+        onImageUrlChange={setImageUrl}
+        onSubmit={handleUrlSubmit}
+      />
       
       {/* Background Image Dialog */}
-      <Dialog open={showBgImageDialog} onOpenChange={setShowBgImageDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Set Background Image</DialogTitle>
-          </DialogHeader>
-          <div className="py-4 space-y-4">
-            <div>
-              <h4 className="text-sm font-medium mb-2">Upload Image</h4>
-              <div className="flex items-center space-x-2">
-                <Button 
-                  variant="outline" 
-                  onClick={() => bgFileInputRef.current?.click()}
-                  className="w-full flex items-center justify-center gap-2"
-                >
-                  <Upload className="h-4 w-4" />
-                  <span>Choose File</span>
-                </Button>
-                <input
-                  ref={bgFileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleBgFileChange}
-                  className="hidden"
-                />
-              </div>
-            </div>
-            
-            <div className="my-2">
-              <div className="relative flex items-center">
-                <div className="flex-grow border-t border-gray-300"></div>
-                <span className="mx-3 text-xs text-gray-500">OR</span>
-                <div className="flex-grow border-t border-gray-300"></div>
-              </div>
-            </div>
-            
-            <div>
-              <h4 className="text-sm font-medium mb-2">Image URL</h4>
-              <input
-                type="text"
-                className="w-full px-3 py-2 border rounded-md"
-                placeholder="Enter image URL"
-                value={bgImageUrl}
-                onChange={(e) => setBgImageUrl(e.target.value)}
-              />
-            </div>
-            
-            {bgImage && (
-              <div>
-                <h4 className="text-sm font-medium mb-2">Current Background</h4>
-                <div className="flex justify-between items-center">
-                  <div className="h-16 w-16 border rounded overflow-hidden">
-                    <img src={bgImage} alt="Current background" className="h-full w-full object-cover" />
-                  </div>
-                  <Button variant="destructive" size="sm" onClick={() => setBgImage(null)}>
-                    Remove
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
-          <div className="flex justify-end space-x-2">
-            <Button variant="outline" onClick={() => setShowBgImageDialog(false)}>
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleBgImageUrlSubmit}
-              disabled={!bgImageUrl}
-            >
-              Set URL Image
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <BgImageDialog
+        open={showBgImageDialog}
+        onOpenChange={setShowBgImageDialog}
+        bgImage={bgImage}
+        bgImageUrl={bgImageUrl}
+        onBgImageUrlChange={setBgImageUrl}
+        onUploadClick={() => bgFileInputRef.current?.click()}
+        onBgImageUrlSubmit={handleBgImageUrlSubmit}
+        onBgImageRemove={() => setBgImage(null)}
+      />
       
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <
+      <DeleteDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        onConfirm={handleDeleteSticker}
+        title="Delete Sticker?"
+        description="This action cannot be undone."
+      />
+
+      {/* Hidden input for background image upload */}
+      <input
+        ref={bgFileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleBgFileChange}
+        className="hidden"
+      />
+    </>
+  );
+};
+
+export default BookSlot;

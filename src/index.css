@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -85,11 +86,6 @@
   
   .book-slot.empty {
     @apply hover:bg-gray-50/30;
-  }
-  
-  .book-slot.empty::after {
-    content: "+";
-    @apply text-2xl text-gray-300/50 pointer-events-none;
   }
   
   .book {

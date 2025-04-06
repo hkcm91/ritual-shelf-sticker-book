@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Book, Sticker } from "lucide-react";
 
 type SlotTypeToggleProps = {
   slotType: "book" | "sticker";
@@ -26,6 +27,7 @@ const SlotTypeToggle: React.FC<SlotTypeToggleProps> = ({
           value="book" 
           aria-label="Book Slot" 
           className="slot-toggle-dot"
+          title="Book"
         >
           <span className="sr-only">Book</span>
         </ToggleGroupItem>
@@ -33,6 +35,7 @@ const SlotTypeToggle: React.FC<SlotTypeToggleProps> = ({
           value="sticker" 
           aria-label="Sticker Slot" 
           className="slot-toggle-dot"
+          title="Sticker"
         >
           <span className="sr-only">Sticker</span>
         </ToggleGroupItem>

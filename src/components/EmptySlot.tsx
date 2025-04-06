@@ -4,13 +4,14 @@ import { storageService } from '../services/storageService';
 import { toast } from 'sonner';
 import UrlDialog from './UrlDialog';
 import { useBookshelfStore } from '../store/bookshelfStore';
+import { Plus } from 'lucide-react';
 
 type EmptySlotProps = {
   fileInputRef: React.RefObject<HTMLInputElement>;
   onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
   slotType?: "book" | "sticker";
   onClick?: () => void; 
-  position: number; // Add position prop to know which slot we're working with
+  position: number;
 };
 
 const EmptySlot: React.FC<EmptySlotProps> = ({ 
@@ -29,13 +30,13 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
     ? "image/*" 
     : "image/*,application/json";
   
-  // Check storage before upload
+  // Handle the file input change
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const stats = storageService.getUsageStats();
     
     // If storage is getting full (over 80%), warn the user
     if (stats.percent > 80) {
-      toast.warning(`Storage is ${stats.percent}% full. Consider removing unused items or using smaller images.`);
+      toast.warning(`Storage is ${stats.percent}% full. Consider removing unused items.`);
     }
     
     // For book slots, create a temporary book and open the modal
@@ -82,7 +83,7 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
     }
   };
   
-  // Handle the click event and call the onClick prop
+  // Handle the click event
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent event bubbling
     
@@ -97,8 +98,8 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
     }
   };
   
+  // Handle URL submission for stickers
   const handleUrlSubmit = () => {
-    // Here you would handle adding a sticker from URL
     if (!imageUrl) {
       toast.error("Please enter a valid URL");
       return;
@@ -138,7 +139,10 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
         className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer"
         onClick={handleClick}
       >
-        <span className="text-5xl text-gray-300/20">+</span>
+        <Plus className="w-6 h-6 text-gray-300/50" />
+        <span className="text-xs text-gray-300/50 mt-1">
+          {slotType === "book" ? "Add Book" : "Add Sticker"}
+        </span>
       </div>
       <input
         ref={fileInputRef}

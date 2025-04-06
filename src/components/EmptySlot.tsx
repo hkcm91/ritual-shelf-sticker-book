@@ -14,7 +14,7 @@ const EmptySlot: React.FC<EmptySlotProps> = ({ fileInputRef }) => {
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/*"
+        accept="image/*,application/json"
         className="hidden"
       />
     </>

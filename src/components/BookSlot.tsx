@@ -300,6 +300,68 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     
     const draggedBook = getDraggedBook();
     
+    // First check if there are files being dropped
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const file = e.dataTransfer.files[0];
+      
+      // For Lottie JSON files
+      if (file.type === 'application/json' && slotType === 'sticker') {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (typeof event.target?.result === 'string') {
+            try {
+              // Validate that it's a proper Lottie JSON
+              JSON.parse(event.target.result);
+              
+              const newBookId = addBook({
+                title: 'Sticker',
+                author: 'Decoration',
+                coverURL: event.target.result,
+                progress: 0,
+                rating: 0,
+                position,
+                shelfId: activeShelfId,
+                isSticker: true
+              });
+              
+              toast.success('Lottie sticker added successfully');
+            } catch (err) {
+              toast.error('Invalid Lottie JSON file');
+            }
+          }
+        };
+        reader.readAsText(file);
+        return;
+      } 
+      // For image files
+      else if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (typeof event.target?.result === 'string') {
+            const newBookId = addBook({
+              title: slotType === 'sticker' ? 'Sticker' : '',
+              author: slotType === 'sticker' ? 'Decoration' : '',
+              coverURL: event.target.result,
+              progress: 0,
+              rating: 0,
+              position,
+              shelfId: activeShelfId,
+              isSticker: slotType === 'sticker'
+            });
+            
+            if (slotType === 'book') {
+              openModal(newBookId);
+            } else {
+              toast.success('Sticker added successfully');
+            }
+          }
+        };
+        reader.readAsDataURL(file);
+        return;
+      }
+    }
+    
+    // If there's no file being dropped, check for book drag
     if (!draggedBook || book) return; // Only allow dropping onto empty slots
     
     // Update the draggedBook with the new position
@@ -330,7 +392,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     // Calculate new position with expanded boundaries to allow full slot movement
     const slotWidth = 150; // Width of the book slot
     const slotHeight = 220; // Height of the book slot
-    const maxOffset = Math.max(slotWidth, slotHeight) / 2; // Maximum offset based on slot dimensions
+    const maxOffset = Math.max(slotWidth, slotHeight); // Maximum offset based on slot dimensions
     
     const newX = Math.max(-maxOffset, Math.min(maxOffset, e.clientX - dragStart.x));
     const newY = Math.max(-maxOffset, Math.min(maxOffset, e.clientY - dragStart.y));
@@ -383,7 +445,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
       const handleMouseMove = (e: MouseEvent) => {
         const slotWidth = 150;
         const slotHeight = 220;
-        const maxOffset = Math.max(slotWidth, slotHeight) / 2;
+        const maxOffset = Math.max(slotWidth, slotHeight);
         
         const newX = Math.max(-maxOffset, Math.min(maxOffset, e.clientX - dragStart.x));
         const newY = Math.max(-maxOffset, Math.min(maxOffset, e.clientY - dragStart.y));

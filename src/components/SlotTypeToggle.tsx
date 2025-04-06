@@ -1,45 +1,32 @@
 
 import React from 'react';
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Circle } from "lucide-react";
 
 type SlotTypeToggleProps = {
   slotType: "book" | "sticker";
   handleTypeToggle: (value: string) => void;
+  isVisible?: boolean; // Add visibility prop
 };
 
 const SlotTypeToggle: React.FC<SlotTypeToggleProps> = ({ 
   slotType, 
-  handleTypeToggle 
+  handleTypeToggle,
+  isVisible = true // Default to visible
 }) => {
+  // If not visible, don't render anything
+  if (!isVisible) return null;
+  
   return (
-    <div 
-      className="absolute bottom-1 left-0 right-0 z-10 flex justify-center"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <ToggleGroup 
-        type="single" 
-        value={slotType} 
-        onValueChange={handleTypeToggle}
-        className="flex space-x-2 pointer-events-auto"
-      >
-        <ToggleGroupItem 
-          value="book" 
-          aria-label="Book Slot" 
-          className="slot-toggle-dot"
-          title="Book"
-        >
-          <span className="sr-only">Book</span>
-        </ToggleGroupItem>
-        <ToggleGroupItem 
-          value="sticker" 
-          aria-label="Sticker Slot" 
-          className="slot-toggle-dot"
-          title="Sticker"
-        >
-          <span className="sr-only">Sticker</span>
-        </ToggleGroupItem>
-      </ToggleGroup>
+    <div className="slot-toggle-container">
+      <button
+        className={`book-toggle-dot ${slotType === 'book' ? 'active' : ''}`}
+        onClick={() => handleTypeToggle('book')}
+        aria-label="Switch to book mode"
+      />
+      <button
+        className={`sticker-toggle-dot ${slotType === 'sticker' ? 'active' : ''}`}
+        onClick={() => handleTypeToggle('sticker')}
+        aria-label="Switch to sticker mode"
+      />
     </div>
   );
 };

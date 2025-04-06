@@ -35,7 +35,8 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     handleRotate,
     handleScaleChange,
     handleResetTransform,
-    handleDeleteSticker
+    handleDeleteSticker,
+    isAltDrag
   } = useBookSlot({ position, slotType });
 
   // Handle type toggle without triggering file input
@@ -66,6 +67,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
               position2D={position2D}
               rotation={rotation}
               handleStickerMouseDown={handleStickerMouseDown}
+              isAltDrag={isAltDrag}
             />
           </PopoverTrigger>
           <SlotControls 

@@ -1,13 +1,11 @@
+
 import { useState, useEffect } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import { toast } from 'sonner';
+import { useStickerDrag } from './useStickerDrag';
 
 type UseDragAndDropProps = {
   position: number;
-  isDragging: boolean;
-  setIsDragging: (value: boolean) => void;
-  dragStart: { x: number, y: number };
-  setDragStart: (value: { x: number, y: number }) => void;
   setPosition2D: (value: { x: number, y: number }) => void;
   book: any;
   slotType?: "book" | "sticker";
@@ -15,10 +13,6 @@ type UseDragAndDropProps = {
 
 export const useDragAndDrop = ({
   position,
-  isDragging,
-  setIsDragging,
-  dragStart,
-  setDragStart,
   setPosition2D,
   book,
   slotType = "book"
@@ -26,6 +20,21 @@ export const useDragAndDrop = ({
   const { activeShelfId, updateBook, getDraggedBook, addBook, openModal } = useBookshelfStore();
   const [slotDimensions, setSlotDimensions] = useState({ width: 150, height: 220 });
   const [initialPosition, setInitialPosition] = useState({ x: 0, y: 0 });
+  
+  // Use the sticker drag hook
+  const { 
+    isDragging, 
+    setIsDragging,
+    dragStart, 
+    setDragStart,
+    handleStickerMouseDown 
+  } = useStickerDrag({
+    position,
+    book,
+    initialPosition,
+    setPosition2D,
+    slotDimensions
+  });
   
   // Update slot dimensions when window resizes
   useEffect(() => {
@@ -45,67 +54,24 @@ export const useDragAndDrop = ({
     return () => window.removeEventListener('resize', updateDimensions);
   }, [position]);
   
-  // Sticker drag management
-  const handleStickerMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!book?.isSticker) return;
-    
-    e.stopPropagation();
-    e.preventDefault();
-    
-    setIsDragging(true);
-    setDragStart({
-      x: e.clientX,
-      y: e.clientY
-    });
-    
-    // Store the initial position for accurate movement calculation
-    setInitialPosition(currentPosition => ({
-      x: currentPosition.x,
-      y: currentPosition.y
-    }));
-  };
-  
-  const handleStickerMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isDragging || !book?.isSticker) return;
-    
-    e.stopPropagation();
-    
-    // Calculate movement deltas
-    const deltaX = e.clientX - dragStart.x;
-    const deltaY = e.clientY - dragStart.y;
-    
-    // Calculate new position
-    const newX = initialPosition.x + deltaX;
-    const newY = initialPosition.y + deltaY;
-    
-    // Calculate sticker's effective dimensions (with scale)
-    const stickerScale = book.scale || 1;
-    const stickerWidth = slotDimensions.width * 0.8 * stickerScale; // 80% of slot width
-    const stickerHeight = slotDimensions.height * 0.8 * stickerScale; // 80% of slot height
-    
-    // Calculate boundaries to keep sticker visible within the slot
-    const maxX = slotDimensions.width/2 - stickerWidth/4;
-    const maxY = slotDimensions.height/2 - stickerHeight/4;
-    const minX = -maxX;
-    const minY = -maxY;
-    
-    // Clamp the position within boundaries
-    const clampedX = Math.max(minX, Math.min(maxX, newX));
-    const clampedY = Math.max(minY, Math.min(maxY, newY));
-    
-    setPosition2D({
-      x: clampedX,
-      y: clampedY
-    });
-  };
-  
-  const handleStickerMouseUp = () => {
-    if (isDragging) {
-      setIsDragging(false);
-      
-      // Save the position to local storage
-      // This is handled by the useTransformControls hook
+  // Update initial position when position2D changes
+  useEffect(() => {
+    if (!isDragging) {
+      setInitialPosition(currentPosition => ({
+        x: currentPosition.x,
+        y: currentPosition.y
+      }));
     }
+  }, [isDragging]);
+  
+  // Helper function for sticker mouse move
+  const handleStickerMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    // This is now handled in the useStickerDrag hook
+  };
+  
+  // Helper function for sticker mouse up
+  const handleStickerMouseUp = () => {
+    // This is now handled in the useStickerDrag hook
   };
   
   // Handle drag over to allow drop
@@ -200,58 +166,16 @@ export const useDragAndDrop = ({
     
     toast.success('Book moved successfully');
   };
-  
-  // Document-level event handlers for drag
-  useEffect(() => {
-    if (isDragging) {
-      const handleMouseMove = (e: MouseEvent) => {
-        // Calculate movement deltas
-        const deltaX = e.clientX - dragStart.x;
-        const deltaY = e.clientY - dragStart.y;
-        
-        // Calculate new position
-        const newX = initialPosition.x + deltaX;
-        const newY = initialPosition.y + deltaY;
-        
-        // Calculate boundaries based on sticker and slot dimensions
-        const stickerScale = book?.scale || 1;
-        const stickerWidth = slotDimensions.width * 0.8 * stickerScale;
-        const stickerHeight = slotDimensions.height * 0.8 * stickerScale;
-        
-        const maxX = slotDimensions.width/2 - stickerWidth/4;
-        const maxY = slotDimensions.height/2 - stickerHeight/4;
-        const minX = -maxX;
-        const minY = -maxY;
-        
-        // Clamp the position within boundaries
-        const clampedX = Math.max(minX, Math.min(maxX, newX));
-        const clampedY = Math.max(minY, Math.min(maxY, newY));
-        
-        setPosition2D({
-          x: clampedX,
-          y: clampedY
-        });
-      };
-      
-      const handleMouseUp = () => {
-        setIsDragging(false);
-      };
-      
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-      
-      return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-      };
-    }
-  }, [isDragging, dragStart, setPosition2D, setIsDragging, book, slotDimensions, initialPosition]);
 
   return {
     handleStickerMouseDown,
     handleStickerMouseMove,
     handleStickerMouseUp,
     handleDragOver,
-    handleDrop
+    handleDrop,
+    isDragging,
+    setIsDragging,
+    dragStart,
+    setDragStart
   };
 };

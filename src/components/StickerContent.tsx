@@ -9,6 +9,7 @@ type StickerContentProps = {
   position2D: { x: number, y: number };
   rotation: number;
   handleStickerMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
+  isAltDrag?: boolean;
 };
 
 // Using forwardRef to properly handle refs from PopoverTrigger
@@ -17,11 +18,13 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
   scale,
   position2D,
   rotation,
-  handleStickerMouseDown
+  handleStickerMouseDown,
+  isAltDrag = false
 }, ref) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = useState({ width: 150, height: 220 });
   const { updateBook } = useBookshelfStore();
+  const [altKeyPressed, setAltKeyPressed] = useState(false);
 
   // Measure container on mount and resize
   useEffect(() => {
@@ -37,6 +40,29 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
     }
   }, []);
 
+  // Listen for Alt key press/release
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Alt') {
+        setAltKeyPressed(true);
+      }
+    };
+    
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === 'Alt') {
+        setAltKeyPressed(false);
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
+
   if (!book || !book.isSticker) return null;
   
   try {
@@ -45,7 +71,10 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
       transform: `scale(${scale}) translate(${position2D.x / scale}px, ${position2D.y / scale}px) rotate(${rotation}deg)`,
       transformOrigin: 'center',
       width: '100%',
-      height: '100%'
+      height: '100%',
+      // Add a subtle border when alt key is pressed for extended movement
+      boxShadow: altKeyPressed ? '0 0 0 2px rgba(255, 165, 0, 0.5)' : 'none',
+      transition: 'box-shadow 0.2s ease'
     };
     
     // Check if it's a Lottie JSON
@@ -76,7 +105,7 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
           }
           containerRef.current = node;
         }}
-        className="w-full h-full cursor-move"
+        className="w-full h-full cursor-move relative"
         onMouseDown={handleStickerMouseDown}
         style={isLottie ? stickerStyle : {
           backgroundImage: `url(${book.coverURL})`,
@@ -98,6 +127,13 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
                 pointerEvents: 'none' // Make Lottie ignore pointer events
               }}
             />
+          </div>
+        )}
+        
+        {/* Small helper tip that appears when holding Alt */}
+        {altKeyPressed && (
+          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white text-xs px-2 py-0.5 rounded whitespace-nowrap opacity-80">
+            Extended boundaries
           </div>
         )}
       </div>

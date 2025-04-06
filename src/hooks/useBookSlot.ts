@@ -26,10 +26,6 @@ export const useBookSlot = ({ position, slotType = "book" }: UseBookSlotProps) =
     position2D,
     setPosition2D,
     rotation,
-    isDragging,
-    setIsDragging,
-    dragStart,
-    setDragStart,
     handleRotate,
     handleScaleChange,
     handleResetTransform,
@@ -49,13 +45,13 @@ export const useBookSlot = ({ position, slotType = "book" }: UseBookSlotProps) =
     handleStickerMouseMove,
     handleStickerMouseUp,
     handleDragOver,
-    handleDrop
-  } = useDragAndDrop({
-    position,
+    handleDrop,
     isDragging,
     setIsDragging,
     dragStart,
-    setDragStart,
+    setDragStart
+  } = useDragAndDrop({
+    position,
     setPosition2D,
     book,
     slotType
@@ -97,6 +93,7 @@ export const useBookSlot = ({ position, slotType = "book" }: UseBookSlotProps) =
     handleRotate,
     handleScaleChange,
     handleResetTransform,
-    handleDeleteSticker
+    handleDeleteSticker,
+    isAltDrag: isDragging && Boolean(document.querySelector('key === "Alt"'))
   };
 };

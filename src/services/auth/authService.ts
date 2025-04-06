@@ -1,38 +1,10 @@
 
+import { AuthConfig, AuthState, IAuthService, UserProfile } from './types';
+
 /**
- * User Authentication Service
- * 
- * This is a placeholder for the future user authentication implementation.
- * The actual implementation will depend on the chosen auth provider
- * (Firebase Auth, Auth0, custom solution, etc.).
+ * Core Authentication Service Implementation
  */
-
-// Authentication configuration interface
-export interface AuthConfig {
-  apiKey?: string;
-  authDomain?: string;
-  redirectUri?: string;
-}
-
-// User profile interface
-export interface UserProfile {
-  id: string;
-  displayName?: string;
-  email?: string;
-  photoURL?: string;
-  createdAt: number;
-  lastLoginAt: number;
-}
-
-// Auth state interface
-export interface AuthState {
-  isAuthenticated: boolean;
-  user: UserProfile | null;
-  isLoading: boolean;
-  error: string | null;
-}
-
-class UserAuthService {
+class AuthService implements IAuthService {
   private config: AuthConfig = {};
   private isInitialized = false;
   private authState: AuthState = {
@@ -231,5 +203,5 @@ class UserAuthService {
   }
 }
 
-// Export singleton instance
-export const userAuthService = new UserAuthService();
+// Create a single instance of the auth service
+export const authService = new AuthService();

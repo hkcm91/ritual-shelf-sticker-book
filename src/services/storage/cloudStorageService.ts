@@ -2,7 +2,7 @@
 import { toast } from 'sonner';
 import { BaseStorageService } from './baseStorageService';
 import { StorageOptions } from './types';
-import { userAuthService } from '../userAuthService';
+import { userAuthService } from '../auth';
 
 /**
  * Cloud storage implementation

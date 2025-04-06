@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { userAuthService, AuthState } from '../services/userAuthService';
+import { userAuthService, AuthState } from '../services/auth';
 
 /**
  * Hook for accessing authentication state and methods in components

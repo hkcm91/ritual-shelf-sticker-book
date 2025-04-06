@@ -1,4 +1,3 @@
-
 import { StateCreator } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'sonner';
@@ -11,18 +10,12 @@ export interface BooksSlice {
   deleteBook: (id: string) => void;
 }
 
-type BookshelfInitialState = {
-  books: Record<string, BookData>;
-  shelves: any;
-  activeShelfId: string;
-};
-
 export const createBooksSlice: StateCreator<
   BooksSlice & { findEmptyPosition: (shelfId: string) => number },
   [],
   [],
   BooksSlice
-> = (set, get, _) => {
+> = (set, get, store) => {
   // Initialize with default or stored state
   const initialBooks = typeof window !== 'undefined' ?
     JSON.parse(localStorage.getItem('ritual-bookshelf-books') || '{}') : {};

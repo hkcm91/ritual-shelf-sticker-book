@@ -1,3 +1,4 @@
+
 import { StateCreator } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'sonner';
@@ -26,7 +27,7 @@ export const createShelvesSlice: StateCreator<
   [],
   [],
   ShelvesSlice
-> = (set, get, _) => {
+> = (set, get, store) => {
   // Initialize with default or stored state
   const initialShelves = typeof window !== 'undefined' ? 
     JSON.parse(localStorage.getItem('ritual-bookshelf-shelves') || '{}') : {};

@@ -18,7 +18,7 @@ export const createUISlice: StateCreator<
   [],
   [],
   UISlice
-> = (set, get, _) => ({
+> = (set, get, store) => ({
   isModalOpen: false,
   activeBookId: null,
   draggedBook: null,

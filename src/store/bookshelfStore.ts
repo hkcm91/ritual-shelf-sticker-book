@@ -12,10 +12,10 @@ export type BookshelfState = BooksSlice & ShelvesSlice & UISlice & {
 };
 
 // Create and export the store with all slices
-export const useBookshelfStore = create<BookshelfState>((set, get) => ({
-  ...createBooksSlice(set, get),
-  ...createShelvesSlice(set, get),
-  ...createUISlice(set, get),
+export const useBookshelfStore = create<BookshelfState>((set, get, api) => ({
+  ...createBooksSlice(set, get, api),
+  ...createShelvesSlice(set, get, api),
+  ...createUISlice(set, get, api),
   
   // Utility function to find empty position
   findEmptyPosition: (shelfId: string) => {

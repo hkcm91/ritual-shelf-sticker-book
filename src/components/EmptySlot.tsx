@@ -32,9 +32,6 @@ const EmptySlot: React.FC<EmptySlotProps> = ({ fileInputRef, onFileSelect, slotT
     <>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className="text-5xl text-gray-300/20">+</span>
-        <span className="text-xs text-gray-400 mt-2">
-          {slotType === "book" ? "Add Book" : "Add Sticker"}
-        </span>
       </div>
       <input
         ref={fileInputRef}

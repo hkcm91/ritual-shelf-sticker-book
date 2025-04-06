@@ -38,6 +38,13 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     handleDeleteSticker
   } = useBookSlot({ position, slotType });
 
+  // Handle type toggle without triggering file input
+  const handleTypeToggle = (value: string) => {
+    if (value) {
+      setSlotType(value as "book" | "sticker");
+    }
+  };
+
   // Render book content based on type
   const renderBookContent = () => {
     if (!book) return null;
@@ -83,7 +90,12 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
       >
         {!book && (
           <div className="absolute top-0 left-0 right-0 z-10 flex justify-center py-1">
-            <ToggleGroup type="single" value={slotType} onValueChange={(value) => value && setSlotType(value as "book" | "sticker")}>
+            <ToggleGroup 
+              type="single" 
+              value={slotType} 
+              onValueChange={handleTypeToggle}
+              className="pointer-events-auto"
+            >
               <ToggleGroupItem value="book" aria-label="Book Slot" className="h-6 w-6 p-0">
                 <BookOpen className="h-3 w-3" />
               </ToggleGroupItem>

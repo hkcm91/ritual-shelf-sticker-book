@@ -23,10 +23,33 @@ export const createShelfLayoutSlice: StateCreator<
 > = (set, get) => {
   return {
     addRow: () => {
-      const { activeShelfId, shelves } = get();
+      const { activeShelfId, shelves, books } = get();
       if (!activeShelfId) return;
       
       const shelf = shelves[activeShelfId];
+      
+      // Check for hidden books from previous row removals that can now be restored
+      const updatedBooks = { ...books };
+      
+      // Find and restore any hidden books that were in rows that are now visible again
+      Object.keys(updatedBooks).forEach(bookId => {
+        const book = updatedBooks[bookId];
+        if (book.shelfId === activeShelfId && book.hidden && book.originalPosition !== undefined) {
+          const originalRow = Math.floor(book.originalPosition / shelf.columns);
+          // If the original row will now be visible with the new row count
+          if (originalRow < shelf.rows + 1) {
+            // Restore the book to its original position
+            updatedBooks[bookId] = {
+              ...book,
+              position: book.originalPosition,
+              hidden: false
+            };
+            // Remove the originalPosition field after restoring
+            delete updatedBooks[bookId].originalPosition;
+          }
+        }
+      });
+      
       set((state) => {
         const updatedShelves = {
           ...state.shelves,
@@ -37,8 +60,12 @@ export const createShelfLayoutSlice: StateCreator<
         };
         
         saveShelvesToStorage(updatedShelves);
+        localStorage.setItem('ritual-bookshelf-books', JSON.stringify(updatedBooks));
         
-        return { shelves: updatedShelves };
+        return { 
+          shelves: updatedShelves,
+          books: updatedBooks
+        };
       });
     },
     
@@ -90,37 +117,30 @@ export const createShelfLayoutSlice: StateCreator<
       const shelf = shelves[activeShelfId];
       const newColumns = shelf.columns + 1;
       
-      // Recalculate book positions for the new column layout
-      const updatedPositions = recalculateBookPositions(
-        activeShelfId,
-        shelf.columns,
-        newColumns,
-        books
-      );
-      
-      // Apply new positions to books
+      // We'll now restore hidden books and keep all visible books in their current positions
       const updatedBooks = { ...books };
-      Object.keys(updatedPositions).forEach(bookId => {
-        updatedBooks[bookId] = { 
-          ...updatedBooks[bookId], 
-          position: updatedPositions[bookId] 
-        };
-      });
       
-      // Check for hidden books that might become visible again
+      // Check for hidden books from previous column removals that can now be restored
       Object.keys(updatedBooks).forEach(bookId => {
         const book = updatedBooks[bookId];
-        if (book.shelfId === activeShelfId && book.hidden) {
-          // Calculate if this book would now be visible in the new layout
+        if (book.shelfId === activeShelfId && book.hidden && book.originalPosition !== undefined) {
           const originalRow = Math.floor(book.originalPosition / shelf.columns);
-          if (originalRow < shelf.rows) {
-            // This book can be visible again
-            delete updatedBooks[bookId].hidden;
-            // Calculate new position based on original position
-            const originalCol = book.originalPosition % shelf.columns;
-            if (originalCol < newColumns) {
-              updatedBooks[bookId].position = originalRow * newColumns + originalCol;
-            }
+          const originalCol = book.originalPosition % shelf.columns;
+          
+          // Only restore if the book's original row is still visible and the column is now visible
+          if (originalRow < shelf.rows && originalCol < newColumns) {
+            // Calculate the new position that preserves the book's location
+            const newPosition = originalRow * newColumns + originalCol;
+            
+            // Restore the book to its proper location
+            updatedBooks[bookId] = {
+              ...book,
+              position: newPosition,
+              hidden: false
+            };
+            
+            // Remove the originalPosition field after restoring
+            delete updatedBooks[bookId].originalPosition;
           }
         }
       });
@@ -159,7 +179,7 @@ export const createShelfLayoutSlice: StateCreator<
       // Mark books in last column as hidden but preserve them
       const updatedBooks = { ...books };
       
-      // First mark books in the last column as hidden
+      // Mark books in the last column as hidden
       booksInLastColumn.forEach(bookId => {
         updatedBooks[bookId] = {
           ...updatedBooks[bookId],
@@ -168,28 +188,6 @@ export const createShelfLayoutSlice: StateCreator<
           // Mark as hidden but keep in storage
           hidden: true
         };
-      });
-      
-      // Update positions for remaining visible books
-      const remainingVisibleBooks = Object.keys(updatedBooks)
-        .filter(bookId => 
-          updatedBooks[bookId].shelfId === activeShelfId && 
-          !updatedBooks[bookId].hidden &&
-          !booksInLastColumn.includes(bookId)
-        );
-      
-      remainingVisibleBooks.forEach(bookId => {
-        const book = updatedBooks[bookId];
-        const currentRow = Math.floor(book.position / shelf.columns);
-        const currentCol = book.position % shelf.columns;
-        
-        // Only reposition if the column is valid in the new layout
-        if (currentCol < newColumns) {
-          updatedBooks[bookId] = {
-            ...book,
-            position: currentRow * newColumns + currentCol
-          };
-        }
       });
       
       set((state) => {

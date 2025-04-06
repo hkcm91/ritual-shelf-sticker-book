@@ -1,3 +1,4 @@
+
 import { StateCreator } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'sonner';
@@ -44,8 +45,16 @@ export const createBooksSlice: StateCreator<
           [id]: { ...bookData, id, position }
         };
         
-        // Save to localStorage
-        localStorage.setItem('ritual-bookshelf-books', JSON.stringify(updatedBooks));
+        // Try to save to localStorage with error handling
+        try {
+          localStorage.setItem('ritual-bookshelf-books', JSON.stringify(updatedBooks));
+        } catch (error) {
+          console.error('Failed to save books to localStorage:', error);
+          // Don't prevent the state update, but notify the user
+          setTimeout(() => {
+            toast.warning("Your browser storage is getting full. Some items may not be saved.");
+          }, 100);
+        }
         
         return { books: updatedBooks };
       });
@@ -59,8 +68,15 @@ export const createBooksSlice: StateCreator<
           [id]: { ...state.books[id], ...data }
         };
         
-        // Save to localStorage
-        localStorage.setItem('ritual-bookshelf-books', JSON.stringify(updatedBooks));
+        // Try to save to localStorage with error handling
+        try {
+          localStorage.setItem('ritual-bookshelf-books', JSON.stringify(updatedBooks));
+        } catch (error) {
+          console.error('Failed to update books in localStorage:', error);
+          setTimeout(() => {
+            toast.warning("Failed to save all changes. Your browser storage may be full.");
+          }, 100);
+        }
         
         return { books: updatedBooks };
       });
@@ -70,8 +86,12 @@ export const createBooksSlice: StateCreator<
       set((state) => {
         const { [id]: removed, ...remaining } = state.books;
         
-        // Save to localStorage
-        localStorage.setItem('ritual-bookshelf-books', JSON.stringify(remaining));
+        // Try to save to localStorage with error handling
+        try {
+          localStorage.setItem('ritual-bookshelf-books', JSON.stringify(remaining));
+        } catch (error) {
+          console.error('Failed to delete book from localStorage:', error);
+        }
         
         return { books: remaining };
       });

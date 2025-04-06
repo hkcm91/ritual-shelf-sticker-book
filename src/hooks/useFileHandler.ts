@@ -20,21 +20,29 @@ export const useFileHandler = ({ position, slotType = "book" }: UseFileHandlerPr
       const reader = new FileReader();
       reader.onload = (event) => {
         if (typeof event.target?.result === 'string') {
-          const newBookId = addBook({
-            title: '',
-            author: '',
-            coverURL: event.target.result,
-            progress: 0,
-            rating: 0,
-            position,
-            shelfId: activeShelfId,
-            isSticker: slotType === "sticker"
-          });
-          
-          if (newBookId && slotType === "book") {
-            openModal(newBookId);
-          } else if (newBookId) {
-            toast.success('Sticker added successfully');
+          try {
+            const newBookId = addBook({
+              title: slotType === "book" ? '' : file.name.replace(/\.[^/.]+$/, ""),
+              author: slotType === "book" ? '' : 'Sticker',
+              coverURL: event.target.result,
+              progress: 0,
+              rating: 0,
+              position,
+              shelfId: activeShelfId,
+              isSticker: slotType === "sticker"
+            });
+            
+            if (newBookId && slotType === "book") {
+              // Important: Open modal for book editing
+              openModal(newBookId);
+            } else if (newBookId) {
+              toast.success('Sticker added successfully');
+            } else {
+              toast.error('Failed to add item');
+            }
+          } catch (error) {
+            console.error('Error adding item:', error);
+            toast.error('Failed to save to localStorage. Try using smaller images or clearing some space.');
           }
         }
       };
@@ -48,24 +56,32 @@ export const useFileHandler = ({ position, slotType = "book" }: UseFileHandlerPr
             // Check if it's a valid Lottie JSON
             const lottieData = JSON.parse(event.target.result);
             if (lottieData && (lottieData.v !== undefined || lottieData.animations)) {
-              const newBookId = addBook({
-                title: file.name.replace('.json', ''),
-                author: 'Lottie Animation',
-                coverURL: event.target.result,
-                progress: 0,
-                rating: 0,
-                position,
-                shelfId: activeShelfId,
-                isSticker: true
-              });
-              
-              if (newBookId) {
-                toast.success('Lottie animation added successfully');
+              try {
+                const newBookId = addBook({
+                  title: file.name.replace('.json', ''),
+                  author: 'Lottie Animation',
+                  coverURL: event.target.result,
+                  progress: 0,
+                  rating: 0,
+                  position,
+                  shelfId: activeShelfId,
+                  isSticker: true
+                });
+                
+                if (newBookId) {
+                  toast.success('Lottie animation added successfully');
+                } else {
+                  toast.error('Failed to add animation');
+                }
+              } catch (error) {
+                console.error('Error adding Lottie:', error);
+                toast.error('Failed to save to localStorage. Try using smaller animations or clearing some space.');
               }
             } else {
               toast.error('Invalid Lottie animation format');
             }
           } catch (e) {
+            console.error('Failed to parse JSON:', e);
             toast.error('Failed to parse JSON file');
           }
         }

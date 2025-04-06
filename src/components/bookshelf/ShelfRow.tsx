@@ -9,14 +9,31 @@ type ShelfRowProps = {
 };
 
 const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
-  const { activeShelfId } = useBookshelfStore();
+  const { activeShelfId, shelves } = useBookshelfStore();
   
   // Generate slots for this row
   const renderSlots = () => {
     const slots = [];
+    const { dividers } = shelves;
     
     for (let col = 0; col < columns; col++) {
       const position = rowIndex * columns + col;
+      
+      // Add divider if needed
+      if (dividers?.enabled && col > 0 && col % dividers.booksPerSection === 0) {
+        slots.push(
+          <div 
+            key={`divider-${rowIndex}-${col}`}
+            className="shelf-divider" 
+            style={{
+              width: `var(--divider-thickness)`,
+              backgroundColor: `var(--divider-color)`,
+              height: '100%'
+            }}
+          />
+        );
+      }
+      
       slots.push(
         <BookSlot
           key={`slot-${position}`}

@@ -24,7 +24,7 @@ import {
   Layers,
   AppWindow,
   FileImage,
-  CircleX
+  XCircle
 } from "lucide-react";
 import { toast } from "sonner";
 import ColorPicker from './ColorPicker';
@@ -229,7 +229,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
                       onClick={() => clearImage(updatePageBackgroundImage)}
                       disabled={!page.backgroundImage}
                     >
-                      <CircleX className="mr-1 h-4 w-4" /> Clear
+                      <XCircle className="mr-1 h-4 w-4" /> Clear
                     </Button>
                     
                     <input

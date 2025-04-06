@@ -7,13 +7,13 @@ import { UISlice, createUISlice } from './uiSlice';
 import { CustomizationState, createCustomizationSlice } from './customizationSlice';
 import { BookData, ShelfData } from './types';
 
-// Define the complete store type
+// Define the complete store type that includes all slices
 export type BookshelfState = BooksSlice & CompleteShelvesSlice & UISlice & CustomizationState & {
   findEmptyPosition: (shelfId: string) => number;
 };
 
 // Create and export the store with all slices
-export const useBookshelfStore = create<BookshelfState>((set, get, api) => ({
+export const useBookshelfStore = create<BookshelfState>()((set, get, api) => ({
   ...createBooksSlice(set, get, api),
   ...createShelvesSlice(set, get, api),
   ...createUISlice(set, get, api),

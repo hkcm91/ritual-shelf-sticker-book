@@ -9,7 +9,7 @@ import ShelfDialogs from '../components/shelf/ShelfDialogs';
 import BackgroundSettings from '../components/settings/BackgroundSettings';
 
 const Index = () => {
-  const { shelves, activeShelfId, loadCustomization } = useBookshelfStore();
+  const { shelves, activeShelfId } = useBookshelfStore();
   const [isNewShelfModalOpen, setIsNewShelfModalOpen] = useState(false);
   const [newShelfName, setNewShelfName] = useState("");
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
@@ -23,7 +23,12 @@ const Index = () => {
   // Initialize the store and load customization
   useEffect(() => {
     const shelfId = initializeDefaultShelf();
-    loadCustomization();
+    
+    // Load customization
+    const loadSavedCustomization = useBookshelfStore.getState().loadCustomization;
+    if (loadSavedCustomization) {
+      loadSavedCustomization();
+    }
     
     if (shelfId) {
       toast.success('Welcome to Ritual Bookshelf!', {

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Eyedropper } from "lucide-react";
+import { PipetteIcon } from "lucide-react";
 
 interface ColorPickerProps {
   color: string;
@@ -49,7 +49,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
           onClick={() => setIsOpen(true)}
           disabled={disabled}
         >
-          <Eyedropper className="h-4 w-4" />
+          <PipetteIcon className="h-4 w-4" />
         </Button>
       </div>
       

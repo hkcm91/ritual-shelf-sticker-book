@@ -24,7 +24,7 @@ const Header: React.FC<HeaderProps> = ({
   setRenameValue,
   setShowBgImageDialog
 }) => {
-  const { ui, openCustomizationModal, closeCustomizationModal } = useBookshelfStore();
+  const { ui, openCustomizationModal } = useBookshelfStore();
   
   return (
     <header className="shadow-md sticky top-0 z-30 px-4 py-3">
@@ -56,7 +56,13 @@ const Header: React.FC<HeaderProps> = ({
       
       <CustomizationModal 
         open={ui.isCustomizationModalOpen} 
-        onOpenChange={closeCustomizationModal} 
+        onOpenChange={(open) => {
+          if (open) {
+            openCustomizationModal();
+          } else {
+            useBookshelfStore.getState().closeCustomizationModal();
+          }
+        }} 
       />
     </header>
   );

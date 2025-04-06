@@ -54,10 +54,54 @@ export interface CustomizationState {
   ui: {
     isCustomizationModalOpen: boolean;
   };
+  
+  // Actions
+  openCustomizationModal: () => void;
+  closeCustomizationModal: () => void;
+  
+  // Page settings
+  updatePageBackground: (color: string) => void;
+  updatePageBackgroundImage: (url: string) => void;
+  
+  // Container settings
+  updateContainerBackground: (color: string) => void;
+  updateContainerBackgroundImage: (url: string) => void;
+  updateContainerOpacity: (opacity: number) => void;
+  updateContainerBorder: (property: 'borderWidth' | 'borderStyle' | 'borderColor' | 'borderRadius', value: any) => void;
+  updateContainerPadding: (padding: number) => void;
+  
+  // Shelf settings
+  updateShelfThickness: (thickness: number) => void;
+  updateShelfColor: (color: string) => void;
+  updateShelfBackgroundImage: (url: string) => void;
+  updateShelfOpacity: (opacity: number) => void;
+  
+  // Divider settings
+  toggleDividers: (enabled: boolean) => void;
+  updateDividersSetting: (property: 'booksPerSection' | 'thickness' | 'color', value: any) => void;
+  
+  // Slots settings
+  updateSlotSetting: (
+    property: 'addButtonBg' | 'addButtonColor' | 'addButtonHoverBg' | 
+              'toggleInactiveColor' | 'toggleActiveColor' | 'toggleBorderColor' | 
+              'emptyHoverBg',
+    value: string
+  ) => void;
+  
+  // Header settings
+  updateHeaderSetting: (
+    property: 'background' | 'backgroundImage' | 'textColor',
+    value: string
+  ) => void;
+  
+  // Storage actions
+  saveCustomization: () => void;
+  loadCustomization: () => void;
+  resetCustomization: () => void;
 }
 
 // Default values
-const defaultCustomization: CustomizationState = {
+const defaultCustomization = {
   page: {
     background: '#f5f5f5',
     backgroundImage: '',
@@ -115,42 +159,77 @@ export const createCustomizationSlice: StateCreator<
   // Actions for customization state
   
   // General UI actions
-  openCustomizationModal: () => set({ ui: { ...get().ui, isCustomizationModalOpen: true } }),
-  closeCustomizationModal: () => set({ ui: { ...get().ui, isCustomizationModalOpen: false } }),
+  openCustomizationModal: () => set((state) => ({ 
+    ui: { ...state.ui, isCustomizationModalOpen: true } 
+  })),
+  
+  closeCustomizationModal: () => set((state) => ({ 
+    ui: { ...state.ui, isCustomizationModalOpen: false } 
+  })),
   
   // Page settings
-  updatePageBackground: (color: string) => 
-    set({ page: { ...get().page, background: color } }),
-  updatePageBackgroundImage: (url: string) => 
-    set({ page: { ...get().page, backgroundImage: url } }),
+  updatePageBackground: (color: string) => set((state) => ({ 
+    page: { ...state.page, background: color } 
+  })),
+  
+  updatePageBackgroundImage: (url: string) => set((state) => ({ 
+    page: { ...state.page, backgroundImage: url } 
+  })),
   
   // Container settings
-  updateContainerBackground: (color: string) => 
-    set({ container: { ...get().container, background: color } }),
-  updateContainerBackgroundImage: (url: string) => 
-    set({ container: { ...get().container, backgroundImage: url } }),
-  updateContainerOpacity: (opacity: number) => 
-    set({ container: { ...get().container, opacity } }),
-  updateContainerBorder: (property: 'borderWidth' | 'borderStyle' | 'borderColor' | 'borderRadius', value: any) =>
-    set({ container: { ...get().container, [property]: value } }),
-  updateContainerPadding: (padding: number) =>
-    set({ container: { ...get().container, padding } }),
+  updateContainerBackground: (color: string) => set((state) => ({ 
+    container: { ...state.container, background: color } 
+  })),
+  
+  updateContainerBackgroundImage: (url: string) => set((state) => ({ 
+    container: { ...state.container, backgroundImage: url } 
+  })),
+  
+  updateContainerOpacity: (opacity: number) => set((state) => ({ 
+    container: { ...state.container, opacity } 
+  })),
+  
+  updateContainerBorder: (property: 'borderWidth' | 'borderStyle' | 'borderColor' | 'borderRadius', value: any) => 
+    set((state) => ({ 
+      container: { ...state.container, [property]: value } 
+    })),
+  
+  updateContainerPadding: (padding: number) => set((state) => ({ 
+    container: { ...state.container, padding } 
+  })),
   
   // Shelf settings
-  updateShelfThickness: (thickness: number) =>
-    set({ shelves: { ...get().shelves, thickness } }),
-  updateShelfColor: (color: string) =>
-    set({ shelves: { ...get().shelves, color } }),
-  updateShelfBackgroundImage: (url: string) =>
-    set({ shelves: { ...get().shelves, backgroundImage: url } }),
-  updateShelfOpacity: (opacity: number) =>
-    set({ shelves: { ...get().shelves, opacity } }),
+  updateShelfThickness: (thickness: number) => set((state) => ({ 
+    shelves: { ...state.shelves, thickness } 
+  })),
+  
+  updateShelfColor: (color: string) => set((state) => ({ 
+    shelves: { ...state.shelves, color } 
+  })),
+  
+  updateShelfBackgroundImage: (url: string) => set((state) => ({ 
+    shelves: { ...state.shelves, backgroundImage: url } 
+  })),
+  
+  updateShelfOpacity: (opacity: number) => set((state) => ({ 
+    shelves: { ...state.shelves, opacity } 
+  })),
   
   // Divider settings
-  toggleDividers: (enabled: boolean) =>
-    set({ shelves: { ...get().shelves, dividers: { ...get().shelves.dividers, enabled } } }),
-  updateDividersSetting: (property: 'booksPerSection' | 'thickness' | 'color', value: any) =>
-    set({ shelves: { ...get().shelves, dividers: { ...get().shelves.dividers, [property]: value } } }),
+  toggleDividers: (enabled: boolean) => set((state) => ({ 
+    shelves: { 
+      ...state.shelves, 
+      dividers: { ...state.shelves.dividers, enabled } 
+    } 
+  })),
+  
+  updateDividersSetting: (property: 'booksPerSection' | 'thickness' | 'color', value: any) => 
+    set((state) => ({ 
+      shelves: { 
+        ...state.shelves, 
+        dividers: { ...state.shelves.dividers, [property]: value } 
+      } 
+    })),
   
   // Slots settings
   updateSlotSetting: (
@@ -158,18 +237,29 @@ export const createCustomizationSlice: StateCreator<
               'toggleInactiveColor' | 'toggleActiveColor' | 'toggleBorderColor' | 
               'emptyHoverBg',
     value: string
-  ) => set({ slots: { ...get().slots, [property]: value } }),
+  ) => set((state) => ({ 
+    slots: { ...state.slots, [property]: value } 
+  })),
   
   // Header settings
   updateHeaderSetting: (
     property: 'background' | 'backgroundImage' | 'textColor',
     value: string
-  ) => set({ header: { ...get().header, [property]: value } }),
+  ) => set((state) => ({ 
+    header: { ...state.header, [property]: value } 
+  })),
   
   // Save all customization settings to localStorage
   saveCustomization: () => {
     try {
-      const { ui, ...settings } = get();
+      const state = get();
+      const { ui, ...settings } = {
+        page: state.page,
+        container: state.container,
+        shelves: state.shelves,
+        slots: state.slots,
+        header: state.header
+      };
       localStorage.setItem('ritual-shelf-customization', JSON.stringify(settings));
       toast.success('Customization settings saved');
     } catch (error) {
@@ -184,7 +274,14 @@ export const createCustomizationSlice: StateCreator<
       const savedSettings = localStorage.getItem('ritual-shelf-customization');
       if (savedSettings) {
         const parsed = JSON.parse(savedSettings);
-        set({ ...get(), ...parsed });
+        set((state) => ({
+          ...state,
+          page: parsed.page || state.page,
+          container: parsed.container || state.container,
+          shelves: parsed.shelves || state.shelves,
+          slots: parsed.slots || state.slots,
+          header: parsed.header || state.header
+        }));
       }
     } catch (error) {
       console.error('Error loading customization settings:', error);
@@ -193,8 +290,15 @@ export const createCustomizationSlice: StateCreator<
   
   // Reset to default settings
   resetCustomization: () => {
-    const { ui } = get();
-    set({ ...defaultCustomization, ui });
+    const state = get();
+    set((state) => ({
+      ...state,
+      page: defaultCustomization.page,
+      container: defaultCustomization.container,
+      shelves: defaultCustomization.shelves,
+      slots: defaultCustomization.slots,
+      header: defaultCustomization.header
+    }));
     localStorage.removeItem('ritual-shelf-customization');
     toast.success('Customization settings reset to defaults');
   }

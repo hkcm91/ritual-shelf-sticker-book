@@ -35,10 +35,17 @@ const BookshelfGrid: React.FC = () => {
       
       grid.push(
         <div key={`row-${row}`} className="flex flex-col mb-8">
-          <div className="flex mb-0 justify-center">
+          <div className="flex justify-center space-x-2">
             {slots}
           </div>
-          <div className="wood-shelf h-6 bg-cover bg-center" style={{ backgroundImage: "url('/public/lovable-uploads/97c95e61-9910-43f5-a443-02a2f05ef00b.png')" }}></div>
+          <div 
+            className="wood-shelf h-6 bg-cover bg-center mt-1" 
+            style={{ 
+              backgroundImage: "url('/lovable-uploads/97c95e61-9910-43f5-a443-02a2f05ef00b.png')",
+              marginLeft: '-8px',
+              marginRight: '-8px'
+            }}
+          />
         </div>
       );
     }
@@ -48,10 +55,16 @@ const BookshelfGrid: React.FC = () => {
   
   return (
     <div 
-      className="bookshelf-wrapper p-4 md:p-8 overflow-x-auto"
-      style={{ transform: `scale(${zoomLevel})` }}
+      className="bookshelf-wrapper p-4 md:p-8 overflow-auto max-w-full w-full"
     >
-      <div className="bookshelf-container flex flex-col items-center bg-wood-texture bg-cover rounded-md p-4 shadow-lg min-w-max">
+      <div 
+        className="bookshelf-container flex flex-col items-center bg-wood-texture bg-cover rounded-md p-6 shadow-lg max-w-full mx-auto transform-gpu"
+        style={{ 
+          transform: `scale(${zoomLevel})`,
+          transformOrigin: 'top center',
+          width: 'max-content'
+        }}
+      >
         {renderGrid()}
       </div>
     </div>

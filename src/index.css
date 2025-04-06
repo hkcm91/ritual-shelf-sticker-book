@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -78,7 +79,9 @@
 
 @layer components {
   .book-slot {
-    @apply relative w-20 h-32 sm:w-24 sm:h-36 md:w-28 md:h-44 xl:w-32 xl:h-52 bg-bookshelf-empty border-2 border-bookshelf-slotBorder rounded-md flex items-center justify-center cursor-pointer transition-all mx-1;
+    @apply relative w-20 h-32 sm:w-24 sm:h-36 md:w-28 md:h-40 xl:w-32 xl:h-48 
+           bg-bookshelf-empty border-2 border-bookshelf-slotBorder rounded-md 
+           flex items-center justify-center cursor-pointer transition-all;
   }
   
   .book-slot.empty {
@@ -103,10 +106,15 @@
   }
   
   .bookshelf-wrapper {
-    @apply max-w-full;
+    @apply max-w-full overflow-x-auto;
   }
   
   .bookshelf-container {
-    @apply w-max mx-auto;
+    @apply w-max mx-auto transition-transform duration-200;
+  }
+  
+  @keyframes book-added {
+    0% { transform: translateY(20px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
   }
 }

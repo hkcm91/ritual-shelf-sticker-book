@@ -22,11 +22,11 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       
-      <div className="px-4 py-3 sticky top-16 z-10 bg-background/90 backdrop-blur-sm border-b">
+      <div className="px-4 py-3 sticky top-16 z-20 bg-background/90 backdrop-blur-sm border-b">
         <ShelfControls />
       </div>
       
-      <div className="flex-grow overflow-auto w-full">
+      <div className="flex-grow w-full overflow-auto">
         <BookshelfGrid />
       </div>
       

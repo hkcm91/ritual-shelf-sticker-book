@@ -25,7 +25,7 @@ const Book: React.FC<BookProps> = ({ data }) => {
   
   return (
     <div
-      className="book relative w-full h-full rounded bg-bookshelf-wood flex items-center justify-center text-white text-xs font-bold text-center cursor-grab z-10 shadow-md transition-transform duration-200 hover:scale-105"
+      className="relative w-full h-full rounded bg-bookshelf-wood flex items-center justify-center text-white text-xs font-bold text-center cursor-grab z-10 shadow-md transition-transform duration-200 hover:scale-105"
       style={{ 
         backgroundImage: `url(${data.coverURL})`,
         backgroundSize: 'cover',

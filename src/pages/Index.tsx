@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useRef } from 'react';
 import { useBookshelfStore, initializeDefaultShelf } from '../store/bookshelfStore';
 import BookshelfGrid from '../components/BookshelfGrid';
@@ -35,18 +36,34 @@ const Index = () => {
   
   // Load background from localStorage
   useEffect(() => {
-    const savedBgImage = localStorage.getItem('webpage-background-image');
-    if (savedBgImage) {
-      setBgImage(savedBgImage);
+    try {
+      const savedBgImage = localStorage.getItem('webpage-background-image');
+      if (savedBgImage) {
+        setBgImage(savedBgImage);
+      }
+    } catch (error) {
+      console.error('Error loading background from localStorage:', error);
     }
   }, []);
   
   // Save background to localStorage when it changes
   useEffect(() => {
     if (bgImage) {
-      localStorage.setItem('webpage-background-image', bgImage);
+      try {
+        localStorage.setItem('webpage-background-image', bgImage);
+      } catch (error) {
+        // Handle quota exceeded error
+        console.error('Error saving background to localStorage:', error);
+        toast.error('Background image is too large to store locally', {
+          description: 'Try using a URL or a smaller image file.'
+        });
+      }
     } else {
-      localStorage.removeItem('webpage-background-image');
+      try {
+        localStorage.removeItem('webpage-background-image');
+      } catch (error) {
+        console.error('Error removing background from localStorage:', error);
+      }
     }
   }, [bgImage]);
   
@@ -75,12 +92,25 @@ const Index = () => {
     if (!file) return;
     
     if (file.type.startsWith('image/')) {
+      // Check file size before processing
+      if (file.size > 2 * 1024 * 1024) { // 2MB limit
+        toast.warning('Image is large and may not be stored locally', {
+          description: 'Consider using an image URL instead.'
+        });
+      }
+
       const reader = new FileReader();
       reader.onload = (event) => {
         if (typeof event.target?.result === 'string') {
-          setBgImage(event.target.result);
-          toast.success('Background image added successfully');
-          setShowBgImageDialog(false);
+          try {
+            setBgImage(event.target.result);
+            toast.success('Background image added successfully');
+            setShowBgImageDialog(false);
+          } catch (error) {
+            toast.error('Failed to set background image', {
+              description: 'The image might be too large. Try using a URL instead.'
+            });
+          }
         }
       };
       reader.readAsDataURL(file);
@@ -96,6 +126,7 @@ const Index = () => {
   const handleBgImageUrlSubmit = () => {
     if (!bgImageUrl) return;
     
+    // When using URL, we just store the URL reference instead of the data
     setBgImage(bgImageUrl);
     toast.success('Background image added from URL');
     setShowBgImageDialog(false);

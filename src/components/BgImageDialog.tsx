@@ -1,8 +1,9 @@
 
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Upload } from 'lucide-react';
+import { Upload, AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 type BgImageDialogProps = {
   open: boolean;
@@ -30,8 +31,18 @@ const BgImageDialog: React.FC<BgImageDialogProps> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Set Background Image</DialogTitle>
+          <DialogDescription>
+            Choose a background image for your bookshelf page
+          </DialogDescription>
         </DialogHeader>
         <div className="py-4 space-y-4">
+          <Alert variant="warning" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              For larger images, using a URL is recommended to avoid storage limitations.
+            </AlertDescription>
+          </Alert>
+
           <div>
             <h4 className="text-sm font-medium mb-2">Upload Image</h4>
             <div className="flex items-center space-x-2">
@@ -55,7 +66,7 @@ const BgImageDialog: React.FC<BgImageDialogProps> = ({
           </div>
           
           <div>
-            <h4 className="text-sm font-medium mb-2">Image URL</h4>
+            <h4 className="text-sm font-medium mb-2">Image URL (Recommended)</h4>
             <input
               type="text"
               className="w-full px-3 py-2 border rounded-md"

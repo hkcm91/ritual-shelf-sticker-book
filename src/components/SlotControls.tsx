@@ -2,11 +2,11 @@
 import React from 'react';
 
 type SlotControlsProps = {
-  // No longer need onShowBgImageDialog
+  // Just a basic component structure for now
 };
 
 const SlotControls: React.FC<SlotControlsProps> = () => {
-  // Empty controls - removed background button
+  // Empty controls component
   return null;
 };
 

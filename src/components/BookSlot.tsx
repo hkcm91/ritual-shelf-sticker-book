@@ -52,17 +52,24 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     if (!book) {
-      e.currentTarget.classList.add('bg-primary-100', 'border-primary');
+      e.currentTarget.classList.add('bg-primary/10', 'border-primary');
+      e.dataTransfer.dropEffect = 'copy';
     }
   };
 
   const handleDragLeave = (e: React.DragEvent) => {
-    e.currentTarget.classList.remove('bg-primary-100', 'border-primary');
+    e.currentTarget.classList.remove('bg-primary/10', 'border-primary');
+  };
+  
+  const handleDragEnter = (e: React.DragEvent) => {
+    if (!book) {
+      e.currentTarget.classList.add('bg-primary/10', 'border-primary');
+    }
   };
   
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    e.currentTarget.classList.remove('bg-primary-100', 'border-primary');
+    e.currentTarget.classList.remove('bg-primary/10', 'border-primary');
     
     if (e.dataTransfer.files.length > 0 && !book) {
       const file = e.dataTransfer.files[0];
@@ -103,12 +110,13 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
             shelfId: activeShelfId,
           });
           
-          toast.success('Book added to shelf!');
+          toast.success(`"${bookData.title}" added to shelf!`);
           return;
         }
       }
     } catch (error) {
       console.error('Error processing drag data', error);
+      toast.error('Failed to add book from search');
     }
     
     const draggedBook = getDraggedBook();
@@ -124,6 +132,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
       className={`book-slot relative h-[220px] w-[150px] mx-1 rounded-sm border-2 border-dashed 
         border-gray-300 transition-colors duration-200 ${!book ? 'empty hover:border-primary/50' : 'border-transparent'}`}
       onDragOver={handleDragOver}
+      onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
@@ -133,6 +142,9 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
         <>
           <div className="absolute inset-0 flex items-center justify-center opacity-30">
             <span className="text-4xl">+</span>
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 text-sm text-center text-primary font-medium pointer-events-none">
+            <span>Drop book here</span>
           </div>
           <input
             ref={fileInputRef}

@@ -39,9 +39,8 @@ const BookshelfGrid: React.FC = () => {
             {slots}
           </div>
           <div 
-            className="wood-shelf h-6 bg-cover bg-center mt-1" 
+            className="wood-shelf h-10 bg-shelf-texture bg-repeat-x bg-bottom bg-contain" 
             style={{ 
-              backgroundImage: "url('/lovable-uploads/97c95e61-9910-43f5-a443-02a2f05ef00b.png')",
               marginLeft: '-8px',
               marginRight: '-8px'
             }}

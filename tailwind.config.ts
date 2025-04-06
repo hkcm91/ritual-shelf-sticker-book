@@ -104,7 +104,8 @@ export default {
 				'book-added': 'book-added 0.3s ease-out'
 			},
 			backgroundImage: {
-				'wood-texture': "url('/public/lovable-uploads/b613332c-c1a6-46ce-bd9f-6643f75a811a.png')"
+				'wood-texture': "url('/lovable-uploads/b613332c-c1a6-46ce-bd9f-6643f75a811a.png')",
+				'shelf-texture': "url('/lovable-uploads/1VjId2_iqK82YNtwIi1V4ckXnQEu6jhM3.png')"
 			}
 		}
 	},

@@ -31,8 +31,8 @@ export const useDragAndDrop = ({
     e.stopPropagation();
     setIsDragging(true);
     setDragStart({
-      x: e.clientX - dragStart.x,
-      y: e.clientY - dragStart.y
+      x: e.clientX,
+      y: e.clientY
     });
   };
   
@@ -95,6 +95,38 @@ export const useDragAndDrop = ({
           }
         };
         reader.readAsDataURL(file);
+        return;
+      } else if (file.type === 'application/json') {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (typeof event.target?.result === 'string') {
+            try {
+              // Check if it's a valid Lottie JSON
+              const lottieData = JSON.parse(event.target.result);
+              if (lottieData && (lottieData.v !== undefined || lottieData.animations)) {
+                const newBookId = addBook({
+                  title: file.name.replace('.json', ''),
+                  author: 'Lottie Animation',
+                  coverURL: event.target.result,
+                  progress: 0,
+                  rating: 0,
+                  position,
+                  shelfId: activeShelfId,
+                  isSticker: true
+                });
+                
+                if (newBookId) {
+                  toast.success('Lottie animation added successfully');
+                }
+              } else {
+                toast.error('Invalid Lottie animation format');
+              }
+            } catch (e) {
+              toast.error('Failed to parse JSON file');
+            }
+          }
+        };
+        reader.readAsText(file);
         return;
       }
     }

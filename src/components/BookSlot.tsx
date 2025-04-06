@@ -80,7 +80,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
         {book ? (
           renderBookContent()
         ) : (
-          <EmptySlot fileInputRef={fileInputRef} />
+          <EmptySlot fileInputRef={fileInputRef} onFileSelect={handleFileChange} />
         )}
       </div>
       

@@ -1,16 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Book as BookIcon, HelpCircle, Star } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
-// Import the extracted components
-import BookDetailsTab from './book-modal/BookDetailsTab';
-import BookNotesTab from './book-modal/BookNotesTab';
-import BookQuizTab from './book-modal/BookQuizTab';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import BookCover from './book-modal/BookCover';
+import BookModalTabs from './book-modal/BookModalTabs';
+import BookModalFooter from './book-modal/BookModalFooter';
 
 const BookModal: React.FC = () => {
   const { isModalOpen, activeBookId, books, closeModal, updateBook, deleteBook } = useBookshelfStore();
@@ -135,73 +129,20 @@ const BookModal: React.FC = () => {
         
         <BookCover coverURL={book?.coverURL} />
         
-        <Tabs defaultValue="details" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="details" className="flex items-center gap-1">
-              <BookIcon className="h-4 w-4" />
-              <span>Details</span>
-            </TabsTrigger>
-            <TabsTrigger value="notes" className="flex items-center gap-1">
-              <Star className="h-4 w-4" />
-              <span>Notes</span>
-            </TabsTrigger>
-            <TabsTrigger value="quizzes" className="flex items-center gap-1">
-              <HelpCircle className="h-4 w-4" />
-              <span>Quizzes</span>
-            </TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="details" className="space-y-4 pt-4">
-            <BookDetailsTab 
-              bookData={bookData} 
-              handleInputChange={handleInputChange} 
-              setRating={setRating} 
-            />
-          </TabsContent>
-          
-          <TabsContent value="notes" className="space-y-4 pt-4">
-            <BookNotesTab 
-              bookData={bookData} 
-              handleInputChange={handleInputChange} 
-            />
-          </TabsContent>
-          
-          <TabsContent value="quizzes" className="space-y-4 pt-4">
-            <BookQuizTab 
-              quizzes={bookData.quizzes} 
-              addEmptyQuiz={addEmptyQuiz} 
-              updateQuiz={updateQuiz} 
-              removeQuiz={removeQuiz} 
-            />
-          </TabsContent>
-        </Tabs>
+        <BookModalTabs 
+          bookData={bookData}
+          handleInputChange={handleInputChange}
+          setRating={setRating}
+          addEmptyQuiz={addEmptyQuiz}
+          updateQuiz={updateQuiz}
+          removeQuiz={removeQuiz}
+        />
         
-        <DialogFooter className="sm:justify-between">
-          <Button
-            variant="destructive"
-            onClick={handleDelete}
-            type="button"
-          >
-            Delete
-          </Button>
-          
-          <div>
-            <Button
-              variant="outline"
-              onClick={closeModal}
-              className="mr-2"
-            >
-              Cancel
-            </Button>
-            
-            <Button
-              onClick={handleSave}
-              type="button"
-            >
-              Save
-            </Button>
-          </div>
-        </DialogFooter>
+        <BookModalFooter 
+          handleSave={handleSave}
+          handleDelete={handleDelete}
+          closeModal={closeModal}
+        />
       </DialogContent>
     </Dialog>
   );

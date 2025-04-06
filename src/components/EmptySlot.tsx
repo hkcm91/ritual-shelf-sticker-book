@@ -1,13 +1,14 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { storageService } from '../services/storageService';
 import { toast } from 'sonner';
+import UrlDialog from './UrlDialog';
 
 type EmptySlotProps = {
   fileInputRef: React.RefObject<HTMLInputElement>;
   onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
   slotType?: "book" | "sticker";
-  onClick?: () => void; // Changed from React.MouseEvent to no parameters
+  onClick?: () => void; 
 };
 
 const EmptySlot: React.FC<EmptySlotProps> = ({ 
@@ -16,6 +17,9 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
   slotType = "book",
   onClick 
 }) => {
+  const [showUrlDialog, setShowUrlDialog] = useState(false);
+  const [imageUrl, setImageUrl] = useState('');
+  
   // Set accept attribute based on slot type
   const acceptAttr = slotType === "book" 
     ? "image/*" 
@@ -37,9 +41,33 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
   // Handle the click event and call the onClick prop
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent event bubbling
-    if (onClick) {
-      onClick(); // Call the onClick prop without passing the event
+    
+    if (slotType === "sticker") {
+      // For stickers, show the URL dialog
+      setShowUrlDialog(true);
+    } else {
+      // For books, use the default click handler
+      if (onClick) {
+        onClick();
+      }
     }
+  };
+  
+  const handleUrlSubmit = () => {
+    // Here you would handle adding a sticker from URL
+    // This would typically call a function from your store or service
+    if (!imageUrl) {
+      toast.error("Please enter a valid URL");
+      return;
+    }
+    
+    toast.success("Adding sticker from URL...");
+    // Mock implementation - you'd replace this with actual code to add the sticker
+    // For example: addStickerFromUrl(imageUrl, position);
+    
+    // Reset and close dialog
+    setImageUrl('');
+    setShowUrlDialog(false);
   };
   
   return (
@@ -56,6 +84,15 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
         accept={acceptAttr}
         className="hidden"
         onChange={handleFileInput}
+      />
+      
+      {/* URL Dialog for Stickers */}
+      <UrlDialog 
+        open={showUrlDialog}
+        onOpenChange={setShowUrlDialog}
+        imageUrl={imageUrl}
+        onImageUrlChange={setImageUrl}
+        onSubmit={handleUrlSubmit}
       />
     </>
   );

@@ -113,8 +113,20 @@
     @apply w-max mx-auto transition-transform duration-200;
   }
   
+  /* Style for the toggle group */
+  .slot-toggle-dot {
+    @apply h-3 w-3 p-0 rounded-full bg-gray-400/70 hover:bg-gray-300/70;
+    @apply flex items-center justify-center;
+    @apply transition-colors duration-200;
+  }
+  
+  .slot-toggle-dot[data-state="on"] {
+    @apply bg-primary;
+  }
+  
   @keyframes book-added {
     0% { transform: translateY(20px); opacity: 0; }
     100% { transform: translateY(0); opacity: 1; }
   }
 }
+

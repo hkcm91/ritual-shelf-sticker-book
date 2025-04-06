@@ -145,34 +145,43 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
         onMouseMove={handleStickerMouseMove}
         onMouseUp={handleStickerMouseUp}
       >
-        {!book && (
-          <div className="absolute top-0 left-0 right-0 z-10 flex justify-center py-1"
-               onClick={(e) => e.stopPropagation()}>
-            <ToggleGroup 
-              type="single" 
-              value={slotType} 
-              onValueChange={handleTypeToggle}
-              className="pointer-events-auto"
-            >
-              <ToggleGroupItem value="book" aria-label="Book Slot" className="h-6 w-6 p-0">
-                <BookOpen className="h-3 w-3" />
-              </ToggleGroupItem>
-              <ToggleGroupItem value="sticker" aria-label="Sticker Slot" className="h-6 w-6 p-0">
-                <Sticker className="h-3 w-3" />
-              </ToggleGroupItem>
-            </ToggleGroup>
-          </div>
-        )}
-        
         {book ? (
           renderBookContent()
         ) : (
-          <EmptySlot 
-            fileInputRef={fileInputRef} 
-            onFileSelect={handleFileChange} 
-            slotType={slotType}
-            onClick={handleEmptySlotClick}
-          />
+          <>
+            <EmptySlot 
+              fileInputRef={fileInputRef} 
+              onFileSelect={handleFileChange} 
+              slotType={slotType}
+              onClick={handleEmptySlotClick}
+            />
+            
+            {/* Moved toggle group to the bottom */}
+            <div className="absolute bottom-1 left-0 right-0 z-10 flex justify-center"
+                onClick={(e) => e.stopPropagation()}>
+              <ToggleGroup 
+                type="single" 
+                value={slotType} 
+                onValueChange={handleTypeToggle}
+                className="flex space-x-1 pointer-events-auto"
+              >
+                <ToggleGroupItem 
+                  value="book" 
+                  aria-label="Book Slot" 
+                  className="h-3 w-3 p-0 rounded-full bg-gray-400/70 hover:bg-gray-300/70 data-[state=on]:bg-primary"
+                >
+                  <span className="sr-only">Book</span>
+                </ToggleGroupItem>
+                <ToggleGroupItem 
+                  value="sticker" 
+                  aria-label="Sticker Slot" 
+                  className="h-3 w-3 p-0 rounded-full bg-gray-400/70 hover:bg-gray-300/70 data-[state=on]:bg-primary"
+                >
+                  <span className="sr-only">Sticker</span>
+                </ToggleGroupItem>
+              </ToggleGroup>
+            </div>
+          </>
         )}
       </div>
       

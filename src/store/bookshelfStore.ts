@@ -18,6 +18,7 @@ export type BookData = {
   notes?: string;
   quizzes?: {question: string, answer: string}[];
   isSticker?: boolean;
+  opacity?: number;
 };
 
 export type ShelfData = {
@@ -25,6 +26,12 @@ export type ShelfData = {
   name: string;
   rows: number;
   columns: number;
+  backgroundColor?: string;
+  backgroundOpacity?: number;
+  backgroundImage?: string;
+  textureImage?: string;
+  shelfColor?: string;
+  shelfOpacity?: number;
 };
 
 type BookshelfState = {
@@ -53,6 +60,9 @@ type BookshelfState = {
   removeColumn: () => void;
   setZoom: (level: number) => void;
   findEmptyPosition: (shelfId: string) => number;
+  setShelfBackground: (id: string, backgroundImage: string) => void;
+  setShelfTexture: (id: string, textureImage: string) => void;
+  resetShelfStyle: (id: string) => void;
 };
 
 // Load saved data from localStorage
@@ -414,6 +424,71 @@ export const useBookshelfStore = create<BookshelfState>((set, get) => ({
   
   setZoom: (level) => {
     set({ zoomLevel: level });
+  },
+  
+  // New functions for shelf customization
+  setShelfBackground: (id, backgroundImage) => {
+    set((state) => {
+      const updatedShelves = {
+        ...state.shelves,
+        [id]: { 
+          ...state.shelves[id], 
+          backgroundImage 
+        }
+      };
+      
+      // Save to localStorage
+      localStorage.setItem('ritual-bookshelf-shelves', JSON.stringify(updatedShelves));
+      
+      return { shelves: updatedShelves };
+    });
+    
+    toast.success('Background updated');
+  },
+  
+  setShelfTexture: (id, textureImage) => {
+    set((state) => {
+      const updatedShelves = {
+        ...state.shelves,
+        [id]: { 
+          ...state.shelves[id], 
+          textureImage 
+        }
+      };
+      
+      // Save to localStorage
+      localStorage.setItem('ritual-bookshelf-shelves', JSON.stringify(updatedShelves));
+      
+      return { shelves: updatedShelves };
+    });
+    
+    toast.success('Shelf texture updated');
+  },
+  
+  resetShelfStyle: (id) => {
+    set((state) => {
+      const { 
+        backgroundImage, 
+        backgroundColor, 
+        backgroundOpacity, 
+        textureImage, 
+        shelfColor, 
+        shelfOpacity, 
+        ...restShelfData 
+      } = state.shelves[id];
+      
+      const updatedShelves = {
+        ...state.shelves,
+        [id]: restShelfData
+      };
+      
+      // Save to localStorage
+      localStorage.setItem('ritual-bookshelf-shelves', JSON.stringify(updatedShelves));
+      
+      return { shelves: updatedShelves };
+    });
+    
+    toast.success('Shelf style reset to default');
   }
 }));
 

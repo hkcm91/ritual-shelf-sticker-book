@@ -346,21 +346,24 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
                 }}
               >
                 {isLottie && animationData && (
-                  <Lottie 
-                    animationData={animationData} 
-                    loop={true} 
-                    autoplay={true}
-                    style={{ width: '100%', height: '100%' }}
-                  />
+                  <div className="w-full h-full flex items-center justify-center">
+                    <Lottie 
+                      animationData={animationData} 
+                      loop={true} 
+                      autoplay={true}
+                      style={{ width: '100%', height: '100%' }}
+                    />
+                  </div>
                 )}
               </div>
             </PopoverTrigger>
-            <StickerControls 
+            <SlotControls 
               scale={scale}
               onScaleChange={handleScaleChange}
               onRotate={handleRotate}
               onResetTransform={handleResetTransform}
               onShowDeleteDialog={() => setShowDeleteDialog(true)}
+              isLottie={isLottie}
             />
           </Popover>
         );
@@ -382,7 +385,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     <>
       <div 
         className={`book-slot relative h-[220px] w-[150px] mx-1 rounded-sm
-          ${!book ? 'hover:bg-gray-50/10' : ''}
+          ${!book ? 'hover:bg-gray-50/10' : 'hover:border hover:border-primary/30'}
           transition-colors duration-200 cursor-pointer`}
         onClick={handleClick}
         onDragOver={handleDragOver}

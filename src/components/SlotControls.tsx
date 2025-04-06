@@ -42,7 +42,6 @@ const SlotControls: React.FC<SlotControlsProps> = ({
               size="icon"
               className="h-6 w-6"
               onClick={() => onScaleChange(Math.max(0.5, scale - 0.1))}
-              disabled={isLottie}
             >
               <ZoomOut className="h-3.5 w-3.5" />
             </Button>
@@ -54,29 +53,26 @@ const SlotControls: React.FC<SlotControlsProps> = ({
               size="icon"
               className="h-6 w-6"
               onClick={() => onScaleChange(Math.min(3, scale + 0.1))}
-              disabled={isLottie}
             >
               <ZoomIn className="h-3.5 w-3.5" />
             </Button>
           </div>
         </div>
         
-        {!isLottie && (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Size</span>
-              <div className="flex-1 mx-4">
-                <Slider
-                  value={[scale * 100]}
-                  min={50}
-                  max={300}
-                  step={5}
-                  onValueChange={(value) => onScaleChange(value[0] / 100)}
-                />
-              </div>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium">Size</span>
+            <div className="flex-1 mx-4">
+              <Slider
+                value={[scale * 100]}
+                min={50}
+                max={300}
+                step={5}
+                onValueChange={(value) => onScaleChange(value[0] / 100)}
+              />
             </div>
           </div>
-        )}
+        </div>
         
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium">Rotate</span>

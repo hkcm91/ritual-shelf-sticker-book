@@ -1,8 +1,9 @@
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import Book from './Book';
 import { toast } from 'sonner';
+import Lottie from 'lottie-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 type BookSlotProps = {
@@ -14,6 +15,7 @@ type SlotType = 'book' | 'sticker';
 const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [slotType, setSlotType] = useState<SlotType>('book');
+  const [bgColor, setBgColor] = useState<string>('transparent');
   
   const { 
     books, 
@@ -29,32 +31,89 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     (book) => book.shelfId === activeShelfId && book.position === position
   );
   
+  // Save slot preference to local storage
+  useEffect(() => {
+    // Load saved background color if exists
+    const savedBgColor = localStorage.getItem(`slot-${activeShelfId}-${position}-bg`);
+    if (savedBgColor) {
+      setBgColor(savedBgColor);
+    }
+    
+    const savedSlotType = localStorage.getItem(`slot-${activeShelfId}-${position}-type`);
+    if (savedSlotType === 'book' || savedSlotType === 'sticker') {
+      setSlotType(savedSlotType);
+    }
+  }, [activeShelfId, position]);
+  
+  // Save slot type to local storage when it changes
+  useEffect(() => {
+    localStorage.setItem(`slot-${activeShelfId}-${position}-type`, slotType);
+  }, [slotType, activeShelfId, position]);
+  
+  // Save background color when it changes
+  useEffect(() => {
+    if (bgColor !== 'transparent') {
+      localStorage.setItem(`slot-${activeShelfId}-${position}-bg`, bgColor);
+    }
+  }, [bgColor, activeShelfId, position]);
+  
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      if (typeof event.target?.result === 'string') {
-        const newBookId = addBook({
-          title: slotType === 'sticker' ? 'Sticker' : '',
-          author: slotType === 'sticker' ? 'Decoration' : '',
-          coverURL: event.target.result,
-          progress: 0,
-          rating: 0,
-          position,
-          shelfId: activeShelfId,
-          isSticker: slotType === 'sticker'
-        });
-        
-        if (slotType === 'book') {
-          openModal(newBookId);
-        } else {
-          toast.success('Sticker added successfully');
+    // For Lottie JSON files
+    if (file.type === 'application/json' && slotType === 'sticker') {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (typeof event.target?.result === 'string') {
+          try {
+            // Validate that it's a proper Lottie JSON
+            JSON.parse(event.target.result);
+            
+            const newBookId = addBook({
+              title: 'Sticker',
+              author: 'Decoration',
+              coverURL: event.target.result,
+              progress: 0,
+              rating: 0,
+              position,
+              shelfId: activeShelfId,
+              isSticker: true
+            });
+            
+            toast.success('Lottie sticker added successfully');
+          } catch (err) {
+            toast.error('Invalid Lottie JSON file');
+          }
         }
-      }
-    };
-    reader.readAsDataURL(file);
+      };
+      reader.readAsText(file);
+    } 
+    // For image files
+    else {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (typeof event.target?.result === 'string') {
+          const newBookId = addBook({
+            title: slotType === 'sticker' ? 'Sticker' : '',
+            author: slotType === 'sticker' ? 'Decoration' : '',
+            coverURL: event.target.result,
+            progress: 0,
+            rating: 0,
+            position,
+            shelfId: activeShelfId,
+            isSticker: slotType === 'sticker'
+          });
+          
+          if (slotType === 'book') {
+            openModal(newBookId);
+          } else {
+            toast.success('Sticker added successfully');
+          }
+        }
+      };
+      reader.readAsDataURL(file);
+    }
     
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -65,6 +124,19 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     if (!book) {
       fileInputRef.current?.click();
     }
+  };
+  
+  const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    
+    // For empty slot, show color picker
+    if (!book) {
+      const color = prompt('Enter background color (hex, rgb, or name):', bgColor === 'transparent' ? '' : bgColor);
+      if (color !== null) {
+        setBgColor(color || 'transparent');
+      }
+    }
+    return false;
   };
   
   // Handle drag over to allow drop
@@ -89,9 +161,31 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     
     toast.success('Book moved successfully');
   };
-
-  const toggleSlotType = () => {
-    setSlotType(slotType === 'book' ? 'sticker' : 'book');
+  
+  // Render Lottie if needed
+  const renderBookContent = () => {
+    if (!book) return null;
+    
+    if (book.isSticker && book.coverURL.startsWith('{')) {
+      try {
+        // Parse Lottie JSON data
+        const animationData = JSON.parse(book.coverURL);
+        return (
+          <div className="w-full h-full">
+            <Lottie 
+              animationData={animationData} 
+              loop={true} 
+              autoplay={true}
+              style={{ width: '100%', height: '100%' }}
+            />
+          </div>
+        );
+      } catch (e) {
+        return <Book data={book} />;
+      }
+    } else {
+      return <Book data={book} />;
+    }
   };
   
   return (
@@ -100,11 +194,13 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
         ${!book ? 'hover:bg-gray-50/10' : ''}
         transition-colors duration-200 cursor-pointer`}
       onClick={handleClick}
+      onContextMenu={handleContextMenu}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
+      style={{ backgroundColor: bgColor }}
     >
       {book ? (
-        <Book data={book} />
+        renderBookContent()
       ) : (
         <>
           <div className="absolute inset-0 flex items-center justify-center">

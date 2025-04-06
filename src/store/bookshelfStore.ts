@@ -4,46 +4,18 @@ import { toast } from 'sonner';
 import { BooksSlice, createBooksSlice } from './booksSlice';
 import { ShelvesSlice, createShelvesSlice } from './shelvesSlice';
 import { UISlice, createUISlice } from './uiSlice';
+import { BookData, ShelfData } from './types';
 
 // Define the complete store type
 export type BookshelfState = BooksSlice & ShelvesSlice & UISlice & {
   findEmptyPosition: (shelfId: string) => number;
 };
 
-// Load saved data from localStorage
-const loadInitialState = () => {
-  try {
-    const savedBooks = localStorage.getItem('ritual-bookshelf-books');
-    const savedShelves = localStorage.getItem('ritual-bookshelf-shelves');
-    const savedActiveShelf = localStorage.getItem('ritual-bookshelf-active-shelf');
-    
-    return {
-      books: savedBooks ? JSON.parse(savedBooks) : {},
-      shelves: savedShelves ? JSON.parse(savedShelves) : {},
-      activeShelfId: savedActiveShelf || '',
-    };
-  } catch (error) {
-    console.error('Error loading saved state', error);
-    return {
-      books: {},
-      shelves: {},
-      activeShelfId: '',
-    };
-  }
-};
-
-const initialState = loadInitialState();
-
 // Create and export the store with all slices
 export const useBookshelfStore = create<BookshelfState>((set, get) => ({
-  ...createBooksSlice(set, get, initialState),
-  ...createShelvesSlice(set, get, initialState),
-  ...createUISlice(set, get, initialState),
-  
-  // Set initial state
-  books: initialState.books,
-  shelves: initialState.shelves,
-  activeShelfId: initialState.activeShelfId,
+  ...createBooksSlice(set, get),
+  ...createShelvesSlice(set, get),
+  ...createUISlice(set, get),
   
   // Utility function to find empty position
   findEmptyPosition: (shelfId: string) => {

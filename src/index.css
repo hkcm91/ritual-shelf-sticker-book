@@ -80,7 +80,7 @@
 @layer components {
   .book-slot {
     @apply relative w-20 h-32 sm:w-24 sm:h-36 md:w-28 md:h-40 xl:w-32 xl:h-48 
-           bg-transparent border-2 border-gray-200/50 rounded-md 
+           bg-transparent rounded-md 
            flex items-center justify-center cursor-pointer transition-all;
   }
   

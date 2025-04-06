@@ -3,8 +3,6 @@ import React, { useRef, useState } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import Book from './Book';
 import { toast } from 'sonner';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 type BookSlotProps = {
@@ -99,7 +97,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   return (
     <div 
       className={`book-slot relative h-[220px] w-[150px] mx-1 rounded-sm
-        ${!book ? 'hover:border border-dashed border-gray-300/40 hover:bg-gray-50/10' : ''}
+        ${!book ? 'hover:bg-gray-50/10' : ''}
         transition-colors duration-200 cursor-pointer`}
       onClick={handleClick}
       onDragOver={handleDragOver}
@@ -115,37 +113,46 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*"
+            accept={slotType === 'book' ? 'image/*' : 'image/*, application/json'}
             onChange={handleFileChange}
             className="hidden"
           />
           
-          {/* Slot type toggle */}
-          <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1 opacity-60 hover:opacity-100">
+          {/* Slot type toggle with circles */}
+          <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-3 opacity-60 hover:opacity-100">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-6 w-6 bg-white/80 backdrop-blur-sm rounded-full shadow-sm"
+                  <div 
+                    className={`h-2.5 w-2.5 rounded-full cursor-pointer transition-all duration-200 ${slotType === 'book' ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/70'}`}
                     onClick={(e) => {
                       e.stopPropagation();
-                      toggleSlotType();
+                      setSlotType('book');
                     }}
-                  >
-                    {slotType === 'book' ? <ArrowLeft className="h-3 w-3" /> : <ArrowRight className="h-3 w-3" />}
-                  </Button>
+                  />
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>{slotType === 'book' ? 'Switch to sticker slot' : 'Switch to book slot'}</p>
+                  <p>Book Slot</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
             
-            <div className="px-2 py-1 text-xs bg-white/80 backdrop-blur-sm rounded-full shadow-sm">
-              {slotType === 'book' ? 'Book Slot' : 'Sticker Slot'}
-            </div>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div 
+                    className={`h-2.5 w-2.5 rounded-full cursor-pointer transition-all duration-200 ${slotType === 'sticker' ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/70'}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSlotType('sticker');
+                    }}
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Sticker Slot (supports Lottie files)</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </>
       )}

@@ -10,8 +10,6 @@ type StickerControlsProps = {
   onRotate: (direction: 'cw' | 'ccw') => void;
   onResetTransform: () => void;
   onShowDeleteDialog: () => void;
-  onReplaceImage: () => void;
-  onShowUrlDialog: () => void;
 };
 
 const StickerControls: React.FC<StickerControlsProps> = ({

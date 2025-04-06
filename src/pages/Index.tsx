@@ -1,5 +1,4 @@
-
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useBookshelfStore, initializeDefaultShelf } from '../store/bookshelfStore';
 import BookshelfGrid from '../components/BookshelfGrid';
 import BookModal from '../components/BookModal';
@@ -7,8 +6,9 @@ import BookSearchDrawer from '../components/BookSearchDrawer';
 import { toast } from 'sonner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { BookOpen, PlusCircle, Edit2 } from "lucide-react";
+import { BookOpen, PlusCircle, Edit2, Palette } from "lucide-react";
 import ShelfControls from '../components/ShelfControls';
+import BgImageDialog from '../components/BgImageDialog';
 
 const Index = () => {
   const { shelves, activeShelfId, switchShelf, addShelf, updateShelf } = useBookshelfStore();
@@ -16,6 +16,12 @@ const Index = () => {
   const [newShelfName, setNewShelfName] = React.useState("");
   const [isRenameModalOpen, setIsRenameModalOpen] = React.useState(false);
   const [renameValue, setRenameValue] = React.useState("");
+  
+  // Background customization
+  const [showBgImageDialog, setShowBgImageDialog] = useState<boolean>(false);
+  const [bgImage, setBgImage] = useState<string | null>(null);
+  const [bgImageUrl, setBgImageUrl] = useState<string>('');
+  const bgFileInputRef = useRef<HTMLInputElement>(null);
   
   // Initialize the store
   useEffect(() => {
@@ -26,6 +32,23 @@ const Index = () => {
       });
     }
   }, []);
+  
+  // Load background from localStorage
+  useEffect(() => {
+    const savedBgImage = localStorage.getItem('webpage-background-image');
+    if (savedBgImage) {
+      setBgImage(savedBgImage);
+    }
+  }, []);
+  
+  // Save background to localStorage when it changes
+  useEffect(() => {
+    if (bgImage) {
+      localStorage.setItem('webpage-background-image', bgImage);
+    } else {
+      localStorage.removeItem('webpage-background-image');
+    }
+  }, [bgImage]);
   
   const handleAddShelf = () => {
     if (newShelfName.trim()) {
@@ -46,11 +69,51 @@ const Index = () => {
       setIsRenameModalOpen(false);
     }
   };
+  
+  const handleBgFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (typeof event.target?.result === 'string') {
+          setBgImage(event.target.result);
+          toast.success('Background image added successfully');
+          setShowBgImageDialog(false);
+        }
+      };
+      reader.readAsDataURL(file);
+    } else {
+      toast.error('Only image files are supported for backgrounds');
+    }
+    
+    if (bgFileInputRef.current) {
+      bgFileInputRef.current.value = '';
+    }
+  };
+  
+  const handleBgImageUrlSubmit = () => {
+    if (!bgImageUrl) return;
+    
+    setBgImage(bgImageUrl);
+    toast.success('Background image added from URL');
+    setShowBgImageDialog(false);
+    setBgImageUrl('');
+  };
 
   const currentShelf = shelves[activeShelfId];
   
   return (
-    <div className="min-h-screen flex flex-col">
+    <div 
+      className="min-h-screen flex flex-col"
+      style={{
+        backgroundImage: bgImage ? `url(${bgImage})` : 'none',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
       <header className="bg-wood-texture bg-cover shadow-md sticky top-0 z-30 px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
@@ -102,6 +165,15 @@ const Index = () => {
           </div>
           
           <div className="flex items-center space-x-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowBgImageDialog(true)}
+              className="bg-white/90 hover:bg-white text-gray-700"
+              title="Customize Background"
+            >
+              <Palette className="h-4 w-4" />
+            </Button>
             <ShelfControls />
             <BookSearchDrawer />
           </div>
@@ -113,6 +185,25 @@ const Index = () => {
       </div>
       
       <BookModal />
+      
+      <BgImageDialog
+        open={showBgImageDialog}
+        onOpenChange={setShowBgImageDialog}
+        bgImage={bgImage}
+        bgImageUrl={bgImageUrl}
+        onBgImageUrlChange={setBgImageUrl}
+        onUploadClick={() => bgFileInputRef.current?.click()}
+        onBgImageUrlSubmit={handleBgImageUrlSubmit}
+        onBgImageRemove={() => setBgImage(null)}
+      />
+      
+      <input
+        ref={bgFileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleBgFileChange}
+        className="hidden"
+      />
     </div>
   );
 };

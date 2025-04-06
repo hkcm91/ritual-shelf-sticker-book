@@ -8,8 +8,6 @@ import { Popover, PopoverTrigger } from '@/components/ui/popover';
 // Import our components
 import SlotControls from './SlotControls';
 import StickerControls from './StickerControls';
-import BgImageDialog from './BgImageDialog';
-import UrlDialog from './UrlDialog';
 import DeleteDialog from './DeleteDialog';
 
 type BookSlotProps = {
@@ -18,21 +16,14 @@ type BookSlotProps = {
 
 const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const bgFileInputRef = useRef<HTMLInputElement>(null);
   
   // State
-  const [bgColor, setBgColor] = useState<string>('transparent');
-  const [bgImage, setBgImage] = useState<string | null>(null);
   const [scale, setScale] = useState<number>(1);
   const [position2D, setPosition2D] = useState<{ x: number, y: number }>({ x: 0, y: 0 });
   const [rotation, setRotation] = useState<number>(0);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [dragStart, setDragStart] = useState<{ x: number, y: number }>({ x: 0, y: 0 });
-  const [showUrlDialog, setShowUrlDialog] = useState<boolean>(false);
-  const [imageUrl, setImageUrl] = useState<string>('');
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
-  const [showBgImageDialog, setShowBgImageDialog] = useState<boolean>(false);
-  const [bgImageUrl, setBgImageUrl] = useState<string>('');
   
   // Store
   const { 
@@ -93,18 +84,8 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     }
   }, [books]);
   
-  // Save background preferences to local storage
+  // Save scale and position preferences
   useEffect(() => {
-    const savedBgColor = localStorage.getItem(`slot-${activeShelfId}-${position}-bg`);
-    if (savedBgColor) {
-      setBgColor(savedBgColor);
-    }
-    
-    const savedBgImage = localStorage.getItem(`slot-${activeShelfId}-${position}-bg-image`);
-    if (savedBgImage) {
-      setBgImage(savedBgImage);
-    }
-    
     const savedScale = localStorage.getItem(`slot-${activeShelfId}-${position}-scale`);
     if (savedScale) {
       setScale(parseFloat(savedScale));
@@ -125,11 +106,6 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     }
   }, [activeShelfId, position]);
   
-  // Save background color when it changes
-  useEffect(() => {
-    localStorage.setItem(`slot-${activeShelfId}-${position}-bg`, bgColor);
-  }, [bgColor, activeShelfId, position]);
-  
   // Save scale and position when they change
   useEffect(() => {
     localStorage.setItem(`slot-${activeShelfId}-${position}-scale`, scale.toString());
@@ -144,15 +120,6 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   useEffect(() => {
     localStorage.setItem(`slot-${activeShelfId}-${position}-rotation`, rotation.toString());
   }, [rotation, activeShelfId, position]);
-  
-  // Save background image when it changes
-  useEffect(() => {
-    if (bgImage) {
-      localStorage.setItem(`slot-${activeShelfId}-${position}-bg-image`, bgImage);
-    } else {
-      localStorage.removeItem(`slot-${activeShelfId}-${position}-bg-image`);
-    }
-  }, [bgImage, activeShelfId, position]);
   
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -186,71 +153,10 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     }
   };
 
-  const handleBgFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    
-    if (file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (typeof event.target?.result === 'string') {
-          setBgImage(event.target.result);
-          toast.success('Background image added successfully');
-          setShowBgImageDialog(false);
-        }
-      };
-      reader.readAsDataURL(file);
-    } else {
-      toast.error('Only image files are supported for backgrounds');
-    }
-    
-    if (bgFileInputRef.current) {
-      bgFileInputRef.current.value = '';
-    }
-  };
-
-  const handleUrlSubmit = () => {
-    if (!imageUrl) return;
-    
-    // Regular image URL
-    const newBookId = addBook({
-      title: '',
-      author: '',
-      coverURL: imageUrl,
-      progress: 0,
-      rating: 0,
-      position,
-      shelfId: activeShelfId,
-      isSticker: false
-    });
-    
-    openModal(newBookId);
-    setShowUrlDialog(false);
-    setImageUrl('');
-  };
-  
-  const handleBgImageUrlSubmit = () => {
-    if (!bgImageUrl) return;
-    
-    setBgImage(bgImageUrl);
-    toast.success('Background image added from URL');
-    setShowBgImageDialog(false);
-    setBgImageUrl('');
-  };
-  
   const handleClick = () => {
     if (!book) {
       fileInputRef.current?.click();
     }
-  };
-  
-  const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    
-    // For empty slot, show customization options
-    setShowBgImageDialog(true);
-    
-    return false;
   };
   
   // Handle drag over to allow drop
@@ -397,7 +303,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     }
   }, [isDragging, dragStart]);
   
-  // Render Lottie if needed
+  // Render book content based on type
   const renderBookContent = () => {
     if (!book) return null;
     
@@ -411,70 +317,56 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
           height: '100%'
         };
         
-        // For Lottie JSON
-        if (book.coverURL.startsWith('{')) {
-          // Parse Lottie JSON data
-          const animationData = JSON.parse(book.coverURL);
-          return (
-            <Popover>
-              <PopoverTrigger asChild>
-                <div 
-                  className="w-full h-full cursor-move"
-                  style={stickerStyle}
-                  onMouseDown={handleStickerMouseDown}
-                  onClick={(e) => e.stopPropagation()}
-                >
+        // Check if it's a Lottie JSON
+        let isLottie = false;
+        let animationData = null;
+        
+        if (typeof book.coverURL === 'string' && book.coverURL.startsWith('{')) {
+          try {
+            animationData = JSON.parse(book.coverURL);
+            isLottie = true;
+          } catch (e) {
+            isLottie = false;
+          }
+        }
+        
+        return (
+          <Popover>
+            <PopoverTrigger asChild>
+              <div 
+                className="w-full h-full cursor-move"
+                onClick={(e) => e.stopPropagation()}
+                onMouseDown={handleStickerMouseDown}
+                style={isLottie ? stickerStyle : {
+                  backgroundImage: `url(${book.coverURL})`,
+                  backgroundSize: 'contain',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat',
+                  ...stickerStyle
+                }}
+              >
+                {isLottie && animationData && (
                   <Lottie 
                     animationData={animationData} 
                     loop={true} 
                     autoplay={true}
                     style={{ width: '100%', height: '100%' }}
                   />
-                </div>
-              </PopoverTrigger>
-              <StickerControls 
-                scale={scale}
-                onScaleChange={handleScaleChange}
-                onRotate={handleRotate}
-                onResetTransform={handleResetTransform}
-                onReplaceImage={() => {}}
-                onShowUrlDialog={() => {}}
-                onShowDeleteDialog={() => setShowDeleteDialog(true)}
-              />
-            </Popover>
-          );
-        } else {
-          // For sticker images
-          return (
-            <Popover>
-              <PopoverTrigger asChild>
-                <div 
-                  className="w-full h-full cursor-move"
-                  onClick={(e) => e.stopPropagation()}
-                  onMouseDown={handleStickerMouseDown}
-                  style={{
-                    backgroundImage: `url(${book.coverURL})`,
-                    backgroundSize: 'contain',
-                    backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat',
-                    ...stickerStyle
-                  }}
-                />
-              </PopoverTrigger>
-              <StickerControls 
-                scale={scale}
-                onScaleChange={handleScaleChange}
-                onRotate={handleRotate}
-                onResetTransform={handleResetTransform}
-                onReplaceImage={() => {}}
-                onShowUrlDialog={() => {}}
-                onShowDeleteDialog={() => setShowDeleteDialog(true)}
-              />
-            </Popover>
-          );
-        }
+                )}
+              </div>
+            </PopoverTrigger>
+            <StickerControls 
+              scale={scale}
+              onScaleChange={handleScaleChange}
+              onRotate={handleRotate}
+              onResetTransform={handleResetTransform}
+              onShowDeleteDialog={() => setShowDeleteDialog(true)}
+            />
+          </Popover>
+        );
       } catch (e) {
-        // Fallback if there's an error with Lottie parsing
+        // Fallback if there's an error
+        console.error("Error rendering sticker:", e);
         return (
           <div className="flex items-center justify-center w-full h-full text-red-500">
             Invalid sticker
@@ -493,17 +385,10 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
           ${!book ? 'hover:bg-gray-50/10' : ''}
           transition-colors duration-200 cursor-pointer`}
         onClick={handleClick}
-        onContextMenu={handleContextMenu}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
         onMouseMove={handleStickerMouseMove}
         onMouseUp={handleStickerMouseUp}
-        style={{ 
-          backgroundColor: bgColor,
-          backgroundImage: bgImage ? `url(${bgImage})` : 'none',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center'
-        }}
       >
         {book ? (
           renderBookContent()
@@ -519,23 +404,9 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
               onChange={handleFileChange}
               className="hidden"
             />
-            
-            <SlotControls onShowBgImageDialog={() => setShowBgImageDialog(true)} />
           </>
         )}
       </div>
-      
-      {/* Background Image Dialog */}
-      <BgImageDialog
-        open={showBgImageDialog}
-        onOpenChange={setShowBgImageDialog}
-        bgImage={bgImage}
-        bgImageUrl={bgImageUrl}
-        onBgImageUrlChange={setBgImageUrl}
-        onUploadClick={() => bgFileInputRef.current?.click()}
-        onBgImageUrlSubmit={handleBgImageUrlSubmit}
-        onBgImageRemove={() => setBgImage(null)}
-      />
       
       {/* Delete Confirmation Dialog */}
       <DeleteDialog
@@ -544,15 +415,6 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
         onConfirm={handleDeleteSticker}
         title="Delete Item?"
         description="This action cannot be undone."
-      />
-
-      {/* Hidden input for background image upload */}
-      <input
-        ref={bgFileInputRef}
-        type="file"
-        accept="image/*"
-        onChange={handleBgFileChange}
-        className="hidden"
       />
     </>
   );

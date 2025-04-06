@@ -53,12 +53,18 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
         toast.error('Failed to create new book');
       }
     } else {
-      // For stickers, show the URL dialog
-      setShowUrlDialog(true);
+      // For stickers, show the URL dialog or file picker
+      if (e.altKey || e.ctrlKey) {
+        // Alt or Ctrl click shows the URL dialog
+        setShowUrlDialog(true);
+      } else {
+        // Regular click opens file picker
+        fileInputRef.current?.click();
+      }
     }
   };
   
-  // Handle the file input change (this will be called from the Book Modal)
+  // Handle the file input change
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const stats = storageService.getUsageStats();
     
@@ -115,6 +121,12 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
         <span className="text-xs text-gray-300/50 mt-1">
           {slotType === "book" ? "Add Book" : "Add Sticker"}
         </span>
+        
+        {slotType === "sticker" && (
+          <span className="text-xs text-gray-300/30 mt-1">
+            (Alt+Click for URL)
+          </span>
+        )}
       </div>
       <input
         ref={fileInputRef}

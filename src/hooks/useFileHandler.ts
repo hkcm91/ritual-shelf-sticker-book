@@ -17,6 +17,8 @@ export const useFileHandler = ({ position, slotType = "book" }: UseFileHandlerPr
     const file = e.target.files?.[0];
     if (!file) return;
     
+    console.log(`Handling file: ${file.name}, type: ${file.type}, size: ${file.size}`);
+    
     // For book type, only allow images
     if (slotType === "book") {
       if (!file.type.startsWith('image/')) {
@@ -31,11 +33,28 @@ export const useFileHandler = ({ position, slotType = "book" }: UseFileHandlerPr
       reader.onload = async (event) => {
         if (typeof event.target?.result === 'string') {
           try {
-            // The storage service will handle compression during addBook
+            // Compress the image before adding
+            let imageData = event.target.result;
+            
+            // Only compress if over 200KB
+            if (file.size > 200 * 1024) {
+              try {
+                imageData = await compressImage(imageData, {
+                  quality: 0.7,
+                  maxWidth: 600,
+                  maxHeight: 900
+                });
+                console.log("Book cover compressed successfully");
+              } catch (err) {
+                console.warn('Failed to compress book cover:', err);
+                // Continue with original image
+              }
+            }
+            
             const newBookId = addBook({
               title: '',
               author: '',
-              coverURL: event.target.result,
+              coverURL: imageData,
               progress: 0,
               rating: 0,
               position,
@@ -74,6 +93,7 @@ export const useFileHandler = ({ position, slotType = "book" }: UseFileHandlerPr
                     maxWidth: 400,
                     maxHeight: 400
                   });
+                  console.log("Sticker image compressed successfully");
                 } catch (err) {
                   console.warn('Failed to compress sticker image:', err);
                   // Continue with original image if compression fails
@@ -103,20 +123,22 @@ export const useFileHandler = ({ position, slotType = "book" }: UseFileHandlerPr
           }
         };
         reader.readAsDataURL(file);
-      } else if (file.type === 'application/json') {
+      } else if (file.type === 'application/json' || file.name.endsWith('.json')) {
         // Handle Lottie JSON files
         const reader = new FileReader();
         reader.onload = (event) => {
-          if (typeof event.target?.result === 'string') {
-            try {
-              // Check if it's a valid Lottie JSON
-              const lottieData = JSON.parse(event.target.result);
-              if (lottieData && (lottieData.v !== undefined || lottieData.animations)) {
-                try {
+          try {
+            if (typeof event.target?.result === 'string') {
+              const jsonContent = event.target.result;
+              
+              // Check if it's valid JSON and a Lottie file
+              try {
+                const lottieData = JSON.parse(jsonContent);
+                if (lottieData && (lottieData.v !== undefined || lottieData.animations)) {
                   const newBookId = addBook({
                     title: file.name.replace('.json', ''),
                     author: 'Lottie Animation',
-                    coverURL: event.target.result,
+                    coverURL: jsonContent,
                     progress: 0,
                     rating: 0,
                     position,
@@ -129,17 +151,17 @@ export const useFileHandler = ({ position, slotType = "book" }: UseFileHandlerPr
                   } else {
                     toast.error('Failed to add animation');
                   }
-                } catch (error) {
-                  console.error('Error adding Lottie:', error);
-                  toast.error('Failed to save to localStorage. Try using smaller animations or clearing some space.');
+                } else {
+                  toast.error('Invalid Lottie animation format');
                 }
-              } else {
-                toast.error('Invalid Lottie animation format');
+              } catch (e) {
+                console.error('Failed to parse JSON:', e);
+                toast.error('Failed to parse JSON file');
               }
-            } catch (e) {
-              console.error('Failed to parse JSON:', e);
-              toast.error('Failed to parse JSON file');
             }
+          } catch (err) {
+            console.error('Error processing Lottie file:', err);
+            toast.error('Error processing Lottie file');
           }
         };
         reader.readAsText(file);

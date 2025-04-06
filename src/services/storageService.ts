@@ -86,8 +86,31 @@ class StorageService {
         });
       }
 
-      // Stringify the value
-      const serialized = JSON.stringify(value);
+      // Special handling for large objects
+      let serialized: string;
+      
+      if (typeof value === 'object' && value !== null) {
+        // Special handling for books with large coverURL data
+        if (key === 'books') {
+          for (const bookId in value) {
+            const book = value[bookId];
+            if (book.coverURL && typeof book.coverURL === 'string' && book.coverURL.length > 500000) {
+              // Compress large cover images
+              if (book.coverURL.startsWith('data:image/')) {
+                book.coverURL = await compressImage(book.coverURL, {
+                  quality: 0.6,
+                  maxWidth: 600,
+                  maxHeight: 900
+                });
+                console.log(`Compressed large book cover for book ${bookId}`);
+              }
+            }
+          }
+        }
+        serialized = JSON.stringify(value);
+      } else {
+        serialized = JSON.stringify(value);
+      }
       
       if (this.currentBackend === 'local') {
         // Store in localStorage

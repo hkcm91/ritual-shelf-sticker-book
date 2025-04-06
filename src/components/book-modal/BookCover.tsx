@@ -23,6 +23,7 @@ const BookCover: React.FC<BookCoverProps> = ({
       
       reader.onload = (event) => {
         if (typeof event.target?.result === 'string') {
+          console.log("Book cover loaded, length:", event.target.result.length);
           onCoverChange(event.target.result);
         }
       };

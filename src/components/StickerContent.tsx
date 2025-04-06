@@ -2,6 +2,7 @@
 import React, { forwardRef, useRef, useEffect, useState } from 'react';
 import Lottie from 'lottie-react';
 import { useBookshelfStore } from '../store/bookshelfStore';
+import { toast } from 'sonner';
 
 type StickerContentProps = {
   book: any;
@@ -26,6 +27,8 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
   const { updateBook } = useBookshelfStore();
   const [altKeyPressed, setAltKeyPressed] = useState(false);
   const [lottieError, setLottieError] = useState(false);
+  const [isLottie, setIsLottie] = useState(false);
+  const [animationData, setAnimationData] = useState<any>(null);
 
   // Measure container on mount and resize
   useEffect(() => {
@@ -64,6 +67,62 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
     };
   }, []);
 
+  // Check if content is Lottie
+  useEffect(() => {
+    if (!book || !book.isSticker || !book.coverURL) return;
+    
+    let isLottieAnimation = false;
+    let lottieParsed = null;
+    
+    // Try to determine if this is a Lottie animation
+    try {
+      // If it's a URL that ends with .json
+      if (typeof book.coverURL === 'string') {
+        if (book.coverURL.startsWith('http') && book.coverURL.endsWith('.json')) {
+          // Fetch the JSON from URL
+          fetch(book.coverURL)
+            .then(response => response.json())
+            .then(data => {
+              if (data && (data.v !== undefined || data.animations)) {
+                setIsLottie(true);
+                setAnimationData(data);
+              } else {
+                setIsLottie(false);
+                setLottieError(true);
+              }
+            })
+            .catch(err => {
+              console.error("Failed to fetch Lottie JSON:", err);
+              setLottieError(true);
+            });
+          return;
+        }
+        
+        // If it's an inline JSON string
+        if (book.coverURL.startsWith('{') || book.coverURL.trim().startsWith('{')) {
+          try {
+            lottieParsed = JSON.parse(book.coverURL);
+            isLottieAnimation = Boolean(lottieParsed && (lottieParsed.v !== undefined || lottieParsed.animations));
+            if (isLottieAnimation) {
+              setIsLottie(true);
+              setAnimationData(lottieParsed);
+              return;
+            }
+          } catch (e) {
+            console.log("Not a valid JSON:", e);
+          }
+        }
+      }
+      
+      // Not a Lottie animation
+      setIsLottie(false);
+    } catch (e) {
+      console.error("Error checking for Lottie:", e);
+      setIsLottie(false);
+      setLottieError(true);
+    }
+  }, [book]);
+
   if (!book || !book.isSticker) return null;
   
   try {
@@ -77,23 +136,6 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
       boxShadow: altKeyPressed ? '0 0 0 2px rgba(255, 165, 0, 0.5)' : 'none',
       transition: 'box-shadow 0.2s ease'
     };
-    
-    // Check if it's a Lottie JSON
-    let isLottie = false;
-    let animationData = null;
-    
-    if (typeof book.coverURL === 'string') {
-      // Try to parse as JSON first to check if it's a Lottie animation
-      try {
-        if (book.coverURL.startsWith('{') || book.coverURL.trim().startsWith('{')) {
-          animationData = JSON.parse(book.coverURL);
-          isLottie = Boolean(animationData && (animationData.v !== undefined || animationData.animations));
-        }
-      } catch (e) {
-        console.log("Not a valid JSON:", e);
-        isLottie = false;
-      }
-    }
     
     return (
       <div 
@@ -127,7 +169,10 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
                 height: '100%',
                 pointerEvents: 'none' // Make Lottie ignore pointer events
               }}
-              onError={() => setLottieError(true)}
+              onError={() => {
+                setLottieError(true);
+                toast.error("Failed to load Lottie animation");
+              }}
             />
           </div>
         )}

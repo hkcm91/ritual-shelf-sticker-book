@@ -1,8 +1,7 @@
 
 import React from 'react';
 import { 
-  PopoverContent, 
-  PopoverClose 
+  PopoverContent
 } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
@@ -111,16 +110,14 @@ const SlotControls: React.FC<SlotControlsProps> = ({
             <RefreshCw className="h-3.5 w-3.5 mr-1" /> Reset
           </Button>
           
-          <PopoverClose asChild>
-            <Button
-              variant="destructive"
-              size="sm"
-              className="text-xs h-8"
-              onClick={onShowDeleteDialog}
-            >
-              <Trash2 className="h-3.5 w-3.5 mr-1" /> Remove
-            </Button>
-          </PopoverClose>
+          <Button
+            variant="destructive"
+            size="sm"
+            className="text-xs h-8"
+            onClick={onShowDeleteDialog}
+          >
+            <Trash2 className="h-3.5 w-3.5 mr-1" /> Remove
+          </Button>
         </div>
       </div>
     </PopoverContent>

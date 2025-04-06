@@ -1,4 +1,3 @@
-
 import React, { useRef, useState, useEffect } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import Book from './Book';
@@ -16,6 +15,10 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [slotType, setSlotType] = useState<SlotType>('book');
   const [bgColor, setBgColor] = useState<string>('transparent');
+  const [scale, setScale] = useState<number>(1);
+  const [position2D, setPosition2D] = useState<{ x: number, y: number }>({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [dragStart, setDragStart] = useState<{ x: number, y: number }>({ x: 0, y: 0 });
   
   const { 
     books, 
@@ -43,6 +46,21 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     if (savedSlotType === 'book' || savedSlotType === 'sticker') {
       setSlotType(savedSlotType);
     }
+    
+    // Load saved scale and position if exists
+    const savedScale = localStorage.getItem(`slot-${activeShelfId}-${position}-scale`);
+    if (savedScale) {
+      setScale(parseFloat(savedScale));
+    }
+    
+    const savedPositionX = localStorage.getItem(`slot-${activeShelfId}-${position}-position-x`);
+    const savedPositionY = localStorage.getItem(`slot-${activeShelfId}-${position}-position-y`);
+    if (savedPositionX && savedPositionY) {
+      setPosition2D({
+        x: parseFloat(savedPositionX),
+        y: parseFloat(savedPositionY)
+      });
+    }
   }, [activeShelfId, position]);
   
   // Save slot type to local storage when it changes
@@ -52,10 +70,18 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   
   // Save background color when it changes
   useEffect(() => {
-    if (bgColor !== 'transparent') {
-      localStorage.setItem(`slot-${activeShelfId}-${position}-bg`, bgColor);
-    }
+    localStorage.setItem(`slot-${activeShelfId}-${position}-bg`, bgColor);
   }, [bgColor, activeShelfId, position]);
+  
+  // Save scale and position when they change
+  useEffect(() => {
+    localStorage.setItem(`slot-${activeShelfId}-${position}-scale`, scale.toString());
+  }, [scale, activeShelfId, position]);
+  
+  useEffect(() => {
+    localStorage.setItem(`slot-${activeShelfId}-${position}-position-x`, position2D.x.toString());
+    localStorage.setItem(`slot-${activeShelfId}-${position}-position-y`, position2D.y.toString());
+  }, [position2D, activeShelfId, position]);
   
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -135,6 +161,29 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
       if (color !== null) {
         setBgColor(color || 'transparent');
       }
+    } 
+    // For sticker, allow adjustment
+    else if (book.isSticker) {
+      const action = prompt('Enter "scale" followed by a number (e.g., "scale 1.5") or "reset" to reset position and scale:', '');
+      if (action) {
+        if (action.toLowerCase() === 'reset') {
+          setScale(1);
+          setPosition2D({ x: 0, y: 0 });
+          toast.success('Sticker position and scale reset');
+        } else if (action.toLowerCase().startsWith('scale ')) {
+          try {
+            const newScale = parseFloat(action.split(' ')[1]);
+            if (!isNaN(newScale) && newScale > 0 && newScale <= 3) {
+              setScale(newScale);
+              toast.success(`Scale set to ${newScale}`);
+            } else {
+              toast.error('Scale must be between 0 and 3');
+            }
+          } catch (err) {
+            toast.error('Invalid scale format');
+          }
+        }
+      }
     }
     return false;
   };
@@ -162,26 +211,119 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     toast.success('Book moved successfully');
   };
   
+  // Sticker drag management
+  const handleStickerMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!book?.isSticker) return;
+    
+    e.stopPropagation();
+    setIsDragging(true);
+    setDragStart({
+      x: e.clientX - position2D.x,
+      y: e.clientY - position2D.y
+    });
+  };
+  
+  const handleStickerMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDragging || !book?.isSticker) return;
+    
+    e.stopPropagation();
+    // Calculate new position with boundaries to keep within the slot
+    const maxOffset = 50; // How far the sticker can be moved from center in any direction
+    const newX = Math.max(-maxOffset, Math.min(maxOffset, e.clientX - dragStart.x));
+    const newY = Math.max(-maxOffset, Math.min(maxOffset, e.clientY - dragStart.y));
+    
+    setPosition2D({
+      x: newX,
+      y: newY
+    });
+  };
+  
+  const handleStickerMouseUp = () => {
+    if (isDragging) {
+      setIsDragging(false);
+    }
+  };
+  
+  // Set up mouse move and up event listeners
+  useEffect(() => {
+    if (isDragging) {
+      const handleMouseMove = (e: MouseEvent) => {
+        const maxOffset = 50;
+        const newX = Math.max(-maxOffset, Math.min(maxOffset, e.clientX - dragStart.x));
+        const newY = Math.max(-maxOffset, Math.min(maxOffset, e.clientY - dragStart.y));
+        
+        setPosition2D({
+          x: newX,
+          y: newY
+        });
+      };
+      
+      const handleMouseUp = () => {
+        setIsDragging(false);
+      };
+      
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isDragging, dragStart]);
+  
   // Render Lottie if needed
   const renderBookContent = () => {
     if (!book) return null;
     
-    if (book.isSticker && book.coverURL.startsWith('{')) {
+    if (book.isSticker) {
       try {
-        // Parse Lottie JSON data
-        const animationData = JSON.parse(book.coverURL);
-        return (
-          <div className="w-full h-full">
-            <Lottie 
-              animationData={animationData} 
-              loop={true} 
-              autoplay={true}
-              style={{ width: '100%', height: '100%' }}
+        if (book.coverURL.startsWith('{')) {
+          // Parse Lottie JSON data
+          const animationData = JSON.parse(book.coverURL);
+          return (
+            <div 
+              className="w-full h-full cursor-move"
+              style={{ 
+                transform: `scale(${scale}) translate(${position2D.x / scale}px, ${position2D.y / scale}px)`,
+                transformOrigin: 'center'
+              }}
+              onMouseDown={handleStickerMouseDown}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Lottie 
+                animationData={animationData} 
+                loop={true} 
+                autoplay={true}
+                style={{ width: '100%', height: '100%' }}
+              />
+            </div>
+          );
+        } else {
+          // For sticker images
+          return (
+            <div 
+              className="w-full h-full cursor-move"
+              onClick={(e) => e.stopPropagation()}
+              onMouseDown={handleStickerMouseDown}
+              style={{ 
+                backgroundImage: `url(${book.coverURL})`,
+                backgroundSize: 'contain',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                transform: `scale(${scale}) translate(${position2D.x / scale}px, ${position2D.y / scale}px)`,
+                transformOrigin: 'center'
+              }}
             />
+          );
+        }
+      } catch (e) {
+        // Fallback if there's an error with Lottie parsing
+        return (
+          <div className="flex items-center justify-center w-full h-full text-red-500">
+            Invalid sticker
           </div>
         );
-      } catch (e) {
-        return <Book data={book} />;
       }
     } else {
       return <Book data={book} />;
@@ -197,6 +339,8 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
       onContextMenu={handleContextMenu}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
+      onMouseMove={handleStickerMouseMove}
+      onMouseUp={handleStickerMouseUp}
       style={{ backgroundColor: bgColor }}
     >
       {book ? (

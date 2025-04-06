@@ -1,4 +1,3 @@
-
 import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'sonner';
@@ -56,11 +55,35 @@ type BookshelfState = {
   findEmptyPosition: (shelfId: string) => number;
 };
 
+// Load saved data from localStorage
+const loadInitialState = () => {
+  try {
+    const savedBooks = localStorage.getItem('ritual-bookshelf-books');
+    const savedShelves = localStorage.getItem('ritual-bookshelf-shelves');
+    const savedActiveShelf = localStorage.getItem('ritual-bookshelf-active-shelf');
+    
+    return {
+      books: savedBooks ? JSON.parse(savedBooks) : {},
+      shelves: savedShelves ? JSON.parse(savedShelves) : {},
+      activeShelfId: savedActiveShelf || '',
+    };
+  } catch (error) {
+    console.error('Error loading saved state', error);
+    return {
+      books: {},
+      shelves: {},
+      activeShelfId: '',
+    };
+  }
+};
+
+const initialState = loadInitialState();
+
 // Store
 export const useBookshelfStore = create<BookshelfState>((set, get) => ({
-  books: {},
-  shelves: {},
-  activeShelfId: '',
+  books: initialState.books,
+  shelves: initialState.shelves,
+  activeShelfId: initialState.activeShelfId,
   isModalOpen: false,
   activeBookId: null,
   draggedBook: null,
@@ -105,27 +128,41 @@ export const useBookshelfStore = create<BookshelfState>((set, get) => ({
       return "";
     }
     
-    set((state) => ({
-      books: {
+    set((state) => {
+      const updatedBooks = {
         ...state.books,
         [id]: { ...bookData, id, position }
-      }
-    }));
+      };
+      
+      // Save to localStorage
+      localStorage.setItem('ritual-bookshelf-books', JSON.stringify(updatedBooks));
+      
+      return { books: updatedBooks };
+    });
     return id;
   },
   
   updateBook: (id, data) => {
-    set((state) => ({
-      books: {
+    set((state) => {
+      const updatedBooks = {
         ...state.books,
         [id]: { ...state.books[id], ...data }
-      }
-    }));
+      };
+      
+      // Save to localStorage
+      localStorage.setItem('ritual-bookshelf-books', JSON.stringify(updatedBooks));
+      
+      return { books: updatedBooks };
+    });
   },
   
   deleteBook: (id) => {
     set((state) => {
       const { [id]: removed, ...remaining } = state.books;
+      
+      // Save to localStorage
+      localStorage.setItem('ritual-bookshelf-books', JSON.stringify(remaining));
+      
       return { books: remaining };
     });
   },
@@ -133,23 +170,36 @@ export const useBookshelfStore = create<BookshelfState>((set, get) => ({
   // Shelf operations
   addShelf: (shelfData) => {
     const id = uuidv4();
-    set((state) => ({
-      shelves: {
+    set((state) => {
+      const updatedShelves = {
         ...state.shelves,
         [id]: { ...shelfData, id }
-      },
-      activeShelfId: id
-    }));
+      };
+      
+      // Save to localStorage
+      localStorage.setItem('ritual-bookshelf-shelves', JSON.stringify(updatedShelves));
+      localStorage.setItem('ritual-bookshelf-active-shelf', id);
+      
+      return {
+        shelves: updatedShelves,
+        activeShelfId: id
+      };
+    });
     return id;
   },
   
   updateShelf: (id, data) => {
-    set((state) => ({
-      shelves: {
+    set((state) => {
+      const updatedShelves = {
         ...state.shelves,
         [id]: { ...state.shelves[id], ...data }
-      }
-    }));
+      };
+      
+      // Save to localStorage
+      localStorage.setItem('ritual-bookshelf-shelves', JSON.stringify(updatedShelves));
+      
+      return { shelves: updatedShelves };
+    });
   },
   
   deleteShelf: (id) => {
@@ -169,6 +219,11 @@ export const useBookshelfStore = create<BookshelfState>((set, get) => ({
       // Set new active shelf
       const newActiveId = Object.keys(remainingShelves)[0];
       
+      // Save to localStorage
+      localStorage.setItem('ritual-bookshelf-shelves', JSON.stringify(remainingShelves));
+      localStorage.setItem('ritual-bookshelf-books', JSON.stringify(updatedBooks));
+      localStorage.setItem('ritual-bookshelf-active-shelf', newActiveId);
+      
       return { 
         shelves: remainingShelves,
         books: updatedBooks,
@@ -179,11 +234,13 @@ export const useBookshelfStore = create<BookshelfState>((set, get) => ({
   
   setActiveShelf: (id) => {
     set({ activeShelfId: id });
+    localStorage.setItem('ritual-bookshelf-active-shelf', id);
   },
   
   // Added the switchShelf method that was missing
   switchShelf: (id) => {
     set({ activeShelfId: id });
+    localStorage.setItem('ritual-bookshelf-active-shelf', id);
   },
   
   // UI operations
@@ -211,14 +268,18 @@ export const useBookshelfStore = create<BookshelfState>((set, get) => ({
     if (!activeShelfId) return;
     
     const shelf = shelves[activeShelfId];
-    set({
-      shelves: {
-        ...shelves,
+    set((state) => {
+      const updatedShelves = {
+        ...state.shelves,
         [activeShelfId]: {
           ...shelf,
           rows: shelf.rows + 1
         }
-      }
+      };
+      
+      localStorage.setItem('ritual-bookshelf-shelves', JSON.stringify(updatedShelves));
+      
+      return { shelves: updatedShelves };
     });
   },
   
@@ -244,15 +305,22 @@ export const useBookshelfStore = create<BookshelfState>((set, get) => ({
       }
     });
     
-    set({
-      shelves: {
-        ...shelves,
+    set((state) => {
+      const updatedShelves = {
+        ...state.shelves,
         [activeShelfId]: {
           ...shelf,
           rows: shelf.rows - 1
         }
-      },
-      books: updatedBooks
+      };
+      
+      localStorage.setItem('ritual-bookshelf-shelves', JSON.stringify(updatedShelves));
+      localStorage.setItem('ritual-bookshelf-books', JSON.stringify(updatedBooks));
+      
+      return {
+        shelves: updatedShelves,
+        books: updatedBooks
+      };
     });
   },
   
@@ -275,15 +343,22 @@ export const useBookshelfStore = create<BookshelfState>((set, get) => ({
       }
     });
     
-    set({
-      shelves: {
-        ...shelves,
+    set((state) => {
+      const updatedShelves = {
+        ...state.shelves,
         [activeShelfId]: {
           ...shelf,
           columns: newColumns
         }
-      },
-      books: updatedBooks
+      };
+      
+      localStorage.setItem('ritual-bookshelf-shelves', JSON.stringify(updatedShelves));
+      localStorage.setItem('ritual-bookshelf-books', JSON.stringify(updatedBooks));
+      
+      return {
+        shelves: updatedShelves,
+        books: updatedBooks
+      };
     });
   },
   
@@ -318,15 +393,22 @@ export const useBookshelfStore = create<BookshelfState>((set, get) => ({
       }
     });
     
-    set({
-      shelves: {
-        ...shelves,
+    set((state) => {
+      const updatedShelves = {
+        ...state.shelves,
         [activeShelfId]: {
           ...shelf,
           columns: newColumns
         }
-      },
-      books: updatedBooks
+      };
+      
+      localStorage.setItem('ritual-bookshelf-shelves', JSON.stringify(updatedShelves));
+      localStorage.setItem('ritual-bookshelf-books', JSON.stringify(updatedBooks));
+      
+      return {
+        shelves: updatedShelves,
+        books: updatedBooks
+      };
     });
   },
   

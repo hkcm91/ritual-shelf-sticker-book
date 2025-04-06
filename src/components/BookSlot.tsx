@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Book from './Book';
 import { Popover, PopoverTrigger } from '@/components/ui/popover';
@@ -151,6 +150,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
             onFileSelect={handleFileChange} 
             slotType={slotType}
             onClick={handleEmptySlotClick}
+            position={position}
           />
         )}
         

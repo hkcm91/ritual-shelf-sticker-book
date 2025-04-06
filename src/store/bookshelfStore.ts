@@ -1,7 +1,6 @@
 
 import { create } from 'zustand';
 import { toast } from 'sonner';
-import { BookData, ShelfData } from './types';
 import { BooksSlice, createBooksSlice } from './booksSlice';
 import { ShelvesSlice, createShelvesSlice } from './shelvesSlice';
 import { UISlice, createUISlice } from './uiSlice';
@@ -70,8 +69,8 @@ export const useBookshelfStore = create<BookshelfState>((set, get) => ({
   },
 }));
 
-// Re-export types
-export { BookData, ShelfData };
+// Re-export types properly
+export type { BookData, ShelfData } from './types';
 
 // Helper to initialize a default shelf if none exists
 export const initializeDefaultShelf = () => {

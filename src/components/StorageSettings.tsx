@@ -9,12 +9,18 @@ import { storageService, StorageBackend } from '../services/storageService';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { toast } from 'sonner';
 import StorageUsage from './StorageUsage';
+import DeleteDialog from './DeleteDialog';
+import { useBookshelfStore, initializeDefaultShelf } from '../store/bookshelfStore';
 
 const StorageSettings: React.FC = () => {
   const [currentBackend, setCurrentBackend] = useState<StorageBackend>(
     storageService.getBackend()
   );
   const [isResetting, setIsResetting] = useState(false);
+  const [showResetDialog, setShowResetDialog] = useState(false);
+  
+  // Get reset shelf method from the store
+  const { books, shelves } = useBookshelfStore();
   
   const handleBackendChange = (value: string) => {
     const backend = value as StorageBackend;
@@ -39,6 +45,24 @@ const StorageSettings: React.FC = () => {
         window.location.reload();
       } else {
         setIsResetting(false);
+      }
+    }, 500);
+  };
+
+  const handleShelfReset = () => {
+    setIsResetting(true);
+    
+    setTimeout(() => {
+      const success = storageService.resetBookshelfData();
+      
+      if (success) {
+        // Create a default shelf if needed after the reset
+        initializeDefaultShelf();
+        // Refresh the page to reset the app state
+        window.location.reload();
+      } else {
+        setIsResetting(false);
+        setShowResetDialog(false);
       }
     }, 500);
   };
@@ -127,29 +151,58 @@ const StorageSettings: React.FC = () => {
                 </AlertDescription>
               </Alert>
               
-              <div className="rounded-lg border p-3">
-                <h3 className="font-medium mb-2">Reset All Storage</h3>
-                <p className="text-sm text-gray-500 mb-3">
-                  This will delete all your books, shelves, and customizations.
-                </p>
-                <Button 
-                  variant="destructive" 
-                  onClick={handleResetStorage}
-                  disabled={isResetting}
-                  className="flex items-center gap-2"
-                >
-                  {isResetting ? (
-                    <>
-                      <RefreshCw className="h-4 w-4 animate-spin" />
-                      <span>Resetting...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Trash2 className="h-4 w-4" />
-                      <span>Reset All Storage</span>
-                    </>
-                  )}
-                </Button>
+              <div className="space-y-4">
+                {/* Shelf Reset Option */}
+                <div className="rounded-lg border p-3">
+                  <h3 className="font-medium mb-2">Reset Bookshelf</h3>
+                  <p className="text-sm text-gray-500 mb-3">
+                    This will delete all your books and stickers but keep your application settings.
+                  </p>
+                  <Button 
+                    variant="destructive" 
+                    onClick={() => setShowResetDialog(true)}
+                    disabled={isResetting}
+                    className="flex items-center gap-2"
+                  >
+                    {isResetting ? (
+                      <>
+                        <RefreshCw className="h-4 w-4 animate-spin" />
+                        <span>Resetting...</span>
+                      </>
+                    ) : (
+                      <>
+                        <RefreshCw className="h-4 w-4" />
+                        <span>Reset Bookshelf</span>
+                      </>
+                    )}
+                  </Button>
+                </div>
+                
+                {/* All Storage Reset Option */}
+                <div className="rounded-lg border p-3">
+                  <h3 className="font-medium mb-2">Reset All Storage</h3>
+                  <p className="text-sm text-gray-500 mb-3">
+                    This will delete all your books, shelves, and customizations.
+                  </p>
+                  <Button 
+                    variant="destructive" 
+                    onClick={handleResetStorage}
+                    disabled={isResetting}
+                    className="flex items-center gap-2"
+                  >
+                    {isResetting ? (
+                      <>
+                        <RefreshCw className="h-4 w-4 animate-spin" />
+                        <span>Resetting...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="h-4 w-4" />
+                        <span>Reset All Storage</span>
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
             </div>
           </TabsContent>
@@ -161,6 +214,15 @@ const StorageSettings: React.FC = () => {
           Storage backend can be changed at any time, but data will not be automatically transferred.
         </p>
       </CardFooter>
+
+      {/* Reset Bookshelf Confirmation Dialog */}
+      <DeleteDialog
+        open={showResetDialog}
+        onOpenChange={setShowResetDialog}
+        onConfirm={handleShelfReset}
+        title="Reset Bookshelf?"
+        description="This will delete all your books and stickers. This action cannot be undone."
+      />
     </Card>
   );
 };

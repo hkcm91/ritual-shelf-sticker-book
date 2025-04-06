@@ -1,6 +1,7 @@
 
 import { compressImage } from '../utils/imageUtils';
 import { toast } from 'sonner';
+import { resetBookshelfData } from '../utils/storageUtils';
 
 // Storage types
 export type StorageOptions = {
@@ -49,6 +50,11 @@ class StorageService {
       toast.error('Failed to reset storage');
       return false;
     }
+  }
+
+  // Reset only bookshelf data, preserving settings
+  public resetBookshelfData(): boolean {
+    return resetBookshelfData();
   }
 
   // Get an item from storage

@@ -33,6 +33,36 @@ export const resetAllStorage = (): boolean => {
 };
 
 /**
+ * Reset bookshelf data only (books and stickers)
+ * This preserves app settings and preferences
+ */
+export const resetBookshelfData = (): boolean => {
+  try {
+    // Get all keys from localStorage
+    const keys = Object.keys(localStorage);
+    
+    // Filter specifically for book and shelf content data
+    const bookshelfKeys = keys.filter(key => 
+      key === 'ritual-bookshelf-books' || 
+      key === 'ritual-bookshelf-shelves' || 
+      key.startsWith('slot-') ||
+      (key.startsWith('ritual-bookshelf-') && key.includes('customization'))
+    );
+    
+    // Remove each key
+    bookshelfKeys.forEach(key => localStorage.removeItem(key));
+    
+    toast.success(`Reset bookshelf data (${bookshelfKeys.length} items cleared)`);
+    console.log(`Cleared ${bookshelfKeys.length} bookshelf items`);
+    return true;
+  } catch (error) {
+    console.error('Error resetting bookshelf data:', error);
+    toast.error('Failed to reset bookshelf');
+    return false;
+  }
+};
+
+/**
  * Get total size of all application storage items in bytes
  */
 export const getAppStorageSize = (): number => {

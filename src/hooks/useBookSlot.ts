@@ -23,6 +23,7 @@ export const useBookSlot = ({ position }: UseBookSlotProps) => {
   const {
     scale,
     position2D,
+    setPosition2D,
     rotation,
     isDragging,
     setIsDragging,
@@ -54,10 +55,7 @@ export const useBookSlot = ({ position }: UseBookSlotProps) => {
     setIsDragging,
     dragStart,
     setDragStart,
-    setPosition2D: (pos) => {
-      // This function doesn't actually check if the positions are different, it just sets them
-      return setPosition2D(pos);
-    },
+    setPosition2D,
     book
   });
   

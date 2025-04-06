@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -96,12 +95,22 @@ export default {
 				'book-added': {
 					'0%': { transform: 'scale(0.8)', opacity: '0' },
 					'100%': { transform: 'scale(1)', opacity: '1' }
+				},
+				'popover-show': {
+					'0%': { opacity: '0', transform: 'scale(0.95)' },
+					'100%': { opacity: '1', transform: 'scale(1)' }
+				},
+				'popover-hide': {
+					'0%': { opacity: '1', transform: 'scale(1)' },
+					'100%': { opacity: '0', transform: 'scale(0.95)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
-				'book-added': 'book-added 0.3s ease-out'
+				'book-added': 'book-added 0.3s ease-out',
+				'popover-show': 'popover-show 0.2s ease-out',
+				'popover-hide': 'popover-hide 0.2s ease-out'
 			},
 			backgroundImage: {
 				'wood-texture': "url('/lovable-uploads/b613332c-c1a6-46ce-bd9f-6643f75a811a.png')",

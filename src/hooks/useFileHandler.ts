@@ -2,6 +2,7 @@
 import { useRef } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import { toast } from 'sonner';
+import { compressImage } from '../utils/imageUtils';
 
 type UseFileHandlerProps = {
   position: number;
@@ -12,7 +13,7 @@ export const useFileHandler = ({ position, slotType = "book" }: UseFileHandlerPr
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { activeShelfId, addBook, openModal } = useBookshelfStore();
   
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     
@@ -27,9 +28,10 @@ export const useFileHandler = ({ position, slotType = "book" }: UseFileHandlerPr
       }
       
       const reader = new FileReader();
-      reader.onload = (event) => {
+      reader.onload = async (event) => {
         if (typeof event.target?.result === 'string') {
           try {
+            // The storage service will handle compression during addBook
             const newBookId = addBook({
               title: '',
               author: '',
@@ -59,13 +61,29 @@ export const useFileHandler = ({ position, slotType = "book" }: UseFileHandlerPr
     else if (slotType === "sticker") {
       if (file.type.startsWith('image/')) {
         const reader = new FileReader();
-        reader.onload = (event) => {
+        reader.onload = async (event) => {
           if (typeof event.target?.result === 'string') {
             try {
+              let imageData = event.target.result;
+              
+              // Try to compress sticker images for better storage efficiency
+              if (file.size > 100 * 1024) { // If over 100KB
+                try {
+                  imageData = await compressImage(imageData, {
+                    quality: 0.6,
+                    maxWidth: 400,
+                    maxHeight: 400
+                  });
+                } catch (err) {
+                  console.warn('Failed to compress sticker image:', err);
+                  // Continue with original image if compression fails
+                }
+              }
+              
               const newBookId = addBook({
                 title: file.name.replace(/\.[^/.]+$/, ""),
                 author: 'Sticker',
-                coverURL: event.target.result,
+                coverURL: imageData,
                 progress: 0,
                 rating: 0,
                 position,

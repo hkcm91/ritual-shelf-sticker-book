@@ -4,6 +4,7 @@ import { useBookshelfStore } from '../../store/bookshelfStore';
 import CustomizationPanel from './CustomizationPanel';
 import ShelfRow from './ShelfRow';
 import { useBookshelfCustomization } from '../../hooks/useBookshelfCustomization';
+import StorageUsage from '../StorageUsage';
 
 const BookshelfGrid: React.FC = () => {
   const { activeShelfId, shelves, zoomLevel } = useBookshelfStore();
@@ -79,6 +80,12 @@ const BookshelfGrid: React.FC = () => {
           handleFileChange={handleFileChange}
           handleImageUrl={handleImageUrl}
         />
+        
+        {/* Add storage usage indicator */}
+        <div className="absolute bottom-1 right-1 w-48 z-10 bg-white/90 rounded shadow">
+          <StorageUsage />
+        </div>
+        
         {renderGrid()}
       </div>
     </div>

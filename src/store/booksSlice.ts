@@ -1,8 +1,8 @@
-
 import { StateCreator } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'sonner';
 import { BookData } from './types';
+import { storageService } from '../services/storageService';
 
 export interface BooksSlice {
   books: Record<string, BookData>;
@@ -18,8 +18,7 @@ export const createBooksSlice: StateCreator<
   BooksSlice
 > = (set, get, store) => {
   // Initialize with default or stored state
-  const initialBooks = typeof window !== 'undefined' ?
-    JSON.parse(localStorage.getItem('ritual-bookshelf-books') || '{}') : {};
+  const initialBooks = storageService.getItem<Record<string, BookData>>('books') || {};
 
   return {
     books: initialBooks,
@@ -39,22 +38,31 @@ export const createBooksSlice: StateCreator<
         return "";
       }
       
+      // Determine if this is a book cover that needs compression
+      const needsCompression = !bookData.isSticker && 
+        typeof bookData.coverURL === 'string' && 
+        bookData.coverURL.startsWith('data:image/');
+      
       set((state) => {
         const updatedBooks = {
           ...state.books,
           [id]: { ...bookData, id, position }
         };
         
-        // Try to save to localStorage with error handling
-        try {
-          localStorage.setItem('ritual-bookshelf-books', JSON.stringify(updatedBooks));
-        } catch (error) {
-          console.error('Failed to save books to localStorage:', error);
-          // Don't prevent the state update, but notify the user
-          setTimeout(() => {
-            toast.warning("Your browser storage is getting full. Some items may not be saved.");
-          }, 100);
-        }
+        // Try to save to storage with compression for book covers
+        storageService.setItem('books', updatedBooks, {
+          compress: needsCompression,
+          quality: 0.7,
+          maxWidth: 600,
+          maxHeight: 900
+        }).then(success => {
+          if (!success) {
+            // Storage error, but we'll keep the state update so user can see their book
+            setTimeout(() => {
+              toast.warning("Storage is getting full. Your book was added but may not be saved permanently. Consider removing unused items.");
+            }, 100);
+          }
+        });
         
         return { books: updatedBooks };
       });
@@ -68,15 +76,14 @@ export const createBooksSlice: StateCreator<
           [id]: { ...state.books[id], ...data }
         };
         
-        // Try to save to localStorage with error handling
-        try {
-          localStorage.setItem('ritual-bookshelf-books', JSON.stringify(updatedBooks));
-        } catch (error) {
-          console.error('Failed to update books in localStorage:', error);
-          setTimeout(() => {
-            toast.warning("Failed to save all changes. Your browser storage may be full.");
-          }, 100);
-        }
+        // Save to storage
+        storageService.setItem('books', updatedBooks).then(success => {
+          if (!success) {
+            setTimeout(() => {
+              toast.warning("Failed to save all changes. Your storage may be full.");
+            }, 100);
+          }
+        });
         
         return { books: updatedBooks };
       });
@@ -86,12 +93,8 @@ export const createBooksSlice: StateCreator<
       set((state) => {
         const { [id]: removed, ...remaining } = state.books;
         
-        // Try to save to localStorage with error handling
-        try {
-          localStorage.setItem('ritual-bookshelf-books', JSON.stringify(remaining));
-        } catch (error) {
-          console.error('Failed to delete book from localStorage:', error);
-        }
+        // Save to storage
+        storageService.setItem('books', remaining);
         
         return { books: remaining };
       });

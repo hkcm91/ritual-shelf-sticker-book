@@ -1,27 +1,20 @@
 
 import { ShelfData } from '../types';
 import { BooksSlice } from '../booksSlice';
+import { storageService } from '../../services/storageService';
 
 /**
- * Updates shelf data in localStorage
+ * Updates shelf data in storage
  */
-export const saveShelvesToStorage = (shelves: Record<string, ShelfData>): void => {
-  try {
-    localStorage.setItem('ritual-bookshelf-shelves', JSON.stringify(shelves));
-  } catch (error) {
-    console.error('Failed to save shelves to localStorage:', error);
-  }
+export const saveShelvesToStorage = (shelves: Record<string, ShelfData>): Promise<boolean> => {
+  return storageService.setItem('shelves', shelves);
 };
 
 /**
- * Updates active shelf ID in localStorage
+ * Updates active shelf ID in storage
  */
-export const saveActiveShelfToStorage = (id: string): void => {
-  try {
-    localStorage.setItem('ritual-bookshelf-active-shelf', id);
-  } catch (error) {
-    console.error('Failed to save active shelf to localStorage:', error);
-  }
+export const saveActiveShelfToStorage = (id: string): Promise<boolean> => {
+  return storageService.setItem('active-shelf', id);
 };
 
 /**
@@ -87,4 +80,11 @@ export const recalculateBookPositions = (
   });
   
   return updatedPositions;
+};
+
+/**
+ * Gets the estimated storage usage statistics
+ */
+export const getStorageStats = () => {
+  return storageService.getUsageStats();
 };

@@ -1,141 +1,138 @@
 
-import React from 'react';
+import React, { useState } from 'react';
+import { Settings, Rows3, Columns } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useBookshelfStore } from '../store/bookshelfStore';
-import { Button } from '@/components/ui/button';
-import { Minus, Plus, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import ShelfStylesDialog from './ShelfStylesDialog';
+import StorageSettings from './StorageSettings';
 
 const ShelfControls: React.FC = () => {
-  const { 
-    activeShelfId,
-    addRow, 
-    removeRow, 
-    addColumn, 
-    removeColumn, 
-    setZoom,
-    zoomLevel
-  } = useBookshelfStore();
+  const [open, setOpen] = useState(false);
+  const [openStyles, setOpenStyles] = useState(false);
+  const { addRow, removeRow, addColumn, removeColumn, activeShelfId, shelves } = useBookshelfStore();
   
-  const handleZoomIn = () => {
-    setZoom(Math.min(zoomLevel + 0.25, 2));
+  const activeShelf = shelves[activeShelfId];
+  
+  const handleAddRow = () => {
+    if (activeShelfId) {
+      addRow(activeShelfId);
+    }
   };
   
-  const handleZoomOut = () => {
-    setZoom(Math.max(zoomLevel - 0.25, 0.5));
+  const handleRemoveRow = () => {
+    if (activeShelfId && activeShelf && activeShelf.rows > 1) {
+      removeRow(activeShelfId);
+    }
   };
   
-  const handleResetZoom = () => {
-    setZoom(1);
+  const handleAddColumn = () => {
+    if (activeShelfId) {
+      addColumn(activeShelfId);
+    }
   };
   
-  if (!activeShelfId) return null;
+  const handleRemoveColumn = () => {
+    if (activeShelfId && activeShelf && activeShelf.columns > 1) {
+      removeColumn(activeShelfId);
+    }
+  };
   
   return (
-    <div className="flex items-center gap-2">
-      <div className="flex gap-1 bg-white/90 rounded-md p-1">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={addRow}
-              className="h-8 w-8 text-gray-700"
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Add Row</TooltipContent>
-        </Tooltip>
-        
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={removeRow}
-              className="h-8 w-8 text-gray-700"
-            >
-              <Minus className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Remove Row</TooltipContent>
-        </Tooltip>
-      </div>
+    <>
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetTrigger asChild>
+          <Button variant="ghost" size="icon" className="bg-white/90 hover:bg-white text-gray-700">
+            <Settings className="h-4 w-4" />
+          </Button>
+        </SheetTrigger>
+        <SheetContent className="overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>Bookshelf Settings</SheetTitle>
+            <SheetDescription>
+              Adjust your bookshelf layout and appearance
+            </SheetDescription>
+          </SheetHeader>
+          
+          <Tabs defaultValue="layout" className="mt-6">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="layout">Layout</TabsTrigger>
+              <TabsTrigger value="appearance">Appearance</TabsTrigger>
+              <TabsTrigger value="storage">Storage</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="layout" className="mt-4 space-y-6">
+              <div className="space-y-2">
+                <h3 className="text-sm font-medium">Rows</h3>
+                <div className="flex items-center space-x-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleRemoveRow}
+                    disabled={!activeShelf || activeShelf.rows <= 1}
+                    className="px-2"
+                  >
+                    -
+                  </Button>
+                  <div className="flex items-center space-x-1">
+                    <Rows3 className="h-4 w-4 text-gray-500" />
+                    <span className="font-medium">{activeShelf ? activeShelf.rows : 0}</span>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleAddRow}
+                    className="px-2"
+                  >
+                    +
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <h3 className="text-sm font-medium">Columns</h3>
+                <div className="flex items-center space-x-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleRemoveColumn}
+                    disabled={!activeShelf || activeShelf.columns <= 1}
+                    className="px-2"
+                  >
+                    -
+                  </Button>
+                  <div className="flex items-center space-x-1">
+                    <Columns className="h-4 w-4 text-gray-500" />
+                    <span className="font-medium">{activeShelf ? activeShelf.columns : 0}</span>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleAddColumn}
+                    className="px-2"
+                  >
+                    +
+                  </Button>
+                </div>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="appearance" className="mt-4">
+              <Button variant="outline" onClick={() => setOpenStyles(true)}>
+                Customize Shelf Appearance
+              </Button>
+            </TabsContent>
+            
+            <TabsContent value="storage" className="mt-4">
+              <StorageSettings />
+            </TabsContent>
+          </Tabs>
+        </SheetContent>
+      </Sheet>
       
-      <div className="flex gap-1 bg-white/90 rounded-md p-1">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={addColumn}
-              className="h-8 w-8 text-gray-700"
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Add Column</TooltipContent>
-        </Tooltip>
-        
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={removeColumn}
-              className="h-8 w-8 text-gray-700"
-            >
-              <Minus className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Remove Column</TooltipContent>
-        </Tooltip>
-      </div>
-      
-      <div className="flex gap-1 bg-white/90 rounded-md p-1">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={handleZoomOut}
-              className="h-8 w-8 text-gray-700"
-            >
-              <ZoomOut className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Zoom Out</TooltipContent>
-        </Tooltip>
-        
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={handleResetZoom}
-              className="h-8 w-8 text-gray-700"
-            >
-              <RotateCcw className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Reset Zoom</TooltipContent>
-        </Tooltip>
-        
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={handleZoomIn}
-              className="h-8 w-8 text-gray-700"
-            >
-              <ZoomIn className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Zoom In</TooltipContent>
-        </Tooltip>
-      </div>
-    </div>
+      <ShelfStylesDialog open={openStyles} onOpenChange={setOpenStyles} />
+    </>
   );
 };
 

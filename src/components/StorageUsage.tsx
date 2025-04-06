@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { getStorageStats } from '../store/utils/shelfUtils';
 import { Progress } from "@/components/ui/progress";
+import { storageService } from '../services/storageService';
 
 const StorageUsage: React.FC = () => {
   const [usage, setUsage] = useState({ percent: 0, used: 0, total: 0 });
@@ -21,7 +21,7 @@ const StorageUsage: React.FC = () => {
   }, []);
   
   const updateStats = () => {
-    const stats = getStorageStats();
+    const stats = storageService.getUsageStats();
     setUsage(stats);
   };
   

@@ -23,9 +23,11 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       
-      <div className="px-4 py-3 sticky top-16 z-20 bg-background/90 backdrop-blur-sm border-b flex items-center justify-between">
-        <ShelfControls />
-        <BookSearchDrawer />
+      <div className="px-4 py-2 sticky top-14 z-20 bg-background/90 backdrop-blur-sm border-b">
+        <div className="flex items-center justify-between">
+          <ShelfControls />
+          <BookSearchDrawer />
+        </div>
       </div>
       
       <div className="flex-grow w-full overflow-auto">

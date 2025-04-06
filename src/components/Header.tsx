@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { PlusCircle, Edit2, BookOpen } from "lucide-react";
 
 export function Header() {
   const { shelves, activeShelfId, switchShelf, addShelf, updateShelf } = useBookshelfStore();
@@ -42,23 +43,16 @@ export function Header() {
 
   return (
     <header className="bg-wood-texture bg-cover border-b shadow-md sticky top-0 z-10">
-      <div className="container mx-auto py-3 md:py-4 px-4 flex flex-col md:flex-row justify-between items-center">
-        <div className="flex flex-col items-center md:items-start mb-3 md:mb-0">
-          <h1 className="text-2xl md:text-3xl font-bold text-white drop-shadow-md">
-            Ritual Bookshelf
-          </h1>
-          <p className="text-sm text-white/80 text-center md:text-left">
-            Track your reading journey with a beautiful digital bookshelf
-          </p>
-        </div>
+      <div className="container mx-auto py-3 px-4 flex items-center justify-between">
+        <BookOpen className="h-6 w-6 text-white" />
 
-        <div className="flex items-center gap-2 md:gap-4">
-          <div className="w-40 md:w-48">
+        <div className="flex items-center gap-2">
+          <div className="w-48">
             <Select
               value={activeShelfId}
               onValueChange={(value) => switchShelf(value)}
             >
-              <SelectTrigger>
+              <SelectTrigger className="bg-white/80 border-0">
                 <SelectValue placeholder="Select a shelf..." />
               </SelectTrigger>
               <SelectContent>
@@ -72,8 +66,8 @@ export function Header() {
           </div>
 
           <Button
-            variant="outline"
-            size="sm"
+            variant="ghost"
+            size="icon"
             onClick={() => {
               if (currentShelf) {
                 setRenameValue(currentShelf.name);
@@ -81,17 +75,18 @@ export function Header() {
               }
             }}
             disabled={!currentShelf}
-            className="bg-white/80 hover:bg-white"
+            className="bg-white/80 hover:bg-white text-gray-700"
           >
-            Rename
+            <Edit2 className="h-4 w-4" />
           </Button>
 
           <Button
-            variant="default"
-            size="sm"
+            variant="ghost"
+            size="icon"
             onClick={() => setIsNewShelfModalOpen(true)}
+            className="bg-white/80 hover:bg-white text-gray-700"
           >
-            New Shelf
+            <PlusCircle className="h-4 w-4" />
           </Button>
         </div>
       </div>

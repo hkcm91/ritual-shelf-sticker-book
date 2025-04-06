@@ -14,7 +14,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 20 14.3% 4.1%;
 
-    --primary: 186 60% 55%;
+    --primary: 30 60% 50%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 12 40% 50%;
@@ -46,7 +46,7 @@
     --popover: 20 14.3% 4.1%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 186 60% 55%;
+    --primary: 30 60% 50%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary: 12 40% 50%;
@@ -80,17 +80,17 @@
 @layer components {
   .book-slot {
     @apply relative w-20 h-32 sm:w-24 sm:h-36 md:w-28 md:h-40 xl:w-32 xl:h-48 
-           bg-bookshelf-empty border-2 border-bookshelf-slotBorder rounded-md 
+           bg-transparent border-2 border-gray-200/50 rounded-md 
            flex items-center justify-center cursor-pointer transition-all;
   }
   
   .book-slot.empty {
-    @apply hover:bg-bookshelf-slot/70;
+    @apply hover:bg-gray-50/30;
   }
   
   .book-slot.empty::after {
     content: "+";
-    @apply text-2xl text-white/70 pointer-events-none;
+    @apply text-2xl text-gray-300/50 pointer-events-none;
   }
   
   .book {

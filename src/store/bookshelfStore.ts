@@ -1,3 +1,4 @@
+
 import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'sonner';
@@ -17,6 +18,7 @@ export type BookData = {
   plot?: string;
   notes?: string;
   quizzes?: {question: string, answer: string}[];
+  isSticker?: boolean;
 };
 
 export type ShelfData = {

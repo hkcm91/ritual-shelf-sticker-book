@@ -66,9 +66,9 @@ export default {
 				bookshelf: {
 					wood: '#a47148',
 					shelf: '#8B5A2B',
-					slot: '#45CCCC',
-					slotBorder: '#2BAAAA',
-					empty: '#B0E9E9',
+					slot: '#f0f0f0',
+					slotBorder: '#e0e0e0',
+					empty: '#f8f8f8',
 				}
 			},
 			borderRadius: {

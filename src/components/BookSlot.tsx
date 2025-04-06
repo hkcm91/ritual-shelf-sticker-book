@@ -1,15 +1,22 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import Book from './Book';
 import { toast } from 'sonner';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 type BookSlotProps = {
   position: number;
 };
 
+type SlotType = 'book' | 'sticker';
+
 const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [slotType, setSlotType] = useState<SlotType>('book');
+  
   const { 
     books, 
     activeShelfId, 
@@ -32,16 +39,21 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     reader.onload = (event) => {
       if (typeof event.target?.result === 'string') {
         const newBookId = addBook({
-          title: '',
-          author: '',
+          title: slotType === 'sticker' ? 'Sticker' : '',
+          author: slotType === 'sticker' ? 'Decoration' : '',
           coverURL: event.target.result,
           progress: 0,
           rating: 0,
           position,
           shelfId: activeShelfId,
+          isSticker: slotType === 'sticker'
         });
         
-        openModal(newBookId);
+        if (slotType === 'book') {
+          openModal(newBookId);
+        } else {
+          toast.success('Sticker added successfully');
+        }
       }
     };
     reader.readAsDataURL(file);
@@ -79,10 +91,14 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     
     toast.success('Book moved successfully');
   };
+
+  const toggleSlotType = () => {
+    setSlotType(slotType === 'book' ? 'sticker' : 'book');
+  };
   
   return (
     <div 
-      className={`book-slot relative h-[220px] w-[150px] mx-1 rounded-sm 
+      className={`book-slot relative h-[220px] w-[150px] mx-1 rounded-sm
         ${!book ? 'hover:border border-dashed border-gray-300/40 hover:bg-gray-50/10' : ''}
         transition-colors duration-200 cursor-pointer`}
       onClick={handleClick}
@@ -103,6 +119,34 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
             onChange={handleFileChange}
             className="hidden"
           />
+          
+          {/* Slot type toggle */}
+          <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1 opacity-60 hover:opacity-100">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-6 w-6 bg-white/80 backdrop-blur-sm rounded-full shadow-sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleSlotType();
+                    }}
+                  >
+                    {slotType === 'book' ? <ArrowLeft className="h-3 w-3" /> : <ArrowRight className="h-3 w-3" />}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{slotType === 'book' ? 'Switch to sticker slot' : 'Switch to book slot'}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            
+            <div className="px-2 py-1 text-xs bg-white/80 backdrop-blur-sm rounded-full shadow-sm">
+              {slotType === 'book' ? 'Book Slot' : 'Sticker Slot'}
+            </div>
+          </div>
         </>
       )}
     </div>

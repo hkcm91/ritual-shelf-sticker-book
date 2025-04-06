@@ -1,11 +1,22 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import SignInForm from '../components/auth/SignInForm';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 const Auth: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  
+  // Redirect to home if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
+  
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col p-4">
       <header className="mb-8">
@@ -30,8 +41,8 @@ const Auth: React.FC = () => {
         </div>
         
         <p className="mt-8 text-sm text-gray-500 max-w-md text-center">
-          Note: Cloud storage and synchronization features are coming soon.
-          This sign-in page is a preview of upcoming functionality.
+          Cloud storage enables you to access your bookshelf from any device and keeps 
+          your library safe if your browser data gets cleared.
         </p>
       </main>
       

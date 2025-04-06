@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { BookOpen, PlusCircle, Edit2, Palette } from "lucide-react";
 import ShelfControls from '../components/ShelfControls';
 import BgImageDialog from '../components/BgImageDialog';
+import HeaderAuthButton from '../components/Header';
 
 const Index = () => {
   const { shelves, activeShelfId, switchShelf, addShelf, updateShelf } = useBookshelfStore();
@@ -196,6 +197,7 @@ const Index = () => {
           </div>
           
           <div className="flex items-center space-x-3">
+            <HeaderAuthButton />
             <Button
               variant="ghost"
               size="icon"

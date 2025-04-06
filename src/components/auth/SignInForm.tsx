@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '../../hooks/useAuth';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 export const SignInForm: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -14,6 +15,7 @@ export const SignInForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   
   const { signIn, signUp } = useAuth();
+  const navigate = useNavigate();
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,11 +28,15 @@ export const SignInForm: React.FC = () => {
         result = await signUp(email, password);
         if (result) {
           toast.success('Account created successfully!');
+          // Redirect to home page
+          navigate('/');
         }
       } else {
         result = await signIn(email, password);
         if (result) {
           toast.success('Signed in successfully!');
+          // Redirect to home page
+          navigate('/');
         }
       }
       

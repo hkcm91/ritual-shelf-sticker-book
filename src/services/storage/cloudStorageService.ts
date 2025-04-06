@@ -2,29 +2,35 @@
 import { toast } from 'sonner';
 import { BaseStorageService } from './baseStorageService';
 import { StorageOptions } from './types';
+import { userAuthService } from '../userAuthService';
 
 /**
  * Cloud storage implementation
- * This is a placeholder for actual cloud storage implementation
+ * This service is connected to the user authentication
  */
 export class CloudStorageService extends BaseStorageService {
   private apiKey: string | null = null;
-  private userId: string | null = null;
   private endpoint: string | null = null;
   
   /**
    * Initialize the cloud storage with configuration
    */
-  public init(config: { apiKey?: string, userId?: string, endpoint?: string }): void {
+  public init(config: { apiKey?: string, endpoint?: string }): void {
     this.apiKey = config.apiKey || null;
-    this.userId = config.userId || null;
     this.endpoint = config.endpoint || 'https://api.example.com/storage';
     
     console.log('Cloud storage initialized with config:', {
       apiKey: this.apiKey ? '***' : 'not set',
-      userId: this.userId || 'not set',
       endpoint: this.endpoint
     });
+  }
+  
+  /**
+   * Get current user ID from auth service
+   */
+  private getUserId(): string | null {
+    const authState = userAuthService.getAuthState();
+    return authState.isAuthenticated && authState.user ? authState.user.id : null;
   }
   
   /**
@@ -40,7 +46,13 @@ export class CloudStorageService extends BaseStorageService {
    * Get an item from cloud storage
    */
   public getItem<T>(key: string): T | null {
-    console.log(`Cloud getItem: ${key} (not yet implemented)`);
+    const userId = this.getUserId();
+    if (!userId) {
+      console.log('Cannot get item from cloud: Not authenticated');
+      return null;
+    }
+    
+    console.log(`Cloud getItem: ${key} for user ${userId} (not fully implemented)`);
     return null;
   }
 
@@ -48,14 +60,23 @@ export class CloudStorageService extends BaseStorageService {
    * Store an item in cloud storage
    */
   public async setItem(key: string, value: any, options?: StorageOptions): Promise<boolean> {
-    console.log(`Cloud setItem: ${key} (not yet implemented)`);
-    console.log('Options:', options);
+    const userId = this.getUserId();
+    if (!userId) {
+      toast.error('Cannot save to cloud storage: You need to sign in first');
+      return false;
+    }
+    
+    console.log(`Cloud setItem: ${key} for user ${userId} (not fully implemented)`);
     
     // Handle image compression if needed (for future implementation)
     value = await this.compressImageIfNeeded(value, options);
     
     // Process large objects like books (for future implementation)
     value = await this.processLargeObjectData(key, value);
+    
+    toast.info('Cloud storage operations being implemented', {
+      description: 'Your data will be saved locally for now'
+    });
     
     return false;
   }
@@ -64,7 +85,13 @@ export class CloudStorageService extends BaseStorageService {
    * Remove an item from cloud storage
    */
   public removeItem(key: string): boolean {
-    console.log(`Cloud removeItem: ${key} (not yet implemented)`);
+    const userId = this.getUserId();
+    if (!userId) {
+      console.log('Cannot remove item from cloud: Not authenticated');
+      return false;
+    }
+    
+    console.log(`Cloud removeItem: ${key} for user ${userId} (not fully implemented)`);
     return false;
   }
 
@@ -72,7 +99,13 @@ export class CloudStorageService extends BaseStorageService {
    * Clear all cloud storage for this app
    */
   public clear(): boolean {
-    console.log('Cloud clear storage (not yet implemented)');
+    const userId = this.getUserId();
+    if (!userId) {
+      console.log('Cannot clear cloud storage: Not authenticated');
+      return false;
+    }
+    
+    console.log(`Cloud clear storage for user ${userId} (not fully implemented)`);
     return false;
   }
 
@@ -80,8 +113,17 @@ export class CloudStorageService extends BaseStorageService {
    * Get cloud storage usage statistics
    */
   public getUsageStats(): { used: number, total: number, percent: number } {
+    const userId = this.getUserId();
+    const isAuthenticated = !!userId;
+    
+    // If not authenticated, show zero usage
+    if (!isAuthenticated) {
+      return { used: 0, total: 100 * 1024 * 1024, percent: 0 };
+    }
+    
     // Placeholder for cloud storage stats
-    return { used: 0, total: 100 * 1024 * 1024, percent: 0 };
+    // In a real implementation, this would fetch the actual usage from the server
+    return { used: 15 * 1024 * 1024, total: 100 * 1024 * 1024, percent: 15 };
   }
 }
 

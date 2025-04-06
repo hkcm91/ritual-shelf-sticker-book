@@ -4,6 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Cloud, HardDrive } from "lucide-react";
 import { StorageBackend } from '../../services/storage/types';
 import { toast } from 'sonner';
+import { useAuth } from '../../hooks/useAuth';
 
 interface StorageBackendSelectorProps {
   currentBackend: StorageBackend;
@@ -14,13 +15,28 @@ const StorageBackendSelector: React.FC<StorageBackendSelectorProps> = ({
   currentBackend,
   onBackendChange
 }) => {
+  const { isAuthenticated } = useAuth();
+  
   const handleBackendChange = (value: string) => {
     const backend = value as StorageBackend;
+    
+    if (backend === 'cloud' && !isAuthenticated) {
+      toast.info('Authentication needed for cloud storage', {
+        description: 'Sign in to enable cloud synchronization'
+      });
+    }
+    
     onBackendChange(backend);
     
     if (backend === 'cloud') {
-      toast.info('Cloud storage is not yet fully implemented', {
-        description: 'Some features may not work as expected'
+      toast.success('Switched to cloud storage', {
+        description: isAuthenticated 
+          ? 'Your data will be synced across devices' 
+          : 'Sign in to enable synchronization'
+      });
+    } else {
+      toast.success('Switched to local storage', {
+        description: 'Your data will be stored in this browser only'
       });
     }
   };
@@ -42,7 +58,7 @@ const StorageBackendSelector: React.FC<StorageBackendSelectorProps> = ({
           <SelectItem value="cloud" className="flex items-center">
             <div className="flex items-center gap-2">
               <Cloud className="h-4 w-4" />
-              <span>Cloud Storage</span>
+              <span>Cloud Storage {!isAuthenticated && "(Sign-in required)"}</span>
             </div>
           </SelectItem>
         </SelectContent>

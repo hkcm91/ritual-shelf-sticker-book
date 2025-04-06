@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertTriangle, Cloud, Database, HardDrive, RefreshCw, Trash2 } from "lucide-react";
-import { storageService, StorageBackend } from '../services/storageService';
+import { storageService, StorageBackend } from '../services/storage/storageService';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { toast } from 'sonner';
 import StorageUsage from './StorageUsage';

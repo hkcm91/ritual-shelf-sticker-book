@@ -2,7 +2,7 @@ import { StateCreator } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'sonner';
 import { BookData } from './types';
-import { storageService } from '../services/storageService';
+import { storageService } from '../services/storage/storageService';
 
 export interface BooksSlice {
   books: Record<string, BookData>;

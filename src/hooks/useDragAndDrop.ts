@@ -102,7 +102,7 @@ export const useDragAndDrop = ({
         };
         reader.readAsDataURL(file);
         return;
-      } else if (file.type === 'application/json') {
+      } else if (file.type === 'application/json' && slotType === "sticker") {
         const reader = new FileReader();
         reader.onload = (event) => {
           if (typeof event.target?.result === 'string') {
@@ -133,6 +133,12 @@ export const useDragAndDrop = ({
           }
         };
         reader.readAsText(file);
+        return;
+      } else if (slotType === "book" && !file.type.startsWith('image/')) {
+        toast.error('Only image files are supported for books');
+        return;
+      } else if (slotType === "sticker" && !file.type.startsWith('image/') && file.type !== 'application/json') {
+        toast.error('Only image or Lottie JSON files are supported for stickers');
         return;
       }
     }

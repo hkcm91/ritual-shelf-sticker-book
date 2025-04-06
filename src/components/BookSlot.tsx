@@ -89,6 +89,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
         className={`book-slot relative h-[220px] w-[150px] mx-1 rounded-sm
           ${!book ? 'hover:bg-gray-50/10' : 'hover:border hover:border-primary/30'}
           transition-colors duration-200 cursor-pointer`}
+        data-position={position} // Add data attribute for position
         onDragOver={handleDragOver}
         onDrop={handleDrop}
         onMouseMove={handleStickerMouseMove}

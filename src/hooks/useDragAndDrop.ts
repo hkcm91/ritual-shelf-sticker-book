@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import { toast } from 'sonner';
@@ -25,6 +24,19 @@ export const useDragAndDrop = ({
   slotType = "book"
 }: UseDragAndDropProps) => {
   const { activeShelfId, updateBook, getDraggedBook, addBook, openModal } = useBookshelfStore();
+  const [slotDimensions, setSlotDimensions] = useState({ width: 150, height: 220 });
+  
+  // Update slot dimensions when window resizes
+  useEffect(() => {
+    const updateDimensions = () => {
+      // Standard slot dimensions, could be made dynamic
+      setSlotDimensions({ width: 150, height: 220 });
+    };
+    
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, []);
   
   // Sticker drag management
   const handleStickerMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -43,12 +55,16 @@ export const useDragAndDrop = ({
     
     e.stopPropagation();
     // Calculate new position with expanded boundaries to allow full slot movement
-    const slotWidth = 150; // Width of the book slot
-    const slotHeight = 220; // Height of the book slot
-    const maxOffset = Math.max(slotWidth, slotHeight); // Maximum offset based on slot dimensions
+    const stickerWidth = book.width || slotDimensions.width / 2; // Estimated width
+    const stickerHeight = book.height || slotDimensions.height / 2; // Estimated height
     
-    const newX = Math.max(-maxOffset, Math.min(maxOffset, e.clientX - dragStart.x));
-    const newY = Math.max(-maxOffset, Math.min(maxOffset, e.clientY - dragStart.y));
+    // Calculate maximum boundaries to keep sticker fully visible
+    const maxX = slotDimensions.width / 2 - stickerWidth / 2;
+    const maxY = slotDimensions.height / 2 - stickerHeight / 2;
+    
+    // Calculate new position with boundary constraints
+    const newX = Math.max(-maxX, Math.min(maxX, e.clientX - dragStart.x));
+    const newY = Math.max(-maxY, Math.min(maxY, e.clientY - dragStart.y));
     
     setPosition2D({
       x: newX,
@@ -159,16 +175,26 @@ export const useDragAndDrop = ({
   useEffect(() => {
     if (isDragging) {
       const handleMouseMove = (e: MouseEvent) => {
-        const slotWidth = 150;
-        const slotHeight = 220;
-        const maxOffset = Math.max(slotWidth, slotHeight);
+        // Calculate maximum boundaries to keep sticker fully visible
+        const stickerWidth = book?.width || slotDimensions.width / 2;
+        const stickerHeight = book?.height || slotDimensions.height / 2;
         
-        const newX = Math.max(-maxOffset, Math.min(maxOffset, e.clientX - dragStart.x));
-        const newY = Math.max(-maxOffset, Math.min(maxOffset, e.clientY - dragStart.y));
+        const maxX = slotDimensions.width / 2 - stickerWidth / 2;
+        const maxY = slotDimensions.height / 2 - stickerHeight / 2;
+        
+        // Calculate new position with boundary constraints
+        const newX = Math.max(-maxX, Math.min(maxX, e.clientX - dragStart.x));
+        const newY = Math.max(-maxY, Math.min(maxY, e.clientY - dragStart.y));
         
         setPosition2D({
           x: newX,
           y: newY
+        });
+        
+        // Update drag start for next movement calculation
+        setDragStart({
+          x: e.clientX,
+          y: e.clientY
         });
       };
       
@@ -184,7 +210,7 @@ export const useDragAndDrop = ({
         document.removeEventListener('mouseup', handleMouseUp);
       };
     }
-  }, [isDragging, dragStart, setPosition2D, setIsDragging]);
+  }, [isDragging, dragStart, setPosition2D, setIsDragging, book, slotDimensions]);
 
   return {
     handleStickerMouseDown,

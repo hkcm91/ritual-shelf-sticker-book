@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import {
   Dialog,
@@ -32,7 +31,6 @@ const ShelfStylesDialog = () => {
   
   const activeShelf = shelves[activeShelfId];
   
-  // Load current values when dialog opens
   React.useEffect(() => {
     if (open && activeShelf) {
       setTempBackgroundColor(activeShelf.backgroundColor || "#4a5568");
@@ -58,7 +56,6 @@ const ShelfStylesDialog = () => {
     reader.onerror = () => toast.error("Failed to read the image file");
     reader.readAsDataURL(file);
     
-    // Reset file input
     if (backgroundFileRef.current) {
       backgroundFileRef.current.value = '';
     }
@@ -80,7 +77,6 @@ const ShelfStylesDialog = () => {
     reader.onerror = () => toast.error("Failed to read the image file");
     reader.readAsDataURL(file);
     
-    // Reset file input
     if (textureFileRef.current) {
       textureFileRef.current.value = '';
     }

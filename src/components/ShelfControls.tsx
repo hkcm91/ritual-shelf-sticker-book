@@ -3,6 +3,7 @@ import React from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import { Button } from '@/components/ui/button';
 import { Minus, Plus, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const ShelfControls: React.FC = () => {
   const { 
@@ -30,76 +31,112 @@ const ShelfControls: React.FC = () => {
   if (!activeShelfId) return null;
   
   return (
-    <div className="flex flex-wrap gap-2 p-3 bg-white/70 backdrop-blur-sm shadow rounded-md">
-      <div className="flex gap-2">
-        <Button 
-          variant="outline" 
-          size="sm"
-          onClick={addRow}
-          className="flex gap-1 items-center"
-        >
-          <Plus className="h-4 w-4" />
-          Row
-        </Button>
+    <div className="flex items-center gap-2">
+      <TooltipProvider>
+        <div className="flex gap-1 bg-white/90 rounded-md p-1">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={addRow}
+                className="h-8 w-8 text-gray-700"
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Add Row</TooltipContent>
+          </Tooltip>
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={removeRow}
+                className="h-8 w-8 text-gray-700"
+              >
+                <Minus className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Remove Row</TooltipContent>
+          </Tooltip>
+        </div>
         
-        <Button 
-          variant="outline" 
-          size="sm"
-          onClick={removeRow}
-          className="flex gap-1 items-center"
-        >
-          <Minus className="h-4 w-4" />
-          Row
-        </Button>
-      </div>
-      
-      <div className="flex gap-2">
-        <Button 
-          variant="outline" 
-          size="sm"
-          onClick={addColumn}
-          className="flex gap-1 items-center"
-        >
-          <Plus className="h-4 w-4" />
-          Column
-        </Button>
+        <div className="flex gap-1 bg-white/90 rounded-md p-1">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={addColumn}
+                className="h-8 w-8 text-gray-700"
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Add Column</TooltipContent>
+          </Tooltip>
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={removeColumn}
+                className="h-8 w-8 text-gray-700"
+              >
+                <Minus className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Remove Column</TooltipContent>
+          </Tooltip>
+        </div>
         
-        <Button 
-          variant="outline" 
-          size="sm"
-          onClick={removeColumn}
-          className="flex gap-1 items-center"
-        >
-          <Minus className="h-4 w-4" />
-          Column
-        </Button>
-      </div>
-      
-      <div className="flex gap-2 ml-auto">
-        <Button 
-          variant="outline" 
-          size="sm"
-          onClick={handleZoomOut}
-        >
-          <ZoomOut className="h-4 w-4" />
-        </Button>
-        
-        <Button 
-          variant="outline" 
-          size="sm"
-          onClick={handleResetZoom}
-        >
-          <RotateCcw className="h-4 w-4" />
-        </Button>
-        
-        <Button 
-          variant="outline" 
-          size="sm"
-          onClick={handleZoomIn}
-        >
-          <ZoomIn className="h-4 w-4" />
-        </Button>
-      </div>
+        <div className="flex gap-1 bg-white/90 rounded-md p-1">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={handleZoomOut}
+                className="h-8 w-8 text-gray-700"
+              >
+                <ZoomOut className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Zoom Out</TooltipContent>
+          </Tooltip>
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={handleResetZoom}
+                className="h-8 w-8 text-gray-700"
+              >
+                <RotateCcw className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Reset Zoom</TooltipContent>
+          </Tooltip>
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={handleZoomIn}
+                className="h-8 w-8 text-gray-700"
+              >
+                <ZoomIn className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Zoom In</TooltipContent>
+          </Tooltip>
+        </div>
+      </TooltipProvider>
     </div>
   );
 };

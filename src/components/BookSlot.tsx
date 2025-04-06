@@ -83,8 +83,8 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   return (
     <div 
       className={`book-slot relative h-[220px] w-[150px] mx-1 rounded-sm 
-        ${!book ? 'border border-dashed border-gray-300/20 hover:border-primary/30' : 'border-transparent'}
-        transition-colors duration-200 ${!book ? 'cursor-pointer' : ''}`}
+        ${!book ? 'hover:border border-dashed border-gray-300/40 hover:bg-gray-50/10' : ''}
+        transition-colors duration-200 cursor-pointer`}
       onClick={handleClick}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
@@ -94,10 +94,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
       ) : (
         <>
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-4xl text-gray-300/40">+</span>
-          </div>
-          <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 text-sm text-center text-primary font-medium">
-            <span>Click to add book</span>
+            <span className="text-5xl text-gray-300/20">+</span>
           </div>
           <input
             ref={fileInputRef}

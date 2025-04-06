@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -115,13 +114,13 @@
   
   /* Style for the toggle group */
   .slot-toggle-dot {
-    @apply h-3 w-3 p-0 rounded-full bg-gray-400/70 hover:bg-gray-300/70;
+    @apply h-3 w-3 p-0 rounded-full bg-gray-300/50 hover:bg-gray-200/60;
     @apply flex items-center justify-center;
     @apply transition-colors duration-200;
   }
   
   .slot-toggle-dot[data-state="on"] {
-    @apply bg-primary;
+    @apply bg-[#9b87f5];
   }
   
   @keyframes book-added {
@@ -129,4 +128,3 @@
     100% { transform: translateY(0); opacity: 1; }
   }
 }
-

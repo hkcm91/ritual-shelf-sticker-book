@@ -148,41 +148,39 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
         {book ? (
           renderBookContent()
         ) : (
-          <>
-            <EmptySlot 
-              fileInputRef={fileInputRef} 
-              onFileSelect={handleFileChange} 
-              slotType={slotType}
-              onClick={handleEmptySlotClick}
-            />
-            
-            {/* Moved toggle group to the bottom */}
-            <div className="absolute bottom-1 left-0 right-0 z-10 flex justify-center"
-                onClick={(e) => e.stopPropagation()}>
-              <ToggleGroup 
-                type="single" 
-                value={slotType} 
-                onValueChange={handleTypeToggle}
-                className="flex space-x-1 pointer-events-auto"
-              >
-                <ToggleGroupItem 
-                  value="book" 
-                  aria-label="Book Slot" 
-                  className="h-3 w-3 p-0 rounded-full bg-gray-400/70 hover:bg-gray-300/70 data-[state=on]:bg-primary"
-                >
-                  <span className="sr-only">Book</span>
-                </ToggleGroupItem>
-                <ToggleGroupItem 
-                  value="sticker" 
-                  aria-label="Sticker Slot" 
-                  className="h-3 w-3 p-0 rounded-full bg-gray-400/70 hover:bg-gray-300/70 data-[state=on]:bg-primary"
-                >
-                  <span className="sr-only">Sticker</span>
-                </ToggleGroupItem>
-              </ToggleGroup>
-            </div>
-          </>
+          <EmptySlot 
+            fileInputRef={fileInputRef} 
+            onFileSelect={handleFileChange} 
+            slotType={slotType}
+            onClick={handleEmptySlotClick}
+          />
         )}
+        
+        {/* Always show toggle group, whether slot is empty or filled */}
+        <div className="absolute bottom-1 left-0 right-0 z-10 flex justify-center"
+            onClick={(e) => e.stopPropagation()}>
+          <ToggleGroup 
+            type="single" 
+            value={slotType} 
+            onValueChange={handleTypeToggle}
+            className="flex space-x-1 pointer-events-auto"
+          >
+            <ToggleGroupItem 
+              value="book" 
+              aria-label="Book Slot" 
+              className="slot-toggle-dot"
+            >
+              <span className="sr-only">Book</span>
+            </ToggleGroupItem>
+            <ToggleGroupItem 
+              value="sticker" 
+              aria-label="Sticker Slot" 
+              className="slot-toggle-dot"
+            >
+              <span className="sr-only">Sticker</span>
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </div>
       </div>
       
       {/* Delete Confirmation Dialog */}

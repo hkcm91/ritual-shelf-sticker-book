@@ -34,9 +34,11 @@ const BookshelfGrid: React.FC = () => {
       }
       
       grid.push(
-        <div key={`row-${row}`} className="flex flex-col">
-          <div className="flex gap-3 mb-1">{slots}</div>
-          <div className="shelf mb-3"></div>
+        <div key={`row-${row}`} className="flex flex-col mb-8">
+          <div className="flex mb-0 justify-center">
+            {slots}
+          </div>
+          <div className="wood-shelf h-6 bg-cover bg-center" style={{ backgroundImage: "url('/public/lovable-uploads/97c95e61-9910-43f5-a443-02a2f05ef00b.png')" }}></div>
         </div>
       );
     }
@@ -46,10 +48,10 @@ const BookshelfGrid: React.FC = () => {
   
   return (
     <div 
-      className="bookshelf-wrapper p-4 md:p-8"
+      className="bookshelf-wrapper p-4 md:p-8 overflow-x-auto"
       style={{ transform: `scale(${zoomLevel})` }}
     >
-      <div className="bookshelf-container flex flex-col bg-wood-texture bg-cover rounded-md p-4 shadow-lg">
+      <div className="bookshelf-container flex flex-col items-center bg-wood-texture bg-cover rounded-md p-4 shadow-lg min-w-max">
         {renderGrid()}
       </div>
     </div>

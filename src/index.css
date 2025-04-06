@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -79,7 +78,7 @@
 
 @layer components {
   .book-slot {
-    @apply relative w-24 h-36 md:w-28 md:h-44 bg-bookshelf-empty border-2 border-bookshelf-slotBorder rounded-md flex items-center justify-center cursor-pointer transition-all;
+    @apply relative w-20 h-32 sm:w-24 sm:h-36 md:w-28 md:h-44 xl:w-32 xl:h-52 bg-bookshelf-empty border-2 border-bookshelf-slotBorder rounded-md flex items-center justify-center cursor-pointer transition-all mx-1;
   }
   
   .book-slot.empty {
@@ -92,19 +91,22 @@
   }
   
   .book {
-    @apply w-[90%] h-[90%] rounded-sm bg-bookshelf-wood flex flex-col items-center justify-center text-white text-xs font-bold text-center cursor-grab z-10 animate-book-added bg-cover bg-center bg-no-repeat shadow-md;
+    @apply w-[90%] h-[90%] rounded-sm animate-book-added;
   }
   
   .progress-bar {
     @apply absolute bottom-0 left-0 h-1 bg-green-500;
   }
   
-  .shelf {
-    @apply relative w-full h-5 bg-bookshelf-shelf shadow-md;
+  .wood-shelf {
+    @apply relative w-full shadow-md;
   }
   
-  .shelf::after {
-    content: "";
-    @apply absolute top-0 left-0 w-full h-full bg-wood-texture bg-cover opacity-70;
+  .bookshelf-wrapper {
+    @apply max-w-full;
+  }
+  
+  .bookshelf-container {
+    @apply w-max mx-auto;
   }
 }

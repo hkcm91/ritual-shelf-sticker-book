@@ -46,7 +46,6 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
       <div 
         ref={ref}
         className="w-full h-full cursor-move"
-        onClick={(e) => e.stopPropagation()}
         onMouseDown={handleStickerMouseDown}
         style={isLottie ? stickerStyle : {
           backgroundImage: `url(${book.coverURL})`,

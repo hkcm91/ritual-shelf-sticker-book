@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { storageService } from '../services/storageService';
+import { storageService } from '../services/storage/storageService';
 import { toast } from 'sonner';
 import UrlDialog from './UrlDialog';
 import { useBookshelfStore } from '../store/bookshelfStore';

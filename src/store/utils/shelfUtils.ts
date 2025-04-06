@@ -1,7 +1,6 @@
-
 import { ShelfData } from '../types';
 import { BooksSlice } from '../booksSlice';
-import { storageService } from '../../services/storageService';
+import { storageService } from '../../services/storage/storageService';
 
 /**
  * Updates shelf data in storage

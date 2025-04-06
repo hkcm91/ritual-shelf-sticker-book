@@ -10,7 +10,8 @@ const Book: React.FC<BookProps> = ({ data }) => {
   const { openModal, setDraggedBook } = useBookshelfStore();
   
   const handleDragStart = (e: React.DragEvent) => {
-    e.dataTransfer.setData('text/plain', data.id);
+    e.dataTransfer.setData('bookId', data.id);
+    e.dataTransfer.effectAllowed = 'move';
     setDraggedBook(data.id);
   };
   

@@ -36,9 +36,9 @@ const initialState = loadInitialState();
 
 // Create and export the store with all slices
 export const useBookshelfStore = create<BookshelfState>((set, get) => ({
-  ...createBooksSlice(set, get),
-  ...createShelvesSlice(set, get),
-  ...createUISlice(set, get),
+  ...createBooksSlice(set, get, initialState),
+  ...createShelvesSlice(set, get, initialState),
+  ...createUISlice(set, get, initialState),
   
   // Set initial state
   books: initialState.books,

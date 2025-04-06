@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, Book as BookIcon } from 'lucide-react';
+import { Search, Book as BookIcon, Plus } from 'lucide-react';
 import { searchBooks, getCoverImageUrl, OpenLibraryBook } from '@/services/openLibraryService';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 import { toast } from 'sonner';
@@ -13,7 +13,7 @@ const BookSearchDrawer = () => {
   const [query, setQuery] = useState('');
   const [searchResults, setSearchResults] = useState<OpenLibraryBook[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const { activeShelfId } = useBookshelfStore();
+  const { activeShelfId, addBook } = useBookshelfStore();
 
   const handleSearch = async () => {
     if (!query.trim()) return;
@@ -36,23 +36,22 @@ const BookSearchDrawer = () => {
     }
   };
 
-  const handleDragStart = (e: React.DragEvent, book: OpenLibraryBook) => {
-    // Create the drag data
-    const bookData = {
+  const handleAddBook = (book: OpenLibraryBook) => {
+    // Find first empty slot
+    const newBookId = addBook({
       title: book.title,
       author: book.author_name ? book.author_name[0] : 'Unknown Author',
       coverURL: getCoverImageUrl(book.cover_i, 'M'),
+      progress: 0,
+      rating: 0,
+      position: -1, // The store will find an empty slot
       shelfId: activeShelfId,
-      searchBook: true // Flag to identify this is from search
-    };
+      series: book.series && book.series[0] ? book.series[0] : '',
+    });
     
-    // Set the drag data
-    e.dataTransfer.setData('application/json', JSON.stringify(bookData));
-    
-    // Set a drag image preview
-    const img = new Image();
-    img.src = getCoverImageUrl(book.cover_i, 'S');
-    e.dataTransfer.setDragImage(img, 0, 0);
+    toast.success(`"${book.title}" added to shelf!`);
+    // Optionally close the drawer after adding
+    // setOpen(false);
   };
 
   return (
@@ -98,9 +97,7 @@ const BookSearchDrawer = () => {
             {searchResults.map((book) => (
               <div
                 key={book.key}
-                className="border rounded-md p-2 flex flex-col cursor-grab relative"
-                draggable
-                onDragStart={(e) => handleDragStart(e, book)}
+                className="border rounded-md p-2 flex flex-col relative group"
               >
                 <div className="relative pt-[140%] mb-2 bg-muted rounded">
                   <img
@@ -111,6 +108,14 @@ const BookSearchDrawer = () => {
                       (e.target as HTMLImageElement).src = '/placeholder.svg';
                     }}
                   />
+                  <Button 
+                    size="icon"
+                    variant="secondary"
+                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => handleAddBook(book)}
+                  >
+                    <Plus size={16} />
+                  </Button>
                 </div>
                 <h3 className="font-medium text-sm line-clamp-2" title={book.title}>
                   {book.title}
@@ -119,7 +124,7 @@ const BookSearchDrawer = () => {
                   {book.author_name ? book.author_name[0] : 'Unknown'}
                   {book.first_publish_year && ` (${book.first_publish_year})`}
                 </p>
-                <div className="absolute top-1.5 right-1.5 bg-background/80 rounded-full p-1">
+                <div className="absolute top-1.5 left-1.5 bg-background/80 rounded-full p-1">
                   <BookIcon size={14} className="text-muted-foreground" />
                 </div>
               </div>
@@ -127,8 +132,8 @@ const BookSearchDrawer = () => {
           </div>
           
           {!isSearching && searchResults.length > 0 && (
-            <div className="text-center text-sm text-muted-foreground">
-              Drag a book to an empty shelf slot to add it to your collection
+            <div className="text-center text-sm text-muted-foreground mt-4">
+              Click the + button on any book to add it to your bookshelf
             </div>
           )}
         </div>

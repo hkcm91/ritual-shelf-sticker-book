@@ -51,6 +51,7 @@ type BookshelfState = {
   addColumn: () => void;
   removeColumn: () => void;
   setZoom: (level: number) => void;
+  findEmptyPosition: (shelfId: string) => number;
 };
 
 // Store
@@ -63,13 +64,49 @@ export const useBookshelfStore = create<BookshelfState>((set, get) => ({
   draggedBook: null,
   zoomLevel: 1,
   
+  // Find empty position
+  findEmptyPosition: (shelfId: string) => {
+    const { books, shelves } = get();
+    const shelf = shelves[shelfId];
+    if (!shelf) return -1;
+    
+    const maxPositions = shelf.rows * shelf.columns;
+    const occupiedPositions = new Set(
+      Object.values(books)
+        .filter(book => book.shelfId === shelfId)
+        .map(book => book.position)
+    );
+    
+    // Find the first available position
+    for (let i = 0; i < maxPositions; i++) {
+      if (!occupiedPositions.has(i)) {
+        return i;
+      }
+    }
+    
+    return -1; // No positions available
+  },
+  
   // Book operations
   addBook: (bookData) => {
     const id = uuidv4();
+    const { findEmptyPosition } = get();
+    
+    // If position is -1, find an empty slot
+    const position = bookData.position === -1 ? 
+      findEmptyPosition(bookData.shelfId) : 
+      bookData.position;
+    
+    if (position === -1) {
+      // No empty slots found
+      toast?.error("No empty slots on this shelf!");
+      return "";
+    }
+    
     set((state) => ({
       books: {
         ...state.books,
-        [id]: { ...bookData, id }
+        [id]: { ...bookData, id, position }
       }
     }));
     return id;

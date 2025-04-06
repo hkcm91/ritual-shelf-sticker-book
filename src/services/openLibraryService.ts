@@ -7,6 +7,7 @@ export type OpenLibraryBook = {
   author_name?: string[];
   cover_i?: number;
   first_publish_year?: number;
+  series?: string[];
 };
 
 export type OpenLibraryResponse = {
@@ -25,7 +26,7 @@ export const searchBooks = async (query: string): Promise<OpenLibraryBook[]> => 
       params: {
         q: query,
         limit: 20,
-        fields: 'key,title,author_name,cover_i,first_publish_year'
+        fields: 'key,title,author_name,cover_i,first_publish_year,series'
       }
     });
     

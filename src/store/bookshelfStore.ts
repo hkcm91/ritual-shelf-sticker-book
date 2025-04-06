@@ -1,22 +1,25 @@
 
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { v4 as uuidv4 } from 'uuid';
 
+// Types
 export type BookData = {
   id: string;
   title: string;
   author: string;
-  series?: string;
   coverURL: string;
+  series?: string;
   progress: number;
   rating: number;
+  position: number;
+  shelfId: string;
   characters?: string;
   plot?: string;
-  shelfId: string;
-  position: number;
+  notes?: string;
+  quizzes?: {question: string, answer: string}[];
 };
 
-export type Shelf = {
+export type ShelfData = {
   id: string;
   name: string;
   rows: number;
@@ -25,290 +28,280 @@ export type Shelf = {
 
 type BookshelfState = {
   books: Record<string, BookData>;
-  shelves: Record<string, Shelf>;
+  shelves: Record<string, ShelfData>;
   activeShelfId: string;
-  activeBookId: string | null;
-  zoomLevel: number;
   isModalOpen: boolean;
-  getDraggedBook: () => BookData | null;
-  setDraggedBook: (id: string | null) => void;
-  
-  // Books actions
-  addBook: (book: Omit<BookData, 'id'>) => string;
-  updateBook: (id: string, data: Partial<BookData>) => void;
+  activeBookId: string | null;
+  draggedBook: string | null;
+  zoomLevel: number;
+  addBook: (bookData: Omit<BookData, 'id'>) => string;
+  updateBook: (id: string, data: Partial<Omit<BookData, 'id'>>) => void;
   deleteBook: (id: string) => void;
-  moveBook: (id: string, newPosition: number) => void;
-  
-  // Shelf actions
-  addShelf: (name: string) => string;
-  updateShelf: (id: string, data: Partial<Shelf>) => void;
+  addShelf: (shelfData: Omit<ShelfData, 'id'>) => string;
+  updateShelf: (id: string, data: Partial<Omit<ShelfData, 'id'>>) => void;
   deleteShelf: (id: string) => void;
-  switchShelf: (id: string) => void;
+  setActiveShelf: (id: string) => void;
+  openModal: (bookId: string) => void;
+  closeModal: () => void;
+  setDraggedBook: (bookId: string | null) => void;
+  getDraggedBook: () => BookData | null;
   addRow: () => void;
   removeRow: () => void;
   addColumn: () => void;
   removeColumn: () => void;
-  
-  // Modal
-  openModal: (bookId: string | null) => void;
-  closeModal: () => void;
-  
-  // Zoom
   setZoom: (level: number) => void;
 };
 
-export const useBookshelfStore = create<BookshelfState>()(
-  persist(
-    (set, get) => {
-      // Helper to generate IDs
-      const generateId = () => Math.random().toString(36).substring(2, 9);
-      let draggedBookId: string | null = null;
+// Store
+export const useBookshelfStore = create<BookshelfState>((set, get) => ({
+  books: {},
+  shelves: {},
+  activeShelfId: '',
+  isModalOpen: false,
+  activeBookId: null,
+  draggedBook: null,
+  zoomLevel: 1,
+  
+  // Book operations
+  addBook: (bookData) => {
+    const id = uuidv4();
+    set((state) => ({
+      books: {
+        ...state.books,
+        [id]: { ...bookData, id }
+      }
+    }));
+    return id;
+  },
+  
+  updateBook: (id, data) => {
+    set((state) => ({
+      books: {
+        ...state.books,
+        [id]: { ...state.books[id], ...data }
+      }
+    }));
+  },
+  
+  deleteBook: (id) => {
+    set((state) => {
+      const { [id]: removed, ...remaining } = state.books;
+      return { books: remaining };
+    });
+  },
+  
+  // Shelf operations
+  addShelf: (shelfData) => {
+    const id = uuidv4();
+    set((state) => ({
+      shelves: {
+        ...state.shelves,
+        [id]: { ...shelfData, id }
+      },
+      activeShelfId: id
+    }));
+    return id;
+  },
+  
+  updateShelf: (id, data) => {
+    set((state) => ({
+      shelves: {
+        ...state.shelves,
+        [id]: { ...state.shelves[id], ...data }
+      }
+    }));
+  },
+  
+  deleteShelf: (id) => {
+    set((state) => {
+      if (Object.keys(state.shelves).length <= 1) return state;
       
-      return {
-        books: {},
-        shelves: {},
-        activeShelfId: '',
-        activeBookId: null,
-        zoomLevel: 1,
-        isModalOpen: false,
-        
-        getDraggedBook: () => {
-          if (!draggedBookId) return null;
-          return get().books[draggedBookId] || null;
-        },
-        
-        setDraggedBook: (id) => {
-          draggedBookId = id;
-        },
-        
-        // Books actions
-        addBook: (bookData) => {
-          const id = generateId();
-          const { activeShelfId, books } = get();
-          
-          // Find next available position
-          const shelfBooks = Object.values(books).filter(b => b.shelfId === activeShelfId);
-          const maxPosition = shelfBooks.length > 0 
-            ? Math.max(...shelfBooks.map(b => b.position)) 
-            : -1;
-          const newPosition = maxPosition + 1;
-          
-          const newBook = {
-            ...bookData,
-            id,
-            position: newPosition,
-            shelfId: activeShelfId,
-          };
-          
-          set((state) => ({
-            books: {
-              ...state.books,
-              [id]: newBook,
-            },
-          }));
-          
-          return id;
-        },
-        
-        updateBook: (id, data) => {
-          set((state) => ({
-            books: {
-              ...state.books,
-              [id]: {
-                ...state.books[id],
-                ...data,
-              },
-            },
-          }));
-        },
-        
-        deleteBook: (id) => {
-          set((state) => {
-            const { [id]: deletedBook, ...remainingBooks } = state.books;
-            return { books: remainingBooks };
-          });
-        },
-        
-        moveBook: (id, newPosition) => {
-          const { books, activeShelfId } = get();
-          const book = books[id];
-          
-          if (!book) return;
-          
-          // Update the moved book's position
-          set((state) => ({
-            books: {
-              ...state.books,
-              [id]: {
-                ...book,
-                position: newPosition,
-              },
-            },
-          }));
-        },
-        
-        // Shelf actions
-        addShelf: (name) => {
-          const id = generateId();
-          const newShelf: Shelf = {
-            id,
-            name,
-            rows: 3,
-            columns: 6,
-          };
-          
-          set((state) => ({
-            shelves: {
-              ...state.shelves,
-              [id]: newShelf,
-            },
-            activeShelfId: id,
-          }));
-          
-          return id;
-        },
-        
-        updateShelf: (id, data) => {
-          set((state) => ({
-            shelves: {
-              ...state.shelves,
-              [id]: {
-                ...state.shelves[id],
-                ...data,
-              },
-            },
-          }));
-        },
-        
-        deleteShelf: (id) => {
-          set((state) => {
-            const { [id]: deletedShelf, ...remainingShelves } = state.shelves;
-            
-            // If deleting the active shelf, switch to another shelf
-            let nextActiveId = state.activeShelfId;
-            if (id === state.activeShelfId) {
-              const shelfIds = Object.keys(remainingShelves);
-              nextActiveId = shelfIds.length > 0 ? shelfIds[0] : '';
-            }
-            
-            // Also delete books in this shelf
-            const updatedBooks = { ...state.books };
-            Object.keys(updatedBooks).forEach(bookId => {
-              if (updatedBooks[bookId].shelfId === id) {
-                delete updatedBooks[bookId];
-              }
-            });
-            
-            return { 
-              shelves: remainingShelves,
-              activeShelfId: nextActiveId,
-              books: updatedBooks
-            };
-          });
-        },
-        
-        switchShelf: (id) => {
-          set({ activeShelfId: id });
-        },
-        
-        addRow: () => {
-          const { activeShelfId, shelves } = get();
-          const shelf = shelves[activeShelfId];
-          
-          if (shelf) {
-            set((state) => ({
-              shelves: {
-                ...state.shelves,
-                [activeShelfId]: {
-                  ...shelf,
-                  rows: shelf.rows + 1,
-                },
-              },
-            }));
-          }
-        },
-        
-        removeRow: () => {
-          const { activeShelfId, shelves } = get();
-          const shelf = shelves[activeShelfId];
-          
-          if (shelf && shelf.rows > 1) {
-            set((state) => ({
-              shelves: {
-                ...state.shelves,
-                [activeShelfId]: {
-                  ...shelf,
-                  rows: shelf.rows - 1,
-                },
-              },
-            }));
-          }
-        },
-        
-        addColumn: () => {
-          const { activeShelfId, shelves } = get();
-          const shelf = shelves[activeShelfId];
-          
-          if (shelf) {
-            set((state) => ({
-              shelves: {
-                ...state.shelves,
-                [activeShelfId]: {
-                  ...shelf,
-                  columns: shelf.columns + 1,
-                },
-              },
-            }));
-          }
-        },
-        
-        removeColumn: () => {
-          const { activeShelfId, shelves } = get();
-          const shelf = shelves[activeShelfId];
-          
-          if (shelf && shelf.columns > 1) {
-            set((state) => ({
-              shelves: {
-                ...state.shelves,
-                [activeShelfId]: {
-                  ...shelf,
-                  columns: shelf.columns - 1,
-                },
-              },
-            }));
-          }
-        },
-        
-        // Modal
-        openModal: (bookId) => {
-          set({ isModalOpen: true, activeBookId: bookId });
-        },
-        
-        closeModal: () => {
-          set({ isModalOpen: false, activeBookId: null });
-        },
-        
-        // Zoom
-        setZoom: (level) => {
-          set({ zoomLevel: level });
-        },
+      const { [id]: removed, ...remainingShelves } = state.shelves;
+      
+      // Delete books on this shelf
+      const updatedBooks = { ...state.books };
+      Object.keys(updatedBooks).forEach(bookId => {
+        if (updatedBooks[bookId].shelfId === id) {
+          delete updatedBooks[bookId];
+        }
+      });
+      
+      // Set new active shelf
+      const newActiveId = Object.keys(remainingShelves)[0];
+      
+      return { 
+        shelves: remainingShelves,
+        books: updatedBooks,
+        activeShelfId: newActiveId
       };
-    },
-    {
-      name: 'ritual-bookshelf-storage',
+    });
+  },
+  
+  setActiveShelf: (id) => {
+    set({ activeShelfId: id });
+  },
+  
+  // UI operations
+  openModal: (bookId) => {
+    set({ isModalOpen: true, activeBookId: bookId });
+  },
+  
+  closeModal: () => {
+    set({ isModalOpen: false, activeBookId: null });
+  },
+  
+  // Drag and drop
+  setDraggedBook: (bookId) => {
+    set({ draggedBook: bookId });
+  },
+  
+  getDraggedBook: () => {
+    const { draggedBook, books } = get();
+    return draggedBook ? books[draggedBook] : null;
+  },
+  
+  // Grid operations
+  addRow: () => {
+    const { activeShelfId, shelves } = get();
+    if (!activeShelfId) return;
+    
+    const shelf = shelves[activeShelfId];
+    set({
+      shelves: {
+        ...shelves,
+        [activeShelfId]: {
+          ...shelf,
+          rows: shelf.rows + 1
+        }
+      }
+    });
+  },
+  
+  removeRow: () => {
+    const { activeShelfId, shelves, books } = get();
+    if (!activeShelfId) return;
+    
+    const shelf = shelves[activeShelfId];
+    if (shelf.rows <= 1) return;
+    
+    // Calculate which positions will be removed
+    const lastRowPositions = [];
+    for (let i = 0; i < shelf.columns; i++) {
+      lastRowPositions.push((shelf.rows - 1) * shelf.columns + i);
     }
-  )
-);
+    
+    // Check and remove books in the last row
+    const updatedBooks = { ...books };
+    Object.keys(updatedBooks).forEach(bookId => {
+      const book = updatedBooks[bookId];
+      if (book.shelfId === activeShelfId && lastRowPositions.includes(book.position)) {
+        delete updatedBooks[bookId];
+      }
+    });
+    
+    set({
+      shelves: {
+        ...shelves,
+        [activeShelfId]: {
+          ...shelf,
+          rows: shelf.rows - 1
+        }
+      },
+      books: updatedBooks
+    });
+  },
+  
+  addColumn: () => {
+    const { activeShelfId, shelves, books } = get();
+    if (!activeShelfId) return;
+    
+    const shelf = shelves[activeShelfId];
+    const newColumns = shelf.columns + 1;
+    
+    // Adjust book positions for the new column layout
+    const updatedBooks = { ...books };
+    Object.keys(updatedBooks).forEach(bookId => {
+      const book = updatedBooks[bookId];
+      if (book.shelfId === activeShelfId) {
+        const currentRow = Math.floor(book.position / shelf.columns);
+        const currentCol = book.position % shelf.columns;
+        const newPosition = currentRow * newColumns + currentCol;
+        updatedBooks[bookId] = { ...book, position: newPosition };
+      }
+    });
+    
+    set({
+      shelves: {
+        ...shelves,
+        [activeShelfId]: {
+          ...shelf,
+          columns: newColumns
+        }
+      },
+      books: updatedBooks
+    });
+  },
+  
+  removeColumn: () => {
+    const { activeShelfId, shelves, books } = get();
+    if (!activeShelfId) return;
+    
+    const shelf = shelves[activeShelfId];
+    if (shelf.columns <= 1) return;
+    
+    const newColumns = shelf.columns - 1;
+    
+    // Find books in the last column of each row
+    const lastColumnPositions = [];
+    for (let row = 0; row < shelf.rows; row++) {
+      lastColumnPositions.push(row * shelf.columns + (shelf.columns - 1));
+    }
+    
+    // Remove books in the last column and adjust positions for remaining
+    const updatedBooks = { ...books };
+    Object.keys(updatedBooks).forEach(bookId => {
+      const book = updatedBooks[bookId];
+      if (book.shelfId === activeShelfId) {
+        if (lastColumnPositions.includes(book.position)) {
+          delete updatedBooks[bookId];
+        } else {
+          const currentRow = Math.floor(book.position / shelf.columns);
+          const currentCol = book.position % shelf.columns;
+          const newPosition = currentRow * newColumns + currentCol;
+          updatedBooks[bookId] = { ...book, position: newPosition };
+        }
+      }
+    });
+    
+    set({
+      shelves: {
+        ...shelves,
+        [activeShelfId]: {
+          ...shelf,
+          columns: newColumns
+        }
+      },
+      books: updatedBooks
+    });
+  },
+  
+  setZoom: (level) => {
+    set({ zoomLevel: level });
+  }
+}));
 
-// Initialize a default shelf if none exists
+// Helper to initialize a default shelf if none exists
 export const initializeDefaultShelf = () => {
   const { shelves, addShelf } = useBookshelfStore.getState();
   
   if (Object.keys(shelves).length === 0) {
-    const id = addShelf('My First Shelf');
-    useBookshelfStore.setState({ activeShelfId: id });
-    return id;
+    const defaultShelfId = addShelf({
+      name: 'My First Shelf',
+      rows: 2,
+      columns: 4
+    });
+    return defaultShelfId;
   }
   
-  return Object.keys(shelves)[0];
+  return null;
 };

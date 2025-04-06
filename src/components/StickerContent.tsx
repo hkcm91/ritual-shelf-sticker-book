@@ -33,11 +33,15 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
     let isLottie = false;
     let animationData = null;
     
-    if (typeof book.coverURL === 'string' && book.coverURL.startsWith('{')) {
+    if (typeof book.coverURL === 'string') {
+      // Try to parse as JSON first to check if it's a Lottie animation
       try {
-        animationData = JSON.parse(book.coverURL);
-        isLottie = true;
+        if (book.coverURL.startsWith('{') || book.coverURL.trim().startsWith('{')) {
+          animationData = JSON.parse(book.coverURL);
+          isLottie = Boolean(animationData && (animationData.v !== undefined || animationData.animations));
+        }
       } catch (e) {
+        console.log("Not a valid JSON:", e);
         isLottie = false;
       }
     }

@@ -1,4 +1,3 @@
-
 import { StateCreator } from 'zustand';
 import { ShelfData } from '../types';
 import { BooksSlice } from '../booksSlice';
@@ -50,13 +49,19 @@ export const createShelfLayoutSlice: StateCreator<
       const shelf = shelves[activeShelfId];
       if (shelf.rows <= 1) return;
       
-      // Find books in the last row
-      const booksToRemove = getBooksInLastRow(activeShelfId, shelf, books);
+      // Find books in the last row - but we won't delete them
+      const booksInLastRow = getBooksInLastRow(activeShelfId, shelf, books);
       
-      // Remove books in the last row
+      // Just mark books in the last row as invisible - don't delete them
       const updatedBooks = { ...books };
-      booksToRemove.forEach(bookId => {
-        delete updatedBooks[bookId];
+      booksInLastRow.forEach(bookId => {
+        updatedBooks[bookId] = {
+          ...updatedBooks[bookId],
+          // Store the original position in a field so we can restore it later if needed
+          originalPosition: updatedBooks[bookId].position,
+          // Mark as hidden but keep in storage
+          hidden: true
+        };
       });
       
       set((state) => {
@@ -102,6 +107,24 @@ export const createShelfLayoutSlice: StateCreator<
         };
       });
       
+      // Check for hidden books that might become visible again
+      Object.keys(updatedBooks).forEach(bookId => {
+        const book = updatedBooks[bookId];
+        if (book.shelfId === activeShelfId && book.hidden) {
+          // Calculate if this book would now be visible in the new layout
+          const originalRow = Math.floor(book.originalPosition / shelf.columns);
+          if (originalRow < shelf.rows) {
+            // This book can be visible again
+            delete updatedBooks[bookId].hidden;
+            // Calculate new position based on original position
+            const originalCol = book.originalPosition % shelf.columns;
+            if (originalCol < newColumns) {
+              updatedBooks[bookId].position = originalRow * newColumns + originalCol;
+            }
+          }
+        }
+      });
+      
       set((state) => {
         const updatedShelves = {
           ...state.shelves,
@@ -130,29 +153,43 @@ export const createShelfLayoutSlice: StateCreator<
       
       const newColumns = shelf.columns - 1;
       
-      // Find books in the last column
-      const booksToRemove = getBooksInLastColumn(activeShelfId, shelf, books);
+      // Find books in the last column - but we won't delete them
+      const booksInLastColumn = getBooksInLastColumn(activeShelfId, shelf, books);
       
-      // Remove books in the last column and recalculate positions for remaining
+      // Mark books in last column as hidden but preserve them
       const updatedBooks = { ...books };
       
-      // First remove books in the last column
-      booksToRemove.forEach(bookId => {
-        delete updatedBooks[bookId];
+      // First mark books in the last column as hidden
+      booksInLastColumn.forEach(bookId => {
+        updatedBooks[bookId] = {
+          ...updatedBooks[bookId],
+          // Store the original position
+          originalPosition: updatedBooks[bookId].position,
+          // Mark as hidden but keep in storage
+          hidden: true
+        };
       });
       
-      // Update positions for remaining books
-      const remainingBooks = Object.keys(updatedBooks)
-        .filter(bookId => updatedBooks[bookId].shelfId === activeShelfId);
+      // Update positions for remaining visible books
+      const remainingVisibleBooks = Object.keys(updatedBooks)
+        .filter(bookId => 
+          updatedBooks[bookId].shelfId === activeShelfId && 
+          !updatedBooks[bookId].hidden &&
+          !booksInLastColumn.includes(bookId)
+        );
       
-      remainingBooks.forEach(bookId => {
+      remainingVisibleBooks.forEach(bookId => {
         const book = updatedBooks[bookId];
         const currentRow = Math.floor(book.position / shelf.columns);
         const currentCol = book.position % shelf.columns;
-        updatedBooks[bookId] = {
-          ...book,
-          position: currentRow * newColumns + currentCol
-        };
+        
+        // Only reposition if the column is valid in the new layout
+        if (currentCol < newColumns) {
+          updatedBooks[bookId] = {
+            ...book,
+            position: currentRow * newColumns + currentCol
+          };
+        }
       });
       
       set((state) => {

@@ -18,6 +18,8 @@ export type BookData = {
   quizzes?: {question: string, answer: string}[];
   isSticker?: boolean;
   opacity?: number;
+  hidden?: boolean;
+  originalPosition?: number;
 };
 
 export type ShelfData = {

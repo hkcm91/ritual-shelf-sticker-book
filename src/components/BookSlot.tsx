@@ -45,6 +45,13 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     }
   };
 
+  // Special handler for the empty slot click, separate from toggle clicks
+  const handleEmptySlotClick = () => {
+    if (!book) {
+      handleClick();
+    }
+  };
+
   // Render book content based on type
   const renderBookContent = () => {
     if (!book) return null;
@@ -82,14 +89,14 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
         className={`book-slot relative h-[220px] w-[150px] mx-1 rounded-sm
           ${!book ? 'hover:bg-gray-50/10' : 'hover:border hover:border-primary/30'}
           transition-colors duration-200 cursor-pointer`}
-        onClick={handleClick}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
         onMouseMove={handleStickerMouseMove}
         onMouseUp={handleStickerMouseUp}
       >
         {!book && (
-          <div className="absolute top-0 left-0 right-0 z-10 flex justify-center py-1">
+          <div className="absolute top-0 left-0 right-0 z-10 flex justify-center py-1"
+               onClick={(e) => e.stopPropagation()}>
             <ToggleGroup 
               type="single" 
               value={slotType} 
@@ -113,6 +120,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
             fileInputRef={fileInputRef} 
             onFileSelect={handleFileChange} 
             slotType={slotType}
+            onClick={handleEmptySlotClick}
           />
         )}
       </div>

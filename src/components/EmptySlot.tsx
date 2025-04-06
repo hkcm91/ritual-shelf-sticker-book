@@ -7,9 +7,15 @@ type EmptySlotProps = {
   fileInputRef: React.RefObject<HTMLInputElement>;
   onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
   slotType?: "book" | "sticker";
+  onClick?: () => void;
 };
 
-const EmptySlot: React.FC<EmptySlotProps> = ({ fileInputRef, onFileSelect, slotType = "book" }) => {
+const EmptySlot: React.FC<EmptySlotProps> = ({ 
+  fileInputRef, 
+  onFileSelect, 
+  slotType = "book",
+  onClick 
+}) => {
   // Set accept attribute based on slot type
   const acceptAttr = slotType === "book" 
     ? "image/*" 
@@ -30,7 +36,10 @@ const EmptySlot: React.FC<EmptySlotProps> = ({ fileInputRef, onFileSelect, slotT
   
   return (
     <>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
+      <div 
+        className="absolute inset-0 flex flex-col items-center justify-center"
+        onClick={onClick}
+      >
         <span className="text-5xl text-gray-300/20">+</span>
       </div>
       <input

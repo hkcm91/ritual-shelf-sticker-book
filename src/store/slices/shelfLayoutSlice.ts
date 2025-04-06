@@ -42,10 +42,9 @@ export const createShelfLayoutSlice: StateCreator<
             updatedBooks[bookId] = {
               ...book,
               position: book.originalPosition,
-              hidden: false
+              hidden: false,
+              // Keep originalPosition in case we need to hide it again
             };
-            // Remove the originalPosition field after restoring
-            delete updatedBooks[bookId].originalPosition;
           }
         }
       });
@@ -85,7 +84,7 @@ export const createShelfLayoutSlice: StateCreator<
         updatedBooks[bookId] = {
           ...updatedBooks[bookId],
           // Store the original position in a field so we can restore it later if needed
-          originalPosition: updatedBooks[bookId].position,
+          originalPosition: updatedBooks[bookId].originalPosition || updatedBooks[bookId].position,
           // Mark as hidden but keep in storage
           hidden: true
         };
@@ -129,18 +128,13 @@ export const createShelfLayoutSlice: StateCreator<
           
           // Only restore if the book's original row is still visible and the column is now visible
           if (originalRow < shelf.rows && originalCol < newColumns) {
-            // Calculate the new position that preserves the book's location
-            const newPosition = originalRow * newColumns + originalCol;
-            
-            // Restore the book to its proper location
+            // Restore the book to its original position
             updatedBooks[bookId] = {
               ...book,
-              position: newPosition,
-              hidden: false
+              position: book.originalPosition,
+              hidden: false,
+              // Keep originalPosition for future reference
             };
-            
-            // Remove the originalPosition field after restoring
-            delete updatedBooks[bookId].originalPosition;
           }
         }
       });
@@ -183,8 +177,8 @@ export const createShelfLayoutSlice: StateCreator<
       booksInLastColumn.forEach(bookId => {
         updatedBooks[bookId] = {
           ...updatedBooks[bookId],
-          // Store the original position
-          originalPosition: updatedBooks[bookId].position,
+          // Store the original position if not already stored
+          originalPosition: updatedBooks[bookId].originalPosition || updatedBooks[bookId].position,
           // Mark as hidden but keep in storage
           hidden: true
         };

@@ -4,6 +4,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'sonner';
 import { ShelfData } from './types';
 import { BooksSlice } from './booksSlice';
+import { saveShelvesToStorage, saveActiveShelfToStorage } from './utils/shelfUtils';
+import { ShelfStylesSlice, createShelfStylesSlice } from './slices/shelfStylesSlice';
+import { ShelfLayoutSlice, createShelfLayoutSlice } from './slices/shelfLayoutSlice';
 
 export interface ShelvesSlice {
   shelves: Record<string, ShelfData>;
@@ -13,20 +16,16 @@ export interface ShelvesSlice {
   deleteShelf: (id: string) => void;
   setActiveShelf: (id: string) => void;
   switchShelf: (id: string) => void;
-  addRow: () => void;
-  removeRow: () => void;
-  addColumn: () => void;
-  removeColumn: () => void;
-  setShelfBackground: (id: string, backgroundImage: string) => void;
-  setShelfTexture: (id: string, textureImage: string) => void;
-  resetShelfStyle: (id: string) => void;
 }
 
+// Extend ShelvesSlice with layout and styles slices
+export type CompleteShelvesSlice = ShelvesSlice & ShelfLayoutSlice & ShelfStylesSlice;
+
 export const createShelvesSlice: StateCreator<
-  ShelvesSlice & BooksSlice,
+  CompleteShelvesSlice & BooksSlice,
   [],
   [],
-  ShelvesSlice
+  CompleteShelvesSlice
 > = (set, get, store) => {
   // Initialize with default or stored state
   const initialShelves = typeof window !== 'undefined' ? 
@@ -34,7 +33,8 @@ export const createShelvesSlice: StateCreator<
   const initialActiveShelf = typeof window !== 'undefined' ? 
     localStorage.getItem('ritual-bookshelf-active-shelf') || '' : '';
 
-  return {
+  // Create the core shelves slice
+  const coreSlice: ShelvesSlice = {
     shelves: initialShelves,
     activeShelfId: initialActiveShelf,
     
@@ -47,8 +47,8 @@ export const createShelvesSlice: StateCreator<
         };
         
         // Save to localStorage
-        localStorage.setItem('ritual-bookshelf-shelves', JSON.stringify(updatedShelves));
-        localStorage.setItem('ritual-bookshelf-active-shelf', id);
+        saveShelvesToStorage(updatedShelves);
+        saveActiveShelfToStorage(id);
         
         return {
           shelves: updatedShelves,
@@ -66,7 +66,7 @@ export const createShelvesSlice: StateCreator<
         };
         
         // Save to localStorage
-        localStorage.setItem('ritual-bookshelf-shelves', JSON.stringify(updatedShelves));
+        saveShelvesToStorage(updatedShelves);
         
         return { shelves: updatedShelves };
       });
@@ -90,9 +90,9 @@ export const createShelvesSlice: StateCreator<
         const newActiveId = Object.keys(remainingShelves)[0];
         
         // Save to localStorage
-        localStorage.setItem('ritual-bookshelf-shelves', JSON.stringify(remainingShelves));
+        saveShelvesToStorage(remainingShelves);
         localStorage.setItem('ritual-bookshelf-books', JSON.stringify(updatedBooks));
-        localStorage.setItem('ritual-bookshelf-active-shelf', newActiveId);
+        saveActiveShelfToStorage(newActiveId);
         
         return { 
           shelves: remainingShelves,
@@ -104,225 +104,19 @@ export const createShelvesSlice: StateCreator<
     
     setActiveShelf: (id) => {
       set({ activeShelfId: id });
-      localStorage.setItem('ritual-bookshelf-active-shelf', id);
+      saveActiveShelfToStorage(id);
     },
     
     switchShelf: (id) => {
       set({ activeShelfId: id });
-      localStorage.setItem('ritual-bookshelf-active-shelf', id);
-    },
-    
-    addRow: () => {
-      const { activeShelfId, shelves } = get();
-      if (!activeShelfId) return;
-      
-      const shelf = shelves[activeShelfId];
-      set((state) => {
-        const updatedShelves = {
-          ...state.shelves,
-          [activeShelfId]: {
-            ...shelf,
-            rows: shelf.rows + 1
-          }
-        };
-        
-        localStorage.setItem('ritual-bookshelf-shelves', JSON.stringify(updatedShelves));
-        
-        return { shelves: updatedShelves };
-      });
-    },
-    
-    removeRow: () => {
-      const { activeShelfId, shelves, books } = get();
-      if (!activeShelfId) return;
-      
-      const shelf = shelves[activeShelfId];
-      if (shelf.rows <= 1) return;
-      
-      // Calculate which positions will be removed
-      const lastRowPositions = [];
-      for (let i = 0; i < shelf.columns; i++) {
-        lastRowPositions.push((shelf.rows - 1) * shelf.columns + i);
-      }
-      
-      // Check and remove books in the last row
-      const updatedBooks = { ...books };
-      Object.keys(updatedBooks).forEach(bookId => {
-        const book = updatedBooks[bookId];
-        if (book.shelfId === activeShelfId && lastRowPositions.includes(book.position)) {
-          delete updatedBooks[bookId];
-        }
-      });
-      
-      set((state) => {
-        const updatedShelves = {
-          ...state.shelves,
-          [activeShelfId]: {
-            ...shelf,
-            rows: shelf.rows - 1
-          }
-        };
-        
-        localStorage.setItem('ritual-bookshelf-shelves', JSON.stringify(updatedShelves));
-        localStorage.setItem('ritual-bookshelf-books', JSON.stringify(updatedBooks));
-        
-        return {
-          shelves: updatedShelves,
-          books: updatedBooks
-        };
-      });
-    },
-    
-    addColumn: () => {
-      const { activeShelfId, shelves, books } = get();
-      if (!activeShelfId) return;
-      
-      const shelf = shelves[activeShelfId];
-      const newColumns = shelf.columns + 1;
-      
-      // Adjust book positions for the new column layout
-      const updatedBooks = { ...books };
-      Object.keys(updatedBooks).forEach(bookId => {
-        const book = updatedBooks[bookId];
-        if (book.shelfId === activeShelfId) {
-          const currentRow = Math.floor(book.position / shelf.columns);
-          const currentCol = book.position % shelf.columns;
-          const newPosition = currentRow * newColumns + currentCol;
-          updatedBooks[bookId] = { ...book, position: newPosition };
-        }
-      });
-      
-      set((state) => {
-        const updatedShelves = {
-          ...state.shelves,
-          [activeShelfId]: {
-            ...shelf,
-            columns: newColumns
-          }
-        };
-        
-        localStorage.setItem('ritual-bookshelf-shelves', JSON.stringify(updatedShelves));
-        localStorage.setItem('ritual-bookshelf-books', JSON.stringify(updatedBooks));
-        
-        return {
-          shelves: updatedShelves,
-          books: updatedBooks
-        };
-      });
-    },
-    
-    removeColumn: () => {
-      const { activeShelfId, shelves, books } = get();
-      if (!activeShelfId) return;
-      
-      const shelf = shelves[activeShelfId];
-      if (shelf.columns <= 1) return;
-      
-      const newColumns = shelf.columns - 1;
-      
-      // Find books in the last column of each row
-      const lastColumnPositions = [];
-      for (let row = 0; row < shelf.rows; row++) {
-        lastColumnPositions.push(row * shelf.columns + (shelf.columns - 1));
-      }
-      
-      // Remove books in the last column and adjust positions for remaining
-      const updatedBooks = { ...books };
-      Object.keys(updatedBooks).forEach(bookId => {
-        const book = updatedBooks[bookId];
-        if (book.shelfId === activeShelfId) {
-          if (lastColumnPositions.includes(book.position)) {
-            delete updatedBooks[bookId];
-          } else {
-            const currentRow = Math.floor(book.position / shelf.columns);
-            const currentCol = book.position % shelf.columns;
-            const newPosition = currentRow * newColumns + currentCol;
-            updatedBooks[bookId] = { ...book, position: newPosition };
-          }
-        }
-      });
-      
-      set((state) => {
-        const updatedShelves = {
-          ...state.shelves,
-          [activeShelfId]: {
-            ...shelf,
-            columns: newColumns
-          }
-        };
-        
-        localStorage.setItem('ritual-bookshelf-shelves', JSON.stringify(updatedShelves));
-        localStorage.setItem('ritual-bookshelf-books', JSON.stringify(updatedBooks));
-        
-        return {
-          shelves: updatedShelves,
-          books: updatedBooks
-        };
-      });
-    },
-    
-    setShelfBackground: (id, backgroundImage) => {
-      set((state) => {
-        const updatedShelves = {
-          ...state.shelves,
-          [id]: { 
-            ...state.shelves[id], 
-            backgroundImage 
-          }
-        };
-        
-        // Save to localStorage
-        localStorage.setItem('ritual-bookshelf-shelves', JSON.stringify(updatedShelves));
-        
-        return { shelves: updatedShelves };
-      });
-      
-      toast.success('Background updated');
-    },
-    
-    setShelfTexture: (id, textureImage) => {
-      set((state) => {
-        const updatedShelves = {
-          ...state.shelves,
-          [id]: { 
-            ...state.shelves[id], 
-            textureImage 
-          }
-        };
-        
-        // Save to localStorage
-        localStorage.setItem('ritual-bookshelf-shelves', JSON.stringify(updatedShelves));
-        
-        return { shelves: updatedShelves };
-      });
-      
-      toast.success('Shelf texture updated');
-    },
-    
-    resetShelfStyle: (id) => {
-      set((state) => {
-        const { 
-          backgroundImage, 
-          backgroundColor, 
-          backgroundOpacity, 
-          textureImage, 
-          shelfColor, 
-          shelfOpacity, 
-          ...restShelfData 
-        } = state.shelves[id];
-        
-        const updatedShelves = {
-          ...state.shelves,
-          [id]: restShelfData
-        };
-        
-        // Save to localStorage
-        localStorage.setItem('ritual-bookshelf-shelves', JSON.stringify(updatedShelves));
-        
-        return { shelves: updatedShelves };
-      });
-      
-      toast.success('Shelf style reset to default');
+      saveActiveShelfToStorage(id);
     }
+  };
+  
+  // Combine with layout and styles slices
+  return {
+    ...coreSlice,
+    ...createShelfLayoutSlice(set, get, store),
+    ...createShelfStylesSlice(set, get, store)
   };
 };

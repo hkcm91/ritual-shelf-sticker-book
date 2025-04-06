@@ -2,12 +2,12 @@
 import { create } from 'zustand';
 import { toast } from 'sonner';
 import { BooksSlice, createBooksSlice } from './booksSlice';
-import { ShelvesSlice, createShelvesSlice } from './shelvesSlice';
+import { CompleteShelvesSlice, createShelvesSlice } from './shelvesSlice';
 import { UISlice, createUISlice } from './uiSlice';
 import { BookData, ShelfData } from './types';
 
 // Define the complete store type
-export type BookshelfState = BooksSlice & ShelvesSlice & UISlice & {
+export type BookshelfState = BooksSlice & CompleteShelvesSlice & UISlice & {
   findEmptyPosition: (shelfId: string) => number;
 };
 

@@ -9,6 +9,14 @@ import EmptySlot from './EmptySlot';
 import { useBookSlot } from '../hooks/useBookSlot';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { BookOpen, Sticker } from "lucide-react";
+import { 
+  ContextMenu,
+  ContextMenuTrigger,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator
+} from "@/components/ui/context-menu";
+import { RotateCcw, RotateCw, RefreshCw, Trash2 } from "lucide-react";
 
 type BookSlotProps = {
   position: number;
@@ -59,26 +67,50 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     
     if (book.isSticker) {
       return (
-        <Popover>
-          <PopoverTrigger asChild>
-            <StickerContent 
-              book={book}
-              scale={scale}
-              position2D={position2D}
-              rotation={rotation}
-              handleStickerMouseDown={handleStickerMouseDown}
-              isAltDrag={isAltDrag}
-            />
-          </PopoverTrigger>
-          <SlotControls 
-            scale={scale}
-            onScaleChange={handleScaleChange}
-            onRotate={handleRotate}
-            onResetTransform={handleResetTransform}
-            onShowDeleteDialog={() => setShowDeleteDialog(true)}
-            isLottie={typeof book.coverURL === 'string' && book.coverURL.startsWith('{')}
-          />
-        </Popover>
+        <ContextMenu>
+          <ContextMenuTrigger>
+            <Popover>
+              <PopoverTrigger asChild>
+                <StickerContent 
+                  book={book}
+                  scale={scale}
+                  position2D={position2D}
+                  rotation={rotation}
+                  handleStickerMouseDown={handleStickerMouseDown}
+                  isAltDrag={isAltDrag}
+                />
+              </PopoverTrigger>
+              <SlotControls 
+                scale={scale}
+                onScaleChange={handleScaleChange}
+                onRotate={handleRotate}
+                onResetTransform={handleResetTransform}
+                onShowDeleteDialog={() => setShowDeleteDialog(true)}
+                isLottie={typeof book.coverURL === 'string' && book.coverURL.startsWith('{')}
+              />
+            </Popover>
+          </ContextMenuTrigger>
+          <ContextMenuContent className="w-48">
+            <ContextMenuItem onClick={() => handleRotate('ccw')}>
+              <RotateCcw className="mr-2 h-4 w-4" />
+              <span>Rotate Left</span>
+            </ContextMenuItem>
+            <ContextMenuItem onClick={() => handleRotate('cw')}>
+              <RotateCw className="mr-2 h-4 w-4" />
+              <span>Rotate Right</span>
+            </ContextMenuItem>
+            <ContextMenuSeparator />
+            <ContextMenuItem onClick={handleResetTransform}>
+              <RefreshCw className="mr-2 h-4 w-4" />
+              <span>Reset</span>
+            </ContextMenuItem>
+            <ContextMenuSeparator />
+            <ContextMenuItem onClick={() => setShowDeleteDialog(true)} className="text-red-500">
+              <Trash2 className="mr-2 h-4 w-4" />
+              <span>Delete</span>
+            </ContextMenuItem>
+          </ContextMenuContent>
+        </ContextMenu>
       );
     } else {
       return <Book data={book} />;

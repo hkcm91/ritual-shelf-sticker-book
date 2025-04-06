@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import { useTransformControls } from './useTransformControls';
 import { useDragAndDrop } from './useDragAndDrop';
@@ -13,6 +13,7 @@ type UseBookSlotProps = {
 
 export const useBookSlot = ({ position, slotType = "book" }: UseBookSlotProps) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
+  const [isAltKeyPressed, setIsAltKeyPressed] = useState<boolean>(false);
   const { books, activeShelfId, deleteBook } = useBookshelfStore();
   
   // Get the book from the store
@@ -38,6 +39,29 @@ export const useBookSlot = ({ position, slotType = "book" }: UseBookSlotProps) =
     handleFileChange,
     handleClick: handleFileClick
   } = useFileHandler({ position, slotType });
+  
+  // Listen for Alt key press/release
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Alt') {
+        setIsAltKeyPressed(true);
+      }
+    };
+    
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === 'Alt') {
+        setIsAltKeyPressed(false);
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
   
   // Use the drag and drop hook
   const {
@@ -94,6 +118,6 @@ export const useBookSlot = ({ position, slotType = "book" }: UseBookSlotProps) =
     handleScaleChange,
     handleResetTransform,
     handleDeleteSticker,
-    isAltDrag: isDragging && Boolean(document.querySelector('key === "Alt"'))
+    isAltDrag: isDragging && isAltKeyPressed
   };
 };

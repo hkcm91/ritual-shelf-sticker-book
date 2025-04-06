@@ -1,6 +1,6 @@
-
 import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
+import { toast } from 'sonner';
 
 // Types
 export type BookData = {
@@ -99,7 +99,7 @@ export const useBookshelfStore = create<BookshelfState>((set, get) => ({
     
     if (position === -1) {
       // No empty slots found
-      toast?.error("No empty slots on this shelf!");
+      toast.error("No empty slots on this shelf!");
       return "";
     }
     

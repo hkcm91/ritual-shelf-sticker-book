@@ -8,9 +8,10 @@ import { toast } from 'sonner';
 
 type UseBookSlotProps = {
   position: number;
+  slotType?: "book" | "sticker";
 };
 
-export const useBookSlot = ({ position }: UseBookSlotProps) => {
+export const useBookSlot = ({ position, slotType = "book" }: UseBookSlotProps) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
   const { books, activeShelfId, deleteBook } = useBookshelfStore();
   
@@ -40,7 +41,7 @@ export const useBookSlot = ({ position }: UseBookSlotProps) => {
     fileInputRef,
     handleFileChange,
     handleClick: handleFileClick
-  } = useFileHandler({ position });
+  } = useFileHandler({ position, slotType });
   
   // Use the drag and drop hook
   const {
@@ -56,7 +57,8 @@ export const useBookSlot = ({ position }: UseBookSlotProps) => {
     dragStart,
     setDragStart,
     setPosition2D,
-    book
+    book,
+    slotType
   });
   
   // Handle deletion

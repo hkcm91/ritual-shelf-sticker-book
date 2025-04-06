@@ -11,6 +11,7 @@ type UseDragAndDropProps = {
   setDragStart: (value: { x: number, y: number }) => void;
   setPosition2D: (value: { x: number, y: number }) => void;
   book: any;
+  slotType?: "book" | "sticker";
 };
 
 export const useDragAndDrop = ({
@@ -20,7 +21,8 @@ export const useDragAndDrop = ({
   dragStart,
   setDragStart,
   setPosition2D,
-  book
+  book,
+  slotType = "book"
 }: UseDragAndDropProps) => {
   const { activeShelfId, updateBook, getDraggedBook, addBook, openModal } = useBookshelfStore();
   
@@ -88,10 +90,14 @@ export const useDragAndDrop = ({
               rating: 0,
               position,
               shelfId: activeShelfId,
-              isSticker: false
+              isSticker: slotType === "sticker"
             });
             
-            openModal(newBookId);
+            if (slotType === "book") {
+              openModal(newBookId);
+            } else {
+              toast.success('Sticker added successfully');
+            }
           }
         };
         reader.readAsDataURL(file);

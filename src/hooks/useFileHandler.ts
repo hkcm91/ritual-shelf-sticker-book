@@ -5,9 +5,10 @@ import { toast } from 'sonner';
 
 type UseFileHandlerProps = {
   position: number;
+  slotType?: "book" | "sticker";
 };
 
-export const useFileHandler = ({ position }: UseFileHandlerProps) => {
+export const useFileHandler = ({ position, slotType = "book" }: UseFileHandlerProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { activeShelfId, addBook, openModal } = useBookshelfStore();
   
@@ -27,11 +28,13 @@ export const useFileHandler = ({ position }: UseFileHandlerProps) => {
             rating: 0,
             position,
             shelfId: activeShelfId,
-            isSticker: false
+            isSticker: slotType === "sticker"
           });
           
-          if (newBookId) {
+          if (newBookId && slotType === "book") {
             openModal(newBookId);
+          } else if (newBookId) {
+            toast.success('Sticker added successfully');
           }
         }
       };

@@ -286,7 +286,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
                       onClick={() => clearImage(updateContainerBackgroundImage)}
                       disabled={!container.backgroundImage}
                     >
-                      <CircleX className="mr-1 h-4 w-4" /> Clear
+                      <XCircle className="mr-1 h-4 w-4" /> Clear
                     </Button>
                     
                     <input
@@ -415,7 +415,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
                       onClick={() => clearImage(updateShelfBackgroundImage)}
                       disabled={!shelves.backgroundImage}
                     >
-                      <CircleX className="mr-1 h-4 w-4" /> Clear
+                      <XCircle className="mr-1 h-4 w-4" /> Clear
                     </Button>
                     
                     <input
@@ -631,7 +631,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
                       onClick={() => clearImage((url) => updateHeaderSetting('backgroundImage', url))}
                       disabled={!header.backgroundImage}
                     >
-                      <CircleX className="mr-1 h-4 w-4" /> Clear
+                      <XCircle className="mr-1 h-4 w-4" /> Clear
                     </Button>
                     
                     <input

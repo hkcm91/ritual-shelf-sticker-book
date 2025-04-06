@@ -2,6 +2,7 @@
 import React from 'react';
 import BookSlot from '../BookSlot';
 import { useBookshelfStore } from '../../store/bookshelfStore';
+import { ShelfData } from '../../store/types';
 
 type ShelfRowProps = {
   rowIndex: number;
@@ -10,17 +11,21 @@ type ShelfRowProps = {
 
 const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
   const { activeShelfId, shelves } = useBookshelfStore();
+  const shelvesData = shelves as Record<string, ShelfData>;
+  const shelf = shelvesData[activeShelfId];
+  const customization = shelves as any;
   
   // Generate slots for this row
   const renderSlots = () => {
     const slots = [];
-    const { dividers } = shelves;
+    
+    const dividers = customization.dividers || { enabled: false, booksPerSection: 6 };
     
     for (let col = 0; col < columns; col++) {
       const position = rowIndex * columns + col;
       
       // Add divider if needed
-      if (dividers?.enabled && col > 0 && col % dividers.booksPerSection === 0) {
+      if (dividers.enabled && col > 0 && col % dividers.booksPerSection === 0) {
         slots.push(
           <div 
             key={`divider-${rowIndex}-${col}`}

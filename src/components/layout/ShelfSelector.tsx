@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PlusCircle, Edit2 } from "lucide-react";
 import { useBookshelfStore } from '../../store/bookshelfStore';
+import { ShelfData } from '../../store/types';
 
 type ShelfSelectorProps = {
-  currentShelf: any;
+  currentShelf: ShelfData | null;
   setIsRenameModalOpen: (open: boolean) => void;
   setRenameValue: (value: string) => void;
   setIsNewShelfModalOpen: (open: boolean) => void;
@@ -20,6 +21,7 @@ const ShelfSelector: React.FC<ShelfSelectorProps> = ({
   setIsNewShelfModalOpen
 }) => {
   const { shelves, activeShelfId, switchShelf } = useBookshelfStore();
+  const shelvesData = shelves as Record<string, ShelfData>;
   
   return (
     <>
@@ -35,7 +37,7 @@ const ShelfSelector: React.FC<ShelfSelectorProps> = ({
               <SelectValue placeholder="Select a shelf..." />
             </SelectTrigger>
             <SelectContent>
-              {Object.values(shelves).map((shelf) => (
+              {Object.values(shelvesData).map((shelf) => (
                 <SelectItem key={shelf.id} value={shelf.id}>
                   {shelf.name}
                 </SelectItem>

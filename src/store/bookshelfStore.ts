@@ -22,7 +22,8 @@ export const useBookshelfStore = create<BookshelfState>()((set, get, api) => ({
   // Utility function to find empty position
   findEmptyPosition: (shelfId: string) => {
     const { books, shelves } = get();
-    const shelf = shelves[shelfId];
+    const shelvesData = shelves as Record<string, ShelfData>;
+    const shelf = shelvesData[shelfId];
     if (!shelf) return -1;
     
     const maxPositions = shelf.rows * shelf.columns;
@@ -49,8 +50,9 @@ export type { BookData, ShelfData } from './types';
 // Helper to initialize a default shelf if none exists
 export const initializeDefaultShelf = () => {
   const { shelves, addShelf } = useBookshelfStore.getState();
+  const shelvesData = shelves as Record<string, ShelfData>;
   
-  if (Object.keys(shelves).length === 0) {
+  if (Object.keys(shelvesData).length === 0) {
     const defaultShelfId = addShelf({
       name: 'My First Shelf',
       rows: 2,

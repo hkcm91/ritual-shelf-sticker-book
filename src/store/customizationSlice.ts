@@ -50,7 +50,7 @@ export interface CustomizationState {
     backgroundImage: string;
     textColor: string;
   };
-  // UI state
+  // UI state for customization
   ui: {
     isCustomizationModalOpen: boolean;
   };
@@ -139,7 +139,7 @@ const defaultCustomization = {
   },
   header: {
     background: '#a47148',
-    backgroundImage: '/lovable-uploads/b613332c-c1a6-46ce-bd9f-6643f75a811a.png',
+    backgroundImage: '',
     textColor: '#ffffff',
   },
   ui: {
@@ -199,37 +199,54 @@ export const createCustomizationSlice: StateCreator<
   })),
   
   // Shelf settings
-  updateShelfThickness: (thickness: number) => set((state) => ({ 
-    shelves: { ...state.shelves, thickness } 
-  })),
+  updateShelfThickness: (thickness: number) => set((state) => {
+    const customShelves = { ...state.shelves };
+    if ('thickness' in customShelves) {
+      customShelves.thickness = thickness;
+    }
+    return { shelves: customShelves };
+  }),
   
-  updateShelfColor: (color: string) => set((state) => ({ 
-    shelves: { ...state.shelves, color } 
-  })),
+  updateShelfColor: (color: string) => set((state) => {
+    const customShelves = { ...state.shelves };
+    if ('color' in customShelves) {
+      customShelves.color = color;
+    }
+    return { shelves: customShelves };
+  }),
   
-  updateShelfBackgroundImage: (url: string) => set((state) => ({ 
-    shelves: { ...state.shelves, backgroundImage: url } 
-  })),
+  updateShelfBackgroundImage: (url: string) => set((state) => {
+    const customShelves = { ...state.shelves };
+    if ('backgroundImage' in customShelves) {
+      customShelves.backgroundImage = url;
+    }
+    return { shelves: customShelves };
+  }),
   
-  updateShelfOpacity: (opacity: number) => set((state) => ({ 
-    shelves: { ...state.shelves, opacity } 
-  })),
+  updateShelfOpacity: (opacity: number) => set((state) => {
+    const customShelves = { ...state.shelves };
+    if ('opacity' in customShelves) {
+      customShelves.opacity = opacity;
+    }
+    return { shelves: customShelves };
+  }),
   
   // Divider settings
-  toggleDividers: (enabled: boolean) => set((state) => ({ 
-    shelves: { 
-      ...state.shelves, 
-      dividers: { ...state.shelves.dividers, enabled } 
-    } 
-  })),
+  toggleDividers: (enabled: boolean) => set((state) => {
+    const customShelves = { ...state.shelves };
+    if ('dividers' in customShelves) {
+      customShelves.dividers = { ...customShelves.dividers, enabled };
+    }
+    return { shelves: customShelves };
+  }),
   
-  updateDividersSetting: (property: 'booksPerSection' | 'thickness' | 'color', value: any) => 
-    set((state) => ({ 
-      shelves: { 
-        ...state.shelves, 
-        dividers: { ...state.shelves.dividers, [property]: value } 
-      } 
-    })),
+  updateDividersSetting: (property: 'booksPerSection' | 'thickness' | 'color', value: any) => set((state) => {
+    const customShelves = { ...state.shelves };
+    if ('dividers' in customShelves) {
+      customShelves.dividers = { ...customShelves.dividers, [property]: value };
+    }
+    return { shelves: customShelves };
+  }),
   
   // Slots settings
   updateSlotSetting: (
@@ -253,13 +270,16 @@ export const createCustomizationSlice: StateCreator<
   saveCustomization: () => {
     try {
       const state = get();
-      const { ui, ...settings } = {
-        page: state.page,
-        container: state.container,
-        shelves: state.shelves,
-        slots: state.slots,
-        header: state.header
+      const { page, container, slots, header } = state;
+      const shelves = {
+        thickness: state.shelves.thickness,
+        color: state.shelves.color,
+        backgroundImage: state.shelves.backgroundImage,
+        opacity: state.shelves.opacity,
+        dividers: state.shelves.dividers
       };
+      
+      const settings = { page, container, shelves, slots, header };
       localStorage.setItem('ritual-shelf-customization', JSON.stringify(settings));
       toast.success('Customization settings saved');
     } catch (error) {
@@ -274,14 +294,26 @@ export const createCustomizationSlice: StateCreator<
       const savedSettings = localStorage.getItem('ritual-shelf-customization');
       if (savedSettings) {
         const parsed = JSON.parse(savedSettings);
-        set((state) => ({
-          ...state,
-          page: parsed.page || state.page,
-          container: parsed.container || state.container,
-          shelves: parsed.shelves || state.shelves,
-          slots: parsed.slots || state.slots,
-          header: parsed.header || state.header
-        }));
+        
+        set((state) => {
+          // Create a properly structured state update
+          const customShelves = { ...state.shelves };
+          if (parsed.shelves) {
+            if ('thickness' in parsed.shelves) customShelves.thickness = parsed.shelves.thickness;
+            if ('color' in parsed.shelves) customShelves.color = parsed.shelves.color;
+            if ('backgroundImage' in parsed.shelves) customShelves.backgroundImage = parsed.shelves.backgroundImage;
+            if ('opacity' in parsed.shelves) customShelves.opacity = parsed.shelves.opacity;
+            if ('dividers' in parsed.shelves) customShelves.dividers = parsed.shelves.dividers;
+          }
+          
+          return {
+            page: parsed.page || state.page,
+            container: parsed.container || state.container,
+            shelves: customShelves,
+            slots: parsed.slots || state.slots,
+            header: parsed.header || state.header
+          };
+        });
       }
     } catch (error) {
       console.error('Error loading customization settings:', error);
@@ -290,15 +322,25 @@ export const createCustomizationSlice: StateCreator<
   
   // Reset to default settings
   resetCustomization: () => {
-    const state = get();
-    set((state) => ({
-      ...state,
-      page: defaultCustomization.page,
-      container: defaultCustomization.container,
-      shelves: defaultCustomization.shelves,
-      slots: defaultCustomization.slots,
-      header: defaultCustomization.header
-    }));
+    set((state) => {
+      const customShelves = {
+        ...state.shelves,
+        thickness: defaultCustomization.shelves.thickness,
+        color: defaultCustomization.shelves.color,
+        backgroundImage: defaultCustomization.shelves.backgroundImage,
+        opacity: defaultCustomization.shelves.opacity,
+        dividers: defaultCustomization.shelves.dividers
+      };
+      
+      return {
+        page: defaultCustomization.page,
+        container: defaultCustomization.container,
+        shelves: customShelves,
+        slots: defaultCustomization.slots,
+        header: defaultCustomization.header
+      };
+    });
+    
     localStorage.removeItem('ritual-shelf-customization');
     toast.success('Customization settings reset to defaults');
   }

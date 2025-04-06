@@ -8,9 +8,10 @@ import ShelfControls from '../ShelfControls';
 import BookSearchDrawer from '../BookSearchDrawer';
 import { useBookshelfStore } from '../../store/bookshelfStore';
 import CustomizationModal from '../customization/CustomizationModal';
+import { ShelfData } from '../../store/types';
 
 type HeaderProps = {
-  currentShelf: any;
+  currentShelf: ShelfData | null;
   setIsNewShelfModalOpen: (open: boolean) => void;
   setIsRenameModalOpen: (open: boolean) => void;
   setRenameValue: (value: string) => void;
@@ -24,7 +25,7 @@ const Header: React.FC<HeaderProps> = ({
   setRenameValue,
   setShowBgImageDialog
 }) => {
-  const { ui, openCustomizationModal } = useBookshelfStore();
+  const { ui, openCustomizationModal, closeCustomizationModal } = useBookshelfStore();
   
   return (
     <header className="shadow-md sticky top-0 z-30 px-4 py-3">
@@ -55,12 +56,12 @@ const Header: React.FC<HeaderProps> = ({
       </div>
       
       <CustomizationModal 
-        open={ui.isCustomizationModalOpen} 
+        open={ui?.isCustomizationModalOpen || false} 
         onOpenChange={(open) => {
           if (open) {
             openCustomizationModal();
           } else {
-            useBookshelfStore.getState().closeCustomizationModal();
+            closeCustomizationModal();
           }
         }} 
       />

@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import Header from '../components/layout/Header';
 import ShelfDialogs from '../components/shelf/ShelfDialogs';
 import BackgroundSettings from '../components/settings/BackgroundSettings';
+import { ShelfData } from '../store/types';
 
 const Index = () => {
   const { shelves, activeShelfId } = useBookshelfStore();
@@ -49,7 +50,8 @@ const Index = () => {
     }
   }, []);
 
-  const currentShelf = shelves[activeShelfId];
+  const shelvesData = shelves as Record<string, ShelfData>;
+  const currentShelf = activeShelfId ? shelvesData[activeShelfId] : null;
   
   return (
     <div className="min-h-screen flex flex-col">

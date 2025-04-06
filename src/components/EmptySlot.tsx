@@ -37,7 +37,7 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
   return (
     <>
       <div 
-        className="absolute inset-0 flex flex-col items-center justify-center"
+        className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer"
         onClick={onClick}
       >
         <span className="text-5xl text-gray-300/20">+</span>

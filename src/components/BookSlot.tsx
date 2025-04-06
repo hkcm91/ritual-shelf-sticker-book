@@ -56,7 +56,10 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   };
 
   // Special handler for the empty slot click, separate from toggle clicks
-  const handleEmptySlotClick = () => {
+  const handleEmptySlotClick = (e: React.MouseEvent) => {
+    // Stop propagation to prevent other handlers from firing
+    e.stopPropagation();
+    
     if (!book) {
       handleClick();
     }

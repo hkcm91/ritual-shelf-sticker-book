@@ -3,7 +3,7 @@ import React from 'react';
 
 type EmptySlotProps = {
   fileInputRef: React.RefObject<HTMLInputElement>;
-  onFileSelect?: () => void;
+  onFileSelect?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 const EmptySlot: React.FC<EmptySlotProps> = ({ fileInputRef, onFileSelect }) => {

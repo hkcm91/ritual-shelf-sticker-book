@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Book, Sticker } from "lucide-react";
+import { Circle } from "lucide-react";
 
 type SlotTypeToggleProps = {
   slotType: "book" | "sticker";
@@ -21,7 +21,7 @@ const SlotTypeToggle: React.FC<SlotTypeToggleProps> = ({
         type="single" 
         value={slotType} 
         onValueChange={handleTypeToggle}
-        className="flex space-x-1 pointer-events-auto"
+        className="flex space-x-2 pointer-events-auto"
       >
         <ToggleGroupItem 
           value="book" 

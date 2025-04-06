@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import BookCover from './book-modal/BookCover';
 import BookModalTabs from './book-modal/BookModalTabs';
 import BookModalFooter from './book-modal/BookModalFooter';
@@ -18,6 +18,7 @@ const BookModal: React.FC = () => {
     characters: '',
     plot: '',
     notes: '',
+    coverURL: '',
     quizzes: [] as {question: string, answer: string}[]
   });
   
@@ -32,7 +33,8 @@ const BookModal: React.FC = () => {
         characters, 
         plot, 
         notes, 
-        quizzes 
+        quizzes,
+        coverURL
       } = books[activeBookId];
       
       setBookData({
@@ -44,6 +46,7 @@ const BookModal: React.FC = () => {
         characters: characters || '',
         plot: plot || '',
         notes: notes || '',
+        coverURL: coverURL || '',
         quizzes: quizzes || []
       });
     } else {
@@ -57,6 +60,7 @@ const BookModal: React.FC = () => {
         characters: '',
         plot: '',
         notes: '',
+        coverURL: '',
         quizzes: []
       });
     }
@@ -67,6 +71,13 @@ const BookModal: React.FC = () => {
     setBookData((prev) => ({
       ...prev,
       [name]: name === 'progress' ? Math.min(100, Math.max(0, parseInt(value) || 0)) : value,
+    }));
+  };
+  
+  const handleCoverChange = (imageUrl: string) => {
+    setBookData(prev => ({
+      ...prev,
+      coverURL: imageUrl
     }));
   };
   
@@ -87,8 +98,6 @@ const BookModal: React.FC = () => {
   const setRating = (rating: number) => {
     setBookData((prev) => ({ ...prev, rating }));
   };
-  
-  const book = activeBookId ? books[activeBookId] : null;
   
   // Quiz handlers
   const addEmptyQuiz = () => {
@@ -125,9 +134,15 @@ const BookModal: React.FC = () => {
           <DialogTitle>
             {activeBookId && books[activeBookId]?.title ? 'Edit Book' : 'Add New Book'}
           </DialogTitle>
+          <DialogDescription>
+            Fill in the details about your book below.
+          </DialogDescription>
         </DialogHeader>
         
-        <BookCover coverURL={book?.coverURL} />
+        <BookCover 
+          coverURL={bookData.coverURL} 
+          onCoverChange={handleCoverChange}
+        />
         
         <BookModalTabs 
           bookData={bookData}

@@ -30,7 +30,35 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
     ? "image/*" 
     : "image/*,application/json";
   
-  // Handle the file input change
+  // Handle click on empty slot
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent event bubbling
+    
+    if (slotType === "book") {
+      // For book slots, open the modal directly
+      const newBookId = addBook({
+        title: '',
+        author: '',
+        coverURL: '', // Empty cover to be updated later
+        progress: 0,
+        rating: 0,
+        position,
+        shelfId: activeShelfId,
+        isSticker: false
+      });
+      
+      if (newBookId) {
+        openModal(newBookId);
+      } else {
+        toast.error('Failed to create new book');
+      }
+    } else {
+      // For stickers, show the URL dialog
+      setShowUrlDialog(true);
+    }
+  };
+  
+  // Handle the file input change (this will be called from the Book Modal)
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const stats = storageService.getUsageStats();
     
@@ -39,63 +67,7 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
       toast.warning(`Storage is ${stats.percent}% full. Consider removing unused items.`);
     }
     
-    // For book slots, create a temporary book and open the modal
-    if (slotType === "book" && e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      
-      if (!file.type.startsWith('image/')) {
-        toast.error('Only image files are supported for books');
-        return;
-      }
-      
-      const reader = new FileReader();
-      reader.onload = async (event) => {
-        if (typeof event.target?.result === 'string') {
-          try {
-            // Create a temporary book and open the modal for editing
-            const newBookId = addBook({
-              title: '',
-              author: '',
-              coverURL: event.target.result,
-              progress: 0,
-              rating: 0,
-              position,
-              shelfId: activeShelfId,
-              isSticker: false
-            });
-            
-            if (newBookId) {
-              // Open modal for book editing immediately
-              openModal(newBookId);
-            } else {
-              toast.error('Failed to add book');
-            }
-          } catch (error) {
-            console.error('Error adding book:', error);
-            toast.error('Failed to save to localStorage. Try using smaller images or clearing some space.');
-          }
-        }
-      };
-      reader.readAsDataURL(file);
-    } else {
-      // Continue with normal file selection for stickers
-      onFileSelect(e);
-    }
-  };
-  
-  // Handle the click event
-  const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent event bubbling
-    
-    if (slotType === "sticker") {
-      // For stickers, show the URL dialog
-      setShowUrlDialog(true);
-    } else {
-      // For books, trigger the file input click
-      if (onClick) {
-        onClick();
-      }
-    }
+    onFileSelect(e);
   };
   
   // Handle URL submission for stickers

@@ -110,14 +110,14 @@
   
   /* Style for the toggle group */
   .slot-toggle-dot {
-    @apply h-2 w-2 p-0 rounded-full;
-    @apply bg-gray-200/60 border border-gray-400/60;
-    @apply hover:bg-gray-300/80 hover:border-gray-500/80;
+    @apply h-3 w-3 p-0 rounded-full;
+    @apply bg-gray-200/40 border border-gray-300/40;
+    @apply hover:bg-gray-300/60 hover:border-gray-400/60;
     @apply transition-colors duration-200;
   }
   
   .slot-toggle-dot[data-state="on"] {
-    @apply bg-gray-500/80 border-gray-600/90;
+    @apply bg-gray-400/60 border-gray-500/60;
   }
   
   @keyframes book-added {

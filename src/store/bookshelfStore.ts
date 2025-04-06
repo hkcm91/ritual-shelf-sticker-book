@@ -41,6 +41,7 @@ type BookshelfState = {
   updateShelf: (id: string, data: Partial<Omit<ShelfData, 'id'>>) => void;
   deleteShelf: (id: string) => void;
   setActiveShelf: (id: string) => void;
+  switchShelf: (id: string) => void;
   openModal: (bookId: string) => void;
   closeModal: () => void;
   setDraggedBook: (bookId: string | null) => void;
@@ -138,6 +139,11 @@ export const useBookshelfStore = create<BookshelfState>((set, get) => ({
   },
   
   setActiveShelf: (id) => {
+    set({ activeShelfId: id });
+  },
+  
+  // Added the switchShelf method that was missing
+  switchShelf: (id) => {
     set({ activeShelfId: id });
   },
   

@@ -20,7 +20,11 @@ export function Header() {
 
   const handleAddShelf = () => {
     if (newShelfName.trim()) {
-      addShelf(newShelfName.trim());
+      addShelf({
+        name: newShelfName.trim(),
+        rows: 2,
+        columns: 4
+      });
       setNewShelfName("");
       setIsNewShelfModalOpen(false);
     }

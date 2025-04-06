@@ -84,7 +84,31 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
       return;
     }
     
-    // Handle book drop
+    // Handle book drop from search results
+    try {
+      const jsonData = e.dataTransfer.getData('application/json');
+      if (jsonData && !book) {
+        const bookData = JSON.parse(jsonData);
+        if (bookData.searchBook) {
+          const newBookId = addBook({
+            title: bookData.title || '',
+            author: bookData.author || '',
+            coverURL: bookData.coverURL || '',
+            progress: 0,
+            rating: 0,
+            position,
+            shelfId: activeShelfId,
+          });
+          
+          // Don't open the modal immediately as details are already provided
+          return;
+        }
+      }
+    } catch (error) {
+      console.error('Error processing drag data', error);
+    }
+    
+    // Handle internal book drop (from another slot)
     const draggedBook = getDraggedBook();
     if (draggedBook && !book) {
       const { updateBook } = useBookshelfStore.getState();

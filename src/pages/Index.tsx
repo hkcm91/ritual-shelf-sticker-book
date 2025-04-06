@@ -5,6 +5,7 @@ import Header from '../components/Header';
 import BookshelfGrid from '../components/BookshelfGrid';
 import BookModal from '../components/BookModal';
 import ShelfControls from '../components/ShelfControls';
+import BookSearchDrawer from '../components/BookSearchDrawer';
 import { toast } from 'sonner';
 
 const Index = () => {
@@ -22,8 +23,9 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       
-      <div className="px-4 py-3 sticky top-16 z-20 bg-background/90 backdrop-blur-sm border-b">
+      <div className="px-4 py-3 sticky top-16 z-20 bg-background/90 backdrop-blur-sm border-b flex items-center justify-between">
         <ShelfControls />
+        <BookSearchDrawer />
       </div>
       
       <div className="flex-grow w-full overflow-auto">

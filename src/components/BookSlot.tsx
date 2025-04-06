@@ -1,7 +1,7 @@
-
 import React, { useRef } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import Book from './Book';
+import { toast } from 'sonner';
 
 type BookSlotProps = {
   position: number;
@@ -18,7 +18,6 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     setDraggedBook 
   } = useBookshelfStore();
   
-  // Find if there's a book in this position on the active shelf
   const book = Object.values(books).find(
     (book) => book.shelfId === activeShelfId && book.position === position
   );
@@ -40,13 +39,11 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
           shelfId: activeShelfId,
         });
         
-        // Open modal to edit the new book's details
         openModal(newBookId);
       }
     };
     reader.readAsDataURL(file);
     
-    // Reset file input
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -54,12 +51,19 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
+    if (!book) {
+      e.currentTarget.classList.add('bg-primary-100', 'border-primary');
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.currentTarget.classList.remove('bg-primary-100', 'border-primary');
   };
   
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
+    e.currentTarget.classList.remove('bg-primary-100', 'border-primary');
     
-    // Handle file drop
     if (e.dataTransfer.files.length > 0 && !book) {
       const file = e.dataTransfer.files[0];
       if (file.type.startsWith('image/')) {
@@ -84,7 +88,6 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
       return;
     }
     
-    // Handle book drop from search results
     try {
       const jsonData = e.dataTransfer.getData('application/json');
       if (jsonData && !book) {
@@ -100,7 +103,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
             shelfId: activeShelfId,
           });
           
-          // Don't open the modal immediately as details are already provided
+          toast.success('Book added to shelf!');
           return;
         }
       }
@@ -108,7 +111,6 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
       console.error('Error processing drag data', error);
     }
     
-    // Handle internal book drop (from another slot)
     const draggedBook = getDraggedBook();
     if (draggedBook && !book) {
       const { updateBook } = useBookshelfStore.getState();
@@ -119,20 +121,27 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   
   return (
     <div 
-      className={`book-slot ${!book ? 'empty' : ''}`}
+      className={`book-slot relative h-[220px] w-[150px] mx-1 rounded-sm border-2 border-dashed 
+        border-gray-300 transition-colors duration-200 ${!book ? 'empty hover:border-primary/50' : 'border-transparent'}`}
       onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
       {book ? (
         <Book data={book} />
       ) : (
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          className="absolute inset-0 opacity-0 cursor-pointer"
-        />
+        <>
+          <div className="absolute inset-0 flex items-center justify-center opacity-30">
+            <span className="text-4xl">+</span>
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="absolute inset-0 opacity-0 cursor-pointer"
+          />
+        </>
       )}
     </div>
   );

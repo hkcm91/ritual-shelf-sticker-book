@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,13 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				bookshelf: {
+					wood: '#a47148',
+					shelf: '#8B5A2B',
+					slot: '#45CCCC',
+					slotBorder: '#2BAAAA',
+					empty: '#B0E9E9',
 				}
 			},
 			borderRadius: {
@@ -84,11 +92,19 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'book-added': {
+					'0%': { transform: 'scale(0.8)', opacity: '0' },
+					'100%': { transform: 'scale(1)', opacity: '1' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'book-added': 'book-added 0.3s ease-out'
+			},
+			backgroundImage: {
+				'wood-texture': "url('/public/lovable-uploads/b613332c-c1a6-46ce-bd9f-6643f75a811a.png')"
 			}
 		}
 	},

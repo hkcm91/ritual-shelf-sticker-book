@@ -1,12 +1,38 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import React, { useEffect } from 'react';
+import { useBookshelfStore, initializeDefaultShelf } from '../store/bookshelfStore';
+import Header from '../components/Header';
+import BookshelfGrid from '../components/BookshelfGrid';
+import BookModal from '../components/BookModal';
+import ShelfControls from '../components/ShelfControls';
+import { toast } from 'sonner';
 
 const Index = () => {
+  // Initialize the store
+  useEffect(() => {
+    const shelfId = initializeDefaultShelf();
+    if (shelfId) {
+      toast.success('Welcome to Ritual Bookshelf!', {
+        description: 'Upload book covers by clicking on the "+" slots or drag and drop images.',
+      });
+    }
+  }, []);
+  
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      
+      <div className="px-4 py-3 sticky top-16 z-10 bg-background/90 backdrop-blur-sm">
+        <ShelfControls />
       </div>
+      
+      <div className="flex-grow overflow-auto">
+        <div className="container mx-auto">
+          <BookshelfGrid />
+        </div>
+      </div>
+      
+      <BookModal />
     </div>
   );
 };

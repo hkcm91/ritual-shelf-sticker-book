@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { forwardRef } from 'react';
 import Lottie from 'lottie-react';
 
 type StickerContentProps = {
@@ -10,13 +10,14 @@ type StickerContentProps = {
   handleStickerMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
 };
 
-const StickerContent: React.FC<StickerContentProps> = ({
+// Using forwardRef to properly handle refs from PopoverTrigger
+const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
   book,
   scale,
   position2D,
   rotation,
   handleStickerMouseDown
-}) => {
+}, ref) => {
   if (!book) return null;
   
   try {
@@ -43,6 +44,7 @@ const StickerContent: React.FC<StickerContentProps> = ({
     
     return (
       <div 
+        ref={ref}
         className="w-full h-full cursor-move"
         onClick={(e) => e.stopPropagation()}
         onMouseDown={handleStickerMouseDown}
@@ -60,7 +62,11 @@ const StickerContent: React.FC<StickerContentProps> = ({
               animationData={animationData} 
               loop={true} 
               autoplay={true}
-              style={{ width: '100%', height: '100%' }}
+              style={{ 
+                width: '100%', 
+                height: '100%',
+                pointerEvents: 'none' // Make Lottie ignore pointer events
+              }}
             />
           </div>
         )}
@@ -70,11 +76,13 @@ const StickerContent: React.FC<StickerContentProps> = ({
     // Fallback if there's an error
     console.error("Error rendering sticker:", e);
     return (
-      <div className="flex items-center justify-center w-full h-full text-red-500">
+      <div ref={ref} className="flex items-center justify-center w-full h-full text-red-500">
         Invalid sticker
       </div>
     );
   }
-};
+});
+
+StickerContent.displayName = 'StickerContent';
 
 export default StickerContent;

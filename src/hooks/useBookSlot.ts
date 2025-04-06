@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import { toast } from 'sonner';
@@ -33,51 +32,7 @@ export const useBookSlot = ({ position }: UseBookSlotProps) => {
     (book) => book.shelfId === activeShelfId && book.position === position
   );
   
-  // Load books from localStorage on initial load
-  useEffect(() => {
-    const loadBooksFromStorage = () => {
-      const storedBooks = localStorage.getItem('ritual-bookshelf-books');
-      if (storedBooks) {
-        try {
-          const booksData = JSON.parse(storedBooks);
-          if (booksData && Object.keys(booksData).length > 0) {
-            Object.values(booksData).forEach((bookData: any) => {
-              if (!books[bookData.id]) {
-                addBook({
-                  title: bookData.title,
-                  author: bookData.author,
-                  coverURL: bookData.coverURL,
-                  progress: bookData.progress || 0,
-                  rating: bookData.rating || 0,
-                  position: bookData.position,
-                  shelfId: bookData.shelfId,
-                  isSticker: bookData.isSticker || false,
-                  series: bookData.series,
-                  characters: bookData.characters,
-                  plot: bookData.plot,
-                  notes: bookData.notes,
-                  quizzes: bookData.quizzes
-                });
-              }
-            });
-          }
-        } catch (error) {
-          console.error('Error loading books from localStorage:', error);
-        }
-      }
-    };
-    
-    loadBooksFromStorage();
-  }, []);
-  
-  // Save books to localStorage when they change
-  useEffect(() => {
-    if (Object.keys(books).length > 0) {
-      localStorage.setItem('ritual-bookshelf-books', JSON.stringify(books));
-    }
-  }, [books]);
-  
-  // Save scale and position preferences
+  // Load saved transform data
   useEffect(() => {
     const savedScale = localStorage.getItem(`slot-${activeShelfId}-${position}-scale`);
     if (savedScale) {
@@ -99,20 +54,13 @@ export const useBookSlot = ({ position }: UseBookSlotProps) => {
     }
   }, [activeShelfId, position]);
   
-  // Save scale and position when they change
+  // Save transform data when they change
   useEffect(() => {
     localStorage.setItem(`slot-${activeShelfId}-${position}-scale`, scale.toString());
-  }, [scale, activeShelfId, position]);
-  
-  useEffect(() => {
     localStorage.setItem(`slot-${activeShelfId}-${position}-position-x`, position2D.x.toString());
     localStorage.setItem(`slot-${activeShelfId}-${position}-position-y`, position2D.y.toString());
-  }, [position2D, activeShelfId, position]);
-  
-  // Save rotation when it changes
-  useEffect(() => {
     localStorage.setItem(`slot-${activeShelfId}-${position}-rotation`, rotation.toString());
-  }, [rotation, activeShelfId, position]);
+  }, [scale, position2D, rotation, activeShelfId, position]);
   
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -133,14 +81,49 @@ export const useBookSlot = ({ position }: UseBookSlotProps) => {
             isSticker: false
           });
           
-          openModal(newBookId);
+          if (newBookId) {
+            openModal(newBookId);
+          }
         }
       };
       reader.readAsDataURL(file);
+    } else if (file.type === 'application/json') {
+      // Handle Lottie JSON files
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (typeof event.target?.result === 'string') {
+          try {
+            // Check if it's a valid Lottie JSON
+            const lottieData = JSON.parse(event.target.result);
+            if (lottieData && (lottieData.v !== undefined || lottieData.animations)) {
+              const newBookId = addBook({
+                title: file.name.replace('.json', ''),
+                author: 'Lottie Animation',
+                coverURL: event.target.result,
+                progress: 0,
+                rating: 0,
+                position,
+                shelfId: activeShelfId,
+                isSticker: true
+              });
+              
+              if (newBookId) {
+                toast.success('Lottie animation added successfully');
+              }
+            } else {
+              toast.error('Invalid Lottie animation format');
+            }
+          } catch (e) {
+            toast.error('Failed to parse JSON file');
+          }
+        }
+      };
+      reader.readAsText(file);
     } else {
-      toast.error('Only image files are supported for books');
+      toast.error('Unsupported file type. Please use images or Lottie JSON files.');
     }
     
+    // Reset file input
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -262,10 +245,16 @@ export const useBookSlot = ({ position }: UseBookSlotProps) => {
       deleteBook(book.id);
       setShowDeleteDialog(false);
       toast.success('Item removed');
+      
+      // Clear transform data from localStorage
+      localStorage.removeItem(`slot-${activeShelfId}-${position}-scale`);
+      localStorage.removeItem(`slot-${activeShelfId}-${position}-position-x`);
+      localStorage.removeItem(`slot-${activeShelfId}-${position}-position-y`);
+      localStorage.removeItem(`slot-${activeShelfId}-${position}-rotation`);
     }
   };
   
-  // Set up mouse move and up event listeners
+  // Document-level event handlers for drag
   useEffect(() => {
     if (isDragging) {
       const handleMouseMove = (e: MouseEvent) => {

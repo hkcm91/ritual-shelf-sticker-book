@@ -8,7 +8,6 @@ import StickerContent from './StickerContent';
 import EmptySlot from './EmptySlot';
 import { useBookSlot } from '../hooks/useBookSlot';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { BookOpen, Sticker } from "lucide-react";
 import { 
   ContextMenu,
   ContextMenuTrigger,
@@ -56,10 +55,9 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   };
 
   // Special handler for the empty slot click, separate from toggle clicks
-  const handleEmptySlotClick = (e: React.MouseEvent) => {
-    // Stop propagation to prevent other handlers from firing
-    e.stopPropagation();
-    
+  const handleEmptySlotClick = () => {
+    // We removed the event parameter since it's not being used
+    // and to match the expected function signature    
     if (!book) {
       handleClick();
     }

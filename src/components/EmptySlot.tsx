@@ -7,7 +7,7 @@ type EmptySlotProps = {
   fileInputRef: React.RefObject<HTMLInputElement>;
   onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
   slotType?: "book" | "sticker";
-  onClick?: () => void;
+  onClick?: () => void; // Changed from React.MouseEvent to no parameters
 };
 
 const EmptySlot: React.FC<EmptySlotProps> = ({ 
@@ -34,11 +34,19 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
     onFileSelect(e);
   };
   
+  // Handle the click event and call the onClick prop
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent event bubbling
+    if (onClick) {
+      onClick(); // Call the onClick prop without passing the event
+    }
+  };
+  
   return (
     <>
       <div 
         className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer"
-        onClick={onClick}
+        onClick={handleClick}
       >
         <span className="text-5xl text-gray-300/20">+</span>
       </div>

@@ -9,20 +9,22 @@ import ShelfDialogs from '../components/shelf/ShelfDialogs';
 import BackgroundSettings from '../components/settings/BackgroundSettings';
 
 const Index = () => {
-  const { shelves, activeShelfId } = useBookshelfStore();
+  const { shelves, activeShelfId, loadCustomization } = useBookshelfStore();
   const [isNewShelfModalOpen, setIsNewShelfModalOpen] = useState(false);
   const [newShelfName, setNewShelfName] = useState("");
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [renameValue, setRenameValue] = useState("");
   
-  // Background customization
+  // Background customization (kept for backward compatibility)
   const [showBgImageDialog, setShowBgImageDialog] = useState<boolean>(false);
   const [bgImage, setBgImage] = useState<string | null>(null);
   const [bgImageUrl, setBgImageUrl] = useState<string>('');
   
-  // Initialize the store
+  // Initialize the store and load customization
   useEffect(() => {
     const shelfId = initializeDefaultShelf();
+    loadCustomization();
+    
     if (shelfId) {
       toast.success('Welcome to Ritual Bookshelf!', {
         description: 'Upload book covers by clicking on the "+" slots or drag and drop images.',
@@ -30,7 +32,7 @@ const Index = () => {
     }
   }, []);
   
-  // Load background from localStorage
+  // Load background from localStorage (for backward compatibility)
   useEffect(() => {
     try {
       const savedBgImage = localStorage.getItem('webpage-background-image');
@@ -41,40 +43,11 @@ const Index = () => {
       console.error('Error loading background from localStorage:', error);
     }
   }, []);
-  
-  // Save background to localStorage when it changes
-  useEffect(() => {
-    if (bgImage) {
-      try {
-        localStorage.setItem('webpage-background-image', bgImage);
-      } catch (error) {
-        // Handle quota exceeded error
-        console.error('Error saving background to localStorage:', error);
-        toast.error('Background image is too large to store locally', {
-          description: 'Try using a URL or a smaller image file.'
-        });
-      }
-    } else {
-      try {
-        localStorage.removeItem('webpage-background-image');
-      } catch (error) {
-        console.error('Error removing background from localStorage:', error);
-      }
-    }
-  }, [bgImage]);
 
   const currentShelf = shelves[activeShelfId];
   
   return (
-    <div 
-      className="min-h-screen flex flex-col"
-      style={{
-        backgroundImage: bgImage ? `url(${bgImage})` : 'none',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed'
-      }}
-    >
+    <div className="min-h-screen flex flex-col">
       <Header 
         currentShelf={currentShelf}
         setIsNewShelfModalOpen={setIsNewShelfModalOpen}

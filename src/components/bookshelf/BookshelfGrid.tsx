@@ -1,24 +1,12 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useBookshelfStore } from '../../store/bookshelfStore';
-import CustomizationPanel from './CustomizationPanel';
 import ShelfRow from './ShelfRow';
-import { useBookshelfCustomization } from '../../hooks/useBookshelfCustomization';
 import StorageUsage from '../StorageUsage';
 
 const BookshelfGrid: React.FC = () => {
   const { activeShelfId, shelves, zoomLevel } = useBookshelfStore();
   const activeShelf = shelves[activeShelfId];
-  
-  // Use the customization hook
-  const {
-    customization,
-    setCustomization,
-    saveCustomization,
-    resetCustomization,
-    handleFileChange,
-    handleImageUrl
-  } = useBookshelfCustomization(activeShelfId);
   
   if (!activeShelf) {
     return (
@@ -42,9 +30,6 @@ const BookshelfGrid: React.FC = () => {
           key={`row-${row}`}
           rowIndex={row}
           columns={columns}
-          shelfBgColor={customization.shelfBgColor}
-          shelfBgImage={customization.shelfBgImage}
-          shelfOpacity={customization.shelfOpacity}
         />
       );
     }
@@ -55,32 +40,22 @@ const BookshelfGrid: React.FC = () => {
   return (
     <div 
       className="bookshelf-wrapper p-4 md:p-8 overflow-auto max-w-full w-full"
+      style={{ 
+        backgroundColor: 'var(--page-bg)',
+        backgroundImage: 'var(--page-bg-image)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
     >
       <div 
         className="bookshelf-container relative flex flex-col items-center rounded-md p-6 shadow-lg max-w-full mx-auto transform-gpu"
         style={{ 
           transform: `scale(${zoomLevel})`,
           transformOrigin: 'top center',
-          width: 'max-content',
-          backgroundColor: customization.containerBgColor,
-          opacity: customization.containerOpacity,
-          backgroundImage: customization.containerBgImage ? 
-            `url(${customization.containerBgImage})` : 
-            'url(/lovable-uploads/b613332c-c1a6-46ce-bd9f-6643f75a811a.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center'
+          width: 'max-content'
         }}
       >
-        <CustomizationPanel
-          customization={customization}
-          setCustomization={setCustomization}
-          activeShelfId={activeShelfId}
-          saveCustomization={saveCustomization}
-          resetCustomization={resetCustomization}
-          handleFileChange={handleFileChange}
-          handleImageUrl={handleImageUrl}
-        />
-        
         {/* Add storage usage indicator */}
         <div className="absolute bottom-1 right-1 w-48 z-10 bg-white/90 rounded shadow">
           <StorageUsage />

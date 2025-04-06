@@ -4,10 +4,11 @@ import { toast } from 'sonner';
 import { BooksSlice, createBooksSlice } from './booksSlice';
 import { CompleteShelvesSlice, createShelvesSlice } from './shelvesSlice';
 import { UISlice, createUISlice } from './uiSlice';
+import { CustomizationState, createCustomizationSlice } from './customizationSlice';
 import { BookData, ShelfData } from './types';
 
 // Define the complete store type
-export type BookshelfState = BooksSlice & CompleteShelvesSlice & UISlice & {
+export type BookshelfState = BooksSlice & CompleteShelvesSlice & UISlice & CustomizationState & {
   findEmptyPosition: (shelfId: string) => number;
 };
 
@@ -16,6 +17,7 @@ export const useBookshelfStore = create<BookshelfState>((set, get, api) => ({
   ...createBooksSlice(set, get, api),
   ...createShelvesSlice(set, get, api),
   ...createUISlice(set, get, api),
+  ...createCustomizationSlice(set, get, api),
   
   // Utility function to find empty position
   findEmptyPosition: (shelfId: string) => {

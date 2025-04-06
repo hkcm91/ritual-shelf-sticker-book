@@ -6,6 +6,8 @@ import ShelfSelector from './ShelfSelector';
 import HeaderAuthButton from '../Header';
 import ShelfControls from '../ShelfControls';
 import BookSearchDrawer from '../BookSearchDrawer';
+import { useBookshelfStore } from '../../store/bookshelfStore';
+import CustomizationModal from '../customization/CustomizationModal';
 
 type HeaderProps = {
   currentShelf: any;
@@ -22,8 +24,10 @@ const Header: React.FC<HeaderProps> = ({
   setRenameValue,
   setShowBgImageDialog
 }) => {
+  const { ui, openCustomizationModal, closeCustomizationModal } = useBookshelfStore();
+  
   return (
-    <header className="bg-wood-texture bg-cover shadow-md sticky top-0 z-30 px-4 py-3">
+    <header className="shadow-md sticky top-0 z-30 px-4 py-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <ShelfSelector 
@@ -39,9 +43,9 @@ const Header: React.FC<HeaderProps> = ({
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setShowBgImageDialog(true)}
+            onClick={() => openCustomizationModal()}
             className="bg-white/90 hover:bg-white text-gray-700"
-            title="Customize Background"
+            title="Customize Appearance"
           >
             <Palette className="h-4 w-4" />
           </Button>
@@ -49,6 +53,11 @@ const Header: React.FC<HeaderProps> = ({
           <BookSearchDrawer />
         </div>
       </div>
+      
+      <CustomizationModal 
+        open={ui.isCustomizationModalOpen} 
+        onOpenChange={closeCustomizationModal} 
+      />
     </header>
   );
 };

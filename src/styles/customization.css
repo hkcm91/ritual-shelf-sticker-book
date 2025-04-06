@@ -1,0 +1,84 @@
+
+:root {
+  /* Page */
+  --page-bg: #f5f5f5;
+  --page-bg-image: none;
+
+  /* Container */
+  --container-bg: #a47148;
+  --container-bg-image: url('/lovable-uploads/b613332c-c1a6-46ce-bd9f-6643f75a811a.png');
+  --container-opacity: 1;
+  --container-border-width: 0px;
+  --container-border-style: solid;
+  --container-border-color: #e0e0e0;
+  --container-border-radius: 8px;
+  --container-padding: 16px;
+
+  /* Shelves */
+  --shelf-thickness: 20px;
+  --shelf-color: #8B5A2B;
+  --shelf-bg-image: none;
+  --shelf-opacity: 1;
+  
+  /* Dividers */
+  --divider-thickness: 2px;
+  --divider-color: #714621;
+  
+  /* Slots */
+  --add-button-bg: rgba(255, 255, 255, 0.9);
+  --add-button-color: #555555;
+  --add-button-hover-bg: #ffffff;
+  --toggle-inactive-color: rgba(200, 200, 200, 0.5);
+  --toggle-active-color: rgba(80, 80, 80, 0.9);
+  --toggle-border-color: rgba(180, 180, 180, 0.7);
+  --empty-hover-bg: rgba(255, 255, 255, 0.1);
+  
+  /* Header */
+  --header-bg: #a47148;
+  --header-bg-image: url('/lovable-uploads/b613332c-c1a6-46ce-bd9f-6643f75a811a.png');
+  --header-text-color: #ffffff;
+}
+
+/* Update existing component styles to use variables */
+.bookshelf-container {
+  background-color: var(--container-bg);
+  background-image: var(--container-bg-image);
+  background-size: cover;
+  background-position: center;
+  opacity: var(--container-opacity);
+  border-width: var(--container-border-width);
+  border-style: var(--container-border-style);
+  border-color: var(--container-border-color);
+  border-radius: var(--container-border-radius);
+  padding: var(--container-padding);
+}
+
+.wood-shelf {
+  background-color: var(--shelf-color);
+  background-image: var(--shelf-bg-image);
+  background-size: cover;
+  opacity: var(--shelf-opacity);
+  height: var(--shelf-thickness);
+}
+
+.book-toggle-dot,
+.sticker-toggle-dot {
+  background-color: var(--toggle-inactive-color);
+  border-color: var(--toggle-border-color);
+}
+
+.book-toggle-dot.active,
+.sticker-toggle-dot.active {
+  background-color: var(--toggle-active-color);
+  border-color: var(--toggle-active-color);
+}
+
+.book-slot.empty:hover {
+  background-color: var(--empty-hover-bg);
+}
+
+header {
+  background-color: var(--header-bg);
+  background-image: var(--header-bg-image);
+  color: var(--header-text-color);
+}

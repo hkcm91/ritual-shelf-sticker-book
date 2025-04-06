@@ -1,13 +1,12 @@
-
 import React, { useRef, useState, useEffect } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import Book from './Book';
 import { toast } from 'sonner';
 import Lottie from 'lottie-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger, PopoverArrow } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { Trash2, RotateCcw, RotateCw, Image, Upload, Link } from 'lucide-react';
+import { Trash2, RotateCcw, RotateCw, Image, Upload, Link, FileImage } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
@@ -20,8 +19,10 @@ type SlotType = 'book' | 'sticker';
 const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const urlInputRef = useRef<HTMLInputElement>(null);
+  const bgFileInputRef = useRef<HTMLInputElement>(null);
   const [slotType, setSlotType] = useState<SlotType>('book');
   const [bgColor, setBgColor] = useState<string>('transparent');
+  const [bgImage, setBgImage] = useState<string | null>(null);
   const [scale, setScale] = useState<number>(1);
   const [position2D, setPosition2D] = useState<{ x: number, y: number }>({ x: 0, y: 0 });
   const [rotation, setRotation] = useState<number>(0);
@@ -30,6 +31,8 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   const [showUrlDialog, setShowUrlDialog] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string>('');
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
+  const [showBgImageDialog, setShowBgImageDialog] = useState<boolean>(false);
+  const [bgImageUrl, setBgImageUrl] = useState<string>('');
   
   const { 
     books, 
@@ -94,10 +97,15 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   
   // Save slot preference to local storage
   useEffect(() => {
-    // Load saved background color if exists
+    // Load saved background color and image if exists
     const savedBgColor = localStorage.getItem(`slot-${activeShelfId}-${position}-bg`);
     if (savedBgColor) {
       setBgColor(savedBgColor);
+    }
+    
+    const savedBgImage = localStorage.getItem(`slot-${activeShelfId}-${position}-bg-image`);
+    if (savedBgImage) {
+      setBgImage(savedBgImage);
     }
     
     const savedSlotType = localStorage.getItem(`slot-${activeShelfId}-${position}-type`);
@@ -151,6 +159,15 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   useEffect(() => {
     localStorage.setItem(`slot-${activeShelfId}-${position}-rotation`, rotation.toString());
   }, [rotation, activeShelfId, position]);
+  
+  // Save background image when it changes
+  useEffect(() => {
+    if (bgImage) {
+      localStorage.setItem(`slot-${activeShelfId}-${position}-bg-image`, bgImage);
+    } else {
+      localStorage.removeItem(`slot-${activeShelfId}-${position}-bg-image`);
+    }
+  }, [bgImage, activeShelfId, position]);
   
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -215,6 +232,29 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     }
   };
 
+  const handleBgFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (typeof event.target?.result === 'string') {
+          setBgImage(event.target.result);
+          toast.success('Background image added successfully');
+          setShowBgImageDialog(false);
+        }
+      };
+      reader.readAsDataURL(file);
+    } else {
+      toast.error('Only image files are supported for backgrounds');
+    }
+    
+    if (bgFileInputRef.current) {
+      bgFileInputRef.current.value = '';
+    }
+  };
+
   const handleUrlSubmit = () => {
     if (!imageUrl) return;
     
@@ -268,6 +308,15 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     }
   };
   
+  const handleBgImageUrlSubmit = () => {
+    if (!bgImageUrl) return;
+    
+    setBgImage(bgImageUrl);
+    toast.success('Background image added from URL');
+    setShowBgImageDialog(false);
+    setBgImageUrl('');
+  };
+  
   const handleClick = () => {
     if (!book) {
       fileInputRef.current?.click();
@@ -277,13 +326,24 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     
-    // For empty slot, show color picker
+    // For empty slot, show customization options
     if (!book) {
-      const color = prompt('Enter background color (hex, rgb, or name):', bgColor === 'transparent' ? '' : bgColor);
-      if (color !== null) {
-        setBgColor(color || 'transparent');
+      // Show a menu with background options
+      const option = prompt('Choose an option:\n1. Change background color\n2. Set background image\n3. Remove background image', '1');
+      
+      if (option === '1') {
+        const color = prompt('Enter background color (hex, rgb, or name):', bgColor === 'transparent' ? '' : bgColor);
+        if (color !== null) {
+          setBgColor(color || 'transparent');
+        }
+      } else if (option === '2') {
+        // Show dialog for background image
+        setShowBgImageDialog(true);
+      } else if (option === '3') {
+        setBgImage(null);
+        toast.success('Background image removed');
       }
-    } 
+    }
     
     return false;
   };
@@ -505,7 +565,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
                   />
                 </div>
               </PopoverTrigger>
-              <PopoverContent className="w-64">
+              <PopoverContent className="w-64" side="top">
                 <div className="space-y-2">
                   <h4 className="font-medium">Sticker Controls</h4>
                   <div className="flex justify-between items-center">
@@ -558,6 +618,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
                     </Button>
                   </div>
                 </div>
+                <PopoverArrow className="fill-background" />
               </PopoverContent>
             </Popover>
           );
@@ -579,7 +640,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
                   }}
                 />
               </PopoverTrigger>
-              <PopoverContent className="w-64">
+              <PopoverContent className="w-64" side="top">
                 <div className="space-y-2">
                   <h4 className="font-medium">Sticker Controls</h4>
                   <div className="flex justify-between items-center">
@@ -632,6 +693,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
                     </Button>
                   </div>
                 </div>
+                <PopoverArrow className="fill-background" />
               </PopoverContent>
             </Popover>
           );
@@ -661,7 +723,12 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
         onDrop={handleDrop}
         onMouseMove={handleStickerMouseMove}
         onMouseUp={handleStickerMouseUp}
-        style={{ backgroundColor: bgColor }}
+        style={{ 
+          backgroundColor: bgColor,
+          backgroundImage: bgImage ? `url(${bgImage})` : 'none',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
       >
         {book ? (
           renderBookContent()
@@ -677,6 +744,30 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
               onChange={handleFileChange}
               className="hidden"
             />
+            
+            {/* Background customization hint */}
+            <div className="absolute top-2 right-2">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-6 w-6 bg-black/30 hover:bg-black/50 text-white/70 opacity-40 hover:opacity-100"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowBgImageDialog(true);
+                      }}
+                    >
+                      <FileImage className="h-3 w-3" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Set background image</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
             
             {/* Slot type toggle with circles */}
             <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-3 opacity-60 hover:opacity-100">
@@ -744,25 +835,83 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
         </DialogContent>
       </Dialog>
       
+      {/* Background Image Dialog */}
+      <Dialog open={showBgImageDialog} onOpenChange={setShowBgImageDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Set Background Image</DialogTitle>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <div>
+              <h4 className="text-sm font-medium mb-2">Upload Image</h4>
+              <div className="flex items-center space-x-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => bgFileInputRef.current?.click()}
+                  className="w-full flex items-center justify-center gap-2"
+                >
+                  <Upload className="h-4 w-4" />
+                  <span>Choose File</span>
+                </Button>
+                <input
+                  ref={bgFileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleBgFileChange}
+                  className="hidden"
+                />
+              </div>
+            </div>
+            
+            <div className="my-2">
+              <div className="relative flex items-center">
+                <div className="flex-grow border-t border-gray-300"></div>
+                <span className="mx-3 text-xs text-gray-500">OR</span>
+                <div className="flex-grow border-t border-gray-300"></div>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="text-sm font-medium mb-2">Image URL</h4>
+              <input
+                type="text"
+                className="w-full px-3 py-2 border rounded-md"
+                placeholder="Enter image URL"
+                value={bgImageUrl}
+                onChange={(e) => setBgImageUrl(e.target.value)}
+              />
+            </div>
+            
+            {bgImage && (
+              <div>
+                <h4 className="text-sm font-medium mb-2">Current Background</h4>
+                <div className="flex justify-between items-center">
+                  <div className="h-16 w-16 border rounded overflow-hidden">
+                    <img src={bgImage} alt="Current background" className="h-full w-full object-cover" />
+                  </div>
+                  <Button variant="destructive" size="sm" onClick={() => setBgImage(null)}>
+                    Remove
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="flex justify-end space-x-2">
+            <Button variant="outline" onClick={() => setShowBgImageDialog(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleBgImageUrlSubmit}
+              disabled={!bgImageUrl}
+            >
+              Set URL Image
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will remove the sticker from your bookshelf.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteSticker}>
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
-  );
-};
-
-export default BookSlot;
+            <

@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Palette, Settings, Book } from 'lucide-react';
+import { Palette, Settings, BookOpen } from 'lucide-react';
 import ShelfSelector from './ShelfSelector';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 import BookSearchDrawer from '../BookSearchDrawer';
@@ -20,6 +20,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import HeaderAuthButton from '../Header';
+import SettingsDrawer from '../settings/SettingsDrawer';
 
 const Header: React.FC = () => {
   const { openCustomizationModal } = useBookshelfStore();
@@ -69,6 +70,9 @@ const Header: React.FC = () => {
       </div>
       
       <div className="flex items-center gap-3">
+        {/* Settings Drawer */}
+        <SettingsDrawer />
+        
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>

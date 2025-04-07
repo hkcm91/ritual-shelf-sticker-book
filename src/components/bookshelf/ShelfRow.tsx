@@ -53,12 +53,12 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
 
       // Add vertical divider if needed and if it's not the first column
       if (dividers.enabled && (dividers.orientation === 'vertical' || dividers.orientation === 'both') && col > 0 && col % dividers.booksPerSection === 0) {
-        slotRow.push(<div key={`vdivider-${rowIndex}-${col}`} style={{
+        slotRow.push(<div key={`vdivider-${rowIndex}-${col}`} className="vertical-shelf-divider" style={{
           width: `${dividers.thickness}px`,
           backgroundColor: dividers.color,
           backgroundImage: `url(${shelfTexture})`,
           opacity: dividers.opacity
-        }} className="vertical-shelf-divider mx-[13px] px-[5px]" />);
+        }} />);
       }
       slotRow.push(<BookSlot key={`slot-${position}`} position={position} />);
     }

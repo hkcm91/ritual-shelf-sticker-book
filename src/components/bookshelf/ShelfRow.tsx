@@ -38,6 +38,12 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
           (dividers.orientation === 'vertical' || dividers.orientation === 'both') && 
           col > 0 && 
           col % dividers.booksPerSection === 0) {
+        // Get shelf texture or use default
+        const shelfTexture = shelf?.textureImage || 
+                          (activeTheme === 'default' || activeTheme === 'custom' ? 
+                          '/lovable-uploads/7a437784-0910-4719-b52b-6564c3004ebe.png' : 
+                          '/textures/default/wood.jpg');
+        
         slotRow.push(
           <div 
             key={`vdivider-${rowIndex}-${col}`}
@@ -45,6 +51,7 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
             style={{
               width: `${dividers.thickness}px`,
               backgroundColor: dividers.color,
+              backgroundImage: `url(${shelfTexture})`,
               opacity: dividers.opacity
             }}
           />
@@ -104,6 +111,7 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
           style={{
             height: `${shelfStyling.dividers.thickness}px`,
             backgroundColor: shelfStyling.dividers.color,
+            backgroundImage: `url(${shelfTexture})`,
             opacity: shelfStyling.dividers.opacity,
             width: '100%',
             position: 'relative',

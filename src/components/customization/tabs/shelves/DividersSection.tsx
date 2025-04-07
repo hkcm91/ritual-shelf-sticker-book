@@ -35,7 +35,7 @@ const DividersSection: React.FC<DividersSectionProps> = ({
                 <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
               </TooltipTrigger>
               <TooltipContent side="right" className="max-w-[300px]">
-                <p>Add subtle dividers to separate books on your shelf</p>
+                <p>Add subtle dividers that match your shelf styling to separate books on your shelf</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -91,7 +91,7 @@ const DividersSection: React.FC<DividersSectionProps> = ({
           
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="link-divider-color">Match shelf color</Label>
+              <Label htmlFor="link-divider-color">Match shelf appearance</Label>
               <Switch 
                 id="link-divider-color"
                 checked={linkDividerStyling}
@@ -99,7 +99,7 @@ const DividersSection: React.FC<DividersSectionProps> = ({
               />
             </div>
             <p className="text-xs text-muted-foreground italic">
-              When enabled, dividers will automatically match your shelf color
+              When enabled, dividers will automatically match your shelf color and texture
             </p>
           </div>
         </>

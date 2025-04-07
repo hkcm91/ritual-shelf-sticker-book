@@ -1,10 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import BookCover from './book-modal/BookCover';
 import BookModalTabs from './book-modal/BookModalTabs';
 import BookModalFooter from './book-modal/BookModalFooter';
+import BookModalHeader from './book-modal/BookModalHeader';
 
 const BookModal: React.FC = () => {
   const { isModalOpen, activeBookId, books, closeModal, updateBook, deleteBook } = useBookshelfStore();
@@ -178,14 +179,9 @@ const BookModal: React.FC = () => {
   return (
     <Dialog open={isModalOpen} onOpenChange={(open) => !open && closeModal()}>
       <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>
-            {activeBookId && books[activeBookId]?.title ? 'Edit Book' : 'Add New Book'}
-          </DialogTitle>
-          <DialogDescription>
-            Fill in the details about your book below.
-          </DialogDescription>
-        </DialogHeader>
+        <BookModalHeader 
+          title={activeBookId && books[activeBookId]?.title ? 'Edit Book' : 'Add New Book'} 
+        />
         
         <BookCover 
           coverURL={bookData.coverURL} 

@@ -34,7 +34,7 @@ const FileInputField: React.FC<FileInputFieldProps> = ({
     setUploadProgress(0);
     
     // Simulate progress updates
-    const interval = setInterval(() => {
+    const interval = window.setInterval(() => {
       setUploadProgress(prev => {
         if (prev >= 90) {
           clearInterval(interval);
@@ -48,7 +48,7 @@ const FileInputField: React.FC<FileInputFieldProps> = ({
   };
   
   const completeProgress = (interval: number) => {
-    clearInterval(interval);
+    window.clearInterval(interval);
     setUploadProgress(100);
     // Add a small delay before removing the progress indicator
     setTimeout(() => {
@@ -79,7 +79,7 @@ const FileInputField: React.FC<FileInputFieldProps> = ({
             onChange(event.target.result as string);
             completeProgress(progressInterval);
           } catch (error) {
-            clearInterval(progressInterval);
+            window.clearInterval(progressInterval);
             setIsUploading(false);
             console.error('Error loading image:', error);
             toast.error('Image may be too large. Try using a URL instead.');
@@ -88,14 +88,14 @@ const FileInputField: React.FC<FileInputFieldProps> = ({
       };
       
       reader.onerror = () => {
-        clearInterval(progressInterval);
+        window.clearInterval(progressInterval);
         setIsUploading(false);
         toast.error('Failed to read the file');
       };
       
       reader.readAsDataURL(file);
     } else {
-      clearInterval(progressInterval);
+      window.clearInterval(progressInterval);
       setIsUploading(false);
       toast.error(`Only ${accept.replace('*', '')} files are supported`);
     }

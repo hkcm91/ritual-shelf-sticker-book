@@ -19,7 +19,7 @@ export const useBookCover = (initialCoverURL: string = '') => {
     setUploadProgress(0);
     
     // Simulate progress updates
-    const interval = setInterval(() => {
+    const interval = window.setInterval(() => {
       setUploadProgress(prev => {
         if (prev >= 90) {
           clearInterval(interval);
@@ -29,7 +29,7 @@ export const useBookCover = (initialCoverURL: string = '') => {
       });
     }, 100);
     
-    return () => clearInterval(interval);
+    return () => window.clearInterval(interval);
   };
   
   const completeProgress = () => {

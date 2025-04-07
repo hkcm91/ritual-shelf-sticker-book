@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import { useDragAndDrop } from './useDragAndDrop';
@@ -53,7 +54,7 @@ export const useBookSlot = ({ position, slotType }: UseBookSlotProps) => {
   });
   
   // Handle file input for empty slots
-  const { fileInputRef, handleFileChange, handleClick } = useFileHandler({ position, slotType });
+  const { fileInputRef, handleFileChange, handleClick, isUploading } = useFileHandler({ position, slotType });
   
   // For drag and drop functionality
   const { 
@@ -122,6 +123,7 @@ export const useBookSlot = ({ position, slotType }: UseBookSlotProps) => {
     handleScaleChange,
     handleResetTransform,
     handleDeleteSticker,
-    isAltDrag
+    isAltDrag,
+    isUploading
   };
 };

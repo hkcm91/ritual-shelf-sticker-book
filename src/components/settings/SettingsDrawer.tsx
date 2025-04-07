@@ -21,6 +21,12 @@ import {
 import { useBookshelfStore } from '@/store/bookshelfStore';
 import ThemeSelector from './ThemeSelector';
 import StorageSettings from '@/components/StorageSettings';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const SettingsDrawer: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -70,9 +76,22 @@ const SettingsDrawer: React.FC = () => {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="bg-white/90 hover:bg-white text-gray-700">
-          <Settings className="h-4 w-4" />
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="text-[color:var(--header-text-color,white)] hover:text-[color:var(--header-text-color,white)] hover:bg-[color:var(--header-hover-bg,rgba(255,255,255,0.1))]"
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Settings</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </SheetTrigger>
       <SheetContent className="overflow-y-auto">
         <SheetHeader>

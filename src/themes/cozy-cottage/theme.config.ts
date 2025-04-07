@@ -7,6 +7,7 @@ const cozyCottage: Theme = {
     // Page
     '--page-bg': '#faf6ed',
     '--page-bg-image': 'none',
+    '--page-text-color': '#4a3921',
     
     // Container
     '--container-bg': '#cca779',
@@ -30,18 +31,19 @@ const cozyCottage: Theme = {
     '--divider-opacity': '1',
     
     // Slots
-    '--add-button-bg': 'rgba(255, 255, 255, 0.9)',
-    '--add-button-color': '#555555',
-    '--add-button-hover-bg': '#ffffff',
-    '--toggle-inactive-color': 'rgba(200, 200, 200, 0.5)',
-    '--toggle-active-color': 'rgba(80, 80, 80, 0.9)',
-    '--toggle-border-color': 'rgba(180, 180, 180, 0.7)',
-    '--empty-hover-bg': 'rgba(255, 255, 255, 0.1)',
+    '--slot-add-button-bg': 'rgba(255, 255, 255, 0.9)',
+    '--slot-add-button-color': '#555555',
+    '--slot-add-button-hover-bg': '#ffffff',
+    '--slot-toggle-inactive-color': 'rgba(200, 200, 200, 0.5)',
+    '--slot-toggle-active-color': 'rgba(80, 80, 80, 0.9)',
+    '--slot-toggle-border-color': 'rgba(180, 180, 180, 0.7)',
+    '--slot-empty-hover-bg': 'rgba(255, 255, 255, 0.1)',
     
     // Header
     '--header-bg': '#cca779',
     '--header-bg-image': 'none',
     '--header-text-color': '#4a3921',
+    '--header-hover-bg': 'rgba(0, 0, 0, 0.05)',
   },
   textures: {
     shelf: '/textures/cozy-cottage/wood.jpg',

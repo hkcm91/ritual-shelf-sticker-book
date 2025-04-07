@@ -43,7 +43,7 @@ const Header: React.FC = () => {
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="bg-transparent h-9 px-3">Collections</NavigationMenuTrigger>
+                <NavigationMenuTrigger className="navigation-menu-item bg-transparent h-9 px-3">Collections</NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className="p-4 w-[240px] rounded-md">
                     <ShelfSelector />

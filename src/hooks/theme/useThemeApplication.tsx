@@ -9,7 +9,7 @@ import { toast } from 'sonner';
  * Hook to apply the active theme to the DOM
  */
 export function useThemeApplication() {
-  const { activeTheme, page, container, shelfStyling } = useBookshelfStore();
+  const { activeTheme, page, container, shelfStyling, header } = useBookshelfStore();
 
   // Apply theme whenever activeTheme changes - avoiding dependency on the whole store state
   const applyTheme = useCallback(() => {
@@ -73,7 +73,8 @@ export function useThemeApplication() {
         
         // Set header hover background for better UX
         document.documentElement.style.setProperty('--header-hover-bg', 
-          themeToApply.variables['--header-text-color'].includes('#f') ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)');
+          themeToApply.variables['--header-hover-bg'] || 
+          (themeToApply.variables['--header-text-color'].includes('#f') ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)'));
       } else if (activeTheme === 'custom') {
         // For custom theme, we apply the current state values directly
         try {
@@ -143,6 +144,29 @@ export function useThemeApplication() {
               );
             }
           }
+          
+          if (header) {
+            // Header
+            document.documentElement.style.setProperty('--header-bg', header.background || '#8B5A2B');
+            document.documentElement.style.setProperty(
+              '--header-bg-image', 
+              header.backgroundImage ? `url(${header.backgroundImage})` : 'none'
+            );
+            document.documentElement.style.setProperty('--header-text-color', header.textColor || '#ffffff');
+            
+            // Auto-set hover background based on text color for better contrast
+            const textColor = header.textColor || '#ffffff';
+            if (textColor.match(/#[0-9a-f]{6}/i)) {
+              const r = parseInt(textColor.slice(1, 3), 16);
+              const g = parseInt(textColor.slice(3, 5), 16);
+              const b = parseInt(textColor.slice(5, 7), 16);
+              const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+              document.documentElement.style.setProperty(
+                '--header-hover-bg', 
+                brightness > 125 ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)'
+              );
+            }
+          }
         } catch (customThemeError) {
           console.error('Error applying custom theme:', customThemeError);
           toast.error('Custom theme could not be fully applied');
@@ -156,7 +180,7 @@ export function useThemeApplication() {
       console.error('Error applying theme:', error);
       toast.error('Error applying theme, using default');
     }
-  }, [activeTheme, page, container, shelfStyling]);
+  }, [activeTheme, page, container, shelfStyling, header]);
 
   // Apply theme once when component mounts and when dependencies change
   useEffect(() => {

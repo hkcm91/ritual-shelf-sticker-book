@@ -7,6 +7,7 @@ const modernLibrary: Theme = {
     // Page
     '--page-bg': '#f0f2f5',
     '--page-bg-image': 'none',
+    '--page-text-color': '#333333',
     
     // Container
     '--container-bg': '#3d4e68',
@@ -30,18 +31,19 @@ const modernLibrary: Theme = {
     '--divider-opacity': '1',
     
     // Slots
-    '--add-button-bg': 'rgba(240, 240, 240, 0.9)',
-    '--add-button-color': '#3d4e68',
-    '--add-button-hover-bg': '#ffffff',
-    '--toggle-inactive-color': 'rgba(220, 220, 220, 0.6)',
-    '--toggle-active-color': 'rgba(200, 200, 200, 0.9)',
-    '--toggle-border-color': 'rgba(180, 180, 180, 0.8)',
-    '--empty-hover-bg': 'rgba(255, 255, 255, 0.15)',
+    '--slot-add-button-bg': 'rgba(240, 240, 240, 0.9)',
+    '--slot-add-button-color': '#3d4e68',
+    '--slot-add-button-hover-bg': '#ffffff',
+    '--slot-toggle-inactive-color': 'rgba(220, 220, 220, 0.6)',
+    '--slot-toggle-active-color': 'rgba(200, 200, 200, 0.9)',
+    '--slot-toggle-border-color': 'rgba(180, 180, 180, 0.8)',
+    '--slot-empty-hover-bg': 'rgba(255, 255, 255, 0.15)',
     
     // Header
     '--header-bg': '#3d4e68',
     '--header-bg-image': 'none',
     '--header-text-color': '#ffffff',
+    '--header-hover-bg': 'rgba(255, 255, 255, 0.1)',
   },
   textures: {
     shelf: '/textures/modern-library/wood.jpg',

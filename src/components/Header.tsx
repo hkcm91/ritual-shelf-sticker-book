@@ -28,7 +28,7 @@ const HeaderAuthButton: React.FC = () => {
         <Button 
           variant="ghost" 
           size="sm"
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 text-[color:var(--header-text-color)]"
         >
           <UserCircle className="h-5 w-5" />
           <span>Sign In</span>
@@ -43,7 +43,7 @@ const HeaderAuthButton: React.FC = () => {
         <Button 
           variant="ghost" 
           size="sm"
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 text-[color:var(--header-text-color)]"
         >
           <UserCircle className="h-5 w-5" />
           <span className="max-w-[100px] truncate">{user?.displayName || user?.email}</span>

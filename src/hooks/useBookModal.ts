@@ -2,16 +2,11 @@
 import { useState, useEffect } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import { toast } from 'sonner';
+import { useBookInputs, BookInputs } from './book-modal/useBookInputs';
+import { useBookQuizzes } from './book-modal/useBookQuizzes';
+import { useBookCover } from './book-modal/useBookCover';
 
-export type BookModalData = {
-  title: string;
-  author: string;
-  series: string;
-  progress: number;
-  rating: number;
-  characters: string[];
-  plot: string;
-  notes: string;
+export type BookModalData = BookInputs & {
   coverURL: string;
   quizzes: {question: string, answer: string}[];
 };
@@ -19,7 +14,8 @@ export type BookModalData = {
 export const useBookModal = () => {
   const { isModalOpen, activeBookId, books, closeModal, updateBook, deleteBook } = useBookshelfStore();
   
-  const [bookData, setBookData] = useState<BookModalData>({
+  // Initialize the book data with default values
+  const defaultBookData: BookModalData = {
     title: '',
     author: '',
     series: '',
@@ -30,45 +26,55 @@ export const useBookModal = () => {
     notes: '',
     coverURL: '',
     quizzes: []
+  };
+  
+  // Set up the modular hooks with default values
+  const { inputs, setInputs, handleInputChange, setRating } = useBookInputs({
+    title: '',
+    author: '',
+    series: '',
+    progress: 0,
+    rating: 0,
+    characters: [],
+    plot: '',
+    notes: ''
   });
   
+  const { coverURL, setCoverURL, handleCoverChange } = useBookCover('');
+  const { quizzes, setQuizzes, addEmptyQuiz, updateQuiz, removeQuiz } = useBookQuizzes([]);
+  
+  // Load book data from store when activeBookId changes
   useEffect(() => {
     if (activeBookId && books[activeBookId]) {
-      const { 
-        title, 
-        author, 
-        series, 
-        progress, 
-        rating, 
-        characters, 
-        plot, 
-        notes, 
-        quizzes,
-        coverURL
-      } = books[activeBookId];
+      const currentBook = books[activeBookId];
       
-      setBookData({
-        title: title || '',
-        author: author || '',
-        series: series || '',
-        progress: progress || 0,
-        rating: rating || 0,
-        characters: Array.isArray(characters) ? characters : [],
-        plot: plot || '',
-        notes: notes || '',
-        coverURL: coverURL || '',
-        quizzes: quizzes || []
+      // Update inputs
+      setInputs({
+        title: currentBook.title || '',
+        author: currentBook.author || '',
+        series: currentBook.series || '',
+        progress: currentBook.progress || 0,
+        rating: currentBook.rating || 0,
+        characters: Array.isArray(currentBook.characters) ? currentBook.characters : [],
+        plot: currentBook.plot || '',
+        notes: currentBook.notes || ''
       });
+      
+      // Update cover
+      setCoverURL(currentBook.coverURL || '');
+      
+      // Update quizzes
+      setQuizzes(currentBook.quizzes || []);
       
       console.log('Loaded book data from store:', {
         id: activeBookId,
-        hasCover: !!coverURL,
-        coverLength: coverURL ? coverURL.length : 0,
-        coverSample: coverURL ? coverURL.substring(0, 50) + '...' : 'undefined'
+        hasCover: !!currentBook.coverURL,
+        coverLength: currentBook.coverURL ? currentBook.coverURL.length : 0,
+        coverSample: currentBook.coverURL ? currentBook.coverURL.substring(0, 50) + '...' : 'undefined'
       });
     } else {
       // Reset form for new books
-      setBookData({
+      setInputs({
         title: '',
         author: '',
         series: '',
@@ -76,36 +82,18 @@ export const useBookModal = () => {
         rating: 0,
         characters: [],
         plot: '',
-        notes: '',
-        coverURL: '',
-        quizzes: []
+        notes: ''
       });
+      setCoverURL('');
+      setQuizzes([]);
     }
-  }, [activeBookId, books]);
+  }, [activeBookId, books, setInputs, setCoverURL, setQuizzes]);
   
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    
-    if (name === 'characters') {
-      // Split the text input by commas to create an array of characters
-      const charactersArray = value.split(',').map(item => item.trim());
-      setBookData(prev => ({ ...prev, characters: charactersArray }));
-    } else {
-      setBookData((prev) => ({
-        ...prev,
-        [name]: name === 'progress' ? Math.min(100, Math.max(0, parseInt(value) || 0)) : value,
-      }));
-    }
-  };
-  
-  const handleCoverChange = (imageUrl: string) => {
-    console.log('Cover changed, new length:', imageUrl ? imageUrl.length : 0);
-    console.log('Cover sample:', imageUrl ? imageUrl.substring(0, 50) + '...' : 'undefined');
-    
-    setBookData(prev => ({
-      ...prev,
-      coverURL: imageUrl
-    }));
+  // Combine all data for consuming components
+  const bookData: BookModalData = {
+    ...inputs,
+    coverURL,
+    quizzes
   };
   
   const handleSave = () => {
@@ -114,7 +102,7 @@ export const useBookModal = () => {
       console.log('Saving book with cover:', bookData.coverURL ? `present (${bookData.coverURL.length} chars)` : 'missing');
       console.log('Cover sample being saved:', bookData.coverURL ? bookData.coverURL.substring(0, 50) + '...' : 'undefined');
       
-      // Create update object explicitly to ensure coverURL is included
+      // Important: Create a complete update object with all required fields
       const updateData = {
         title: bookData.title,
         author: bookData.author,
@@ -124,8 +112,9 @@ export const useBookModal = () => {
         characters: bookData.characters,
         plot: bookData.plot,
         notes: bookData.notes,
-        coverURL: bookData.coverURL,
         quizzes: bookData.quizzes,
+        // Fix: Explicitly include coverURL to ensure it's saved
+        coverURL: bookData.coverURL,
         // Important: preserve these flags that should not be changed
         hidden: books[activeBookId]?.hidden || false,
         isSticker: books[activeBookId]?.isSticker || false
@@ -151,38 +140,6 @@ export const useBookModal = () => {
       deleteBook(activeBookId);
     }
     closeModal();
-  };
-  
-  const setRating = (rating: number) => {
-    setBookData((prev) => ({ ...prev, rating }));
-  };
-  
-  // Quiz handlers
-  const addEmptyQuiz = () => {
-    setBookData(prev => ({
-      ...prev,
-      quizzes: [...prev.quizzes, { question: '', answer: '' }]
-    }));
-  };
-  
-  const updateQuiz = (index: number, field: 'question' | 'answer', value: string) => {
-    const updatedQuizzes = [...bookData.quizzes];
-    updatedQuizzes[index] = { 
-      ...updatedQuizzes[index], 
-      [field]: value 
-    };
-    
-    setBookData(prev => ({
-      ...prev,
-      quizzes: updatedQuizzes
-    }));
-  };
-  
-  const removeQuiz = (index: number) => {
-    setBookData(prev => ({
-      ...prev,
-      quizzes: prev.quizzes.filter((_, i) => i !== index)
-    }));
   };
   
   return {

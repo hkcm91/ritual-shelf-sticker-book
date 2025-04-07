@@ -33,7 +33,7 @@ const BookCover: React.FC<BookCoverProps> = ({
           try {
             console.log("Book cover loaded, length:", event.target.result.length);
             
-            // Always compress the image at higher compression to ensure it can be stored
+            // Always compress the image to ensure it can be stored
             let imageData = event.target.result;
             try {
               // First compression attempt - more aggressive
@@ -59,12 +59,18 @@ const BookCover: React.FC<BookCoverProps> = ({
               // Continue with original if compression fails
             }
             
-            // Apply the change
+            // Apply the change - make sure we're calling the context function
             handleCoverChange(imageData);
             toast.success('Cover image updated');
             
             // Verify that the cover was applied
             console.log("Cover URL after change:", imageData ? "Set (length: " + imageData.length + ")" : "Not set");
+            console.log("BookData cover URL: ", bookData.coverURL ? "Set" : "Not set");
+            
+            // Force a state update after a short delay to make sure React re-renders
+            setTimeout(() => {
+              console.log("Delayed verification - Cover URL present:", !!bookData.coverURL);
+            }, 200);
           } catch (error) {
             console.error('Error processing image:', error);
             toast.error('Failed to process image');

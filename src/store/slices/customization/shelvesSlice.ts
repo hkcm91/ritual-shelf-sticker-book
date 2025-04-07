@@ -41,7 +41,8 @@ export const createShelvesSlice: CustomizationSliceCreator = (set) => ({
       // If this is the first time enabling, use good defaults
       thickness: state.shelfStyling.dividers.thickness || 6,
       color: state.shelfStyling.dividers.color || state.shelfStyling.color,
-      opacity: state.shelfStyling.dividers.opacity || 0.8
+      opacity: state.shelfStyling.dividers.opacity || 0.8,
+      height: state.shelfStyling.dividers.height || 200
     } : { ...state.shelfStyling.dividers, enabled };
     
     return {
@@ -54,7 +55,7 @@ export const createShelvesSlice: CustomizationSliceCreator = (set) => ({
     };
   }),
   
-  updateDividersSetting: (property: 'booksPerSection' | 'booksPerRow' | 'thickness' | 'color' | 'orientation' | 'opacity', value: any) => set((state) => ({
+  updateDividersSetting: (property: 'booksPerSection' | 'booksPerRow' | 'thickness' | 'color' | 'orientation' | 'opacity' | 'height', value: any) => set((state) => ({
     shelfStyling: { 
       ...state.shelfStyling, 
       dividers: { ...state.shelfStyling.dividers, [property]: value } 
@@ -70,6 +71,7 @@ export const createShelvesSlice: CustomizationSliceCreator = (set) => ({
     color?: string;
     opacity?: number;
     orientation?: 'vertical' | 'horizontal' | 'both';
+    height?: number;
   }) => set((state) => ({
     shelfStyling: {
       ...state.shelfStyling,

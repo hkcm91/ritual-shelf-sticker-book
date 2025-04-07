@@ -5,6 +5,7 @@ import { useBookshelfStore } from '@/store/bookshelfStore';
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
+import DividerAppearanceSliders from '@/components/customization/tabs/shelves/controls/DividerAppearanceSliders';
 
 const VerticalDividersControl: React.FC = () => {
   const {
@@ -67,21 +68,29 @@ const VerticalDividersControl: React.FC = () => {
       </div>
       
       {verticalDividersEnabled && (
-        <div className="space-y-2 pl-6">
-          <div className="flex justify-between">
-            <Label>Books between dividers</Label>
-            <span className="text-sm text-muted-foreground">{booksPerSection}</span>
+        <div className="space-y-4 pl-6">
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              <Label>Books between dividers</Label>
+              <span className="text-sm text-muted-foreground">{booksPerSection}</span>
+            </div>
+            <Slider
+              value={[booksPerSection]}
+              min={2}
+              max={6}
+              step={1}
+              onValueChange={handleBooksPerSectionChange}
+            />
+            <p className="text-xs text-muted-foreground">
+              Number of book slots between each vertical divider
+            </p>
           </div>
-          <Slider
-            value={[booksPerSection]}
-            min={2}
-            max={6}
-            step={1}
-            onValueChange={handleBooksPerSectionChange}
-          />
-          <p className="text-xs text-muted-foreground">
-            Number of book slots between each vertical divider
-          </p>
+          
+          {/* Add the divider appearance sliders */}
+          <div className="mt-4">
+            <h4 className="text-sm font-medium mb-2">Divider Appearance</h4>
+            <DividerAppearanceSliders />
+          </div>
         </div>
       )}
     </div>

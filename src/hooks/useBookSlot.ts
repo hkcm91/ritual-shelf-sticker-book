@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import { useDragAndDrop } from './useDragAndDrop';
@@ -26,7 +27,10 @@ export const useBookSlot = ({ position, slotType }: UseBookSlotProps) => {
   
   // For stickers, keep track of 2D position, scale, rotation
   const [position2D, setPosition2D] = useState({ x: 0, y: 0 });
-  const { scale, rotation, handleScaleChange, handleRotate, handleResetTransform } = useTransformControls();
+  const { scale, rotation, handleScaleChange, handleRotate, handleResetTransform } = useTransformControls({ 
+    activeShelfId,  // Pass the required activeShelfId argument here
+    position 
+  });
   
   // Handle file input for empty slots
   const { fileInputRef, handleFileChange, handleClick } = useFileHandler({ position, slotType });
@@ -100,3 +104,4 @@ export const useBookSlot = ({ position, slotType }: UseBookSlotProps) => {
     isAltDrag
   };
 };
+

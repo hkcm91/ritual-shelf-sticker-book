@@ -13,8 +13,7 @@ const BookshelfGrid: React.FC = () => {
     activeShelfId, 
     shelves, 
     zoomLevel, 
-    isCustomizationModalOpen, 
-    closeCustomizationModal,
+    ui,
     loadCustomization
   } = useBookshelfStore();
   
@@ -132,8 +131,11 @@ const BookshelfGrid: React.FC = () => {
       
       {/* Customization Modal */}
       <CustomizationModal 
-        open={isCustomizationModalOpen} 
-        onOpenChange={closeCustomizationModal} 
+        open={ui?.isCustomizationModalOpen || false} 
+        onOpenChange={(isOpen) => {
+          const { openCustomizationModal, closeCustomizationModal } = useBookshelfStore.getState();
+          isOpen ? openCustomizationModal() : closeCustomizationModal();
+        }} 
       />
     </>
   );

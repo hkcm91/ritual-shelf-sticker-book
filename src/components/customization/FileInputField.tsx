@@ -1,5 +1,5 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FileImage, XCircle } from "lucide-react";
@@ -11,6 +11,9 @@ interface FileInputFieldProps {
   placeholder?: string;
   clearLabel?: string;
   uploadLabel?: string;
+  isLoading?: boolean;
+  setIsLoading?: React.Dispatch<React.SetStateAction<boolean>>;
+  accept?: string;
 }
 
 const FileInputField: React.FC<FileInputFieldProps> = ({
@@ -18,7 +21,10 @@ const FileInputField: React.FC<FileInputFieldProps> = ({
   onChange,
   placeholder = "Enter image URL",
   clearLabel = "Clear",
-  uploadLabel = "Upload Image"
+  uploadLabel = "Upload Image",
+  isLoading = false,
+  setIsLoading,
+  accept = "image/*"
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -27,6 +33,8 @@ const FileInputField: React.FC<FileInputFieldProps> = ({
     if (!file) return;
     
     if (file.type.startsWith('image/')) {
+      if (setIsLoading) setIsLoading(true);
+      
       const reader = new FileReader();
       reader.onload = (event) => {
         if (event.target?.result) {
@@ -35,9 +43,17 @@ const FileInputField: React.FC<FileInputFieldProps> = ({
           } catch (error) {
             console.error('Error loading image:', error);
             toast.error('Image may be too large. Try using a URL instead.');
+          } finally {
+            if (setIsLoading) setIsLoading(false);
           }
         }
       };
+      
+      reader.onerror = () => {
+        toast.error('Failed to read the file');
+        if (setIsLoading) setIsLoading(false);
+      };
+      
       reader.readAsDataURL(file);
     } else {
       toast.error('Only image files are supported');
@@ -62,15 +78,17 @@ const FileInputField: React.FC<FileInputFieldProps> = ({
           variant="outline"
           onClick={() => fileInputRef.current?.click()}
           className="flex-1"
+          disabled={isLoading}
         >
-          <FileImage className="mr-1 h-4 w-4" /> {uploadLabel}
+          <FileImage className="mr-1 h-4 w-4" /> 
+          {isLoading ? "Uploading..." : uploadLabel}
         </Button>
         
         <Button
           type="button"
           variant="outline"
           onClick={() => onChange('')}
-          disabled={!value}
+          disabled={!value || isLoading}
         >
           <XCircle className="mr-1 h-4 w-4" /> {clearLabel}
         </Button>
@@ -78,9 +96,10 @@ const FileInputField: React.FC<FileInputFieldProps> = ({
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/*"
+          accept={accept}
           className="hidden"
           onChange={handleFileChange}
+          disabled={isLoading}
         />
       </div>
     </div>

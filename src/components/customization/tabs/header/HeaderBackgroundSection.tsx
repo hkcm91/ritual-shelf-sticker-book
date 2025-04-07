@@ -63,10 +63,10 @@ const HeaderBackgroundSection: React.FC<HeaderBackgroundSectionProps> = ({
       {showColorChart && (
         <div className="rounded-lg border p-3 mt-2 bg-background">
           <ColorChart
-            baseColor={background.startsWith('rgba') 
+            color={background.startsWith('rgba') 
               ? background.replace(/rgba\((\d+),\s*(\d+),\s*(\d+).*/, 'rgb($1,$2,$3)')
               : background}
-            onSelectColor={handleColorSelect}
+            onChange={handleColorSelect}
           />
         </div>
       )}

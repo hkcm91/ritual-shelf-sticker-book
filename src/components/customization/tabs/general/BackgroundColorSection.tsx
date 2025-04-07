@@ -62,8 +62,8 @@ const BackgroundColorSection: React.FC<BackgroundColorSectionProps> = ({
       {showColorChart && (
         <div className="rounded-lg border p-3 mt-2 bg-background">
           <ColorChart
-            baseColor={background || '#f5f5f5'}
-            onSelectColor={handleColorSelect}
+            color={background || '#f5f5f5'}
+            onChange={handleColorSelect}
           />
         </div>
       )}

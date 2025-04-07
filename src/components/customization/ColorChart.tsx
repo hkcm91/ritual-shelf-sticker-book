@@ -6,11 +6,18 @@ import { Button } from "@/components/ui/button";
 import { Copy, Save, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
-import { PaletteTab } from './color-chart/PaletteTab';
+import PaletteTab from './color-chart/PaletteTab';
 import ShadesTab from './color-chart/ShadesTab';
 import HarmonyTab from './color-chart/HarmonyTab';
 import SavedColors from './color-chart/SavedColors';
-import { generateShades, generateHarmonies, hexToHsv, hsvToHex } from './color-utils/colorConversion';
+import { 
+  generateShadesAndTints, 
+  generateHarmonies, 
+  hexToRgb, 
+  rgbToHex,
+  rgbToHsl,
+  hslToRgb
+} from './color-utils/colorConversion';
 
 interface ColorChartProps {
   color: string;
@@ -36,6 +43,70 @@ const ColorChart: React.FC<ColorChartProps> = ({ color, onChange, onClose }) => 
   const hueThumbRef = useRef<HTMLDivElement>(null);
   const isDraggingRef = useRef(false);
   const isHueDraggingRef = useRef(false);
+
+  // Convert hex to HSV
+  const hexToHsv = (hex: string): { h: number, s: number, v: number } => {
+    const rgb = hexToRgb(hex);
+    if (!rgb) return { h: 0, s: 0, v: 0 };
+    
+    const [r, g, b] = rgb;
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const delta = max - min;
+    
+    // Calculate hue
+    let h = 0;
+    if (delta !== 0) {
+      if (max === r) {
+        h = ((g - b) / delta) % 6;
+      } else if (max === g) {
+        h = (b - r) / delta + 2;
+      } else {
+        h = (r - g) / delta + 4;
+      }
+    }
+    
+    h = Math.round(h * 60);
+    if (h < 0) h += 360;
+    
+    // Calculate saturation and value
+    const s = max === 0 ? 0 : Math.round((delta / max) * 100);
+    const v = Math.round((max / 255) * 100);
+    
+    return { h, s, v };
+  };
+
+  // Convert HSV to hex
+  const hsvToHex = (hsv: { h: number, s: number, v: number }): string => {
+    const { h, s, v } = hsv;
+    const hi = Math.floor(h / 60) % 6;
+    const f = h / 60 - Math.floor(h / 60);
+    const p = v * (1 - s / 100);
+    const q = v * (1 - f * s / 100);
+    const t = v * (1 - (1 - f) * s / 100);
+    
+    let r = 0, g = 0, b = 0;
+    v = v * 255 / 100;
+    p = p * 255 / 100;
+    q = q * 255 / 100;
+    t = t * 255 / 100;
+    
+    switch (hi) {
+      case 0: r = v; g = t; b = p; break;
+      case 1: r = q; g = v; b = p; break;
+      case 2: r = p; g = v; b = t; break;
+      case 3: r = p; g = q; b = v; break;
+      case 4: r = t; g = p; b = v; break;
+      case 5: r = v; g = p; b = q; break;
+    }
+    
+    return rgbToHex(Math.round(r), Math.round(g), Math.round(b));
+  };
+
+  // Generate shades from current color
+  const generateShades = (color: string, count: number): string[] => {
+    return generateShadesAndTints(color);
+  };
 
   // Load saved colors from localStorage on component mount
   useEffect(() => {
@@ -385,6 +456,7 @@ const ColorChart: React.FC<ColorChartProps> = ({ color, onChange, onClose }) => 
         
         <TabsContent value="palette" className="mt-0">
           <PaletteTab 
+            palette={generatePalette(currentColor)}
             onSelectColor={handleSelectColor}
             onCopyColor={handleCopyColor}
             onSaveColor={handleSaveColor}
@@ -399,6 +471,22 @@ const ColorChart: React.FC<ColorChartProps> = ({ color, onChange, onClose }) => 
       />
     </div>
   );
+};
+
+// Helper function to generate a palette
+const generatePalette = (baseColor: string): string[] => {
+  const rgb = hexToRgb(baseColor);
+  if (!rgb) return [baseColor, baseColor, baseColor, baseColor, baseColor];
+  
+  const [h, s, l] = rgbToHsl(...rgb);
+  
+  return [
+    rgbToHex(...hslToRgb(h, Math.min(1, s * 1.2), Math.max(0, l - 0.15))), // Primary
+    rgbToHex(...hslToRgb((h + 0.05) % 1, Math.max(0, s - 0.2), Math.min(0.9, l + 0.1))), // Secondary
+    rgbToHex(...hslToRgb((h + 0.02) % 1, Math.max(0, s - 0.4), Math.min(0.95, l + 0.25))), // Background
+    rgbToHex(...hslToRgb(h, Math.min(1, s * 1.3), Math.max(0, l - 0.3))), // Header
+    rgbToHex(...hslToRgb((h + 0.5) % 1, Math.min(1, s * 0.8), Math.max(0.1, l))), // Accent
+  ];
 };
 
 export default ColorChart;

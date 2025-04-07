@@ -8,12 +8,19 @@ import { createSlotsSlice } from './slotsSlice';
 import { createHeaderSlice } from './headerSlice';
 import { createStorageSlice } from './storageSlice';
 import { CustomizationSliceCreator } from './types';
+import { StateCreator } from 'zustand';
+import { BookshelfState } from '../../bookshelfStore';
 
 // Export the default customization for use in the main store
 export { defaultCustomization } from './types';
 
 // Make sure activeTheme is treated as required
-export const createCustomizationSlice: CustomizationSliceCreator = (set, get, api) => {
+export const createCustomizationSlice: StateCreator<
+  BookshelfState,
+  [],
+  [],
+  BookshelfState
+> = (set, get, api) => {
   // Start with the base customization state to ensure all required properties are present
   const baseState = {
     ...defaultCustomization,
@@ -33,4 +40,5 @@ export const createCustomizationSlice: CustomizationSliceCreator = (set, get, ap
 };
 
 // Export types
-export type { CustomizationState, ShelfStyling } from './types';
+export type { CustomizationState } from './types';
+export type { ShelfStyling } from './types';

@@ -1,3 +1,4 @@
+
 import { CustomizationSliceCreator, defaultCustomization } from './types';
 import { toast } from 'sonner';
 import themes from '@/themes';
@@ -12,7 +13,8 @@ export const createStorageSlice: CustomizationSliceCreator = (set, get, api) => 
     const currentState = get();
     
     // Get the selected theme configuration
-    const themeConfig = themes[themeName as ThemeName] || themes.default;
+    const themeKey = themeName as keyof typeof themes;
+    const themeConfig = themes[themeKey as Exclude<typeof themeKey, 'custom'>] || themes.default;
     
     // Apply theme settings to customization state
     set({ 

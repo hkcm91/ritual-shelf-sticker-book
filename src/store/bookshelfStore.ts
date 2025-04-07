@@ -6,6 +6,7 @@ import { CompleteShelvesSlice, createShelvesSlice } from './shelvesSlice';
 import { UISlice, createUISlice } from './uiSlice';
 import { CustomizationState, createCustomizationSlice } from './slices/customization';
 import { BookData, ShelfData } from './types';
+import { StateCreator, StoreApi } from 'zustand';
 
 export type BookshelfState = BooksSlice & CompleteShelvesSlice & UISlice & CustomizationState & {
   findEmptyPosition: (shelfId: string) => number;

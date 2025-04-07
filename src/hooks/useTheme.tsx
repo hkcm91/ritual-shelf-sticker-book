@@ -80,7 +80,9 @@ export const useTheme = () => {
       return;
     }
     
-    const theme = themes[activeTheme as ThemeName] || themes.default;
+    // Fix for type safety
+    const themeKey = activeTheme as keyof typeof themes;
+    const theme = themes[themeKey] || themes.default;
     
     // Apply CSS variables to root
     Object.entries(theme.variables).forEach(([key, value]) => {
@@ -98,15 +100,29 @@ export const useTheme = () => {
   
   // Add custom theme to available themes
   const allThemes = { ...themes };
-  if (!allThemes.custom && activeTheme === 'custom') {
-    // @ts-ignore - adding a dynamic theme
-    allThemes.custom = {
+  
+  // Safely check and add custom theme if needed
+  if (activeTheme === 'custom') {
+    // Create a type-safe way to extend the themes object
+    const customTheme = {
       name: "Custom Theme",
       variables: {},
       textures: {
         shelf: "",
         background: ""
       }
+    };
+    
+    const extendedThemes = {
+      ...allThemes,
+      custom: customTheme
+    };
+    
+    return {
+      activeTheme,
+      setActiveTheme,
+      themes: extendedThemes,
+      availableThemes: Object.keys(themes) as ThemeName[]
     };
   }
   

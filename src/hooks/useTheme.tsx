@@ -50,6 +50,21 @@ export function useTheme() {
           } else {
             document.documentElement.style.setProperty('--page-bg-image', 'none');
           }
+          
+          // Set divider background image to match shelf texture
+          document.documentElement.style.setProperty(
+            '--divider-bg-image', 
+            `url(${themeToApply.textures.shelf || ''})`
+          );
+        }
+        
+        // Enable dividers by default in themes
+        if (themeToApply.variables['--divider-thickness']) {
+          const dividerThickness = parseInt(themeToApply.variables['--divider-thickness']);
+          if (dividerThickness > 0) {
+            // Auto-enable dividers for the theme if thickness is set
+            useBookshelfStore.getState().toggleDividers(true);
+          }
         }
       } else if (activeTheme === 'custom') {
         // For custom theme, we apply the current state values directly
@@ -87,11 +102,22 @@ export function useTheme() {
         );
         document.documentElement.style.setProperty('--shelf-opacity', `${shelfStyling?.opacity || 1}`);
         
+        // Set shelf texture for use in other elements
+        document.documentElement.style.setProperty(
+          '--shelf-texture', 
+          shelfStyling?.backgroundImage ? `url(${shelfStyling.backgroundImage})` : 'url(/lovable-uploads/e6d15a98-d15d-428c-88a8-a557392b7410.png)'
+        );
+        
         // Dividers
         if (shelfStyling?.dividers) {
-          document.documentElement.style.setProperty('--divider-thickness', `${shelfStyling.dividers.thickness || 2}px`);
+          document.documentElement.style.setProperty('--divider-thickness', `${shelfStyling.dividers.thickness || 8}px`);
           document.documentElement.style.setProperty('--divider-color', shelfStyling.dividers.color || '#714621');
+          document.documentElement.style.setProperty('--divider-opacity', `${shelfStyling.dividers.opacity || 1}`);
           document.documentElement.style.setProperty('--divider-orientation', shelfStyling.dividers.orientation || 'vertical');
+          document.documentElement.style.setProperty(
+            '--divider-bg-image', 
+            shelfStyling?.backgroundImage ? `url(${shelfStyling.backgroundImage})` : 'url(/lovable-uploads/e6d15a98-d15d-428c-88a8-a557392b7410.png)'
+          );
         }
       }
       
@@ -120,11 +146,13 @@ export function useTheme() {
       '--container-bg': container?.background || '#a47148',
       '--shelf-color': shelfStyling?.color || '#8B5A2B',
       '--divider-color': shelfStyling?.dividers?.color || '#714621',
+      '--divider-thickness': `${shelfStyling?.dividers?.thickness || 8}px`,
+      '--divider-opacity': `${shelfStyling?.dividers?.opacity || 1}`,
       '--divider-orientation': shelfStyling?.dividers?.orientation || 'vertical',
       // Add more variables as needed
     },
     textures: {
-      shelf: shelfStyling?.backgroundImage || '',
+      shelf: shelfStyling?.backgroundImage || '/lovable-uploads/e6d15a98-d15d-428c-88a8-a557392b7410.png',
       background: page?.backgroundImage || '',
     }
   };

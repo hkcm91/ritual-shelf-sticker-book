@@ -25,8 +25,9 @@ const defaultTheme: Theme = {
     '--shelf-opacity': '1',
     
     // Dividers
-    '--divider-thickness': '2px',
+    '--divider-thickness': '8px',
     '--divider-color': '#714621',
+    '--divider-opacity': '1',
     
     // Slots
     '--add-button-bg': 'rgba(255, 255, 255, 0.9)',
@@ -43,7 +44,7 @@ const defaultTheme: Theme = {
     '--header-text-color': '#ffffff',
   },
   textures: {
-    shelf: '/textures/default/wood.jpg',
+    shelf: '/lovable-uploads/e6d15a98-d15d-428c-88a8-a557392b7410.png',
     background: '',
   }
 };

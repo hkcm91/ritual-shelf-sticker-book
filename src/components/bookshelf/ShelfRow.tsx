@@ -97,11 +97,31 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
   
   // Get custom shelf texture or use default
   const shelfTexture = shelf?.textureImage || 
-                      (useRealisticStyle ? '/lovable-uploads/6583044d-0b9d-49ea-a8f6-a3ac405b78d5.png' : 
+                      (useRealisticStyle ? '/lovable-uploads/e6d15a98-d15d-428c-88a8-a557392b7410.png' : 
                       '/textures/default/wood.jpg');
 
   return (
     <div className={`shelf-row flex flex-col w-full relative ${useRealisticStyle ? 'realistic-shelf' : ''}`}>
+      {/* Add vertical dividers on the sides */}
+      <div 
+        className="shelf-side-left" 
+        style={{
+          width: `${shelfStyling?.dividers?.thickness || 8}px`,
+          backgroundColor: shelfStyling?.dividers?.color || '#714621',
+          backgroundImage: `url(${shelfTexture})`,
+          opacity: shelfStyling?.dividers?.opacity || 1
+        }}
+      ></div>
+      <div 
+        className="shelf-side-right" 
+        style={{
+          width: `${shelfStyling?.dividers?.thickness || 8}px`,
+          backgroundColor: shelfStyling?.dividers?.color || '#714621',
+          backgroundImage: `url(${shelfTexture})`,
+          opacity: shelfStyling?.dividers?.opacity || 1
+        }}
+      ></div>
+      
       {/* Render books and dividers */}
       {renderSlots()}
       

@@ -25,8 +25,9 @@ const darkAcademia: Theme = {
     '--shelf-opacity': '1',
     
     // Dividers
-    '--divider-thickness': '2px',
+    '--divider-thickness': '8px',
     '--divider-color': '#271911',
+    '--divider-opacity': '1',
     
     // Slots
     '--add-button-bg': 'rgba(30, 30, 30, 0.8)',

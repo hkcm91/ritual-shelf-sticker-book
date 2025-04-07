@@ -25,8 +25,9 @@ const cozyCottage: Theme = {
     '--shelf-opacity': '1',
     
     // Dividers
-    '--divider-thickness': '2px',
+    '--divider-thickness': '8px',
     '--divider-color': '#a38055',
+    '--divider-opacity': '1',
     
     // Slots
     '--add-button-bg': 'rgba(255, 255, 255, 0.9)',

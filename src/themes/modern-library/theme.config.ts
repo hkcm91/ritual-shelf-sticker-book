@@ -25,8 +25,9 @@ const modernLibrary: Theme = {
     '--shelf-opacity': '1',
     
     // Dividers
-    '--divider-thickness': '3px',
+    '--divider-thickness': '8px',
     '--divider-color': '#1f2937',
+    '--divider-opacity': '1',
     
     // Slots
     '--add-button-bg': 'rgba(240, 240, 240, 0.9)',

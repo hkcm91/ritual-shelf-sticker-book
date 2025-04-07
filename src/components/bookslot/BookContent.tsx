@@ -40,15 +40,28 @@ const BookContent: React.FC<BookContentProps> = ({
       hasTitle: !!book.title,
       hasAuthor: !!book.author,
       hasCoverURL: !!book.coverURL,
+      coverURLLength: book.coverURL ? book.coverURL.length : 0,
       coverURLValue: book.coverURL ? `${book.coverURL.substring(0, 30)}...` : "undefined",
       position: book.position,
-      shelfId: book.shelfId
+      shelfId: book.shelfId,
+      hidden: book.hidden
     });
   }, [book]);
 
   if (!book) {
     console.error('BookContent received null/undefined book');
     return null;
+  }
+  
+  // Add additional safety check to prevent rendering issues
+  if (book.hidden === true) {
+    console.warn('BookContent attempted to render hidden book:', book.id);
+    // Render a minimal placeholder instead of hiding completely
+    return (
+      <div className="w-full h-full bg-gray-200 rounded-md flex items-center justify-center">
+        <span className="text-gray-500 text-xs">Hidden Book</span>
+      </div>
+    );
   }
   
   // Render book

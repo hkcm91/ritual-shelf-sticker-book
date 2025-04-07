@@ -32,7 +32,10 @@ const Book: React.FC<BookProps> = ({ data }) => {
     return null;
   }
   
-  // Add error boundary for the book component
+  // Add safety check - if book is somehow marked as hidden, render a placeholder anyway
+  // This ensures the book is still visible and clickable even if there's an issue
+  const isHidden = data.hidden === true;
+  
   return (
     <div
       className="relative w-full h-full cursor-grab"
@@ -40,13 +43,18 @@ const Book: React.FC<BookProps> = ({ data }) => {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onClick={handleClick}
-      style={{ display: 'block', opacity: 1 }} // Force display block
+      style={{ display: 'block', opacity: isHidden ? 0.5 : 1 }}
+      data-book-id={data.id}
     >
       <div 
         className="w-full h-full overflow-hidden rounded shadow-md transition-transform duration-200 hover:scale-105"
-        style={{ opacity: 1, display: 'block' }} // Force opacity and display
+        style={{ opacity: 1, display: 'block' }}
+        data-has-cover={!!data.coverURL}
       >
-        <BookCover coverURL={data.coverURL} progress={data.progress} />
+        <BookCover 
+          coverURL={data.coverURL} 
+          progress={data.progress} 
+        />
       </div>
     </div>
   );

@@ -35,9 +35,14 @@ const BookCover: React.FC<BookCoverProps> = ({ coverURL, progress = 0 }) => {
             display: 'block',
             zIndex: 10
           }}
+          data-has-cover="true"
         />
       ) : (
-        <div className="w-full h-full flex items-center justify-center bg-amber-800 rounded" style={{zIndex: 5}}>
+        <div 
+          className="w-full h-full flex items-center justify-center bg-amber-800 rounded" 
+          style={{zIndex: 5}}
+          data-has-cover="false"
+        >
           <span className="text-amber-200 text-sm font-medium">No cover</span>
         </div>
       )}

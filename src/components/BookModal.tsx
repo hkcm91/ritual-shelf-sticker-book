@@ -53,7 +53,8 @@ const BookModal: React.FC = () => {
       console.log('Loaded book data from store:', {
         id: activeBookId,
         hasCover: !!coverURL,
-        coverLength: coverURL ? coverURL.length : 0
+        coverLength: coverURL ? coverURL.length : 0,
+        coverSample: coverURL ? coverURL.substring(0, 50) + '...' : 'undefined'
       });
     } else {
       // Reset form for new books
@@ -89,6 +90,8 @@ const BookModal: React.FC = () => {
   
   const handleCoverChange = (imageUrl: string) => {
     console.log('Cover changed, new length:', imageUrl ? imageUrl.length : 0);
+    console.log('Cover sample:', imageUrl ? imageUrl.substring(0, 50) + '...' : 'undefined');
+    
     setBookData(prev => ({
       ...prev,
       coverURL: imageUrl
@@ -97,8 +100,28 @@ const BookModal: React.FC = () => {
   
   const handleSave = () => {
     if (activeBookId) {
+      // Make sure we are actually sending the cover URL data
       console.log('Saving book with cover:', bookData.coverURL ? `present (${bookData.coverURL.length} chars)` : 'missing');
-      updateBook(activeBookId, bookData);
+      console.log('Cover sample being saved:', bookData.coverURL ? bookData.coverURL.substring(0, 50) + '...' : 'undefined');
+      
+      // Create update object explicitly to ensure coverURL is included
+      const updateData = {
+        title: bookData.title,
+        author: bookData.author,
+        series: bookData.series,
+        progress: bookData.progress,
+        rating: bookData.rating,
+        characters: bookData.characters,
+        plot: bookData.plot,
+        notes: bookData.notes,
+        coverURL: bookData.coverURL,
+        quizzes: bookData.quizzes,
+        // Important: preserve these flags that should not be changed
+        hidden: books[activeBookId]?.hidden || false,
+        isSticker: books[activeBookId]?.isSticker || false
+      };
+      
+      updateBook(activeBookId, updateData);
       
       // Verify cover was included
       setTimeout(() => {
@@ -106,6 +129,7 @@ const BookModal: React.FC = () => {
         if (savedBook) {
           console.log('After save - Book cover in store:', 
             savedBook.coverURL ? `present (${savedBook.coverURL.length} chars)` : 'missing');
+          console.log('Cover sample after save:', savedBook.coverURL ? savedBook.coverURL.substring(0, 50) + '...' : 'undefined');
         }
       }, 100);
     }

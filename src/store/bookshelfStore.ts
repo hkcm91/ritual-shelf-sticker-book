@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { BooksSlice, createBooksSlice } from './booksSlice';
 import { CompleteShelvesSlice, createShelvesSlice } from './shelvesSlice';
 import { UISlice, createUISlice } from './uiSlice';
-import { CustomizationState, createCustomizationSlice, defaultCustomization } from './slices/customization';
+import { CustomizationState, createCustomizationSlice } from './slices/customization';
 import { BookData, ShelfData } from './types';
 
 export type BookshelfState = BooksSlice & CompleteShelvesSlice & UISlice & CustomizationState & {

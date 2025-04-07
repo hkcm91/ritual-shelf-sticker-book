@@ -19,9 +19,9 @@ const DividerAppearanceSliders: React.FC = () => {
         </div>
         <Slider
           value={[shelfStyling?.dividers?.thickness || 2]}
-          min={2}
-          max={16}
-          step={2}
+          min={1}
+          max={12}
+          step={1}
           onValueChange={(value) => updateDividersSetting('thickness', value[0])}
         />
       </div>
@@ -33,7 +33,7 @@ const DividerAppearanceSliders: React.FC = () => {
         </div>
         <Slider
           value={[(shelfStyling?.dividers?.opacity || 1) * 100]}
-          min={40}
+          min={20}
           max={100}
           step={5}
           onValueChange={(value) => updateDividersSetting('opacity', value[0] / 100)}

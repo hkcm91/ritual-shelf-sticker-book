@@ -15,7 +15,7 @@ export const useBookSlot = ({ position, slotType }: UseBookSlotProps) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isAltDrag, setIsAltDrag] = useState(false);
   
-  // Get book from store by position, passing the activeShelfId
+  // Get book from store by position, explicitly passing the activeShelfId
   const book = getBookByPosition(position, activeShelfId);
   
   // Log for debugging

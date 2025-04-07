@@ -1,10 +1,9 @@
 
 import React from 'react';
-import { DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Button } from '@/components/ui/button';
-import { Palette, Maximize2, Minimize2 } from "lucide-react";
+import { Maximize2, Minimize2, X, Palette, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { AnimatedChild } from '../animations/ModalAnimations';
-import { motion } from 'framer-motion';
+import Preview3DButton from '../Preview3DButton';
 
 interface ModalHeaderProps {
   isFullscreen: boolean;
@@ -16,46 +15,42 @@ const ModalHeader: React.FC<ModalHeaderProps> = ({
   toggleFullscreen 
 }) => {
   return (
-    <DialogHeader className="flex-row justify-between items-center space-y-0 pb-3 flex-shrink-0 border-b border-amber-900/20">
-      <AnimatedChild>
-        <DialogTitle className="flex items-center text-xl text-amber-100">
-          <div className="relative">
-            <Palette className="mr-2.5 h-5 w-5 text-amber-400" />
-            <motion.div 
-              animate={{ 
-                scale: [1, 1.2, 1], 
-                opacity: [0.7, 1, 0.7] 
-              }}
-              transition={{ 
-                duration: 2, 
-                repeat: Infinity,
-                repeatType: "reverse" 
-              }}
-              className="absolute inset-0 bg-amber-400/30 rounded-full blur-md"
-            />
-          </div>
-          <span className="text-gradient-gold font-semibold">Magical Bookshelf Customization</span>
-        </DialogTitle>
-        <DialogDescription className="text-amber-100/70 mt-1">
-          Choose a theme or craft your own magical bookshelf appearance
-        </DialogDescription>
-      </AnimatedChild>
+    <AnimatedChild className="flex justify-between items-center">
+      <div className="flex items-center gap-2">
+        <Palette className="h-5 w-5 text-amber-400/90" />
+        <h2 className="text-xl font-semibold text-amber-50 flex items-center gap-1.5">
+          Bookshelf Customization 
+          <Sparkles className="h-4 w-4 text-amber-300/90" />
+        </h2>
+      </div>
       
-      <AnimatedChild>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={toggleFullscreen}
-          className="h-8 w-8 bg-slate-800/50 border-slate-700/50 text-amber-100 hover:bg-slate-700/70 hover:text-amber-200 transition-all duration-300"
-          title={isFullscreen ? "Exit fullscreen" : "Fullscreen mode"}
-        >
-          {isFullscreen ? 
-            <Minimize2 className="h-4 w-4" /> : 
-            <Maximize2 className="h-4 w-4" />
-          }
-        </Button>
-      </AnimatedChild>
-    </DialogHeader>
+      <div className="flex items-center gap-3">
+        <Preview3DButton />
+        
+        <div className="flex">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={toggleFullscreen} 
+            className="text-amber-100 hover:bg-amber-800/20 hover:text-amber-50"
+          >
+            {isFullscreen ? 
+              <Minimize2 className="h-5 w-5" /> : 
+              <Maximize2 className="h-5 w-5" />
+            }
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="icon"
+            type="button"
+            className="text-amber-100 hover:bg-amber-800/20 hover:text-amber-50"
+            onClick={() => document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}))}
+          >
+            <X className="h-5 w-5" />
+          </Button>
+        </div>
+      </div>
+    </AnimatedChild>
   );
 };
 

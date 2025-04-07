@@ -5,12 +5,9 @@ import {
   ContextMenuTrigger,
   ContextMenuContent,
   ContextMenuItem,
-  ContextMenuSeparator,
-  ContextMenuSub,
-  ContextMenuSubTrigger,
-  ContextMenuSubContent
+  ContextMenuSeparator
 } from "@/components/ui/context-menu";
-import { RotateCcw, RotateCw, RefreshCw, Trash2, Layers, ArrowUp, ArrowDown } from "lucide-react";
+import { RotateCcw, RotateCw, RefreshCw, Trash2 } from "lucide-react";
 
 type ContextMenuWrapperProps = {
   children: React.ReactNode;
@@ -18,7 +15,6 @@ type ContextMenuWrapperProps = {
   handleRotate: (direction: 'cw' | 'ccw') => void;
   handleResetTransform: () => void;
   setShowDeleteDialog: (show: boolean) => void;
-  handleZIndexChange?: (direction: 'up' | 'down') => void;
 };
 
 const ContextMenuWrapper: React.FC<ContextMenuWrapperProps> = ({
@@ -26,8 +22,7 @@ const ContextMenuWrapper: React.FC<ContextMenuWrapperProps> = ({
   book,
   handleRotate,
   handleResetTransform,
-  setShowDeleteDialog,
-  handleZIndexChange
+  setShowDeleteDialog
 }) => {
   if (!book?.isSticker) return <>{children}</>;
   
@@ -45,20 +40,6 @@ const ContextMenuWrapper: React.FC<ContextMenuWrapperProps> = ({
           <RotateCw className="mr-2 h-4 w-4" />
           <span>Rotate Right</span>
         </ContextMenuItem>
-        
-        {handleZIndexChange && (
-          <>
-            <ContextMenuSeparator />
-            <ContextMenuItem onClick={() => handleZIndexChange('up')}>
-              <ArrowUp className="mr-2 h-4 w-4" />
-              <span>Bring Forward</span>
-            </ContextMenuItem>
-            <ContextMenuItem onClick={() => handleZIndexChange('down')}>
-              <ArrowDown className="mr-2 h-4 w-4" />
-              <span>Send Backward</span>
-            </ContextMenuItem>
-          </>
-        )}
         
         <ContextMenuSeparator />
         <ContextMenuItem onClick={handleResetTransform}>

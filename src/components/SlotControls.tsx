@@ -10,14 +10,26 @@ type SlotControlsProps = {
   onResetTransform: () => void;
   onShowDeleteDialog: () => void;
   isLottie?: boolean;
-  zIndex?: number;
-  onZIndexChange?: (direction: 'up' | 'down') => void;
 };
 
-const SlotControls: React.FC<SlotControlsProps> = (props) => {
+const SlotControls: React.FC<SlotControlsProps> = ({
+  scale,
+  onScaleChange,
+  onRotate,
+  onResetTransform,
+  onShowDeleteDialog,
+  isLottie
+}) => {
   return (
     <PopoverContent className="w-72 p-0" side="top">
-      <StickerControls {...props} />
+      <StickerControls 
+        scale={scale}
+        onScaleChange={onScaleChange}
+        onRotate={onRotate}
+        onResetTransform={onResetTransform}
+        onShowDeleteDialog={onShowDeleteDialog}
+        isLottie={isLottie}
+      />
     </PopoverContent>
   );
 };

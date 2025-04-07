@@ -17,7 +17,7 @@ type BookSlotProps = {
 
 const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   const [slotType, setSlotType] = useState<"book" | "sticker">("book");
-  const { activeTheme, updateBook } = useBookshelfStore();
+  const { activeTheme } = useBookshelfStore();
   
   const {
     book,
@@ -43,7 +43,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
 
   // Handle type toggle without triggering file input
   const handleTypeToggle = (value: string) => {
-    if (value) {
+    if (value === 'book' || value === 'sticker') {
       setSlotType(value as "book" | "sticker");
     }
   };
@@ -53,19 +53,6 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     if (!book) {
       handleClick();
     }
-  };
-  
-  // Handling z-index changes
-  const handleZIndexChange = (direction: 'up' | 'down') => {
-    if (!book) return;
-    
-    const currentZIndex = book.zIndex || 1;
-    const newZIndex = direction === 'up' ? currentZIndex + 1 : Math.max(1, currentZIndex - 1);
-    
-    updateBook(book.id, {
-      ...book,
-      zIndex: newZIndex
-    });
   };
   
   // Check if we should use realistic styling
@@ -82,7 +69,6 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
           handleRotate={handleRotate}
           handleResetTransform={handleResetTransform}
           setShowDeleteDialog={setShowDeleteDialog}
-          handleZIndexChange={handleZIndexChange}
         >
           <Popover>
             <PopoverTrigger asChild>
@@ -91,7 +77,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
                 scale={scale}
                 position2D={position2D}
                 rotation={rotation}
-                zIndex={book.zIndex || 1}
+                zIndex={10} // Always set stickers to appear above books
                 handleStickerMouseDown={handleStickerMouseDown}
                 isAltDrag={isAltDrag}
               />
@@ -102,8 +88,6 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
               onRotate={handleRotate}
               onResetTransform={handleResetTransform}
               onShowDeleteDialog={() => setShowDeleteDialog(true)}
-              zIndex={book.zIndex || 1}
-              onZIndexChange={handleZIndexChange}
               isLottie={typeof book.coverURL === 'string' && book.coverURL.startsWith('{')}
             />
           </Popover>

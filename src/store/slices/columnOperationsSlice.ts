@@ -57,6 +57,7 @@ export const createColumnOperationsSlice: StateCreator<
           }
         };
         
+        // Save to localStorage
         saveShelvesToStorage(updatedShelves);
         localStorage.setItem('ritual-bookshelf-books', JSON.stringify(updatedBooks));
         

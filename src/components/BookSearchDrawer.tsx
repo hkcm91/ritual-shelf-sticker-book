@@ -89,7 +89,7 @@ const BookSearchDrawer = () => {
         </TooltipProvider>
       </SheetTrigger>
       
-      <SheetContent side="right" className="w-[90vw] sm:max-w-md overflow-y-auto">
+      <SheetContent side="left" className="w-[90vw] sm:max-w-md overflow-y-auto">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <Library size={18} />

@@ -56,6 +56,7 @@ export const createRowOperationsSlice: StateCreator<
           }
         };
         
+        // Save to localStorage directly as well (in addition to the storage service)
         saveShelvesToStorage(updatedShelves);
         localStorage.setItem('ritual-bookshelf-books', JSON.stringify(updatedBooks));
         

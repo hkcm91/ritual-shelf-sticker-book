@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Rows3, Columns } from 'lucide-react';
 import { useBookshelfStore } from '@/store/bookshelfStore';
+import { toast } from 'sonner';
 
 const LayoutTab: React.FC = () => {
   const {
@@ -21,6 +22,9 @@ const LayoutTab: React.FC = () => {
     console.log("Add row clicked, activeShelfId:", activeShelfId);
     if (activeShelfId) {
       addRow();
+      toast.success("Row added successfully");
+    } else {
+      toast.error("No active shelf selected");
     }
   };
   
@@ -28,6 +32,9 @@ const LayoutTab: React.FC = () => {
     console.log("Remove row clicked, activeShelfId:", activeShelfId);
     if (activeShelfId && activeShelf && activeShelf.rows > 1) {
       removeRow();
+      toast.success("Row removed successfully");
+    } else {
+      toast.error("Cannot remove the last row");
     }
   };
   
@@ -35,6 +42,9 @@ const LayoutTab: React.FC = () => {
     console.log("Add column clicked, activeShelfId:", activeShelfId);
     if (activeShelfId) {
       addColumn();
+      toast.success("Column added successfully");
+    } else {
+      toast.error("No active shelf selected");
     }
   };
   
@@ -42,8 +52,13 @@ const LayoutTab: React.FC = () => {
     console.log("Remove column clicked, activeShelfId:", activeShelfId);
     if (activeShelfId && activeShelf && activeShelf.columns > 1) {
       removeColumn();
+      toast.success("Column removed successfully");
+    } else {
+      toast.error("Cannot remove the last column");
     }
   };
+
+  console.log("LayoutTab rendering, activeShelfId:", activeShelfId, "activeShelf:", activeShelf);
 
   return (
     <div className="space-y-6">

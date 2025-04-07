@@ -22,13 +22,14 @@ export const searchBooks = async (query: string): Promise<OpenLibraryBook[]> => 
   try {
     if (!query.trim()) return [];
     
-    const response = await axios.get<OpenLibraryResponse>(OPEN_LIBRARY_API_URL, {
-      params: {
-        q: query,
-        limit: 20,
-        fields: 'key,title,author_name,cover_i,first_publish_year,series'
-      }
-    });
+    // Add a brief delay to avoid rate limiting issues
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Use a CORS proxy to avoid the CORS issues
+    const proxyUrl = 'https://corsproxy.io/?';
+    const encodedApiUrl = encodeURIComponent(`${OPEN_LIBRARY_API_URL}?q=${encodeURIComponent(query)}&limit=20&fields=key,title,author_name,cover_i,first_publish_year,series`);
+    
+    const response = await axios.get<OpenLibraryResponse>(`${proxyUrl}${encodedApiUrl}`);
     
     return response.data.docs;
   } catch (error) {

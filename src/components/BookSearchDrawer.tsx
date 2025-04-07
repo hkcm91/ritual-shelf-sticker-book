@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
@@ -20,10 +21,14 @@ const BookSearchDrawer = () => {
     setIsSearching(true);
     try {
       const results = await searchBooks(query);
+      console.log('Search results:', results);
       setSearchResults(results);
+      if (results.length === 0) {
+        toast.info('No books found. Try a different search term.');
+      }
     } catch (error) {
       console.error('Search failed:', error);
-      toast.error('Failed to search books');
+      toast.error('Failed to search books. The Open Library API might be experiencing issues.');
     } finally {
       setIsSearching(false);
     }

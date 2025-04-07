@@ -1,6 +1,8 @@
+
 import { compressImage } from '../../utils/imageUtils';
 import { StorageBackend, StorageOptions } from './types';
 import { resetAllStorage as resetAllStorageUtil, resetBookshelfData as resetBookshelfDataUtil } from '../../utils/storageUtils';
+import { toast } from 'sonner';
 
 // Get storage usage statistics
 const getUsageStats = () => {
@@ -88,16 +90,51 @@ export const storageService = {
       // Check if we're approaching storage limits
       if (serialized.length > 2 * 1024 * 1024) { // If over 2MB
         console.warn(`Large storage operation: ${(serialized.length / (1024 * 1024)).toFixed(2)}MB`);
+        
+        // If we're hitting extreme sizes, try emergency compression
+        if (serialized.length > 4 * 1024 * 1024) {
+          toast.warning('Storage size is getting large. Consider removing unused items.');
+        }
       }
       
-      localStorage.setItem(key, serialized);
-      return true;
+      try {
+        localStorage.setItem(key, serialized);
+        return true;
+      } catch (storageError) {
+        // If storage fails, try emergency cleanup
+        console.error(`Storage error for ${key}:`, storageError);
+        
+        // If it's likely a quota issue, try to free some space
+        if (storageError instanceof DOMException && 
+            (storageError.name === 'QuotaExceededError' || storageError.code === 22)) {
+          
+          // Remove any temp storage items
+          for (let i = 0; i < localStorage.length; i++) {
+            const tempKey = localStorage.key(i);
+            if (tempKey && tempKey.includes('temp-')) {
+              localStorage.removeItem(tempKey);
+            }
+          }
+          
+          // Try again after cleanup
+          try {
+            localStorage.setItem(key, serialized);
+            return true;
+          } catch (retryError) {
+            console.error('Final storage attempt failed:', retryError);
+            toast.error('Storage is full. Please delete some items to continue.');
+            return false;
+          }
+        }
+        
+        return false;
+      }
     } catch (error) {
       console.error(`Error saving ${key} to localStorage:`, error);
       
       // Check if it's a quota error
       if (error instanceof DOMException && error.name === 'QuotaExceededError') {
-        console.error('Storage quota exceeded');
+        toast.error('Storage quota exceeded. Try removing some books or stickers.');
       }
       
       return false;
@@ -148,21 +185,26 @@ async function compressBookCovers(
       book.coverURL.startsWith('data:image/')
     ) {
       try {
-        // Compress the image
-        const compressedCover = await compressImage(
-          book.coverURL,
-          {
-            quality: options.quality || 0.7,
-            maxWidth: options.maxWidth || 600,
-            maxHeight: options.maxHeight || 900
-          }
-        );
-        
-        // Update the book with compressed cover
-        compressedBooks[id] = {
-          ...book,
-          coverURL: compressedCover
-        };
+        // Check if the image is large enough to warrant compression
+        if (book.coverURL.length > 50000) { // Roughly 50KB
+          // Compress the image
+          const compressedCover = await compressImage(
+            book.coverURL,
+            {
+              quality: options.quality || 0.7,
+              maxWidth: options.maxWidth || 600,
+              maxHeight: options.maxHeight || 900
+            }
+          );
+          
+          // Update the book with compressed cover
+          compressedBooks[id] = {
+            ...book,
+            coverURL: compressedCover
+          };
+          
+          console.log(`Compressed cover for book ${id}: ${book.coverURL.length} -> ${compressedCover.length} bytes`);
+        }
       } catch (err) {
         console.warn(`Failed to compress cover for book ${id}:`, err);
         // Keep original if compression fails

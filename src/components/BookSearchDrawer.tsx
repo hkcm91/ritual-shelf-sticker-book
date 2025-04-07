@@ -18,8 +18,7 @@ const BookSearchDrawer = () => {
   const [query, setQuery] = useState('');
   const [searchResults, setSearchResults] = useState<OpenLibraryBook[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const { activeShelfId, addBook } = useBookshelfStore();
-  const { isBookSearchOpen, setBookSearchOpen } = useBookshelfStore();
+  const { activeShelfId, addBook, isBookSearchOpen, setBookSearchOpen } = useBookshelfStore();
 
   const handleSearch = async () => {
     if (!query.trim()) return;

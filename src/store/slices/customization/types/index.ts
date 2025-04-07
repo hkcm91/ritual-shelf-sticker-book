@@ -40,7 +40,6 @@ export interface CustomizationState extends
 // Default values - all required properties must be initialized
 export const defaultCustomization: CustomizationState = {
   activeTheme: 'default',
-  setActiveTheme: () => {},
   
   page: {
     background: '#f5f5f5',

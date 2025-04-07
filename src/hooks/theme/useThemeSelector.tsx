@@ -8,14 +8,18 @@ import themes from '@/themes';
  * Hook to handle theme selection
  */
 export function useThemeSelector() {
-  const { activeTheme, setActiveTheme, loadCustomization } = useBookshelfStore();
+  const store = useBookshelfStore();
+  const activeTheme = store.activeTheme;
+  const loadCustomization = store.loadCustomization;
   
   // Safely set active theme
   const handleSetActiveTheme = useCallback((theme: ThemeName) => {
-    if (theme !== activeTheme && setActiveTheme) {
-      setActiveTheme(theme);
+    if (theme !== activeTheme && store.setActiveTheme) {
+      store.setActiveTheme(theme);
+    } else if (theme !== activeTheme) {
+      console.warn('setActiveTheme function not available in store');
     }
-  }, [activeTheme, setActiveTheme]);
+  }, [activeTheme, store]);
   
   // Get theme availability information
   const availableThemes = Object.keys(themes) as ThemeName[];

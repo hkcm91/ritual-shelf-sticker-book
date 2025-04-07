@@ -73,13 +73,13 @@ export function useThemeApplication() {
             const dividerThickness = parseInt(themeToApply.variables['--divider-thickness'] as string) || 0;
             if (dividerThickness > 0) {
               // Auto-enable dividers for the theme if thickness is set
-              const toggleDividers = useBookshelfStore.getState().toggleDividers;
-              if (toggleDividers) {
-                toggleDividers(true);
+              const store = useBookshelfStore.getState();
+              if (store.toggleDividers) {
+                store.toggleDividers(true);
               }
               
               // Use same color for all dividers for consistency
-              const updateDividersSetting = useBookshelfStore.getState().updateDividersSetting;
+              const updateDividersSetting = store.updateDividersSetting;
               if (updateDividersSetting) {
                 updateDividersSetting('color', themeToApply.variables['--divider-color'] || '#714621');
               }
@@ -155,11 +155,11 @@ export function useThemeApplication() {
         console.warn(`Unknown theme: ${activeTheme}, falling back to default`);
         // If theme is not found, reset to default - but don't create an infinite loop
         if (activeTheme !== 'default') {
-          const setActiveTheme = useBookshelfStore.getState().setActiveTheme;
-          if (setActiveTheme) {
+          const store = useBookshelfStore.getState();
+          if (store.setActiveTheme) {
             setTimeout(() => {
               try {
-                setActiveTheme('default' as ThemeName);
+                store.setActiveTheme('default' as ThemeName);
               } catch (e) {
                 console.error('Failed to set default theme:', e);
               }
@@ -174,11 +174,11 @@ export function useThemeApplication() {
       toast.error('Error applying theme, using default');
       // Recover by setting to default theme, but avoid infinite loops
       if (activeTheme !== 'default') {
-        const setActiveTheme = useBookshelfStore.getState().setActiveTheme;
-        if (setActiveTheme) {
+        const store = useBookshelfStore.getState();
+        if (store.setActiveTheme) {
           setTimeout(() => {
             try {
-              setActiveTheme('default' as ThemeName);
+              store.setActiveTheme('default' as ThemeName);
             } catch (recoveryError) {
               console.error('Recovery failed:', recoveryError);
             }

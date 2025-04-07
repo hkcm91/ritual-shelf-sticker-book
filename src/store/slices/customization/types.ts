@@ -149,12 +149,12 @@ export const defaultCustomization = {
   }
 };
 
-// Type for slice creators - the key change is here
+// Type for slice creators
 export type CustomizationSliceCreator = StateCreator<
   BookshelfState,
   [],
   [],
-  Partial<CustomizationState>  // Change to Partial<CustomizationState>
+  Partial<CustomizationState>
 >;
 
 // New type for slice actions only

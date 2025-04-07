@@ -2,17 +2,11 @@
 import React from 'react';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { useBookModalContext } from '@/contexts/BookModalContext';
 
-type BookNotesTabProps = {
-  bookData: {
-    plot: string;
-    characters: string[];
-    notes: string;
-  };
-  handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-};
-
-const BookNotesTab: React.FC<BookNotesTabProps> = ({ bookData, handleInputChange }) => {
+const BookNotesTab: React.FC = () => {
+  const { bookData, handleInputChange } = useBookModalContext();
+  
   // Convert characters array to string for editing
   const charactersString = bookData.characters.join(', ');
   

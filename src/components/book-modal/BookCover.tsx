@@ -4,22 +4,20 @@ import { Button } from '@/components/ui/button';
 import { Upload } from 'lucide-react';
 import { compressImage } from '@/utils/imageUtils';
 import { toast } from 'sonner';
+import { useBookModalContext } from '@/contexts/BookModalContext';
 
 type BookCoverProps = {
-  coverURL?: string;
   className?: string;
-  onCoverChange?: (imageUrl: string) => void;
 };
 
 const BookCover: React.FC<BookCoverProps> = ({ 
-  coverURL, 
-  className = "",
-  onCoverChange
+  className = ""
 }) => {
+  const { bookData, handleCoverChange } = useBookModalContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0] && onCoverChange) {
+    if (e.target.files && e.target.files[0] && handleCoverChange) {
       const file = e.target.files[0];
       
       // Check file size - enforce stricter limit
@@ -62,7 +60,7 @@ const BookCover: React.FC<BookCoverProps> = ({
             }
             
             // Apply the change
-            onCoverChange(imageData);
+            handleCoverChange(imageData);
             toast.success('Cover image updated');
             
             // Verify that the cover was applied
@@ -87,13 +85,13 @@ const BookCover: React.FC<BookCoverProps> = ({
   };
   
   // Check if coverURL is valid and not empty
-  const hasCover = coverURL && coverURL.trim() !== '';
+  const hasCover = bookData.coverURL && bookData.coverURL.trim() !== '';
   
   return (
     <div className="relative">
       <div 
         className={`w-full h-40 bg-muted rounded-md bg-cover bg-center ${className} flex items-center justify-center`} 
-        style={{ backgroundImage: hasCover ? `url(${coverURL})` : 'none' }}
+        style={{ backgroundImage: hasCover ? `url(${bookData.coverURL})` : 'none' }}
       >
         {!hasCover && (
           <span className="text-gray-400 text-sm">No cover image</span>

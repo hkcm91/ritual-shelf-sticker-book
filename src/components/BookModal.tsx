@@ -6,6 +6,7 @@ import BookModalTabs from './book-modal/BookModalTabs';
 import BookModalFooter from './book-modal/BookModalFooter';
 import BookModalHeader from './book-modal/BookModalHeader';
 import { useBookModal } from '../hooks/useBookModal';
+import { BookModalProvider } from '../contexts/BookModalContext';
 
 const BookModal: React.FC = () => {
   const {
@@ -24,32 +25,33 @@ const BookModal: React.FC = () => {
     removeQuiz
   } = useBookModal();
   
+  const contextValue = {
+    bookData,
+    handleInputChange,
+    setRating,
+    addEmptyQuiz,
+    updateQuiz,
+    removeQuiz,
+    handleCoverChange,
+    handleSave,
+    handleDelete,
+    closeModal
+  };
+  
   return (
     <Dialog open={isModalOpen} onOpenChange={(open) => !open && closeModal()}>
       <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
-        <BookModalHeader 
-          title={activeBookId && books[activeBookId]?.title ? 'Edit Book' : 'Add New Book'} 
-        />
-        
-        <BookCover 
-          coverURL={bookData.coverURL} 
-          onCoverChange={handleCoverChange}
-        />
-        
-        <BookModalTabs 
-          bookData={bookData}
-          handleInputChange={handleInputChange}
-          setRating={setRating}
-          addEmptyQuiz={addEmptyQuiz}
-          updateQuiz={updateQuiz}
-          removeQuiz={removeQuiz}
-        />
-        
-        <BookModalFooter 
-          handleSave={handleSave}
-          handleDelete={handleDelete}
-          closeModal={closeModal}
-        />
+        <BookModalProvider value={contextValue}>
+          <BookModalHeader 
+            title={activeBookId && books[activeBookId]?.title ? 'Edit Book' : 'Add New Book'} 
+          />
+          
+          <BookCover />
+          
+          <BookModalTabs />
+          
+          <BookModalFooter />
+        </BookModalProvider>
       </DialogContent>
     </Dialog>
   );

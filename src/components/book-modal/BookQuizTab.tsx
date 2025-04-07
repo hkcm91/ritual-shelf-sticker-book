@@ -4,25 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { HelpCircle } from 'lucide-react';
+import { useBookModalContext } from '@/contexts/BookModalContext';
 
-type QuizQuestion = {
-  question: string;
-  answer: string;
-};
-
-type BookQuizTabProps = {
-  quizzes: QuizQuestion[];
-  addEmptyQuiz: () => void;
-  updateQuiz: (index: number, field: 'question' | 'answer', value: string) => void;
-  removeQuiz: (index: number) => void;
-};
-
-const BookQuizTab: React.FC<BookQuizTabProps> = ({ 
-  quizzes, 
-  addEmptyQuiz, 
-  updateQuiz, 
-  removeQuiz 
-}) => {
+const BookQuizTab: React.FC = () => {
+  const { bookData, addEmptyQuiz, updateQuiz, removeQuiz } = useBookModalContext();
+  const quizzes = bookData.quizzes;
+  
   return (
     <div className="space-y-4">
       <div className="text-center mb-2">

@@ -49,14 +49,13 @@ const BookshelfGrid: React.FC = () => {
       }}
     >
       <div 
-        className="bookshelf-container relative flex flex-col items-center rounded-md p-6 shadow-lg mx-auto transform-gpu min-w-fit"
+        className="bookshelf-container relative flex flex-col items-center rounded-md p-6 shadow-lg mx-auto"
         style={{ 
           transform: `scale(${zoomLevel})`,
           transformOrigin: 'top center',
           width: 'fit-content',
           minWidth: `${columns * 160}px`, // Ensure minimum width based on columns
-          maxWidth: '100%',
-          overflow: 'hidden' // Prevent content from overflowing container
+          maxWidth: '100%'
         }}
       >
         {/* Add storage usage indicator */}

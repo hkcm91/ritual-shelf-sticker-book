@@ -32,7 +32,8 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
             style={{
               width: `var(--divider-thickness, 2px)`,
               backgroundColor: `var(--divider-color, #714621)`,
-              height: '100%'
+              height: '100%',
+              minHeight: '220px'
             }}
           />
         );
@@ -51,7 +52,8 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
 
   return (
     <div className="flex flex-col w-full">
-      <div className="flex justify-center items-stretch flex-wrap gap-2 p-2 min-h-[220px]">
+      {/* Books row */}
+      <div className="flex justify-start items-stretch flex-nowrap gap-2 p-2 min-h-[220px] overflow-x-auto">
         {renderSlots()}
       </div>
       
@@ -64,7 +66,8 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundColor: `var(--shelf-color, #8B5A2B)`,
-          opacity: `var(--shelf-opacity, 1)`
+          opacity: `var(--shelf-opacity, 1)`,
+          boxShadow: '0px 4px 6px -2px rgba(0,0,0,0.3)'
         }}
       ></div>
     </div>

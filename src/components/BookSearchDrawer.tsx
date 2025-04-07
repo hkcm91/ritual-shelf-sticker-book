@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -15,11 +15,11 @@ import {
 } from "@/components/ui/tooltip";
 
 const BookSearchDrawer = () => {
-  const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [searchResults, setSearchResults] = useState<OpenLibraryBook[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const { activeShelfId, addBook } = useBookshelfStore();
+  const { isBookSearchOpen, setBookSearchOpen } = useBookshelfStore();
 
   const handleSearch = async () => {
     if (!query.trim()) return;
@@ -59,12 +59,12 @@ const BookSearchDrawer = () => {
   };
 
   // Add console logs for debugging
-  console.log("BookSearchDrawer rendered, open state:", open);
+  console.log("BookSearchDrawer rendered, open state:", isBookSearchOpen);
 
   return (
-    <Sheet open={open} onOpenChange={(newOpen) => {
+    <Sheet open={isBookSearchOpen} onOpenChange={(newOpen) => {
       console.log("Sheet onOpenChange triggered, new state:", newOpen);
-      setOpen(newOpen);
+      setBookSearchOpen(newOpen);
     }}>
       <SheetTrigger asChild>
         <TooltipProvider>
@@ -76,7 +76,7 @@ const BookSearchDrawer = () => {
                 className="text-[color:var(--header-text-color,white)] hover:text-[color:var(--header-text-color,white)] hover:bg-[color:var(--header-hover-bg,rgba(255,255,255,0.1))]"
                 onClick={() => {
                   console.log("Book search button clicked directly");
-                  setOpen(true);
+                  setBookSearchOpen(true);
                 }}
               >
                 <BookOpen className="h-5 w-5" />

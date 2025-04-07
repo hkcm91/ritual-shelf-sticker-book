@@ -6,11 +6,16 @@ export interface UISlice {
   activeBookId: string | null;
   draggedBook: string | null;
   zoomLevel: number;
+  isBookSearchOpen: boolean;
+  isCustomizationModalOpen: boolean;
   openModal: (bookId: string) => void;
   closeModal: () => void;
   setDraggedBook: (bookId: string | null) => void;
   getDraggedBook: () => any | null; // Using 'any' here since it references the BookData type from another slice
   setZoom: (level: number) => void;
+  setBookSearchOpen: (isOpen: boolean) => void;
+  openCustomizationModal: () => void;
+  closeCustomizationModal: () => void;
 }
 
 export const createUISlice: StateCreator<
@@ -23,6 +28,8 @@ export const createUISlice: StateCreator<
   activeBookId: null,
   draggedBook: null,
   zoomLevel: 1,
+  isBookSearchOpen: false,
+  isCustomizationModalOpen: false,
   
   openModal: (bookId) => {
     set({ isModalOpen: true, activeBookId: bookId });
@@ -43,5 +50,17 @@ export const createUISlice: StateCreator<
   
   setZoom: (level) => {
     set({ zoomLevel: level });
+  },
+  
+  setBookSearchOpen: (isOpen) => {
+    set({ isBookSearchOpen: isOpen });
+  },
+  
+  openCustomizationModal: () => {
+    set({ isCustomizationModalOpen: true });
+  },
+  
+  closeCustomizationModal: () => {
+    set({ isCustomizationModalOpen: false });
   }
 });

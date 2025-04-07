@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Palette, Settings, BookOpen, Search, Sparkles } from 'lucide-react';
+import { Palette, BookOpen, Search, Sparkles } from 'lucide-react';
 import ShelfSelector from './ShelfSelector';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 import BookSearchDrawer from '../BookSearchDrawer';
@@ -23,7 +23,7 @@ import HeaderAuthButton from '../Header';
 import SettingsDrawer from '../settings/SettingsDrawer';
 
 const Header: React.FC = () => {
-  const { openCustomizationModal } = useBookshelfStore();
+  const { openCustomizationModal, setBookSearchOpen } = useBookshelfStore();
   const isMobile = useIsMobile();
   const [scrolled, setScrolled] = useState(false);
   
@@ -56,7 +56,6 @@ const Header: React.FC = () => {
           size="icon"
           className="relative game-btn from-amber-900/40 to-amber-950/40"
           onClick={() => {
-            const { setBookSearchOpen } = useBookshelfStore.getState();
             setBookSearchOpen(true);
           }}
         >

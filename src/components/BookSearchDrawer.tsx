@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -18,7 +18,8 @@ const BookSearchDrawer = () => {
   const [query, setQuery] = useState('');
   const [searchResults, setSearchResults] = useState<OpenLibraryBook[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const { activeShelfId, addBook, isBookSearchOpen, setBookSearchOpen } = useBookshelfStore();
+  const { activeShelfId, addBook } = useBookshelfStore();
+  const { isBookSearchOpen, setBookSearchOpen } = useBookshelfStore();
 
   const handleSearch = async () => {
     if (!query.trim()) return;
@@ -61,10 +62,7 @@ const BookSearchDrawer = () => {
   console.log("BookSearchDrawer rendered, open state:", isBookSearchOpen);
 
   return (
-    <Sheet open={isBookSearchOpen} onOpenChange={(newOpen) => {
-      console.log("Sheet onOpenChange triggered, new state:", newOpen);
-      setBookSearchOpen(newOpen);
-    }}>
+    <Sheet open={isBookSearchOpen} onOpenChange={setBookSearchOpen}>
       <SheetTrigger asChild>
         <TooltipProvider>
           <Tooltip>

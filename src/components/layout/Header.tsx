@@ -56,6 +56,7 @@ const Header: React.FC = () => {
           size="icon"
           className="relative game-btn from-amber-900/40 to-amber-950/40"
           onClick={() => {
+            console.log("Search button clicked");
             setBookSearchOpen(true);
           }}
         >
@@ -111,6 +112,9 @@ const Header: React.FC = () => {
         
         <HeaderAuthButton />
       </div>
+      
+      {/* Render BookSearchDrawer component */}
+      <BookSearchDrawer />
     </header>
   );
 };

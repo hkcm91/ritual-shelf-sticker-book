@@ -53,6 +53,7 @@ export const createUISlice: StateCreator<
   },
   
   setBookSearchOpen: (isOpen) => {
+    console.log("Setting book search open state:", isOpen);
     set({ isBookSearchOpen: isOpen });
   },
   

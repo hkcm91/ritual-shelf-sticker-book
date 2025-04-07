@@ -2,7 +2,7 @@ import { StateCreator } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'sonner';
 import { ShelfData } from './types';
-import { BooksSlice } from './booksSlice';
+import { BooksSlice } from './books/booksSlice';
 import { saveShelvesToStorage, saveActiveShelfToStorage } from './utils/shelfUtils';
 import { ShelfStylesSlice, createShelfStylesSlice } from './slices/shelfStylesSlice';
 import { ShelfLayoutSlice, createShelfLayoutSlice } from './slices/shelfLayoutSlice';

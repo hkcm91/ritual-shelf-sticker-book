@@ -1,90 +1,65 @@
-
 import { StateCreator } from 'zustand';
 import { ShelfData } from '../types';
-import { BooksSlice } from '../booksSlice';
-import { 
-  saveShelvesToStorage, 
-  getBooksInLastRow
-} from '../utils/shelfUtils';
-import { 
-  restoreHiddenBooksForRows, 
-  hideLastRowBooks,
-  maintainBookPositionsOnRowChange
-} from '../utils/rowOperations';
+import { getBooksInLastRow, recalculateBookPositions } from '../utils/shelfUtils';
+import { BooksSlice } from '../books/booksSlice';
+import { toast } from 'sonner';
 
 export interface RowOperationsSlice {
-  addRow: () => void;
-  removeRow: () => void;
+  addRow: (shelfId: string) => void;
+  removeRow: (shelfId: string) => void;
 }
 
+/**
+ * Creates the row operations slice
+ */
 export const createRowOperationsSlice: StateCreator<
-  { shelves: Record<string, ShelfData>; activeShelfId: string } & BooksSlice & RowOperationsSlice,
+  { shelves: Record<string, ShelfData>; activeShelfId: string } & BooksSlice,
   [],
   [],
   RowOperationsSlice
-> = (set, get) => {
-  return {
-    addRow: () => {
-      const { activeShelfId, shelves, books } = get();
-      if (!activeShelfId) return;
+> = (set, get) => ({
+  addRow: (shelfId) => {
+    set((state) => {
+      const shelf = state.shelves[shelfId];
+      if (!shelf) return state;
       
-      const shelf = shelves[activeShelfId];
+      const newRows = Math.min(shelf.rows + 1, 5); // Max 5 rows
       
-      // Restore hidden books from previous row removals that can now be visible
-      let updatedBooks = restoreHiddenBooksForRows(activeShelfId, shelf, books);
-      
-      // Ensure books maintain their positions with the new row count
-      updatedBooks = maintainBookPositionsOnRowChange(activeShelfId, shelf.columns, updatedBooks);
-      
-      set((state) => {
-        const updatedShelves = {
+      return {
+        shelves: {
           ...state.shelves,
-          [activeShelfId]: {
-            ...shelf,
-            rows: shelf.rows + 1
-          }
-        };
-        
-        saveShelvesToStorage(updatedShelves);
-        localStorage.setItem('ritual-bookshelf-books', JSON.stringify(updatedBooks));
-        
-        return { 
-          shelves: updatedShelves,
-          books: updatedBooks
-        };
-      });
-    },
-    
-    removeRow: () => {
-      const { activeShelfId, shelves, books } = get();
-      if (!activeShelfId) return;
+          [shelfId]: { ...shelf, rows: newRows }
+        }
+      };
+    });
+  },
+  
+  removeRow: (shelfId) => {
+    set((state) => {
+      const shelf = state.shelves[shelfId];
+      if (!shelf) return state;
       
-      const shelf = shelves[activeShelfId];
-      if (shelf.rows <= 1) return;
+      if (shelf.rows <= 1) {
+        toast.error("Shelves must have at least one row");
+        return state;
+      }
       
-      // Find books in the last row - but we won't delete them
-      const booksInLastRow = getBooksInLastRow(activeShelfId, shelf, books);
+      // Get books in the last row
+      const booksToRemove = getBooksInLastRow(shelfId, shelf, state.books);
       
-      // Hide books in the last row but preserve them
-      const updatedBooks = hideLastRowBooks(activeShelfId, shelf, books, booksInLastRow);
+      // Remove those books
+      const updatedBooks = { ...state.books };
+      booksToRemove.forEach(bookId => delete updatedBooks[bookId]);
       
-      set((state) => {
-        const updatedShelves = {
+      const newRows = shelf.rows - 1;
+      
+      return {
+        shelves: {
           ...state.shelves,
-          [activeShelfId]: {
-            ...shelf,
-            rows: shelf.rows - 1
-          }
-        };
-        
-        saveShelvesToStorage(updatedShelves);
-        localStorage.setItem('ritual-bookshelf-books', JSON.stringify(updatedBooks));
-        
-        return {
-          shelves: updatedShelves,
-          books: updatedBooks
-        };
-      });
-    }
-  };
-};
+          [shelfId]: { ...shelf, rows: newRows }
+        },
+        books: updatedBooks
+      };
+    });
+  }
+});

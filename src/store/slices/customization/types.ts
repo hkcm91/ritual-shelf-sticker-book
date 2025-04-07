@@ -19,7 +19,7 @@ export interface ShelfStyling {
 
 // Define customization state structure
 export interface CustomizationState {
-  // Theme
+  // Theme - explicitly required, not optional
   activeTheme: ThemeName | string;
   setActiveTheme: (themeName: ThemeName | string) => void;
   
@@ -115,7 +115,7 @@ export interface CustomizationState {
   resetCustomization: () => void;
 }
 
-// Default values
+// Default values - all required properties must be initialized
 export const defaultCustomization: CustomizationState = {
   activeTheme: 'default',
   setActiveTheme: () => {},

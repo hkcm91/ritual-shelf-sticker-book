@@ -12,13 +12,17 @@ import { CustomizationSliceCreator } from './types';
 // Export the default customization for use in the main store
 export { defaultCustomization } from './types';
 
+// Non-null assertion operator ensures activeTheme is treated as required
 export const createCustomizationSlice: CustomizationSliceCreator = (set, get, api) => {
-  // Combine all slices with default values
-  return {
+  // Start with base customization state
+  const baseState = {
     // Default state values first (these are all the required properties)
     ...defaultCustomization,
-    
-    // Then add all actions from individual slices
+  };
+  
+  // Combine with all actions from individual slices
+  return {
+    ...baseState,
     ...createUISlice(set, get, api),
     ...createPageSlice(set, get, api),
     ...createContainerSlice(set, get, api),

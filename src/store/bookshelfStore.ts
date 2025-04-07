@@ -11,34 +11,36 @@ export type BookshelfState = BooksSlice & CompleteShelvesSlice & UISlice & Custo
   findEmptyPosition: (shelfId: string) => number;
 };
 
-export const useBookshelfStore = create<BookshelfState>()((set, get, api) => ({
-  ...createBooksSlice(set, get, api),
-  ...createShelvesSlice(set, get, api),
-  ...createUISlice(set, get, api),
-  ...createCustomizationSlice(set, get, api),
-  
-  findEmptyPosition: (shelfId: string) => {
-    const { books, shelves } = get();
-    const shelvesData = shelves as Record<string, ShelfData>;
-    const shelf = shelvesData[shelfId];
-    if (!shelf) return -1;
+export const useBookshelfStore = create<BookshelfState>()((set, get) => {
+  return {
+    ...createBooksSlice(set, get),
+    ...createShelvesSlice(set, get),
+    ...createUISlice(set, get),
+    ...createCustomizationSlice(set, get),
     
-    const maxPositions = shelf.rows * shelf.columns;
-    const occupiedPositions = new Set(
-      Object.values(books)
-        .filter(book => book.shelfId === shelfId)
-        .map(book => book.position)
-    );
-    
-    for (let i = 0; i < maxPositions; i++) {
-      if (!occupiedPositions.has(i)) {
-        return i;
+    findEmptyPosition: (shelfId: string) => {
+      const { books, shelves } = get();
+      const shelvesData = shelves as Record<string, ShelfData>;
+      const shelf = shelvesData[shelfId];
+      if (!shelf) return -1;
+      
+      const maxPositions = shelf.rows * shelf.columns;
+      const occupiedPositions = new Set(
+        Object.values(books)
+          .filter(book => book.shelfId === shelfId)
+          .map(book => book.position)
+      );
+      
+      for (let i = 0; i < maxPositions; i++) {
+        if (!occupiedPositions.has(i)) {
+          return i;
+        }
       }
-    }
-    
-    return -1;
-  },
-}));
+      
+      return -1;
+    },
+  };
+});
 
 export type { BookData, ShelfData } from './types';
 

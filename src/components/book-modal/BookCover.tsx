@@ -22,9 +22,9 @@ const BookCover: React.FC<BookCoverProps> = ({
     if (e.target.files && e.target.files[0] && onCoverChange) {
       const file = e.target.files[0];
       
-      // Check file size
-      if (file.size > 5 * 1024 * 1024) { // 5MB
-        toast.error('Image is too large. Maximum size is 5MB.');
+      // Check file size - enforce stricter limit
+      if (file.size > 3 * 1024 * 1024) { // 3MB max
+        toast.error('Image is too large. Maximum size is 3MB.');
         return;
       }
       
@@ -35,17 +35,29 @@ const BookCover: React.FC<BookCoverProps> = ({
           try {
             console.log("Book cover loaded, length:", event.target.result.length);
             
-            // Always compress the image to ensure it can be stored
+            // Always compress the image at higher compression to ensure it can be stored
             let imageData = event.target.result;
             try {
+              // First compression attempt - more aggressive
               imageData = await compressImage(imageData, {
-                quality: 0.7,
-                maxWidth: 600,
-                maxHeight: 900
+                quality: 0.5, // Lower quality for better compression
+                maxWidth: 500,
+                maxHeight: 750
               });
-              console.log("Book cover compressed, new length:", imageData.length);
+              console.log("Book cover compressed (first pass), new length:", imageData.length);
+              
+              // If still too large, compress again more aggressively
+              if (imageData.length > 500000) { // If over 500KB
+                imageData = await compressImage(imageData, {
+                  quality: 0.3, // Very aggressive compression
+                  maxWidth: 400,
+                  maxHeight: 600
+                });
+                console.log("Book cover compressed (second pass), new length:", imageData.length);
+              }
             } catch (err) {
               console.warn('Failed to compress book cover:', err);
+              toast.warning('Image could not be compressed. Storage issues may occur.');
               // Continue with original if compression fails
             }
             

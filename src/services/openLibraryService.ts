@@ -20,8 +20,8 @@ const OPEN_LIBRARY_API_URL = 'https://openlibrary.org/search.json';
 
 // Define CORS proxies
 const CORS_PROXIES = [
-  (url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
   (url: string) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+  (url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
   (url: string) => `https://proxy.cors.sh/${url}`
 ];
 
@@ -47,14 +47,20 @@ export const searchBooks = async (query: string): Promise<OpenLibraryBook[]> => 
         console.log('Trying CORS proxy URL:', proxyUrl);
         
         response = await axios.get<OpenLibraryResponse>(proxyUrl, {
-          timeout: 8000, // 8 second timeout
+          timeout: 10000, // 10 second timeout - increased for reliability
           headers: {
             'Accept': 'application/json'
           }
         });
         
-        // If we got here, the request succeeded
-        break;
+        // Check if we got a valid response with books
+        if (response.data && response.data.docs && Array.isArray(response.data.docs)) {
+          console.log(`Proxy ${proxyUrl} succeeded with ${response.data.docs.length} results`);
+          break; // Success - exit the loop
+        } else {
+          console.warn('Proxy returned invalid response format:', response.data);
+          // Continue to next proxy
+        }
       } catch (error) {
         console.warn('CORS proxy failed:', error);
         lastError = error;
@@ -63,15 +69,9 @@ export const searchBooks = async (query: string): Promise<OpenLibraryBook[]> => 
     }
     
     // If all proxies failed
-    if (!response) {
-      console.error('All CORS proxies failed:', lastError);
+    if (!response || !response.data || !response.data.docs || !Array.isArray(response.data.docs)) {
+      console.error('All CORS proxies failed or returned invalid data:', lastError);
       throw new Error('Could not connect to Open Library API');
-    }
-    
-    // Ensure we have books in the response
-    if (!response.data || !response.data.docs || !Array.isArray(response.data.docs)) {
-      console.error('Invalid response format from Open Library:', response.data);
-      return [];
     }
     
     console.log('Search results:', response.data.docs);

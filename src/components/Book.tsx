@@ -26,17 +26,13 @@ const Book: React.FC<BookProps> = ({ data }) => {
     });
   }, [data]);
   
-  // The hidden check was causing valid books to not render
+  // Skip rendering stickers
   if (data.isSticker) {
     console.log('Book not rendered - is sticker:', data.id);
     return null;
   }
   
-  // Check if coverURL is a valid string
-  if (!data.coverURL || typeof data.coverURL !== 'string') {
-    console.warn('Book has invalid coverURL:', data.id);
-  }
-  
+  // Add error boundary for the book component
   return (
     <div
       className="relative w-full h-full cursor-grab"

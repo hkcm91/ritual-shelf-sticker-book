@@ -19,13 +19,6 @@ const BookCover: React.FC<BookCoverProps> = ({ coverURL, progress = 0 }) => {
     }
   }, [hasCover, coverURL]);
 
-  // If URL is very large, only log the beginning and length
-  const debugURL = coverURL ? 
-    `${coverURL.substring(0, 30)}... (${coverURL.length} chars)` : 
-    'undefined';
-  
-  console.log("Rendering BookCover component, has valid cover:", hasCover, debugURL);
-
   return (
     <div className="w-full h-full relative" style={{display: 'block'}}>
       {hasCover ? (

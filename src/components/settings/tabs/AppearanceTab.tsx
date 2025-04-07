@@ -1,36 +1,23 @@
 
 import React from 'react';
-import { Button } from "@/components/ui/button";
-import { Palette } from 'lucide-react';
-import { useBookshelfStore } from '@/store/bookshelfStore';
 import ThemeSelector from '../ThemeSelector';
+import { Card, CardContent } from "@/components/ui/card";
 
 interface AppearanceTabProps {
   onCloseDrawer: () => void;
 }
 
 const AppearanceTab: React.FC<AppearanceTabProps> = ({ onCloseDrawer }) => {
-  const { openCustomizationModal } = useBookshelfStore();
-  
-  const handleOpenCustomization = () => {
-    onCloseDrawer();
-    setTimeout(() => {
-      openCustomizationModal();
-    }, 100);
-  };
-
   return (
     <div className="space-y-6">
-      <ThemeSelector />
-      <div className="mt-4">
-        <Button 
-          variant="outline" 
-          className="w-full" 
-          onClick={handleOpenCustomization}
-        >
-          <Palette className="mr-2 h-4 w-4" />
-          Advanced Customization
-        </Button>
+      <Card>
+        <CardContent className="pt-6">
+          <ThemeSelector />
+        </CardContent>
+      </Card>
+      
+      <div className="text-sm text-muted-foreground">
+        Select from our curated collection of themes to instantly transform your bookshelf's appearance.
       </div>
     </div>
   );

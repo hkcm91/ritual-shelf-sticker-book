@@ -21,7 +21,7 @@ const ThemeSelector: React.FC = () => {
         value={activeTheme} 
         onValueChange={handleThemeChange}
       >
-        <SelectTrigger>
+        <SelectTrigger className="w-full">
           <SelectValue placeholder="Select a theme" />
         </SelectTrigger>
         <SelectContent>
@@ -32,12 +32,11 @@ const ThemeSelector: React.FC = () => {
                 {themes[themeName].name}
               </SelectItem>
             ))}
-            <SelectItem value="custom">Custom Theme</SelectItem>
           </SelectGroup>
         </SelectContent>
       </Select>
       <p className="text-xs text-muted-foreground mt-1">
-        Select a theme or open Advanced Customization to create your own
+        Select a theme to customize your bookshelf appearance
       </p>
     </div>
   );

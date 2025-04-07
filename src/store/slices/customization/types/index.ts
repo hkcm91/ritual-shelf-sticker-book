@@ -70,6 +70,7 @@ export const defaultCustomization: CustomizationState = {
       booksPerRow: 2,
       thickness: 2,
       color: '#a37d4f',
+      opacity: 1,
       orientation: 'vertical'
     },
   },

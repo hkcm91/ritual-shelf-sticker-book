@@ -1,8 +1,10 @@
 
 import React, { forwardRef, useRef, useEffect, useState } from 'react';
-import Lottie from 'lottie-react';
-import { useBookshelfStore } from '../store/bookshelfStore';
-import { toast } from 'sonner';
+import { useAnimationDetection } from './stickers/useAnimationDetection';
+import LottieSticker from './stickers/LottieSticker';
+import ImageSticker from './stickers/ImageSticker';
+import StickerErrorState from './stickers/StickerErrorState';
+import AltKeyHelper from './stickers/AltKeyHelper';
 
 type StickerContentProps = {
   book: any;
@@ -26,11 +28,10 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
 }, ref) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = useState({ width: 150, height: 220 });
-  const { updateBook } = useBookshelfStore();
   const [altKeyPressed, setAltKeyPressed] = useState(false);
-  const [lottieError, setLottieError] = useState(false);
-  const [isLottie, setIsLottie] = useState(false);
-  const [animationData, setAnimationData] = useState<any>(null);
+  
+  // Use the custom hook for animation detection
+  const { isLottie, lottieError, animationData } = useAnimationDetection(book?.coverURL);
 
   // Measure container on mount and resize
   useEffect(() => {
@@ -69,62 +70,6 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
     };
   }, []);
 
-  // Check if content is Lottie
-  useEffect(() => {
-    if (!book || !book.isSticker || !book.coverURL) return;
-    
-    let isLottieAnimation = false;
-    let lottieParsed = null;
-    
-    // Try to determine if this is a Lottie animation
-    try {
-      // If it's a URL that ends with .json
-      if (typeof book.coverURL === 'string') {
-        if (book.coverURL.startsWith('http') && book.coverURL.endsWith('.json')) {
-          // Fetch the JSON from URL
-          fetch(book.coverURL)
-            .then(response => response.json())
-            .then(data => {
-              if (data && (data.v !== undefined || data.animations)) {
-                setIsLottie(true);
-                setAnimationData(data);
-              } else {
-                setIsLottie(false);
-                setLottieError(true);
-              }
-            })
-            .catch(err => {
-              console.error("Failed to fetch Lottie JSON:", err);
-              setLottieError(true);
-            });
-          return;
-        }
-        
-        // If it's an inline JSON string
-        if (book.coverURL.startsWith('{') || book.coverURL.trim().startsWith('{')) {
-          try {
-            lottieParsed = JSON.parse(book.coverURL);
-            isLottieAnimation = Boolean(lottieParsed && (lottieParsed.v !== undefined || lottieParsed.animations));
-            if (isLottieAnimation) {
-              setIsLottie(true);
-              setAnimationData(lottieParsed);
-              return;
-            }
-          } catch (e) {
-            console.log("Not a valid JSON:", e);
-          }
-        }
-      }
-      
-      // Not a Lottie animation
-      setIsLottie(false);
-    } catch (e) {
-      console.error("Error checking for Lottie:", e);
-      setIsLottie(false);
-      setLottieError(true);
-    }
-  }, [book]);
-
   if (!book || !book.isSticker) return null;
   
   try {
@@ -153,45 +98,22 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
         }}
         className="w-full h-full cursor-move relative"
         onMouseDown={handleStickerMouseDown}
-        style={isLottie ? stickerStyle : {
-          backgroundImage: `url(${book.coverURL})`,
-          backgroundSize: 'contain',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          ...stickerStyle
-        }}
+        style={stickerStyle}
       >
-        {isLottie && animationData && !lottieError && (
-          <div className="w-full h-full flex items-center justify-center">
-            <Lottie 
-              animationData={animationData} 
-              loop={true} 
-              autoplay={true}
-              style={{ 
-                width: '100%', 
-                height: '100%',
-                pointerEvents: 'none' // Make Lottie ignore pointer events
-              }}
-              onError={() => {
-                setLottieError(true);
-                toast.error("Failed to load Lottie animation");
-              }}
-            />
-          </div>
+        {isLottie ? (
+          <>
+            {animationData && !lottieError ? (
+              <LottieSticker animationData={animationData} />
+            ) : (
+              <StickerErrorState />
+            )}
+          </>
+        ) : (
+          <ImageSticker url={book.coverURL as string} />
         )}
         
-        {isLottie && lottieError && (
-          <div className="w-full h-full flex items-center justify-center text-red-500 text-xs">
-            Lottie error
-          </div>
-        )}
-        
-        {/* Small helper tip that appears when holding Alt */}
-        {altKeyPressed && (
-          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white text-xs px-2 py-0.5 rounded whitespace-nowrap opacity-80">
-            Extended boundaries
-          </div>
-        )}
+        {/* Alt key helper component */}
+        <AltKeyHelper isVisible={altKeyPressed} />
       </div>
     );
   } catch (e) {
@@ -199,7 +121,7 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
     console.error("Error rendering sticker:", e);
     return (
       <div ref={ref} className="flex items-center justify-center w-full h-full text-red-500">
-        Invalid sticker
+        <StickerErrorState message="Invalid sticker" />
       </div>
     );
   }

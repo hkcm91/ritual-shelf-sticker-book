@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { motion } from 'framer-motion';
 import ThreeDBookshelf from './ThreeDBookshelf';
@@ -20,15 +20,37 @@ const Preview3DModal: React.FC<Preview3DModalProps> = ({ open, onOpenChange }) =
     setIsFullscreen(!isFullscreen);
   };
 
+  // Force a specific z-index here
+  useEffect(() => {
+    if (open) {
+      // Find any open dialogs and set their z-index
+      const dialogOverlays = document.querySelectorAll('[data-radix-dialog-overlay]');
+      const dialogContents = document.querySelectorAll('[data-radix-dialog-content]');
+      
+      dialogOverlays.forEach(overlay => {
+        if (overlay.parentElement?.hasAttribute('data-preview-3d')) {
+          (overlay as HTMLElement).style.zIndex = '999';
+        }
+      });
+      
+      dialogContents.forEach(content => {
+        if (content.parentElement?.parentElement?.hasAttribute('data-preview-3d')) {
+          (content as HTMLElement).style.zIndex = '1000';
+        }
+      });
+    }
+  }, [open]);
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange} data-preview-3d="true">
       <DialogContent 
         className={`${isFullscreen ? 'max-w-[95vw] h-[95vh] p-6' : 'max-w-4xl p-6'} 
           bg-gradient-to-b from-slate-950/95 to-slate-900/95 border-amber-950/30
-          backdrop-blur-md overflow-hidden transition-all duration-300 z-[101]`}
+          backdrop-blur-md overflow-hidden transition-all duration-300`}
         style={{ 
           minWidth: isFullscreen ? '95vw' : 'auto',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.45)'
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.45)',
+          zIndex: 1000 // Force a high z-index
         }}
         hideCloseButton={true}
       >

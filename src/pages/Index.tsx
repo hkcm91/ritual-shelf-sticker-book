@@ -17,8 +17,12 @@ const Index = () => {
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [renameValue, setRenameValue] = useState("");
   const [isInitialized, setIsInitialized] = useState(false);
+  // Local state for customization modal
+  const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
   
   console.log("[Index] Rendering with UI state:", ui);
+  console.log("[Index] Store modal state:", useBookshelfStore.getState().ui?.isCustomizationModalOpen);
+  console.log("[Index] Local modal state:", isCustomModalOpen);
   
   // Initialize the store and load customization only once
   useEffect(() => {
@@ -43,31 +47,38 @@ const Index = () => {
     }
   }, [isInitialized]);
 
-  const shelvesData = shelves as Record<string, ShelfData>;
-  const currentShelf = activeShelfId ? shelvesData[activeShelfId] : null;
-  
-  // Get the customization modal state directly from the store
-  const isCustomizationModalOpen = ui?.isCustomizationModalOpen || false;
-  console.log("[Index] Customization modal state:", isCustomizationModalOpen);
-  
-  // Fixed subscription method - using a single callback function
+  // Sync with store for modal state
+  useEffect(() => {
+    const storeState = useBookshelfStore.getState().ui?.isCustomizationModalOpen;
+    console.log("[Index] Syncing modal state with store:", storeState);
+    if (storeState !== isCustomModalOpen) {
+      setIsCustomModalOpen(!!storeState);
+    }
+  }, []);
+
+  // Subscribe to store changes for modal state
   useEffect(() => {
     console.log("[Index] Setting up subscription to customization modal state");
     const unsubscribe = useBookshelfStore.subscribe((state) => {
       const isOpen = state.ui?.isCustomizationModalOpen;
-      console.log("[Index] Customization modal state changed to:", isOpen);
-      // No action needed, just logging
+      console.log("[Index] Store subscription triggered - modal state changed to:", isOpen);
+      if (isOpen !== isCustomModalOpen) {
+        console.log("[Index] Updating local state to match store");
+        setIsCustomModalOpen(!!isOpen);
+      }
     });
     
-    return () => {
-      console.log("[Index] Cleaning up subscription");
-      unsubscribe();
-    };
-  }, []);
+    return unsubscribe;
+  }, [isCustomModalOpen]);
+
+  const shelvesData = shelves as Record<string, ShelfData>;
+  const currentShelf = activeShelfId ? shelvesData[activeShelfId] : null;
   
   const handleCustomizationOpenChange = (newOpen: boolean) => {
     console.log("[Index] handleCustomizationOpenChange called with:", newOpen);
     console.log("[Index] Current store state before change:", useBookshelfStore.getState().ui?.isCustomizationModalOpen);
+    
+    setIsCustomModalOpen(newOpen);
     
     if (newOpen) {
       openCustomizationModal();
@@ -75,11 +86,35 @@ const Index = () => {
       closeCustomizationModal();
     }
     
+    // Force a store update to ensure reactivity
+    useBookshelfStore.setState(state => ({
+      ...state,
+      ui: {
+        ...state.ui,
+        isCustomizationModalOpen: newOpen
+      }
+    }));
+    
     // Check if state was updated correctly
     setTimeout(() => {
       console.log("[Index] Store state after change:", useBookshelfStore.getState().ui?.isCustomizationModalOpen);
     }, 100);
   };
+  
+  // Force open modal with ESC key debugging
+  useEffect(() => {
+    const forceOpenWithKeyboard = (e: KeyboardEvent) => {
+      if (e.key === 'o' && e.ctrlKey && e.altKey) {
+        console.log("[Index] Force opening modal with keyboard shortcut");
+        openCustomizationModal();
+        setIsCustomModalOpen(true);
+        toast.success("Forced modal open with keyboard shortcut");
+      }
+    };
+    
+    window.addEventListener('keydown', forceOpenWithKeyboard);
+    return () => window.removeEventListener('keydown', forceOpenWithKeyboard);
+  }, [openCustomizationModal]);
   
   return (
     <div 
@@ -116,15 +151,25 @@ const Index = () => {
         setRenameValue={setRenameValue}
       />
       
-      {/* Use direct state from the store for the modal */}
+      {/* Use direct state for the modal */}
       <CustomizationModal 
-        open={isCustomizationModalOpen} 
+        open={isCustomModalOpen} 
         onOpenChange={handleCustomizationOpenChange} 
       />
       
       {/* Debug info at the bottom of the page */}
       <div className="fixed bottom-0 left-0 bg-black/80 text-white text-xs p-1 z-50 max-w-[300px] overflow-hidden">
-        Modal state: {isCustomizationModalOpen ? 'Open' : 'Closed'}
+        Modal state: {isCustomModalOpen ? 'Open' : 'Closed'} | 
+        Store state: {ui?.isCustomizationModalOpen ? 'Open' : 'Closed'} | 
+        <button 
+          onClick={() => {
+            openCustomizationModal();
+            setIsCustomModalOpen(true);
+          }}
+          className="ml-1 bg-blue-500 px-1 rounded"
+        >
+          Force Open
+        </button>
       </div>
     </div>
   );

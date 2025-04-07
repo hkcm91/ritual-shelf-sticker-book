@@ -16,8 +16,27 @@ const ShelfControls: React.FC = () => {
     console.log("[ShelfControls] Before opening, customization modal state:", ui?.isCustomizationModalOpen);
     
     try {
+      // First check if already open
+      if (ui?.isCustomizationModalOpen) {
+        console.log("[ShelfControls] Modal already open according to state");
+        toast.info("Customization panel is already open");
+        return;
+      }
+      
+      // Try direct store manipulation first
+      useBookshelfStore.setState(state => ({
+        ...state,
+        ui: {
+          ...state.ui,
+          isCustomizationModalOpen: true
+        }
+      }));
+      
+      // Then call the proper action
       openCustomizationModal();
-      console.log("[ShelfControls] After calling openCustomizationModal, state:", useBookshelfStore.getState().ui?.isCustomizationModalOpen);
+      
+      console.log("[ShelfControls] After calling openCustomizationModal, state:", 
+        useBookshelfStore.getState().ui?.isCustomizationModalOpen);
       
       // Add toast for visual feedback
       toast.success("Opening customization panel...");

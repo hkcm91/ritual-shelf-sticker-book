@@ -1,0 +1,62 @@
+
+/* Customizer UI classes */
+.customizer-section {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.customizer-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 0.5rem 0;
+}
+
+.customizer-section-content {
+  padding-left: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.color-preview {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.color-preview:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 8px rgba(0,0,0,0.2);
+}
+
+.customizer-card {
+  background-color: var(--background);
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+  transform-style: preserve-3d;
+}
+
+.customizer-card:hover {
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+}
+
+/* Theme selection micro-animation */
+.theme-selection {
+  transform-origin: center;
+  transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.theme-selection:hover {
+  transform: scale(1.03);
+}
+
+.theme-selection:active {
+  transform: scale(0.97);
+  transition: all 0.1s ease;
+}

@@ -1,10 +1,14 @@
 
 /* Import all customization CSS files */
-@import './variables.css';
+@import './base-variables.css';
+@import './themes.css';
+@import './typography.css';
+@import './animations.css';
+@import './ui-components.css';
+@import './dialogs.css';
 @import './layout.css';
 @import './shelves.css';
 @import './slots.css';
 @import './header.css';
-@import './themes.css';
 @import './controls.css';
 @import './responsive.css';

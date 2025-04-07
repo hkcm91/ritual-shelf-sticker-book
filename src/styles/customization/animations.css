@@ -1,0 +1,72 @@
+
+/* Magic sparkles animation */
+@keyframes magic-sparkles {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+.magic-sparkles {
+  position: relative;
+}
+
+.magic-sparkles::before,
+.magic-sparkles::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-image: 
+    radial-gradient(circle, #fff 10%, transparent 70%),
+    radial-gradient(circle, #fff 10%, transparent 70%);
+  background-position: 0 0, 5px 5px;
+  background-size: 10px 10px;
+  border-radius: 50%;
+  animation: magic-sparkles 1.5s infinite;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.magic-sparkles::before {
+  top: -5px;
+  left: -5px;
+}
+
+.magic-sparkles::after {
+  bottom: -5px;
+  right: -5px;
+  animation-delay: 0.5s;
+}
+
+/* Game-like glow effects */
+.magical-glow {
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+  animation: magical-pulse 2s infinite alternate;
+}
+
+@keyframes magical-pulse {
+  0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
+  100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); }
+}
+
+/* Button hover effect */
+.magical-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.magical-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transform: translateX(-100%);
+}
+
+.magical-btn:hover::after {
+  transition: transform 0.6s ease;
+  transform: translateX(50%);
+}

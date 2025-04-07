@@ -6,10 +6,9 @@ import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { HelpCircle, AlertTriangle } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import SimpleOrientationSelector from './SimpleOrientationSelector';
-import { Slider } from "@/components/ui/slider";
 import { toast } from 'sonner';
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import DividerControls from './DividerControls';
 
 interface DividersSectionProps {
   linkDividerStyling: boolean;
@@ -22,8 +21,7 @@ const DividersSection: React.FC<DividersSectionProps> = ({
 }) => {
   const { 
     shelfStyling, 
-    toggleDividers,
-    updateDividersSetting
+    toggleDividers
   } = useBookshelfStore();
   
   // Safe handler for toggling dividers
@@ -36,16 +34,6 @@ const DividersSection: React.FC<DividersSectionProps> = ({
       toast.error('Failed to toggle dividers');
     }
   }, [toggleDividers]);
-  
-  // Safe handler for updating divider settings
-  const handleUpdateDividerSetting = useCallback((property: 'orientation' | 'booksPerSection' | 'thickness', value: any) => {
-    try {
-      updateDividersSetting(property, value);
-    } catch (error) {
-      console.error(`Error updating divider ${property}:`, error);
-      toast.error(`Failed to update divider ${property}`);
-    }
-  }, [updateDividersSetting]);
   
   // Check if shelf styling is available
   const hasDividerSettings = shelfStyling && shelfStyling.dividers;
@@ -92,66 +80,10 @@ const DividersSection: React.FC<DividersSectionProps> = ({
           <Separator className="my-2" />
           
           <div className="space-y-6 pl-0.5">
-            <div className="space-y-3">
-              <h4 className="font-medium text-sm text-muted-foreground">Divider Style</h4>
-              <SimpleOrientationSelector 
-                value={shelfStyling.dividers.orientation || 'vertical'} 
-                onChange={(value) => handleUpdateDividerSetting('orientation', value)} 
-              />
-            </div>
-            
-            <div className="space-y-5">
-              <h4 className="font-medium text-sm text-muted-foreground">Divider Layout</h4>
-              
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <Label>Spacing</Label>
-                  <span className="text-sm text-muted-foreground">
-                    {shelfStyling.dividers.booksPerSection || 4} books
-                  </span>
-                </div>
-                <Slider
-                  value={[shelfStyling.dividers.booksPerSection || 4]}
-                  min={2}
-                  max={6}
-                  step={1}
-                  onValueChange={(value) => handleUpdateDividerSetting('booksPerSection', value[0])}
-                />
-                <p className="text-xs text-muted-foreground">
-                  Number of book slots between dividers
-                </p>
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <Label>Thickness</Label>
-                  <span className="text-sm text-muted-foreground">{shelfStyling.dividers.thickness || 6}px</span>
-                </div>
-                <Slider
-                  value={[shelfStyling.dividers.thickness || 6]}
-                  min={2}
-                  max={8}
-                  step={1}
-                  onValueChange={(value) => handleUpdateDividerSetting('thickness', value[0])}
-                />
-              </div>
-            </div>
-            
-            <div className="mt-4 p-3 bg-muted/40 rounded-md">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="link-divider-color">Match shelf appearance</Label>
-                  <Switch 
-                    id="link-divider-color"
-                    checked={linkDividerStyling}
-                    onCheckedChange={setLinkDividerStyling}
-                  />
-                </div>
-                <p className="text-xs text-muted-foreground italic">
-                  When enabled, dividers will automatically match your shelf color and texture
-                </p>
-              </div>
-            </div>
+            <DividerControls 
+              linkDividerStyling={linkDividerStyling}
+              setLinkDividerStyling={setLinkDividerStyling}
+            />
           </div>
         </>
       )}

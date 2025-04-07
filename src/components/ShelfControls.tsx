@@ -13,6 +13,9 @@ const ShelfControls: React.FC = () => {
     console.log("[ShelfControls] Opening customization modal button clicked");
     openCustomizationModal();
     toast.success("Opening customization panel");
+    
+    // Force a global event to ensure other components react to this change
+    window.dispatchEvent(new CustomEvent('open-customization'));
   };
   
   return (

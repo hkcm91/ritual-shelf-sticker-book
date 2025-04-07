@@ -60,12 +60,20 @@ export const createUISlice: StateCreator<
   },
   
   openCustomizationModal: () => {
-    console.log("[UISlice] Opening customization modal");
-    set({ isCustomizationModalOpen: true });
+    console.log("[UISlice] Opening customization modal - BEFORE:", get().isCustomizationModalOpen);
+    set((state) => {
+      console.log("[UISlice] Setting customization modal to TRUE");
+      return { isCustomizationModalOpen: true };
+    });
+    console.log("[UISlice] Opening customization modal - AFTER:", get().isCustomizationModalOpen);
   },
   
   closeCustomizationModal: () => {
-    console.log("[UISlice] Closing customization modal");
-    set({ isCustomizationModalOpen: false });
+    console.log("[UISlice] Closing customization modal - BEFORE:", get().isCustomizationModalOpen);
+    set((state) => {
+      console.log("[UISlice] Setting customization modal to FALSE");
+      return { isCustomizationModalOpen: false };
+    });
+    console.log("[UISlice] Closing customization modal - AFTER:", get().isCustomizationModalOpen);
   }
 });

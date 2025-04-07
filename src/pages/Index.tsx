@@ -47,13 +47,19 @@ const Index = () => {
 
   // Sync with store for modal state
   useEffect(() => {
-    const unsubscribe = useBookshelfStore.subscribe((state) => {
-      const isOpen = state.ui?.isCustomizationModalOpen;
-      console.log("[Index] Store subscription triggered - modal state changed to:", isOpen);
-      setIsCustomModalOpen(!!isOpen);
-    });
+    console.log("[Index] Setting up subscription");
+    const unsubscribe = useBookshelfStore.subscribe(
+      (state) => state.ui.isCustomizationModalOpen,
+      (isOpen) => {
+        console.log("[Index] Store subscription triggered - modal state changed to:", isOpen);
+        setIsCustomModalOpen(isOpen);
+      }
+    );
     
-    return unsubscribe;
+    return () => {
+      console.log("[Index] Cleaning up subscription");
+      unsubscribe();
+    };
   }, []);
   
   const shelvesData = shelves as Record<string, ShelfData>;
@@ -68,6 +74,7 @@ const Index = () => {
       closeCustomizationModal();
     }
     
+    // Directly set local state too for immediate feedback
     setIsCustomModalOpen(newOpen);
   };
   
@@ -85,6 +92,19 @@ const Index = () => {
     window.addEventListener('keydown', forceOpenWithKeyboard);
     return () => window.removeEventListener('keydown', forceOpenWithKeyboard);
   }, [openCustomizationModal]);
+  
+  // Emergency debug function to directly toggle modal
+  const forceToggleModal = () => {
+    const newState = !isCustomModalOpen;
+    console.log("[Index] Force toggling modal to:", newState);
+    setIsCustomModalOpen(newState);
+    if (newState) {
+      openCustomizationModal();
+    } else {
+      closeCustomizationModal();
+    }
+    toast.success(`Modal state forced to: ${newState ? 'OPEN' : 'CLOSED'}`);
+  };
   
   return (
     <div 
@@ -121,25 +141,23 @@ const Index = () => {
         setRenameValue={setRenameValue}
       />
       
-      {/* Use direct state for the modal */}
-      <CustomizationModal 
-        open={isCustomModalOpen} 
-        onOpenChange={handleCustomizationOpenChange} 
-      />
+      {/* Always render the modal but control visibility with the open prop */}
+      <div style={{ position: 'relative', zIndex: 9999 }}>
+        <CustomizationModal 
+          open={isCustomModalOpen} 
+          onOpenChange={handleCustomizationOpenChange} 
+        />
+      </div>
       
-      {/* Debug info at the bottom of the page */}
-      <div className="fixed bottom-0 left-0 bg-black/80 text-white text-xs p-1 z-50 max-w-[300px] overflow-hidden">
-        Modal state: {isCustomModalOpen ? 'Open' : 'Closed'} | 
-        Store state: {ui?.isCustomizationModalOpen ? 'Open' : 'Closed'} | 
+      {/* Emergency floating controls */}
+      <div className="fixed bottom-0 left-0 bg-black/80 text-white text-xs p-2 z-[9999] max-w-[350px] overflow-hidden">
+        <div>Modal state: {isCustomModalOpen ? 'OPEN' : 'CLOSED'}</div>
+        <div>Store state: {ui?.isCustomizationModalOpen ? 'OPEN' : 'CLOSED'}</div>
         <button 
-          onClick={() => {
-            console.log("[Index] Force open button clicked");
-            openCustomizationModal();
-            setIsCustomModalOpen(true);
-          }}
-          className="ml-1 bg-blue-500 px-1 rounded"
+          onClick={forceToggleModal}
+          className="mt-1 bg-blue-500 px-2 py-1 rounded w-full text-center"
         >
-          Force Open
+          Force Toggle Modal (Currently: {isCustomModalOpen ? 'OPEN' : 'CLOSED'})
         </button>
       </div>
     </div>

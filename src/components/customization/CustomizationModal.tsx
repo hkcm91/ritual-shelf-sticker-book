@@ -27,7 +27,6 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
   
   console.log("[CustomizationModal] Rendering with open state:", open);
   
-  // Direct synchronization with store on component mount and updates
   useEffect(() => {
     console.log("[CustomizationModal] Effect on mount/update - open prop:", open);
   }, [open]);
@@ -68,13 +67,11 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
     setIsFullscreen(!isFullscreen);
   };
 
-  // Debug-enhanced dialog open change handler
   const handleOpenChange = (newOpenState: boolean) => {
     console.log("[CustomizationModal] Dialog onOpenChange called with:", newOpenState);
     
     onOpenChange(newOpenState);
     
-    // If dialog is being closed via UI interaction, update the store
     if (!newOpenState && open) {
       console.log("[CustomizationModal] Dialog closing via UI, updating store");
       closeCustomizationModal();
@@ -85,6 +82,8 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
     <Dialog 
       open={open} 
       onOpenChange={handleOpenChange}
+      modal={true}
+      forceMount={true}
     >
       <DialogContent 
         className={`${isFullscreen ? 'max-w-[95vw] h-[95vh] max-h-[95vh]' : 'max-w-4xl max-h-[90vh]'} 
@@ -96,8 +95,8 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
         }}
         hideCloseButton={true}
         data-customization-modal="true"
+        forceMount={true}
       >
-        {/* Background subtle animation */}
         <ModalBackground />
         
         <div className="relative z-10 flex flex-col h-full">
@@ -106,13 +105,10 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
             toggleFullscreen={toggleFullscreen} 
           />
           
-          {/* Live Preview Section */}
           <PreviewSection showSaveAnimation={showSaveAnimation} />
           
-          {/* Content Section */}
           <ContentSection />
           
-          {/* Footer Section */}
           <ModalFooter 
             handleSave={handleSave} 
             handleReset={handleReset} 

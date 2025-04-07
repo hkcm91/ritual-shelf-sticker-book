@@ -2,7 +2,7 @@
 import { CustomizationSliceCreator, defaultCustomization } from './types';
 import { toast } from 'sonner';
 
-export const createStorageSlice: CustomizationSliceCreator = (set, get) => ({
+export const createStorageSlice: CustomizationSliceCreator = (set, get, api) => ({
   // Required property must be explicitly defined, not optional
   activeTheme: 'default',
   

@@ -12,11 +12,10 @@ import { CustomizationSliceCreator } from './types';
 // Export the default customization for use in the main store
 export { defaultCustomization } from './types';
 
-// Non-null assertion operator ensures activeTheme is treated as required
+// Make sure activeTheme is treated as required
 export const createCustomizationSlice: CustomizationSliceCreator = (set, get, api) => {
-  // Start with base customization state
+  // Start with the base customization state to ensure all required properties are present
   const baseState = {
-    // Default state values first (these are all the required properties)
     ...defaultCustomization,
   };
   

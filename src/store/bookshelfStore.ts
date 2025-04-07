@@ -11,12 +11,12 @@ export type BookshelfState = BooksSlice & CompleteShelvesSlice & UISlice & Custo
   findEmptyPosition: (shelfId: string) => number;
 };
 
-export const useBookshelfStore = create<BookshelfState>()((set, get) => {
+export const useBookshelfStore = create<BookshelfState>()((set, get, api) => {
   return {
-    ...createBooksSlice(set, get),
-    ...createShelvesSlice(set, get),
-    ...createUISlice(set, get),
-    ...createCustomizationSlice(set, get),
+    ...createBooksSlice(set, get, api),
+    ...createShelvesSlice(set, get, api),
+    ...createUISlice(set, get, api),
+    ...createCustomizationSlice(set, get, api),
     
     findEmptyPosition: (shelfId: string) => {
       const { books, shelves } = get();

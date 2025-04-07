@@ -9,6 +9,8 @@ export const useTheme = () => {
   const container = useBookshelfStore((state) => state.container);
   const page = useBookshelfStore((state) => state.page);
   const shelfStyling = useBookshelfStore((state) => state.shelfStyling);
+  const slots = useBookshelfStore((state) => state.slots);
+  const header = useBookshelfStore((state) => state.header);
   
   // Apply CSS variables based on store values
   useEffect(() => {
@@ -33,14 +35,28 @@ export const useTheme = () => {
       document.documentElement.style.setProperty('--shelf-color', shelfStyling.color);
       document.documentElement.style.setProperty('--shelf-bg-image', shelfStyling.backgroundImage ? `url(${shelfStyling.backgroundImage})` : 'none');
       document.documentElement.style.setProperty('--shelf-opacity', shelfStyling.opacity.toString());
+      
+      // Slots
+      document.documentElement.style.setProperty('--slot-add-button-bg', slots.addButtonBg);
+      document.documentElement.style.setProperty('--slot-add-button-color', slots.addButtonColor);
+      document.documentElement.style.setProperty('--slot-add-button-hover-bg', slots.addButtonHoverBg);
+      document.documentElement.style.setProperty('--slot-toggle-inactive-color', slots.toggleInactiveColor);
+      document.documentElement.style.setProperty('--slot-toggle-active-color', slots.toggleActiveColor);
+      document.documentElement.style.setProperty('--slot-toggle-border-color', slots.toggleBorderColor);
+      document.documentElement.style.setProperty('--slot-empty-hover-bg', slots.emptyHoverBg);
+      
+      // Header
+      document.documentElement.style.setProperty('--header-bg', header.background);
+      document.documentElement.style.setProperty('--header-bg-image', header.backgroundImage ? `url(${header.backgroundImage})` : 'none');
+      document.documentElement.style.setProperty('--header-text-color', header.textColor);
     }
-  }, [container, page, shelfStyling]);
+  }, [container, page, shelfStyling, slots, header]);
   
   // Apply theme CSS variables from theme files
   useEffect(() => {
     if (!activeTheme) return;
     
-    const theme = themes[activeTheme] || themes.default;
+    const theme = themes[activeTheme as ThemeName] || themes.default;
     
     // Apply CSS variables to root
     Object.entries(theme.variables).forEach(([key, value]) => {

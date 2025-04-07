@@ -7,7 +7,8 @@ import {
   AppWindow,
   SquareDashedBottomCode,
   SquareStack,
-  Layers
+  Layers,
+  Brush
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useBookshelfStore } from "@/store/bookshelfStore";
@@ -18,14 +19,18 @@ import ContainerTab from './tabs/ContainerTab';
 import ShelvesTab from './tabs/ShelvesTab';
 import SlotsTab from './tabs/SlotsTab';
 import HeaderTab from './tabs/HeaderTab';
+import ThemesTab from './tabs/ThemesTab';
 
 const CustomizationContent: React.FC = () => {
   const { saveCustomization, resetCustomization } = useBookshelfStore();
   
   return (
     <div className="space-y-6">
-      <Tabs defaultValue="general" className="w-full">
+      <Tabs defaultValue="themes" className="w-full">
         <TabsList className="w-full justify-start mb-4 overflow-x-auto">
+          <TabsTrigger value="themes" className="flex items-center">
+            <Brush className="mr-1 h-4 w-4" /> Themes
+          </TabsTrigger>
           <TabsTrigger value="general" className="flex items-center">
             <AppWindow className="mr-1 h-4 w-4" /> General
           </TabsTrigger>
@@ -42,6 +47,11 @@ const CustomizationContent: React.FC = () => {
             <Image className="mr-1 h-4 w-4" /> Header
           </TabsTrigger>
         </TabsList>
+        
+        {/* Themes Tab */}
+        <TabsContent value="themes" className="space-y-6">
+          <ThemesTab />
+        </TabsContent>
         
         {/* General Tab */}
         <TabsContent value="general" className="space-y-6">

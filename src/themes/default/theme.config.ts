@@ -9,7 +9,7 @@ const defaultTheme: Theme = {
     '--page-bg-image': 'none',
     
     // Container
-    '--container-bg': '#a47148',
+    '--container-bg': '#8B5A2B',
     '--container-bg-image': 'none',
     '--container-opacity': '1',
     '--container-border-width': '0px',
@@ -25,7 +25,7 @@ const defaultTheme: Theme = {
     '--shelf-opacity': '1',
     
     // Dividers
-    '--divider-thickness': '8px',
+    '--divider-thickness': '10px',
     '--divider-color': '#714621',
     '--divider-opacity': '1',
     
@@ -39,12 +39,12 @@ const defaultTheme: Theme = {
     '--empty-hover-bg': 'rgba(255, 255, 255, 0.1)',
     
     // Header
-    '--header-bg': '#a47148',
+    '--header-bg': '#8B5A2B',
     '--header-bg-image': 'none',
     '--header-text-color': '#ffffff',
   },
   textures: {
-    shelf: '/lovable-uploads/e6d15a98-d15d-428c-88a8-a557392b7410.png',
+    shelf: '/lovable-uploads/7a437784-0910-4719-b52b-6564c3004ebe.png',
     background: '',
   }
 };

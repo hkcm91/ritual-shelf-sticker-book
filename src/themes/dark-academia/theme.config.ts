@@ -9,7 +9,7 @@ const darkAcademia: Theme = {
     '--page-bg-image': 'none',
     
     // Container
-    '--container-bg': '#403328',
+    '--container-bg': '#352011',
     '--container-bg-image': 'none',
     '--container-opacity': '1',
     '--container-border-width': '0px',
@@ -19,13 +19,13 @@ const darkAcademia: Theme = {
     '--container-padding': '16px',
     
     // Shelves
-    '--shelf-thickness': '20px',
+    '--shelf-thickness': '22px',
     '--shelf-color': '#3a2c1f',
     '--shelf-bg-image': 'none',
     '--shelf-opacity': '1',
     
     // Dividers
-    '--divider-thickness': '8px',
+    '--divider-thickness': '10px',
     '--divider-color': '#271911',
     '--divider-opacity': '1',
     
@@ -39,12 +39,12 @@ const darkAcademia: Theme = {
     '--empty-hover-bg': 'rgba(30, 30, 30, 0.2)',
     
     // Header
-    '--header-bg': '#403328',
+    '--header-bg': '#352011',
     '--header-bg-image': 'none',
     '--header-text-color': '#eee',
   },
   textures: {
-    shelf: '/textures/dark-academia/wood.jpg',
+    shelf: '/lovable-uploads/7a437784-0910-4719-b52b-6564c3004ebe.png',
     background: '/textures/dark-academia/books.jpg',
   }
 };

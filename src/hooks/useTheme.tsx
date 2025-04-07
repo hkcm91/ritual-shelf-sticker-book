@@ -39,7 +39,7 @@ export function useTheme() {
         if (themeToApply.textures) {
           document.documentElement.style.setProperty(
             '--shelf-texture', 
-            `url(${themeToApply.textures.shelf || ''})`
+            `url(${themeToApply.textures.shelf || '/lovable-uploads/7a437784-0910-4719-b52b-6564c3004ebe.png'})`
           );
           
           if (themeToApply.textures.background) {
@@ -54,7 +54,7 @@ export function useTheme() {
           // Set divider background image to match shelf texture
           document.documentElement.style.setProperty(
             '--divider-bg-image', 
-            `url(${themeToApply.textures.shelf || ''})`
+            `url(${themeToApply.textures.shelf || '/lovable-uploads/7a437784-0910-4719-b52b-6564c3004ebe.png'})`
           );
         }
         
@@ -81,7 +81,7 @@ export function useTheme() {
         document.documentElement.style.setProperty('--page-bg-attachment', page?.backgroundAttachment || 'fixed');
         
         // Container
-        document.documentElement.style.setProperty('--container-bg', container?.background || '#a47148');
+        document.documentElement.style.setProperty('--container-bg', container?.background || '#8B5A2B');
         document.documentElement.style.setProperty(
           '--container-bg-image', 
           container?.backgroundImage ? `url(${container.backgroundImage})` : 'none'
@@ -105,18 +105,18 @@ export function useTheme() {
         // Set shelf texture for use in other elements
         document.documentElement.style.setProperty(
           '--shelf-texture', 
-          shelfStyling?.backgroundImage ? `url(${shelfStyling.backgroundImage})` : 'url(/lovable-uploads/e6d15a98-d15d-428c-88a8-a557392b7410.png)'
+          shelfStyling?.backgroundImage ? `url(${shelfStyling.backgroundImage})` : `url(/lovable-uploads/7a437784-0910-4719-b52b-6564c3004ebe.png)`
         );
         
         // Dividers
         if (shelfStyling?.dividers) {
-          document.documentElement.style.setProperty('--divider-thickness', `${shelfStyling.dividers.thickness || 8}px`);
+          document.documentElement.style.setProperty('--divider-thickness', `${shelfStyling.dividers.thickness || 10}px`);
           document.documentElement.style.setProperty('--divider-color', shelfStyling.dividers.color || '#714621');
           document.documentElement.style.setProperty('--divider-opacity', `${shelfStyling.dividers.opacity || 1}`);
           document.documentElement.style.setProperty('--divider-orientation', shelfStyling.dividers.orientation || 'vertical');
           document.documentElement.style.setProperty(
             '--divider-bg-image', 
-            shelfStyling?.backgroundImage ? `url(${shelfStyling.backgroundImage})` : 'url(/lovable-uploads/e6d15a98-d15d-428c-88a8-a557392b7410.png)'
+            shelfStyling?.backgroundImage ? `url(${shelfStyling.backgroundImage})` : `url(/lovable-uploads/7a437784-0910-4719-b52b-6564c3004ebe.png)`
           );
         }
       }
@@ -143,16 +143,16 @@ export function useTheme() {
     name: "Custom Theme",
     variables: {
       '--page-bg': page?.background || '#f5f5f5',
-      '--container-bg': container?.background || '#a47148',
+      '--container-bg': container?.background || '#8B5A2B',
       '--shelf-color': shelfStyling?.color || '#8B5A2B',
       '--divider-color': shelfStyling?.dividers?.color || '#714621',
-      '--divider-thickness': `${shelfStyling?.dividers?.thickness || 8}px`,
+      '--divider-thickness': `${shelfStyling?.dividers?.thickness || 10}px`,
       '--divider-opacity': `${shelfStyling?.dividers?.opacity || 1}`,
       '--divider-orientation': shelfStyling?.dividers?.orientation || 'vertical',
       // Add more variables as needed
     },
     textures: {
-      shelf: shelfStyling?.backgroundImage || '/lovable-uploads/e6d15a98-d15d-428c-88a8-a557392b7410.png',
+      shelf: shelfStyling?.backgroundImage || '/lovable-uploads/7a437784-0910-4719-b52b-6564c3004ebe.png',
       background: page?.backgroundImage || '',
     }
   };

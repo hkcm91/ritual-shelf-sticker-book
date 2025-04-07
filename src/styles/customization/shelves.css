@@ -7,7 +7,7 @@
   background-position: center;
   opacity: var(--shelf-opacity);
   height: var(--shelf-thickness);
-  box-shadow: 0px 4px 8px rgba(0,0,0,0.3);
+  box-shadow: 0px 6px 10px rgba(0,0,0,0.4);
   transition: background-color 0.3s ease, opacity 0.3s ease, height 0.3s ease;
   position: relative;
   border-bottom: 1px solid rgba(0,0,0,0.2);
@@ -41,7 +41,7 @@
   right: 0;
   bottom: 0;
   z-index: -1;
-  filter: brightness(0.8);
+  filter: brightness(0.7);
 }
 
 .vertical-shelf-divider {
@@ -50,7 +50,7 @@
   background-image: var(--divider-bg-image, var(--shelf-texture));
   background-size: 200% 100%;
   background-position: center;
-  box-shadow: 0px 0px 4px rgba(0,0,0,0.1);
+  box-shadow: 0px 0px 5px rgba(0,0,0,0.2);
   margin: 0 8px;
   transition: all 0.3s ease;
   min-height: 220px;
@@ -68,7 +68,7 @@
   background-image: var(--divider-bg-image, var(--shelf-texture));
   background-size: 100% 200%;
   background-position: center;
-  box-shadow: 0px 0px 4px rgba(0,0,0,0.1);
+  box-shadow: 0px 0px 5px rgba(0,0,0,0.2);
   margin: 8px -16px 8px -16px;
   padding: 0;
   transition: all 0.3s ease;
@@ -106,7 +106,7 @@
   background-position: center;
   opacity: var(--divider-opacity, 1);
   z-index: 5;
-  box-shadow: 0px 0px 8px rgba(0,0,0,0.15);
+  box-shadow: 0px 0px 8px rgba(0,0,0,0.2);
 }
 
 .shelf-side-left {
@@ -121,7 +121,7 @@
 
 /* Realistic bookshelf styling */
 .realistic-bookshelf {
-  box-shadow: inset 0 0 30px rgba(0,0,0,0.2);
+  box-shadow: inset 0 0 30px rgba(0,0,0,0.3);
   background-color: #5c3d26;
   background-image: var(--container-bg-image);
   background-size: cover;
@@ -147,7 +147,7 @@
   left: 0;
   right: 0;
   height: 100%;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 40%);
+  background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 40%);
   z-index: 0;
   pointer-events: none;
 }
@@ -157,44 +157,19 @@
   z-index: 1;
 }
 
-/* New divider hover effects */
-.vertical-shelf-divider:hover,
-.horizontal-shelf-divider:hover {
-  filter: brightness(1.1);
-}
-
-/* Enhanced divider styles for different orientations */
-.vertical-divider-container {
-  display: flex;
-  align-items: stretch;
-  height: 100%;
-}
-
-.horizontal-divider-container {
-  width: 100%;
-  position: relative;
-}
-
 /* Bookshelf container with divider border */
 .bookshelf-container {
   position: relative;
   padding: var(--container-padding, 16px);
   border-radius: var(--container-border-radius, 8px);
   overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
 /* Border frame that matches dividers */
 .bookshelf-frame {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border: var(--divider-thickness, 8px) solid var(--divider-color, #714621);
-  background-image: var(--divider-bg-image, var(--shelf-texture));
-  background-size: 100% 100%;
-  opacity: var(--divider-opacity, 1);
   pointer-events: none;
-  z-index: 3;
-  box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+  z-index: 20;
+  box-sizing: border-box;
+  border-style: solid;
 }

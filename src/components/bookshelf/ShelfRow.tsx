@@ -97,28 +97,20 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
   
   // Get custom shelf texture or use default
   const shelfTexture = shelf?.textureImage || 
-                      (useRealisticStyle ? '/lovable-uploads/e6d15a98-d15d-428c-88a8-a557392b7410.png' : 
+                      (useRealisticStyle ? '/lovable-uploads/7a437784-0910-4719-b52b-6564c3004ebe.png' : 
                       '/textures/default/wood.jpg');
 
   return (
     <div className={`shelf-row flex flex-col w-full relative ${useRealisticStyle ? 'realistic-shelf' : ''}`}>
-      {/* Add vertical dividers on the sides */}
+      {/* Shelf back panel for realistic look */}
       <div 
-        className="shelf-side-left" 
+        className="bookshelf-back-panel absolute top-0 left-0 right-0 bottom-0 z-0"
         style={{
-          width: `${shelfStyling?.dividers?.thickness || 8}px`,
-          backgroundColor: shelfStyling?.dividers?.color || '#714621',
+          backgroundColor: shelfStyling?.color || '#7c5738',
           backgroundImage: `url(${shelfTexture})`,
-          opacity: shelfStyling?.dividers?.opacity || 1
-        }}
-      ></div>
-      <div 
-        className="shelf-side-right" 
-        style={{
-          width: `${shelfStyling?.dividers?.thickness || 8}px`,
-          backgroundColor: shelfStyling?.dividers?.color || '#714621',
-          backgroundImage: `url(${shelfTexture})`,
-          opacity: shelfStyling?.dividers?.opacity || 1
+          backgroundSize: '100% 100%',
+          opacity: 0.8,
+          filter: 'brightness(0.6)'
         }}
       ></div>
       
@@ -127,7 +119,7 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
       
       {/* Shelf */}
       <div 
-        className="wood-shelf w-full mb-6 relative"
+        className="wood-shelf w-full mb-6 relative z-10"
         style={{
           height: `${shelfStyling?.thickness || 20}px`,
           backgroundImage: `url(${shelfTexture})`,
@@ -136,7 +128,7 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
           backgroundPosition: 'center',
           backgroundColor: shelfStyling?.color || '#7c5738',
           opacity: shelfStyling?.opacity || 1,
-          boxShadow: useRealisticStyle ? '0 4px 8px rgba(0,0,0,0.3)' : '0px 4px 6px -2px rgba(0,0,0,0.3)'
+          boxShadow: useRealisticStyle ? '0 6px 10px rgba(0,0,0,0.4)' : '0px 4px 6px -2px rgba(0,0,0,0.3)'
         }}
       ></div>
     </div>

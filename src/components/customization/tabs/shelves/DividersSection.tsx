@@ -1,13 +1,15 @@
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useBookshelfStore } from "@/store/bookshelfStore";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle, AlertTriangle } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import SimpleOrientationSelector from './SimpleOrientationSelector';
 import { Slider } from "@/components/ui/slider";
+import { toast } from 'sonner';
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface DividersSectionProps {
   linkDividerStyling: boolean;
@@ -23,6 +25,44 @@ const DividersSection: React.FC<DividersSectionProps> = ({
     toggleDividers,
     updateDividersSetting
   } = useBookshelfStore();
+  
+  // Safe handler for toggling dividers
+  const handleToggleDividers = useCallback((checked: boolean) => {
+    try {
+      toggleDividers(checked);
+      toast.success(checked ? 'Dividers enabled' : 'Dividers disabled');
+    } catch (error) {
+      console.error('Error toggling dividers:', error);
+      toast.error('Failed to toggle dividers');
+    }
+  }, [toggleDividers]);
+  
+  // Safe handler for updating divider settings
+  const handleUpdateDividerSetting = useCallback((property: 'orientation' | 'booksPerSection' | 'thickness', value: any) => {
+    try {
+      updateDividersSetting(property, value);
+    } catch (error) {
+      console.error(`Error updating divider ${property}:`, error);
+      toast.error(`Failed to update divider ${property}`);
+    }
+  }, [updateDividersSetting]);
+  
+  // Check if shelf styling is available
+  const hasDividerSettings = shelfStyling && shelfStyling.dividers;
+  
+  // If shelf styling is unavailable, show error message
+  if (!shelfStyling) {
+    return (
+      <div className="rounded-md border p-4">
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            Shelf styling settings could not be loaded. Please refresh the page.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
   
   return (
     <div className="rounded-md border p-4 space-y-4">
@@ -42,20 +82,20 @@ const DividersSection: React.FC<DividersSectionProps> = ({
         </div>
         <Switch 
           id="enable-dividers" 
-          checked={shelfStyling?.dividers?.enabled || false}
-          onCheckedChange={(checked) => toggleDividers(checked)}
+          checked={hasDividerSettings ? (shelfStyling.dividers.enabled || false) : false}
+          onCheckedChange={handleToggleDividers}
         />
       </div>
       
-      {shelfStyling?.dividers?.enabled && (
+      {hasDividerSettings && shelfStyling.dividers.enabled && (
         <>
           <Separator className="my-2" />
           
           <div className="space-y-3">
             <Label className="font-medium">Style</Label>
             <SimpleOrientationSelector 
-              value={shelfStyling?.dividers?.orientation || 'vertical'} 
-              onChange={(value) => updateDividersSetting('orientation', value)} 
+              value={shelfStyling.dividers.orientation || 'vertical'} 
+              onChange={(value) => handleUpdateDividerSetting('orientation', value)} 
             />
           </div>
           
@@ -63,29 +103,29 @@ const DividersSection: React.FC<DividersSectionProps> = ({
             <div className="flex justify-between">
               <Label>Spacing</Label>
               <span className="text-sm text-muted-foreground">
-                {shelfStyling?.dividers?.booksPerSection || 4} books
+                {shelfStyling.dividers.booksPerSection || 4} books
               </span>
             </div>
             <Slider
-              value={[shelfStyling?.dividers?.booksPerSection || 4]}
+              value={[shelfStyling.dividers.booksPerSection || 4]}
               min={2}
               max={6}
               step={1}
-              onValueChange={(value) => updateDividersSetting('booksPerSection', value[0])}
+              onValueChange={(value) => handleUpdateDividerSetting('booksPerSection', value[0])}
             />
           </div>
           
           <div className="space-y-2">
             <div className="flex justify-between">
               <Label>Thickness</Label>
-              <span className="text-sm text-muted-foreground">{shelfStyling?.dividers?.thickness || 6}px</span>
+              <span className="text-sm text-muted-foreground">{shelfStyling.dividers.thickness || 6}px</span>
             </div>
             <Slider
-              value={[shelfStyling?.dividers?.thickness || 6]}
+              value={[shelfStyling.dividers.thickness || 6]}
               min={2}
               max={8}
               step={1}
-              onValueChange={(value) => updateDividersSetting('thickness', value[0])}
+              onValueChange={(value) => handleUpdateDividerSetting('thickness', value[0])}
             />
           </div>
           

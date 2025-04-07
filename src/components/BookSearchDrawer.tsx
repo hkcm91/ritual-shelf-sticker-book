@@ -76,6 +76,7 @@ const BookSearchDrawer = () => {
                 className="text-[color:var(--header-text-color,white)] hover:text-[color:var(--header-text-color,white)] hover:bg-[color:var(--header-hover-bg,rgba(255,255,255,0.1))]"
                 onClick={() => {
                   console.log("Book search button clicked directly");
+                  setOpen(true);
                 }}
               >
                 <BookOpen className="h-5 w-5" />

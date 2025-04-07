@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useBookshelfStore, initializeDefaultShelf } from '../store/bookshelfStore';
 import BookshelfGrid from '../components/BookshelfGrid';

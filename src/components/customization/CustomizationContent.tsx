@@ -22,7 +22,7 @@ import HeaderTab from './tabs/HeaderTab';
 import ThemesTab from './tabs/ThemesTab';
 
 const CustomizationContent: React.FC = () => {
-  const { saveCustomization, resetCustomization } = useBookshelfStore();
+  const { saveCustomization, resetCustomization, activeTheme } = useBookshelfStore();
   
   return (
     <div className="space-y-6">
@@ -78,23 +78,6 @@ const CustomizationContent: React.FC = () => {
           <HeaderTab />
         </TabsContent>
       </Tabs>
-      
-      <div className="flex justify-between mt-4">
-        <Button 
-          variant="outline" 
-          onClick={resetCustomization}
-          size="sm"
-        >
-          Reset to Defaults
-        </Button>
-        
-        <Button 
-          onClick={saveCustomization}
-          size="sm"
-        >
-          Save Customization
-        </Button>
-      </div>
     </div>
   );
 };

@@ -25,9 +25,13 @@ const ThemeSelector: React.FC = () => {
                 {themes[themeName].name}
               </SelectItem>
             ))}
+            <SelectItem value="custom">Custom Theme</SelectItem>
           </SelectGroup>
         </SelectContent>
       </Select>
+      <p className="text-xs text-muted-foreground mt-1">
+        Select a theme or open Advanced Customization to create your own
+      </p>
     </div>
   );
 };

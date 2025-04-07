@@ -4,7 +4,7 @@ import { useBookshelfStore } from '@/store/bookshelfStore';
 import themes, { ThemeName } from '@/themes';
 
 export const useTheme = () => {
-  const activeTheme = useBookshelfStore((state) => state.activeTheme) as ThemeName || 'default';
+  const activeTheme = useBookshelfStore((state) => state.activeTheme) as ThemeName;
   const setActiveTheme = useBookshelfStore((state) => state.setActiveTheme);
   const container = useBookshelfStore((state) => state.container);
   const page = useBookshelfStore((state) => state.page);
@@ -70,6 +70,16 @@ export const useTheme = () => {
   useEffect(() => {
     if (!activeTheme) return;
     
+    // If theme is custom, we're already setting all variables directly above
+    if (activeTheme === 'custom') {
+      document.body.className = document.body.className
+        .split(' ')
+        .filter(cls => !cls.startsWith('theme-'))
+        .join(' ');
+      document.body.classList.add('theme-custom');
+      return;
+    }
+    
     const theme = themes[activeTheme as ThemeName] || themes.default;
     
     // Apply CSS variables to root
@@ -86,10 +96,24 @@ export const useTheme = () => {
     
   }, [activeTheme]);
   
+  // Add custom theme to available themes
+  const allThemes = { ...themes };
+  if (!allThemes.custom && activeTheme === 'custom') {
+    // @ts-ignore - adding a dynamic theme
+    allThemes.custom = {
+      name: "Custom Theme",
+      variables: {},
+      textures: {
+        shelf: "",
+        background: ""
+      }
+    };
+  }
+  
   return {
     activeTheme,
     setActiveTheme,
-    themes,
+    themes: allThemes,
     availableThemes: Object.keys(themes) as ThemeName[]
   };
 };

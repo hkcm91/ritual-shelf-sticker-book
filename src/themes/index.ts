@@ -9,7 +9,7 @@ export const themes = {
   'cozy-cottage': cozyCottage,
 };
 
-export type ThemeName = keyof typeof themes;
+export type ThemeName = keyof typeof themes | 'custom';
 export type Theme = typeof defaultTheme;
 
 export default themes;

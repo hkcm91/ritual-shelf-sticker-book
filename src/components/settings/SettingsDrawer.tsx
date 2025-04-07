@@ -16,15 +16,10 @@ import {
   Columns,
   Palette,
   Save,
-  Upload,
-  Download,
-  RefreshCw,
-  Layout,
-  Image,
-  Sliders
+  Layout, 
 } from 'lucide-react';
 import { useBookshelfStore } from '@/store/bookshelfStore';
-import CustomizationContent from '@/components/customization/CustomizationContent';
+import ThemeSelector from './ThemeSelector';
 import StorageSettings from '@/components/StorageSettings';
 
 const SettingsDrawer: React.FC = () => {
@@ -36,9 +31,7 @@ const SettingsDrawer: React.FC = () => {
     removeColumn,
     activeShelfId,
     shelves,
-    openCustomizationModal, // We'll use this to show the panel directly
-    saveCustomization,
-    resetCustomization
+    openCustomizationModal,
   } = useBookshelfStore();
   
   const activeShelf = shelves[activeShelfId];
@@ -67,6 +60,13 @@ const SettingsDrawer: React.FC = () => {
     }
   };
   
+  const handleOpenCustomization = () => {
+    setOpen(false);
+    setTimeout(() => {
+      openCustomizationModal();
+    }, 100);
+  };
+  
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
@@ -78,7 +78,7 @@ const SettingsDrawer: React.FC = () => {
         <SheetHeader>
           <SheetTitle>Bookshelf Settings</SheetTitle>
           <SheetDescription>
-            Adjust your bookshelf layout, appearance and storage
+            Adjust your bookshelf layout and storage
           </SheetDescription>
         </SheetHeader>
         
@@ -90,7 +90,7 @@ const SettingsDrawer: React.FC = () => {
             </TabsTrigger>
             <TabsTrigger value="appearance" className="flex items-center gap-1">
               <Palette className="h-3.5 w-3.5" />
-              <span>Appearance</span>
+              <span>Theme</span>
             </TabsTrigger>
             <TabsTrigger value="storage" className="flex items-center gap-1">
               <Save className="h-3.5 w-3.5" />
@@ -154,8 +154,18 @@ const SettingsDrawer: React.FC = () => {
             </div>
           </TabsContent>
           
-          <TabsContent value="appearance" className="mt-4">
-            <CustomizationContent />
+          <TabsContent value="appearance" className="mt-4 space-y-6">
+            <ThemeSelector />
+            <div className="mt-4">
+              <Button 
+                variant="outline" 
+                className="w-full" 
+                onClick={handleOpenCustomization}
+              >
+                <Palette className="mr-2 h-4 w-4" />
+                Advanced Customization
+              </Button>
+            </div>
           </TabsContent>
           
           <TabsContent value="storage" className="mt-4">

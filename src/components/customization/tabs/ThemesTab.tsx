@@ -5,6 +5,8 @@ import { Label } from "@/components/ui/label";
 import { useTheme } from '@/hooks/useTheme';
 import { Card } from "@/components/ui/card";
 import { ThemeName } from '@/themes';
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Info } from "lucide-react";
 
 const ThemesTab: React.FC = () => {
   const { activeTheme, setActiveTheme, themes, availableThemes } = useTheme();
@@ -16,6 +18,13 @@ const ThemesTab: React.FC = () => {
         <p className="text-sm text-muted-foreground mb-4">
           Choose a preset theme for your bookshelf
         </p>
+        
+        <Alert variant="outline" className="mb-4">
+          <Info className="h-4 w-4" />
+          <AlertDescription>
+            Any changes made in other customization tabs will be saved as your "Custom" theme. You can always return to a preset theme using these options.
+          </AlertDescription>
+        </Alert>
         
         <RadioGroup 
           value={activeTheme} 
@@ -54,6 +63,25 @@ const ThemesTab: React.FC = () => {
               </div>
             </Card>
           ))}
+          
+          {/* Add Custom Theme option */}
+          <Card 
+            className={`relative p-4 flex flex-col gap-4 cursor-pointer hover:bg-accent/10 transition-colors ${
+              activeTheme === 'custom' ? 'border-2 border-primary' : ''
+            }`}
+            onClick={() => setActiveTheme('custom' as ThemeName)}
+          >
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="custom" id="theme-custom" />
+              <Label htmlFor="theme-custom" className="text-base font-medium">
+                Custom Theme
+              </Label>
+            </div>
+            
+            <div className="h-20 w-full rounded-md border overflow-hidden bg-gradient-to-r from-blue-200 via-pink-200 to-purple-200">
+              <div className="w-full h-4 mt-10 bg-gradient-to-r from-purple-500 to-indigo-500 opacity-0.9" />
+            </div>
+          </Card>
         </RadioGroup>
       </div>
     </div>

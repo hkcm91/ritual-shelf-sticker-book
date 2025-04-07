@@ -4,7 +4,6 @@ import SettingsDrawer from './settings/SettingsDrawer';
 import { Palette } from 'lucide-react';
 import { Button } from './ui/button';
 import { useBookshelfStore } from '@/store/bookshelfStore';
-import ShelfStylesDialog from './ShelfStylesDialog';
 
 const ShelfControls: React.FC = () => {
   const { openCustomizationModal } = useBookshelfStore();

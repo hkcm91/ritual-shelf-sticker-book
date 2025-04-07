@@ -1,13 +1,41 @@
-
 import { CustomizationSliceCreator, defaultCustomization } from './types';
 import { toast } from 'sonner';
+import themes from '@/themes';
+import { ThemeName } from '@/themes';
 
 export const createStorageSlice: CustomizationSliceCreator = (set, get, api) => ({
   // Required property must be explicitly defined, not optional
   activeTheme: 'default',
   
   setActiveTheme: (themeName) => {
-    set({ activeTheme: themeName });
+    // Get current customization state
+    const currentState = get();
+    
+    // Get the selected theme configuration
+    const themeConfig = themes[themeName as ThemeName] || themes.default;
+    
+    // Apply theme settings to customization state
+    set({ 
+      activeTheme: themeName,
+      // Apply theme variables to our customization properties
+      page: {
+        ...currentState.page,
+        background: themeConfig.variables['--page-bg'] || defaultCustomization.page.background,
+        backgroundImage: themeConfig.textures.background || ''
+      },
+      container: {
+        ...currentState.container,
+        background: themeConfig.variables['--container-bg'] || defaultCustomization.container.background,
+        backgroundImage: themeConfig.textures.background || ''
+      },
+      shelfStyling: {
+        ...currentState.shelfStyling,
+        color: themeConfig.variables['--shelf-color'] || defaultCustomization.shelfStyling.color,
+        backgroundImage: themeConfig.textures.shelf || ''
+      },
+      // Keep other existing customization properties
+    });
+    
     localStorage.setItem('bookshelf-active-theme', themeName);
     toast.success(`Theme changed to ${themeName}`);
   },
@@ -25,6 +53,12 @@ export const createStorageSlice: CustomizationSliceCreator = (set, get, api) => 
         header,
         activeTheme
       }));
+      
+      // Save as custom theme
+      if (activeTheme !== 'custom') {
+        set({ activeTheme: 'custom' });
+        localStorage.setItem('bookshelf-active-theme', 'custom');
+      }
       
       toast.success('Customization settings saved');
     } catch (error) {
@@ -45,7 +79,15 @@ export const createStorageSlice: CustomizationSliceCreator = (set, get, api) => 
       }
       
       if (savedTheme) {
-        set({ activeTheme: savedTheme });
+        // If it's not a custom theme, apply the theme settings
+        if (savedTheme !== 'custom') {
+          // We call setActiveTheme through API to ensure proper theme application
+          const { setActiveTheme } = get();
+          setActiveTheme(savedTheme);
+        } else {
+          // Just set the theme name for custom themes
+          set({ activeTheme: savedTheme });
+        }
       }
       
     } catch (error) {

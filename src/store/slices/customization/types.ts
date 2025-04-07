@@ -1,4 +1,3 @@
-
 import { StateCreator } from 'zustand';
 import { BookshelfState } from '../../bookshelfStore';
 import { ThemeName } from '@/themes';
@@ -7,13 +6,15 @@ import { ThemeName } from '@/themes';
 export interface ShelfStyling {
   thickness: number;
   color: string;
-  backgroundImage: string;
+  backgroundImage?: string;
   opacity: number;
   dividers: {
     enabled: boolean;
     booksPerSection: number;
+    booksPerRow: number;
     thickness: number;
     color: string;
+    orientation: 'vertical' | 'horizontal' | 'both';
   };
 }
 
@@ -141,13 +142,14 @@ export const defaultCustomization: CustomizationState = {
   shelfStyling: {
     thickness: 20,
     color: '#8B5A2B',
-    backgroundImage: '',
     opacity: 1,
     dividers: {
       enabled: false,
       booksPerSection: 6,
+      booksPerRow: 2,
       thickness: 2,
       color: '#714621',
+      orientation: 'vertical'
     },
   },
   slots: {

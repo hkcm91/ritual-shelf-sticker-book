@@ -91,6 +91,7 @@ export function useTheme() {
         if (shelfStyling?.dividers) {
           document.documentElement.style.setProperty('--divider-thickness', `${shelfStyling.dividers.thickness || 2}px`);
           document.documentElement.style.setProperty('--divider-color', shelfStyling.dividers.color || '#714621');
+          document.documentElement.style.setProperty('--divider-orientation', shelfStyling.dividers.orientation || 'vertical');
         }
       }
       
@@ -118,6 +119,8 @@ export function useTheme() {
       '--page-bg': page?.background || '#f5f5f5',
       '--container-bg': container?.background || '#a47148',
       '--shelf-color': shelfStyling?.color || '#8B5A2B',
+      '--divider-color': shelfStyling?.dividers?.color || '#714621',
+      '--divider-orientation': shelfStyling?.dividers?.orientation || 'vertical',
       // Add more variables as needed
     },
     textures: {

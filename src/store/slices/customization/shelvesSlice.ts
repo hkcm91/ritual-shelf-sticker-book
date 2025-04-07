@@ -27,7 +27,7 @@ export const createShelvesSlice: CustomizationSliceCreator = (set) => ({
     }
   })),
   
-  updateDividersSetting: (property: 'booksPerSection' | 'thickness' | 'color', value: any) => set((state) => ({
+  updateDividersSetting: (property: 'booksPerSection' | 'booksPerRow' | 'thickness' | 'color' | 'orientation', value: any) => set((state) => ({
     shelfStyling: { 
       ...state.shelfStyling, 
       dividers: { ...state.shelfStyling.dividers, [property]: value } 
@@ -38,8 +38,10 @@ export const createShelvesSlice: CustomizationSliceCreator = (set) => ({
   updateAllDividerSettings: (settings: {
     enabled?: boolean;
     booksPerSection?: number;
+    booksPerRow?: number;
     thickness?: number;
     color?: string;
+    orientation?: 'vertical' | 'horizontal' | 'both';
   }) => set((state) => ({
     shelfStyling: {
       ...state.shelfStyling,

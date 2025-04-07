@@ -7,6 +7,7 @@ import ColorPicker from '../ColorPicker';
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const ShelvesTab: React.FC = () => {
   const { 
@@ -15,7 +16,8 @@ const ShelvesTab: React.FC = () => {
     updateShelfColor,
     updateShelfOpacity,
     toggleDividers,
-    updateDividersSetting
+    updateDividersSetting,
+    updateAllDividerSettings
   } = useBookshelfStore();
 
   return (
@@ -66,7 +68,7 @@ const ShelvesTab: React.FC = () => {
         <h3 className="font-medium text-lg">Dividers</h3>
         
         <div className="flex items-center justify-between">
-          <Label htmlFor="enable-dividers">Enable Column Dividers</Label>
+          <Label htmlFor="enable-dividers">Enable Dividers</Label>
           <Switch 
             id="enable-dividers" 
             checked={shelfStyling?.dividers?.enabled || false}
@@ -79,6 +81,28 @@ const ShelvesTab: React.FC = () => {
             <Separator />
             
             <div className="space-y-2">
+              <Label>Divider Orientation</Label>
+              <RadioGroup 
+                value={shelfStyling?.dividers?.orientation || 'vertical'} 
+                onValueChange={(value) => updateDividersSetting('orientation', value)}
+                className="flex space-x-4"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="vertical" id="vertical" />
+                  <Label htmlFor="vertical">Vertical</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="horizontal" id="horizontal" />
+                  <Label htmlFor="horizontal">Horizontal</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="both" id="both" />
+                  <Label htmlFor="both">Both</Label>
+                </div>
+              </RadioGroup>
+            </div>
+            
+            <div className="space-y-2">
               <Label>Books Per Section</Label>
               <Input
                 type="number"
@@ -87,6 +111,19 @@ const ShelvesTab: React.FC = () => {
                 value={shelfStyling?.dividers?.booksPerSection || 6}
                 onChange={(e) => updateDividersSetting('booksPerSection', parseInt(e.target.value))}
                 className="w-full"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Books Per Row</Label>
+              <Input
+                type="number"
+                min={2}
+                max={10}
+                value={shelfStyling?.dividers?.booksPerRow || 2}
+                onChange={(e) => updateDividersSetting('booksPerRow', parseInt(e.target.value))}
+                className="w-full"
+                disabled={!['horizontal', 'both'].includes(shelfStyling?.dividers?.orientation || 'vertical')}
               />
             </div>
             

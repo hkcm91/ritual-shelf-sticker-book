@@ -18,23 +18,53 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
     const slots = [];
     
     // Access dividers from the customization state
-    const dividers = shelfStyling?.dividers || { enabled: false, booksPerSection: 6 };
+    const dividers = shelfStyling?.dividers || { 
+      enabled: false, 
+      booksPerSection: 6,
+      booksPerRow: 2,
+      orientation: 'vertical'
+    };
     
+    // Create a container for this row that will include horizontal dividers if needed
+    const needsHorizontalDivider = dividers.enabled && 
+      ['horizontal', 'both'].includes(dividers.orientation) &&
+      rowIndex > 0 && 
+      rowIndex % (dividers.booksPerRow || 2) === 0;
+    
+    // Add a horizontal divider for this row if needed
+    if (needsHorizontalDivider) {
+      slots.push(
+        <div 
+          key={`hdivider-${rowIndex}`}
+          className="horizontal-shelf-divider w-full" 
+          style={{
+            height: `${dividers.thickness || 4}px`,
+            backgroundColor: dividers.color || '#714621',
+            marginBottom: '12px'
+          }}
+        />
+      );
+    }
+    
+    // Add the book slots with vertical dividers if needed
     for (let col = 0; col < columns; col++) {
       const position = rowIndex * columns + col;
       
-      // Add divider if needed and if it's not the first column
-      if (dividers.enabled && col > 0 && col % dividers.booksPerSection === 0) {
+      // Add vertical divider if needed and if it's not the first column
+      if (dividers.enabled && 
+          ['vertical', 'both'].includes(dividers.orientation) && 
+          col > 0 && 
+          col % dividers.booksPerSection === 0) {
         slots.push(
           <div 
-            key={`divider-${rowIndex}-${col}`}
-            className="shelf-divider" 
+            key={`vdivider-${rowIndex}-${col}`}
+            className="vertical-shelf-divider" 
             style={{
               width: `${dividers.thickness || 4}px`,
               backgroundColor: dividers.color || '#714621',
               height: '100%',
               minHeight: '220px',
-              margin: '0 8px' // Add some spacing around dividers
+              margin: '0 8px'
             }}
           />
         );
@@ -53,7 +83,7 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
 
   return (
     <div className="flex flex-col w-full">
-      {/* Books row */}
+      {/* Books row with potential dividers */}
       <div className="flex justify-start items-stretch flex-nowrap gap-2 p-2 min-h-[220px]">
         {renderSlots()}
       </div>
@@ -64,7 +94,7 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
         style={{
           height: `${shelfStyling?.thickness || 20}px`,
           backgroundImage: shelf?.textureImage ? `url(${shelf.textureImage})` : 'var(--shelf-texture, url(/textures/default/wood.jpg))',
-          backgroundSize: '100% 100%', // Changed from 'cover' to '100% 100%' to prevent stretching
+          backgroundSize: '100% 100%',
           backgroundRepeat: 'repeat-x',
           backgroundPosition: 'center',
           backgroundColor: shelfStyling?.color || '#8B5A2B',

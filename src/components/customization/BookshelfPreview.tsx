@@ -8,7 +8,7 @@ const BookshelfPreview: React.FC = () => {
       <div 
         className="preview-container h-full w-full relative"
         style={{
-          backgroundColor: 'var(--container-bg)',
+          backgroundColor: 'var(--container-bg, #2e4600)',
           backgroundImage: 'var(--container-bg-image)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
@@ -43,53 +43,69 @@ const BookshelfPreview: React.FC = () => {
         />
         
         <div className="flex flex-col h-full justify-between">
-          {/* Shelf rows */}
-          {[1, 2].map((index) => (
-            <div key={`preview-shelf-${index}`} className="relative">
-              {/* Dividers if enabled */}
-              {index === 1 && (
-                <div className="absolute inset-x-0 -top-[calc(var(--divider-thickness,_6px))] flex justify-around pointer-events-none" 
-                     style={{ display: 'var(--dividers-visible, none)' }}>
-                  {[1, 2].map((divIndex) => (
-                    <div 
-                      key={`preview-divider-${divIndex}`}
-                      className="h-[calc(var(--shelf-thickness,_20px)_+_40px)]"
-                      style={{
-                        width: 'var(--divider-thickness, 6px)',
-                        backgroundColor: 'var(--divider-color, #714621)',
-                        backgroundImage: 'var(--divider-bg-image, none)',
-                        opacity: 'var(--divider-opacity, 0.8)',
-                      }}
-                    />
-                  ))}
-                </div>
-              )}
-              
-              {/* Book slots representation (empty) */}
-              <div className="flex justify-around mb-2 h-[60px]">
-                {[1, 2, 3].map((slotIndex) => (
-                  <div 
-                    key={`preview-slot-${index}-${slotIndex}`}
-                    className="w-[18px] h-[40px] bg-gray-200/30 rounded-sm transform translate-y-4"
-                  />
-                ))}
-              </div>
-              
-              {/* Shelf */}
-              <div 
-                className="w-full"
-                style={{
-                  height: 'var(--shelf-thickness, 20px)',
-                  backgroundColor: 'var(--shelf-color, #d2b48c)',
-                  backgroundImage: 'var(--shelf-texture, none)',
-                  backgroundSize: 'cover',
-                  opacity: 'var(--shelf-opacity, 1)',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
-                  marginTop: index === 1 ? '20px' : '0'
-                }}
-              />
+          {/* First Shelf Row */}
+          <div className="mb-4 relative">
+            {/* Book placeholders */}
+            <div className="flex justify-around mb-1">
+              {[1, 2, 3].map((slotIndex) => (
+                <div 
+                  key={`preview-slot-top-${slotIndex}`}
+                  className="w-[24px] h-[60px] bg-gray-300/30 rounded-sm mx-2"
+                  style={{
+                    backgroundColor: slotIndex === 2 ? 'var(--divider-color, #714621)' : '#adadad30',
+                    width: slotIndex === 2 ? 'var(--divider-thickness, 6px)' : '24px',
+                    display: slotIndex === 2 ? 'var(--dividers-visible, block)' : 'block',
+                    opacity: slotIndex === 2 ? 'var(--divider-opacity, 0.8)' : '0.3',
+                  }}
+                />
+              ))}
             </div>
-          ))}
+            
+            {/* Shelf */}
+            <div 
+              className="w-full"
+              style={{
+                height: 'var(--shelf-thickness, 20px)',
+                backgroundColor: 'var(--shelf-color, #2e4600)',
+                backgroundImage: 'var(--shelf-texture, none)',
+                backgroundSize: 'cover',
+                opacity: 'var(--shelf-opacity, 1)',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+              }}
+            />
+          </div>
+          
+          {/* Second Shelf Row */}
+          <div className="relative mb-4">
+            {/* Book placeholders */}
+            <div className="flex justify-around mb-1">
+              {[1, 2, 3].map((slotIndex) => (
+                <div 
+                  key={`preview-slot-bottom-${slotIndex}`}
+                  className="w-[24px] h-[60px] bg-gray-300/30 rounded-sm mx-2"
+                  style={{
+                    backgroundColor: slotIndex === 2 ? 'var(--divider-color, #714621)' : '#adadad30',
+                    width: slotIndex === 2 ? 'var(--divider-thickness, 6px)' : '24px',
+                    display: slotIndex === 2 ? 'var(--dividers-visible, block)' : 'block',
+                    opacity: slotIndex === 2 ? 'var(--divider-opacity, 0.8)' : '0.3',
+                  }}
+                />
+              ))}
+            </div>
+            
+            {/* Shelf */}
+            <div 
+              className="w-full"
+              style={{
+                height: 'var(--shelf-thickness, 20px)',
+                backgroundColor: 'var(--shelf-color, #2e4600)',
+                backgroundImage: 'var(--shelf-texture, none)',
+                backgroundSize: 'cover',
+                opacity: 'var(--shelf-opacity, 1)',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>

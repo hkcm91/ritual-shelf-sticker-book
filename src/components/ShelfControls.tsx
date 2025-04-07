@@ -9,7 +9,10 @@ import { toast } from 'sonner';
 const ShelfControls: React.FC = () => {
   const { openCustomizationModal } = useBookshelfStore();
   
-  const handleOpenCustomization = () => {
+  const handleOpenCustomization = (e: React.MouseEvent) => {
+    // Ensure we have a proper event handling
+    e.preventDefault();
+    
     console.log("[ShelfControls] Opening customization modal button clicked");
     openCustomizationModal();
     toast.success("Opening customization panel");

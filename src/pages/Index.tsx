@@ -28,10 +28,11 @@ const Index = () => {
       console.log("[Index] Initializing default shelf");
       const shelfId = initializeDefaultShelf();
       
-      // Load customization without any arguments
+      // Get the loadCustomization function
       const loadSavedCustomization = useBookshelfStore.getState().loadCustomization;
       if (loadSavedCustomization) {
         console.log("[Index] Loading saved customization");
+        // Call without any arguments
         loadSavedCustomization();
       }
       
@@ -61,6 +62,12 @@ const Index = () => {
       unsubscribe();
     };
   }, []);
+  
+  // Let's add extra debug logging for the modal state
+  useEffect(() => {
+    console.log("[Index DEBUG] Current local modal state:", isCustomModalOpen);
+    console.log("[Index DEBUG] Current store modal state:", ui?.isCustomizationModalOpen);
+  }, [isCustomModalOpen, ui?.isCustomizationModalOpen]);
   
   const shelvesData = shelves as Record<string, ShelfData>;
   const currentShelf = activeShelfId ? shelvesData[activeShelfId] : null;

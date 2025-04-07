@@ -1,3 +1,4 @@
+
 import React from 'react';
 import BookSlot from '../BookSlot';
 import { useBookshelfStore } from '../../store/bookshelfStore';
@@ -42,10 +43,11 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
     // Add left side divider (bookend)
     if (dividers.enabled && (dividers.orientation === 'vertical' || dividers.orientation === 'both')) {
       slotRow.push(<div key={`vdivider-left-${rowIndex}`} className="vertical-shelf-divider shelf-side-left" style={{
-        width: `${dividers.thickness}px`,
+        width: `${Math.max(dividers.thickness, 8)}px`, // Ensure minimum width
         backgroundColor: dividers.color,
         backgroundImage: `url(${shelfTexture})`,
-        opacity: dividers.opacity
+        opacity: dividers.opacity,
+        filter: 'brightness(0.85)' // Slightly darker for better visibility
       }} />);
     }
     for (let col = 0; col < columns; col++) {
@@ -54,10 +56,11 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
       // Add vertical divider if needed and if it's not the first column
       if (dividers.enabled && (dividers.orientation === 'vertical' || dividers.orientation === 'both') && col > 0 && col % dividers.booksPerSection === 0) {
         slotRow.push(<div key={`vdivider-${rowIndex}-${col}`} className="vertical-shelf-divider" style={{
-          width: `${dividers.thickness}px`,
+          width: `${Math.max(dividers.thickness, 8)}px`, // Ensure minimum width
           backgroundColor: dividers.color,
           backgroundImage: `url(${shelfTexture})`,
-          opacity: dividers.opacity
+          opacity: dividers.opacity,
+          filter: 'brightness(0.85)' // Slightly darker for better visibility
         }} />);
       }
       slotRow.push(<BookSlot key={`slot-${position}`} position={position} />);
@@ -66,15 +69,16 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
     // Add right side divider (bookend)
     if (dividers.enabled && (dividers.orientation === 'vertical' || dividers.orientation === 'both')) {
       slotRow.push(<div key={`vdivider-right-${rowIndex}`} className="vertical-shelf-divider shelf-side-right" style={{
-        width: `${dividers.thickness}px`,
+        width: `${Math.max(dividers.thickness, 8)}px`, // Ensure minimum width
         backgroundColor: dividers.color,
         backgroundImage: `url(${shelfTexture})`,
-        opacity: dividers.opacity
+        opacity: dividers.opacity,
+        filter: 'brightness(0.85)' // Slightly darker for better visibility
       }} />);
     }
 
     // Add the row of slots
-    slots.push(<div key={`slot-row-${rowIndex}`} className="flex justify-start items-stretch flex-nowrap gap-2 p-2 min-h-[220px] relative z-2">
+    slots.push(<div key={`slot-row-${rowIndex}`} className="flex justify-start items-stretch flex-nowrap gap-1 p-2 min-h-[220px] relative z-2">
         {slotRow}
       </div>);
     return slots;
@@ -101,13 +105,14 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
       
       {/* Add horizontal divider if needed and it's not the last row */}
       {shelfStyling?.dividers?.enabled && (shelfStyling.dividers.orientation === 'horizontal' || shelfStyling.dividers.orientation === 'both') && rowIndex < shelf?.rows - 1 && (rowIndex + 1) % (shelfStyling.dividers.booksPerRow || 1) === 0 && <div className="horizontal-shelf-divider" style={{
-      height: `${shelfStyling.dividers.thickness}px`,
+      height: `${Math.max(shelfStyling.dividers.thickness, 8)}px`, // Ensure minimum height
       backgroundColor: shelfStyling.dividers.color,
       backgroundImage: `url(${shelfTexture})`,
       opacity: shelfStyling.dividers.opacity,
       width: '100%',
       position: 'relative',
-      zIndex: 5
+      zIndex: 5,
+      filter: 'brightness(0.85)' // Slightly darker for better visibility
     }} />}
       
       {/* Shelf */}

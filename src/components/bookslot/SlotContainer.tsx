@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 
 type SlotContainerProps = {
   children: React.ReactNode;
@@ -20,16 +20,26 @@ const SlotContainer: React.FC<SlotContainerProps> = ({
   handleMouseMove,
   handleMouseUp
 }) => {
+  // Debug logging
+  useEffect(() => {
+    console.log(`SlotContainer ${position} mounted, hasBook: ${hasBook}`);
+  }, [position, hasBook]);
+
   return (
     <div 
-      className={`book-slot relative h-[220px] w-[150px] mx-1 bg-white/10 rounded-sm overflow-hidden
-        ${!hasBook ? 'hover:bg-gray-50/10' : 'hover:border hover:border-primary/30'}
+      className={`book-slot relative h-[220px] w-[150px] mx-1 rounded-sm overflow-visible
+        ${!hasBook ? 'bg-white/10 hover:bg-gray-50/10' : 'bg-transparent'}
         transition-colors duration-200 cursor-pointer`}
       data-position={position}
+      data-has-book={hasBook ? 'true' : 'false'}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
+      style={{ 
+        opacity: 1,
+        display: 'block'
+      }}
     >
       {children}
     </div>

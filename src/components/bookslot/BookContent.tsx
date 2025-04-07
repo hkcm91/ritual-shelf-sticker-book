@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Book from '../Book';
 import { BookData } from '@/store/bookshelfStore';
 import StickerContent from '../StickerContent';
@@ -32,14 +32,36 @@ const BookContent: React.FC<BookContentProps> = ({
   setShowDeleteDialog,
   isAltDrag
 }) => {
-  if (!book) return null;
+  // Enhanced debugging for rendering decisions
+  useEffect(() => {
+    console.log('BookContent rendering for book:', book.id);
+    console.log('Book type:', book.isSticker ? 'Sticker' : 'Regular Book');
+    console.log('Book data:', {
+      hasTitle: !!book.title,
+      hasAuthor: !!book.author,
+      hasCoverURL: !!book.coverURL,
+      position: book.position,
+      shelfId: book.shelfId
+    });
+  }, [book]);
+
+  if (!book) {
+    console.error('BookContent received null/undefined book');
+    return null;
+  }
   
   // Render book
   if (!book.isSticker) {
-    return <Book data={book} />;
+    console.log('Rendering regular book component for:', book.id);
+    return (
+      <div className="w-full h-full" style={{ display: 'block' }}>
+        <Book data={book} />
+      </div>
+    );
   }
   
   // Render sticker with context menu
+  console.log('Rendering sticker for:', book.id);
   return (
     <ContextMenuWrapper
       book={book}

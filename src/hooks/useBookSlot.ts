@@ -15,19 +15,34 @@ export const useBookSlot = ({ position, slotType }: UseBookSlotProps) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isAltDrag, setIsAltDrag] = useState(false);
   
+  // Log hook initialization
+  useEffect(() => {
+    console.log(`useBookSlot initialized for position ${position}, slotType: ${slotType}`);
+    console.log(`Current activeShelfId: ${activeShelfId}`);
+  }, [position, slotType, activeShelfId]);
+  
   // Get book from store by position, explicitly passing the activeShelfId
   const book = getBookByPosition(position, activeShelfId);
   
   // Log for debugging
-  console.log(`Slot ${position}: Book present: ${!!book}`, book ? `ID: ${book.id}` : '');
-  if (book) {
-    console.log(`Book cover: ${book.coverURL ? 'Present' : 'Missing'}`);
-  }
+  useEffect(() => {
+    console.log(`Slot ${position}: Book present: ${!!book}`, book ? `ID: ${book.id}` : '');
+    if (book) {
+      console.log(`Book details for slot ${position}:`, {
+        id: book.id,
+        title: book.title || 'No title',
+        author: book.author || 'No author',
+        hasCoverURL: !!book.coverURL,
+        coverURLLength: book.coverURL ? book.coverURL.length : 0,
+        isSticker: !!book.isSticker
+      });
+    }
+  }, [book, position]);
   
   // For stickers, keep track of 2D position, scale, rotation
   const [position2D, setPosition2D] = useState({ x: 0, y: 0 });
   const { scale, rotation, handleScaleChange, handleRotate, handleResetTransform } = useTransformControls({ 
-    activeShelfId,  // Pass the required activeShelfId argument here
+    activeShelfId, // Pass the required activeShelfId argument here
     position 
   });
   
@@ -73,9 +88,10 @@ export const useBookSlot = ({ position, slotType }: UseBookSlotProps) => {
     };
   }, []);
   
-  // Handler for deleting a sticker
+  // Handler for deleting a book or sticker
   const handleDeleteSticker = () => {
     if (book) {
+      console.log(`Deleting book/sticker with ID: ${book.id}`);
       deleteBook(book.id);
       setShowDeleteDialog(false);
     }

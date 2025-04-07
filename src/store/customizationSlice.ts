@@ -3,6 +3,20 @@ import { StateCreator } from 'zustand';
 import { BookshelfState } from './bookshelfStore';
 import { toast } from 'sonner';
 
+// Define styling interfaces to separate from ShelfData
+export interface ShelfStyling {
+  thickness: number;
+  color: string;
+  backgroundImage: string;
+  opacity: number;
+  dividers: {
+    enabled: boolean;
+    booksPerSection: number;
+    thickness: number;
+    color: string;
+  };
+}
+
 // Define customization state structure
 export interface CustomizationState {
   // General theme settings
@@ -22,18 +36,7 @@ export interface CustomizationState {
     padding: number;
   };
   // Shelf settings
-  shelves: {
-    thickness: number;
-    color: string;
-    backgroundImage: string;
-    opacity: number;
-    dividers: {
-      enabled: boolean;
-      booksPerSection: number;
-      thickness: number;
-      color: string;
-    };
-  };
+  shelfStyling: ShelfStyling; // Renamed from shelves to avoid confusion with ShelfData
   // Slot customization
   slots: {
     addButtonBg: string;
@@ -116,7 +119,7 @@ const defaultCustomization = {
     borderRadius: 8,
     padding: 16,
   },
-  shelves: {
+  shelfStyling: { // Renamed from shelves
     thickness: 20,
     color: '#8B5A2B',
     backgroundImage: '',
@@ -200,33 +203,33 @@ export const createCustomizationSlice: StateCreator<
   
   // Shelf settings
   updateShelfThickness: (thickness: number) => set((state) => ({
-    shelves: { ...state.shelves, thickness }
+    shelfStyling: { ...state.shelfStyling, thickness }
   })),
   
   updateShelfColor: (color: string) => set((state) => ({
-    shelves: { ...state.shelves, color }
+    shelfStyling: { ...state.shelfStyling, color }
   })),
   
   updateShelfBackgroundImage: (url: string) => set((state) => ({
-    shelves: { ...state.shelves, backgroundImage: url }
+    shelfStyling: { ...state.shelfStyling, backgroundImage: url }
   })),
   
   updateShelfOpacity: (opacity: number) => set((state) => ({
-    shelves: { ...state.shelves, opacity }
+    shelfStyling: { ...state.shelfStyling, opacity }
   })),
   
   // Divider settings
   toggleDividers: (enabled: boolean) => set((state) => ({
-    shelves: { 
-      ...state.shelves, 
-      dividers: { ...state.shelves.dividers, enabled } 
+    shelfStyling: { 
+      ...state.shelfStyling, 
+      dividers: { ...state.shelfStyling.dividers, enabled } 
     }
   })),
   
   updateDividersSetting: (property: 'booksPerSection' | 'thickness' | 'color', value: any) => set((state) => ({
-    shelves: { 
-      ...state.shelves, 
-      dividers: { ...state.shelves.dividers, [property]: value } 
+    shelfStyling: { 
+      ...state.shelfStyling, 
+      dividers: { ...state.shelfStyling.dividers, [property]: value } 
     }
   })),
   
@@ -252,9 +255,9 @@ export const createCustomizationSlice: StateCreator<
   saveCustomization: () => {
     try {
       const state = get();
-      const { page, container, shelves, slots, header } = state;
+      const { page, container, shelfStyling, slots, header } = state;
       
-      const settings = { page, container, shelves, slots, header };
+      const settings = { page, container, shelfStyling, slots, header };
       localStorage.setItem('ritual-shelf-customization', JSON.stringify(settings));
       toast.success('Customization settings saved');
     } catch (error) {
@@ -273,7 +276,7 @@ export const createCustomizationSlice: StateCreator<
         set((state) => ({
           page: parsed.page || state.page,
           container: parsed.container || state.container,
-          shelves: parsed.shelves || state.shelves,
+          shelfStyling: parsed.shelfStyling || state.shelfStyling,
           slots: parsed.slots || state.slots,
           header: parsed.header || state.header
         }));
@@ -288,7 +291,7 @@ export const createCustomizationSlice: StateCreator<
     set({
       page: defaultCustomization.page,
       container: defaultCustomization.container,
-      shelves: defaultCustomization.shelves,
+      shelfStyling: defaultCustomization.shelfStyling,
       slots: defaultCustomization.slots,
       header: defaultCustomization.header
     });

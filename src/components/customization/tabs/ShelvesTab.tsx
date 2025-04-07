@@ -9,7 +9,7 @@ import FileInputField from '../FileInputField';
 
 const ShelvesTab: React.FC = () => {
   const { 
-    shelves, 
+    shelfStyling, 
     updateShelfThickness,
     updateShelfColor,
     updateShelfBackgroundImage,
@@ -26,7 +26,7 @@ const ShelvesTab: React.FC = () => {
         <div className="space-y-2">
           <Label>Shelf Color</Label>
           <ColorPicker 
-            color={shelves.color} 
+            color={shelfStyling.color} 
             onChange={updateShelfColor} 
           />
         </div>
@@ -34,7 +34,7 @@ const ShelvesTab: React.FC = () => {
         <div className="space-y-2">
           <Label>Shelf Texture</Label>
           <FileInputField
-            value={shelves.backgroundImage}
+            value={shelfStyling.backgroundImage}
             onChange={updateShelfBackgroundImage}
             placeholder="Enter texture URL"
             uploadLabel="Upload Texture"
@@ -44,10 +44,10 @@ const ShelvesTab: React.FC = () => {
         <div className="space-y-2">
           <div className="flex justify-between">
             <Label>Shelf Thickness</Label>
-            <span className="text-sm">{shelves.thickness}px</span>
+            <span className="text-sm">{shelfStyling.thickness}px</span>
           </div>
           <Slider
-            value={[shelves.thickness]}
+            value={[shelfStyling.thickness]}
             min={4}
             max={40}
             step={2}
@@ -58,10 +58,10 @@ const ShelvesTab: React.FC = () => {
         <div className="space-y-2">
           <div className="flex justify-between">
             <Label>Opacity</Label>
-            <span className="text-sm">{Math.round(shelves.opacity * 100)}%</span>
+            <span className="text-sm">{Math.round(shelfStyling.opacity * 100)}%</span>
           </div>
           <Slider
-            value={[shelves.opacity * 100]}
+            value={[shelfStyling.opacity * 100]}
             min={20}
             max={100}
             step={5}
@@ -76,52 +76,52 @@ const ShelvesTab: React.FC = () => {
           <div className="flex items-center space-x-2">
             <Switch
               id="dividers-enabled"
-              checked={shelves.dividers.enabled}
+              checked={shelfStyling.dividers.enabled}
               onCheckedChange={toggleDividers}
             />
             <Label htmlFor="dividers-enabled" className="cursor-pointer">
-              {shelves.dividers.enabled ? 'Enabled' : 'Disabled'}
+              {shelfStyling.dividers.enabled ? 'Enabled' : 'Disabled'}
             </Label>
           </div>
         </div>
         
-        <div className={shelves.dividers.enabled ? "" : "opacity-50 pointer-events-none"}>
+        <div className={shelfStyling.dividers.enabled ? "" : "opacity-50 pointer-events-none"}>
           <div className="space-y-2">
             <div className="flex justify-between">
               <Label>Books Per Section</Label>
-              <span className="text-sm">{shelves.dividers.booksPerSection}</span>
+              <span className="text-sm">{shelfStyling.dividers.booksPerSection}</span>
             </div>
             <Slider
-              value={[shelves.dividers.booksPerSection]}
+              value={[shelfStyling.dividers.booksPerSection]}
               min={2}
               max={8}
               step={1}
               onValueChange={(value) => updateDividersSetting('booksPerSection', value[0])}
-              disabled={!shelves.dividers.enabled}
+              disabled={!shelfStyling.dividers.enabled}
             />
           </div>
           
           <div className="space-y-2 mt-4">
             <div className="flex justify-between">
               <Label>Divider Thickness</Label>
-              <span className="text-sm">{shelves.dividers.thickness}px</span>
+              <span className="text-sm">{shelfStyling.dividers.thickness}px</span>
             </div>
             <Slider
-              value={[shelves.dividers.thickness]}
+              value={[shelfStyling.dividers.thickness]}
               min={1}
               max={10}
               step={1}
               onValueChange={(value) => updateDividersSetting('thickness', value[0])}
-              disabled={!shelves.dividers.enabled}
+              disabled={!shelfStyling.dividers.enabled}
             />
           </div>
           
           <div className="space-y-2 mt-4">
             <Label>Divider Color</Label>
             <ColorPicker 
-              color={shelves.dividers.color} 
+              color={shelfStyling.dividers.color} 
               onChange={(color) => updateDividersSetting('color', color)} 
-              disabled={!shelves.dividers.enabled}
+              disabled={!shelfStyling.dividers.enabled}
             />
           </div>
         </div>

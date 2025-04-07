@@ -1,7 +1,17 @@
 
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { CustomizationState } from '../components/bookshelf/CustomizationPanel';
+
+// Define our own interface here instead of importing from a non-existent file
+export interface CustomizationState {
+  containerBgImage: string;
+  containerBgColor: string;
+  containerOpacity: number;
+  shelfBgImage: string;
+  shelfBgColor: string;
+  shelfOpacity: number;
+  isCustomizationOpen: boolean;
+}
 
 export const useBookshelfCustomization = (activeShelfId: string) => {
   // Customization state

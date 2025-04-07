@@ -10,7 +10,7 @@ type ShelfRowProps = {
 };
 
 const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
-  const { activeShelfId, shelves: shelvesData, shelves: customShelves } = useBookshelfStore();
+  const { activeShelfId, shelves: shelvesData, shelfStyling } = useBookshelfStore();
   const shelf = shelvesData[activeShelfId] as ShelfData;
   
   // Generate slots for this row
@@ -18,7 +18,7 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
     const slots = [];
     
     // Access dividers from the customization state
-    const dividers = customShelves.dividers || { enabled: false, booksPerSection: 6 };
+    const dividers = shelfStyling.dividers || { enabled: false, booksPerSection: 6 };
     
     for (let col = 0; col < columns; col++) {
       const position = rowIndex * columns + col;

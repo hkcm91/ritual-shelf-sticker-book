@@ -45,7 +45,7 @@ const HeaderBackgroundSection: React.FC<HeaderBackgroundSectionProps> = ({
     >
       <ColorPicker 
         color={background} 
-        onChange={(color) => onColorChange(color)}
+        onChange={onColorChange}
         allowAlpha={true}
       />
       

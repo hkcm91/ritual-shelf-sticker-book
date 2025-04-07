@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
@@ -34,7 +33,6 @@ const ColorChart: React.FC<ColorChartProps> = ({ color, onChange, onClose }) => 
   const [shades, setShades] = useState<string[]>([]);
   const [harmonies, setHarmonies] = useState<string[]>([]);
   
-  // References for the color picker elements
   const satValCanvasRef = useRef<HTMLCanvasElement>(null);
   const hueSliderRef = useRef<HTMLCanvasElement>(null);
   const pickerDragAreaRef = useRef<HTMLDivElement>(null);
@@ -44,7 +42,6 @@ const ColorChart: React.FC<ColorChartProps> = ({ color, onChange, onClose }) => 
   const isDraggingRef = useRef(false);
   const isHueDraggingRef = useRef(false);
 
-  // Convert hex to HSV
   const hexToHsv = (hex: string): { h: number, s: number, v: number } => {
     const rgb = hexToRgb(hex);
     if (!rgb) return { h: 0, s: 0, v: 0 };
@@ -54,7 +51,6 @@ const ColorChart: React.FC<ColorChartProps> = ({ color, onChange, onClose }) => 
     const min = Math.min(r, g, b);
     const delta = max - min;
     
-    // Calculate hue
     let h = 0;
     if (delta !== 0) {
       if (max === r) {
@@ -69,46 +65,39 @@ const ColorChart: React.FC<ColorChartProps> = ({ color, onChange, onClose }) => 
     h = Math.round(h * 60);
     if (h < 0) h += 360;
     
-    // Calculate saturation and value
     const s = max === 0 ? 0 : Math.round((delta / max) * 100);
     const v = Math.round((max / 255) * 100);
     
     return { h, s, v };
   };
 
-  // Convert HSV to hex
   const hsvToHex = (hsv: { h: number, s: number, v: number }): string => {
     const { h, s, v } = hsv;
     const hi = Math.floor(h / 60) % 6;
     const f = h / 60 - Math.floor(h / 60);
-    const p = v * (1 - s / 100);
-    const q = v * (1 - f * s / 100);
-    const t = v * (1 - (1 - f) * s / 100);
+    const value = v * 255 / 100;
+    const p = (v * (1 - s / 100)) * 255 / 100;
+    const q = (v * (1 - f * s / 100)) * 255 / 100;
+    const t = (v * (1 - (1 - f) * s / 100)) * 255 / 100;
     
     let r = 0, g = 0, b = 0;
-    v = v * 255 / 100;
-    p = p * 255 / 100;
-    q = q * 255 / 100;
-    t = t * 255 / 100;
     
     switch (hi) {
-      case 0: r = v; g = t; b = p; break;
-      case 1: r = q; g = v; b = p; break;
-      case 2: r = p; g = v; b = t; break;
-      case 3: r = p; g = q; b = v; break;
-      case 4: r = t; g = p; b = v; break;
-      case 5: r = v; g = p; b = q; break;
+      case 0: r = value; g = t; b = p; break;
+      case 1: r = q; g = value; b = p; break;
+      case 2: r = p; g = value; b = t; break;
+      case 3: r = p; g = q; b = value; break;
+      case 4: r = t; g = p; b = value; break;
+      case 5: r = value; g = p; b = q; break;
     }
     
     return rgbToHex(Math.round(r), Math.round(g), Math.round(b));
   };
 
-  // Generate shades from current color
   const generateShades = (color: string, count: number): string[] => {
     return generateShadesAndTints(color);
   };
 
-  // Load saved colors from localStorage on component mount
   useEffect(() => {
     const savedColors = localStorage.getItem('customColors');
     if (savedColors) {
@@ -116,7 +105,6 @@ const ColorChart: React.FC<ColorChartProps> = ({ color, onChange, onClose }) => 
     }
   }, []);
 
-  // Initialize hsv from the current color on mount and when color changes
   useEffect(() => {
     if (color !== currentColor) {
       setCurrentColor(color);
@@ -125,7 +113,6 @@ const ColorChart: React.FC<ColorChartProps> = ({ color, onChange, onClose }) => 
     }
   }, [color]);
 
-  // Update shades and harmonies when hsv changes
   useEffect(() => {
     const hex = hsvToHex(hsv);
     setCurrentColor(hex);
@@ -134,14 +121,12 @@ const ColorChart: React.FC<ColorChartProps> = ({ color, onChange, onClose }) => 
     setHarmonies(generateHarmonies(hex));
   }, [hsv]);
 
-  // Initialize the color picker canvases
   useEffect(() => {
     renderSatValCanvas();
     renderHueSlider();
     positionThumbs();
   }, [hsv]);
 
-  // Render the saturation-value canvas
   const renderSatValCanvas = () => {
     const canvas = satValCanvasRef.current;
     if (!canvas) return;
@@ -152,7 +137,6 @@ const ColorChart: React.FC<ColorChartProps> = ({ color, onChange, onClose }) => 
     const width = canvas.width;
     const height = canvas.height;
     
-    // Create saturation-value gradient
     const satGradient = ctx.createLinearGradient(0, 0, width, 0);
     satGradient.addColorStop(0, `hsl(${hsv.h}, 0%, 100%)`);
     satGradient.addColorStop(1, `hsl(${hsv.h}, 100%, 50%)`);
@@ -168,7 +152,6 @@ const ColorChart: React.FC<ColorChartProps> = ({ color, onChange, onClose }) => 
     ctx.fillRect(0, 0, width, height);
   };
 
-  // Render the hue slider
   const renderHueSlider = () => {
     const canvas = hueSliderRef.current;
     if (!canvas) return;
@@ -179,7 +162,6 @@ const ColorChart: React.FC<ColorChartProps> = ({ color, onChange, onClose }) => 
     const width = canvas.width;
     const height = canvas.height;
     
-    // Create hue gradient
     const gradient = ctx.createLinearGradient(0, 0, width, 0);
     for (let i = 0; i <= 6; i++) {
       gradient.addColorStop(i / 6, `hsl(${i * 60}, 100%, 50%)`);
@@ -189,7 +171,6 @@ const ColorChart: React.FC<ColorChartProps> = ({ color, onChange, onClose }) => 
     ctx.fillRect(0, 0, width, height);
   };
 
-  // Position the thumbs based on current hsv
   const positionThumbs = () => {
     if (!satValCanvasRef.current || !hueSliderRef.current || 
         !satValThumbRef.current || !hueThumbRef.current) return;
@@ -198,18 +179,15 @@ const ColorChart: React.FC<ColorChartProps> = ({ color, onChange, onClose }) => 
     const satValHeight = satValCanvasRef.current.height;
     const hueWidth = hueSliderRef.current.width;
     
-    // Position saturation-value thumb
     const satX = (hsv.s / 100) * satValWidth;
     const valY = (1 - hsv.v / 100) * satValHeight;
     satValThumbRef.current.style.left = `${satX}px`;
     satValThumbRef.current.style.top = `${valY}px`;
     
-    // Position hue thumb
     const hueX = (hsv.h / 360) * hueWidth;
     hueThumbRef.current.style.left = `${hueX}px`;
   };
 
-  // Handle saturation-value canvas click and drag
   const handleSatValMouseDown = (e: React.MouseEvent) => {
     if (!pickerDragAreaRef.current || !satValCanvasRef.current) return;
     
@@ -232,7 +210,6 @@ const ColorChart: React.FC<ColorChartProps> = ({ color, onChange, onClose }) => 
     onChange(currentColor);
   };
 
-  // Update saturation and value based on mouse position
   const updateSaturationValue = (e: MouseEvent | React.MouseEvent) => {
     if (!pickerDragAreaRef.current || !satValCanvasRef.current) return;
     
@@ -240,23 +217,18 @@ const ColorChart: React.FC<ColorChartProps> = ({ color, onChange, onClose }) => 
     const canvasWidth = satValCanvasRef.current.width;
     const canvasHeight = satValCanvasRef.current.height;
     
-    // Calculate relative position within the canvas
     let x = e.clientX - rect.left;
     let y = e.clientY - rect.top;
     
-    // Clamp values
     x = Math.max(0, Math.min(canvasWidth, x));
     y = Math.max(0, Math.min(canvasHeight, y));
     
-    // Convert to saturation and value
     const s = (x / canvasWidth) * 100;
     const v = (1 - y / canvasHeight) * 100;
     
-    // Update hsv state
     setHsv(prev => ({ ...prev, s, v }));
   };
 
-  // Handle hue slider click and drag
   const handleHueMouseDown = (e: React.MouseEvent) => {
     if (!hueSliderDragAreaRef.current || !hueSliderRef.current) return;
     
@@ -279,23 +251,18 @@ const ColorChart: React.FC<ColorChartProps> = ({ color, onChange, onClose }) => 
     onChange(currentColor);
   };
 
-  // Update hue based on mouse position
   const updateHue = (e: MouseEvent | React.MouseEvent) => {
     if (!hueSliderDragAreaRef.current || !hueSliderRef.current) return;
     
     const rect = hueSliderDragAreaRef.current.getBoundingClientRect();
     const sliderWidth = hueSliderRef.current.width;
     
-    // Calculate relative position within the slider
     let x = e.clientX - rect.left;
     
-    // Clamp value
     x = Math.max(0, Math.min(sliderWidth, x));
     
-    // Convert to hue (0-360)
     const h = (x / sliderWidth) * 360;
     
-    // Update hsv state
     setHsv(prev => ({ ...prev, h }));
   };
 
@@ -303,7 +270,6 @@ const ColorChart: React.FC<ColorChartProps> = ({ color, onChange, onClose }) => 
     const value = e.target.value;
     setInputColor(value);
     
-    // Only update if a valid hex color
     if (/^#[0-9A-F]{6}$/i.test(value)) {
       setCurrentColor(value);
       setHsv(hexToHsv(value));
@@ -323,9 +289,8 @@ const ColorChart: React.FC<ColorChartProps> = ({ color, onChange, onClose }) => 
   };
 
   const handleSaveColor = (colorToSave: string) => {
-    // Don't add duplicates
     if (!customColors.includes(colorToSave)) {
-      const updatedColors = [...customColors, colorToSave].slice(-24); // Keep last 24 colors
+      const updatedColors = [...customColors, colorToSave].slice(-24);
       setCustomColors(updatedColors);
       localStorage.setItem('customColors', JSON.stringify(updatedColors));
       toast.success(`Saved ${colorToSave} to your collection`);
@@ -336,15 +301,14 @@ const ColorChart: React.FC<ColorChartProps> = ({ color, onChange, onClose }) => 
 
   const handleRandomColor = () => {
     const h = Math.floor(Math.random() * 360);
-    const s = Math.floor(Math.random() * 30) + 70; // 70-100% saturation
-    const v = Math.floor(Math.random() * 30) + 70; // 70-100% value
+    const s = Math.floor(Math.random() * 30) + 70;
+    const v = Math.floor(Math.random() * 30) + 70;
     setHsv({ h, s, v });
   };
 
   return (
     <div className="color-chart w-full p-1 shadow-lg rounded-md">
       <div className="color-picker-section mb-4 border rounded-lg p-3">
-        {/* Current color and hex input */}
         <div className="flex items-center mb-3 gap-2">
           <div 
             className="w-8 h-8 rounded border"
@@ -385,7 +349,6 @@ const ColorChart: React.FC<ColorChartProps> = ({ color, onChange, onClose }) => 
           </Button>
         </div>
 
-        {/* Color picker canvas */}
         <div className="relative w-full rounded overflow-hidden mb-2">
           <canvas 
             ref={satValCanvasRef}
@@ -408,7 +371,6 @@ const ColorChart: React.FC<ColorChartProps> = ({ color, onChange, onClose }) => 
           />
         </div>
 
-        {/* Hue slider */}
         <div className="relative w-full h-8 rounded overflow-hidden">
           <canvas 
             ref={hueSliderRef}
@@ -428,7 +390,6 @@ const ColorChart: React.FC<ColorChartProps> = ({ color, onChange, onClose }) => 
         </div>
       </div>
 
-      {/* Tabs for different color options */}
       <Tabs defaultValue="shades" value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid grid-cols-3 mb-2">
           <TabsTrigger value="shades">Shades</TabsTrigger>
@@ -464,7 +425,6 @@ const ColorChart: React.FC<ColorChartProps> = ({ color, onChange, onClose }) => 
         </TabsContent>
       </Tabs>
       
-      {/* Saved colors */}
       <SavedColors 
         customColors={customColors}
         onSelectColor={handleSelectColor}
@@ -473,7 +433,6 @@ const ColorChart: React.FC<ColorChartProps> = ({ color, onChange, onClose }) => 
   );
 };
 
-// Helper function to generate a palette
 const generatePalette = (baseColor: string): string[] => {
   const rgb = hexToRgb(baseColor);
   if (!rgb) return [baseColor, baseColor, baseColor, baseColor, baseColor];
@@ -481,11 +440,11 @@ const generatePalette = (baseColor: string): string[] => {
   const [h, s, l] = rgbToHsl(...rgb);
   
   return [
-    rgbToHex(...hslToRgb(h, Math.min(1, s * 1.2), Math.max(0, l - 0.15))), // Primary
-    rgbToHex(...hslToRgb((h + 0.05) % 1, Math.max(0, s - 0.2), Math.min(0.9, l + 0.1))), // Secondary
-    rgbToHex(...hslToRgb((h + 0.02) % 1, Math.max(0, s - 0.4), Math.min(0.95, l + 0.25))), // Background
-    rgbToHex(...hslToRgb(h, Math.min(1, s * 1.3), Math.max(0, l - 0.3))), // Header
-    rgbToHex(...hslToRgb((h + 0.5) % 1, Math.min(1, s * 0.8), Math.max(0.1, l))), // Accent
+    rgbToHex(...hslToRgb(h, Math.min(1, s * 1.2), Math.max(0, l - 0.15))),
+    rgbToHex(...hslToRgb((h + 0.05) % 1, Math.max(0, s - 0.2), Math.min(0.9, l + 0.1))),
+    rgbToHex(...hslToRgb((h + 0.02) % 1, Math.max(0, s - 0.4), Math.min(0.95, l + 0.25))),
+    rgbToHex(...hslToRgb(h, Math.min(1, s * 1.3), Math.max(0, l - 0.3))),
+    rgbToHex(...hslToRgb((h + 0.5) % 1, Math.min(1, s * 0.8), Math.max(0.1, l))),
   ];
 };
 

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { BookOpen, PlusCircle, Edit2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -26,10 +25,11 @@ const ShelfSelector: React.FC = () => {
   const currentShelf = activeShelfId ? shelvesData[activeShelfId] : null;
   
   const handleShelfChange = (value: string) => {
-    // Add a small delay to prevent race conditions with selection events
-    setTimeout(() => {
+    // Remove the setTimeout which was causing flickering issues
+    // Just directly switch the shelf
+    if (value !== activeShelfId) {
       switchShelf(value);
-    }, 150);
+    }
   };
   
   return (
@@ -58,6 +58,11 @@ const ShelfSelector: React.FC = () => {
               position="popper"
               sideOffset={5}
               align="center"
+              // Keep dropdown open until user explicitly dismisses it
+              onCloseAutoFocus={(e) => {
+                // Prevent auto focus which can cause dropdown to close
+                e.preventDefault();
+              }}
             >
               {Object.values(shelvesData).map((shelf) => (
                 <SelectItem 

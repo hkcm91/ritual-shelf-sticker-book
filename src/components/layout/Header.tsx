@@ -42,6 +42,9 @@ const Header: React.FC = () => {
       }}
     >
       <div className="flex items-center gap-4">
+        {/* Book search drawer moved to the left side */}
+        <BookSearchDrawer />
+        
         {!isMobile && (
           <NavigationMenu>
             <NavigationMenuList>
@@ -64,9 +67,6 @@ const Header: React.FC = () => {
       </div>
       
       <div className="flex items-center gap-3">
-        {/* Book icon moved from left to right */}
-        <BookSearchDrawer />
-        
         {/* Settings Drawer */}
         <SettingsDrawer />
         

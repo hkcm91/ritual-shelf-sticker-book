@@ -54,7 +54,8 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
             backgroundColor: dividers.color,
             backgroundImage: `url(${shelfTexture})`,
             opacity: dividers.opacity,
-            height: `${dividers.height}px`
+            height: `${dividers.height}px`,
+            flexShrink: 0 // Prevent the divider from shrinking
           }} 
         />
       );
@@ -74,7 +75,8 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
               backgroundImage: `url(${shelfTexture})`,
               opacity: dividers.opacity,
               height: `${dividers.height}px`,
-              flexShrink: 0 // Prevent the divider from shrinking
+              flexShrink: 0, // Prevent the divider from shrinking
+              alignSelf: 'stretch' // Make divider stretch to fill container height
             }} 
             className="vertical-shelf-divider" 
           />
@@ -94,7 +96,8 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
             backgroundColor: dividers.color,
             backgroundImage: `url(${shelfTexture})`,
             opacity: dividers.opacity,
-            height: `${dividers.height}px`
+            height: `${dividers.height}px`,
+            flexShrink: 0 // Prevent the divider from shrinking
           }} 
         />
       );
@@ -104,10 +107,14 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
     slots.push(
       <div 
         key={`slot-row-${rowIndex}`} 
-        className="flex justify-start items-stretch flex-nowrap gap-2 p-2 min-h-[220px] relative z-2"
+        className="flex justify-start items-stretch flex-nowrap gap-2 p-2 relative z-2"
         style={{
-          // Add padding to accommodate the divider height
-          paddingBottom: dividers.enabled ? `${Math.max(0, dividers.height - 220)}px` : '0',
+          // Make sure to set a min-height that accommodates the dividers
+          minHeight: dividers.enabled ? `${Math.max(220, dividers.height)}px` : '220px',
+          // Ensure all items are aligned to the bottom
+          alignItems: 'flex-end',
+          // Add padding to accommodate the divider height differences
+          paddingBottom: '8px'
         }}
       >
         {slotRow}
@@ -133,7 +140,7 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
         "--divider-opacity": shelfStyling?.dividers?.opacity || 1,
         // Adjust the min-height to accommodate larger dividers
         minHeight: shelfStyling?.dividers?.enabled ? 
-          `${Math.max(240, shelfStyling.dividers.height + 20)}px` : '240px',
+          `${Math.max(260, shelfStyling.dividers.height + 40)}px` : '240px',
       } as React.CSSProperties}
     >
       {/* Shelf back panel for realistic look */}

@@ -1,7 +1,7 @@
 
 import { StateCreator } from 'zustand';
 import { ShelfData } from '../types';
-import { BooksSlice } from '../booksSlice';
+import { BooksSlice } from '../books/booksSlice';
 import { RowOperationsSlice, createRowOperationsSlice } from './rowOperationsSlice';
 import { ColumnOperationsSlice, createColumnOperationsSlice } from './columnOperationsSlice';
 

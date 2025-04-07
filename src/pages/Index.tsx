@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useBookshelfStore, initializeDefaultShelf } from '../store/bookshelfStore';
 import BookshelfGrid from '../components/BookshelfGrid';
@@ -31,7 +32,7 @@ const Index = () => {
       const loadSavedCustomization = useBookshelfStore.getState().loadCustomization;
       if (loadSavedCustomization) {
         console.log("[Index] Loading saved customization");
-        loadSavedCustomization(); // Fixed - calling with no arguments as expected
+        loadSavedCustomization(); // Fixed - now calling with no arguments
       }
       
       if (shelfId) {

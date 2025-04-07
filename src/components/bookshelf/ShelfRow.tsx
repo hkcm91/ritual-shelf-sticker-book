@@ -28,8 +28,32 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
       opacity: 0.8
     };
     
+    // Get shelf texture or use default
+    const shelfTexture = shelf?.textureImage || 
+                      (activeTheme === 'default' || activeTheme === 'custom' ? 
+                      '/lovable-uploads/7a437784-0910-4719-b52b-6564c3004ebe.png' : 
+                      '/textures/default/wood.jpg');
+    
     // Add the book slots with vertical dividers if needed
     const slotRow = [];
+    
+    // Add left side divider (bookend)
+    if (dividers.enabled && 
+        (dividers.orientation === 'vertical' || dividers.orientation === 'both')) {
+      slotRow.push(
+        <div 
+          key={`vdivider-left-${rowIndex}`}
+          className="vertical-shelf-divider shelf-side-left" 
+          style={{
+            width: `${dividers.thickness}px`,
+            backgroundColor: dividers.color,
+            backgroundImage: `url(${shelfTexture})`,
+            opacity: dividers.opacity
+          }}
+        />
+      );
+    }
+    
     for (let col = 0; col < columns; col++) {
       const position = rowIndex * columns + col;
       
@@ -38,11 +62,6 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
           (dividers.orientation === 'vertical' || dividers.orientation === 'both') && 
           col > 0 && 
           col % dividers.booksPerSection === 0) {
-        // Get shelf texture or use default
-        const shelfTexture = shelf?.textureImage || 
-                          (activeTheme === 'default' || activeTheme === 'custom' ? 
-                          '/lovable-uploads/7a437784-0910-4719-b52b-6564c3004ebe.png' : 
-                          '/textures/default/wood.jpg');
         
         slotRow.push(
           <div 
@@ -55,8 +74,7 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
               opacity: dividers.opacity,
               height: '100%',
               minHeight: '220px',
-              alignSelf: 'stretch',
-              zIndex: 5 // Lower z-index so stickers appear above
+              alignSelf: 'stretch'
             }}
           />
         );
@@ -66,6 +84,23 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
         <BookSlot
           key={`slot-${position}`}
           position={position}
+        />
+      );
+    }
+    
+    // Add right side divider (bookend)
+    if (dividers.enabled && 
+        (dividers.orientation === 'vertical' || dividers.orientation === 'both')) {
+      slotRow.push(
+        <div 
+          key={`vdivider-right-${rowIndex}`}
+          className="vertical-shelf-divider shelf-side-right" 
+          style={{
+            width: `${dividers.thickness}px`,
+            backgroundColor: dividers.color,
+            backgroundImage: `url(${shelfTexture})`,
+            opacity: dividers.opacity
+          }}
         />
       );
     }
@@ -120,7 +155,7 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
             opacity: shelfStyling.dividers.opacity,
             width: '100%',
             position: 'relative',
-            zIndex: 5 // Lower z-index so stickers appear above
+            zIndex: 5
           }}
         />
       )}
@@ -134,7 +169,7 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
           backgroundColor: shelfStyling?.color || '#7c5738',
           opacity: shelfStyling?.opacity || 1,
           boxShadow: useRealisticStyle ? '0 6px 10px rgba(0,0,0,0.4)' : '0px 4px 6px -2px rgba(0,0,0,0.3)',
-          zIndex: 5 // Lower z-index so stickers appear above
+          zIndex: 5
         }}
       />
     </div>

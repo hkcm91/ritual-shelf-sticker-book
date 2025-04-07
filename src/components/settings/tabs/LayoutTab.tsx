@@ -20,7 +20,8 @@ const LayoutTab: React.FC = () => {
     initializeDefaultShelf,
     shelfStyling,
     toggleDividers,
-    updateDividersSetting
+    updateDividersSetting,
+    updateShelfColor
   } = useBookshelfStore();
   
   const [verticalDividersEnabled, setVerticalDividersEnabled] = useState(false);
@@ -102,6 +103,11 @@ const LayoutTab: React.FC = () => {
     if (checked) {
       const newOrientation = shelfStyling?.dividers?.orientation === 'horizontal' ? 'both' : 'vertical';
       updateDividersSetting('orientation', newOrientation);
+      
+      // When enabling dividers, ensure divider color matches shelf color for cohesive look
+      if (shelfStyling?.color) {
+        updateDividersSetting('color', shelfStyling.color);
+      }
     }
   };
   

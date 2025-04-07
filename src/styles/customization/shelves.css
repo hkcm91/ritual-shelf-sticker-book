@@ -63,14 +63,16 @@
 .vertical-shelf-divider {
   width: var(--divider-thickness, 6px);
   align-self: stretch;
-  margin: 0 2px;
+  margin: 0;
   min-height: 220px;
+  z-index: 3;
 }
 
 .horizontal-shelf-divider {
   height: var(--divider-thickness, 6px);
   width: 100%;
   margin: 0;
+  z-index: 3;
 }
 
 /* Shelf sides styling */

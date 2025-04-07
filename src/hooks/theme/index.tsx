@@ -22,7 +22,7 @@ export function useTheme() {
   const changeTheme = useCallback((themeName: ThemeName) => {
     if (isValidTheme(themeName)) {
       setActiveTheme(themeName);
-      // The error is here - applyTheme() should be called without arguments
+      // Call applyTheme without arguments - it will read from the store
       applyTheme();
     }
   }, [setActiveTheme, applyTheme, isValidTheme]);

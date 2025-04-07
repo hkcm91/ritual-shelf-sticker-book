@@ -2,6 +2,7 @@
 import React from 'react';
 import { BookData } from '../store/bookshelfStore';
 import { useBookInteractions } from '../hooks/useBookInteractions';
+import { BookCover } from './bookslot';
 
 type BookProps = {
   data: BookData;
@@ -30,13 +31,7 @@ const Book: React.FC<BookProps> = ({ data }) => {
       onDragEnd={handleDragEnd}
       onClick={handleClick}
     >
-      {!hasCover && (
-        <div className="text-gray-400 text-xs">No cover</div>
-      )}
-      <div 
-        className="absolute bottom-0 left-0 h-1 bg-green-500"
-        style={{ width: `${data.progress}%` }}
-      ></div>
+      <BookCover coverURL={data.coverURL} progress={data.progress} />
     </div>
   );
 };

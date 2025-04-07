@@ -69,7 +69,7 @@ const BookSearchDrawer = () => {
                 size="icon" 
                 className="text-[color:var(--header-text-color,white)] hover:text-[color:var(--header-text-color,white)] hover:bg-[color:var(--header-hover-bg,rgba(255,255,255,0.1))]"
               >
-                <BookOpen size={18} className="animate-pulse" />
+                <BookOpen className="h-5 w-5" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>

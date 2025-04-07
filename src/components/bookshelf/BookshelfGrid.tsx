@@ -4,6 +4,7 @@ import { useBookshelfStore } from '../../store/bookshelfStore';
 import ShelfRow from './ShelfRow';
 import StorageUsage from '../StorageUsage';
 import ShelfControls from '../ShelfControls';
+import ZoomControls from '../ZoomControls';
 
 const BookshelfGrid: React.FC = () => {
   const { activeShelfId, shelves, zoomLevel } = useBookshelfStore();
@@ -13,6 +14,7 @@ const BookshelfGrid: React.FC = () => {
   // Add wheel event listener for zooming
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
+      // Only zoom when ctrl key is pressed
       if (e.ctrlKey) {
         e.preventDefault();
         const { adjustZoomLevel } = useBookshelfStore.getState();
@@ -86,7 +88,8 @@ const BookshelfGrid: React.FC = () => {
           transformOrigin: 'top center',
           width: 'fit-content',
           minWidth: `${columns * 160}px`, // Ensure minimum width based on columns
-          maxWidth: '100%'
+          maxWidth: '100%',
+          transition: 'transform 0.2s ease' // Smooth transition for zoom
         }}
       >
         {/* Add storage usage indicator */}
@@ -97,6 +100,11 @@ const BookshelfGrid: React.FC = () => {
         <div className="grid-container w-full">
           {renderGrid()}
         </div>
+      </div>
+      
+      {/* Add zoom controls at the bottom right */}
+      <div className="fixed bottom-4 right-4 z-20">
+        <ZoomControls />
       </div>
     </div>
   );

@@ -23,17 +23,18 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
     for (let col = 0; col < columns; col++) {
       const position = rowIndex * columns + col;
       
-      // Add divider if needed
+      // Add divider if needed and if it's not the first column
       if (dividers.enabled && col > 0 && col % dividers.booksPerSection === 0) {
         slots.push(
           <div 
             key={`divider-${rowIndex}-${col}`}
             className="shelf-divider" 
             style={{
-              width: `${dividers.thickness}px`,
-              backgroundColor: dividers.color,
+              width: `${dividers.thickness || 4}px`,
+              backgroundColor: dividers.color || '#714621',
               height: '100%',
-              minHeight: '220px'
+              minHeight: '220px',
+              margin: '0 8px' // Add some spacing around dividers
             }}
           />
         );
@@ -63,7 +64,8 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
         style={{
           height: `${shelfStyling?.thickness || 20}px`,
           backgroundImage: shelf?.textureImage ? `url(${shelf.textureImage})` : 'var(--shelf-texture, url(/textures/default/wood.jpg))',
-          backgroundSize: 'cover',
+          backgroundSize: '100% 100%', // Changed from 'cover' to '100% 100%' to prevent stretching
+          backgroundRepeat: 'repeat-x',
           backgroundPosition: 'center',
           backgroundColor: shelfStyling?.color || '#8B5A2B',
           opacity: shelfStyling?.opacity || 1,

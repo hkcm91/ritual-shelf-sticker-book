@@ -8,7 +8,8 @@ import {
 } from '../utils/shelfUtils';
 import { 
   restoreHiddenBooksForColumns, 
-  hideLastColumnBooks 
+  hideLastColumnBooks,
+  maintainBookPositionsOnColumnChange
 } from '../utils/columnOperations';
 
 export interface ColumnOperationsSlice {
@@ -31,7 +32,10 @@ export const createColumnOperationsSlice: StateCreator<
       const newColumns = shelf.columns + 1;
       
       // Restore hidden books from previous column removals that can now be visible
-      const updatedBooks = restoreHiddenBooksForColumns(activeShelfId, shelf, newColumns, books);
+      let updatedBooks = restoreHiddenBooksForColumns(activeShelfId, shelf, newColumns, books);
+      
+      // Ensure books maintain their positions with the new column count
+      updatedBooks = maintainBookPositionsOnColumnChange(activeShelfId, shelf.columns, newColumns, updatedBooks);
       
       set((state) => {
         const updatedShelves = {

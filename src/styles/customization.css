@@ -27,7 +27,7 @@
   --shelf-opacity: 1;
   
   /* Dividers */
-  --divider-thickness: 2px;
+  --divider-thickness: 4px;
   --divider-color: #714621;
   
   /* Slots */
@@ -72,7 +72,8 @@ body {
 .wood-shelf {
   background-color: var(--shelf-color);
   background-image: var(--shelf-bg-image), var(--shelf-texture);
-  background-size: cover;
+  background-size: 100% 100%; /* Changed to prevent stretching */
+  background-repeat: repeat-x;
   background-position: center;
   opacity: var(--shelf-opacity);
   height: var(--shelf-thickness);
@@ -83,6 +84,7 @@ body {
   width: var(--divider-thickness);
   background-color: var(--divider-color);
   box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+  margin: 0 8px;
 }
 
 .book-slot.empty:hover {
@@ -129,6 +131,7 @@ header {
   max-width: 180px;
   position: relative;
   flex-shrink: 0; /* Prevent slots from shrinking */
+  transition: transform 0.2s ease; /* Smooth transitions */
 }
 
 /* Make sure the grid container adapts to available space */

@@ -57,3 +57,41 @@ export const hideLastColumnBooks = (
   
   return updatedBooks;
 };
+
+/**
+ * Ensures books maintain their visual positions when column count changes
+ * This requires recalculating positions to maintain the same row and column visually
+ */
+export const maintainBookPositionsOnColumnChange = (
+  activeShelfId: string,
+  oldColumns: number,
+  newColumns: number,
+  books: Record<string, BookData>
+): Record<string, BookData> => {
+  const updatedBooks = { ...books };
+  
+  // We need to recalculate positions when columns change to maintain visual positions
+  Object.keys(updatedBooks).forEach(bookId => {
+    const book = updatedBooks[bookId];
+    
+    if (book.shelfId === activeShelfId && !book.hidden) {
+      // Calculate current row and column
+      const currentRow = Math.floor(book.position / oldColumns);
+      const currentCol = book.position % oldColumns;
+      
+      // If the column is less than the new column count, we can keep it in place
+      if (currentCol < newColumns) {
+        // Calculate new position based on current row and column
+        const newPosition = (currentRow * newColumns) + currentCol;
+        updatedBooks[bookId] = {
+          ...book,
+          // Update position but preserve the original position if it exists
+          position: newPosition,
+          originalPosition: book.originalPosition || book.position
+        };
+      }
+    }
+  });
+  
+  return updatedBooks;
+};

@@ -8,7 +8,8 @@ import {
 } from '../utils/shelfUtils';
 import { 
   restoreHiddenBooksForRows, 
-  hideLastRowBooks 
+  hideLastRowBooks,
+  maintainBookPositionsOnRowChange
 } from '../utils/rowOperations';
 
 export interface RowOperationsSlice {
@@ -30,7 +31,10 @@ export const createRowOperationsSlice: StateCreator<
       const shelf = shelves[activeShelfId];
       
       // Restore hidden books from previous row removals that can now be visible
-      const updatedBooks = restoreHiddenBooksForRows(activeShelfId, shelf, books);
+      let updatedBooks = restoreHiddenBooksForRows(activeShelfId, shelf, books);
+      
+      // Ensure books maintain their positions with the new row count
+      updatedBooks = maintainBookPositionsOnRowChange(activeShelfId, shelf.columns, updatedBooks);
       
       set((state) => {
         const updatedShelves = {

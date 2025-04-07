@@ -1,3 +1,4 @@
+
 import { BookData, ShelfData } from '../types';
 
 /**
@@ -52,6 +53,23 @@ export const hideLastRowBooks = (
       hidden: true
     };
   });
+  
+  return updatedBooks;
+};
+
+/**
+ * Ensures books maintain their visual position when adding rows
+ * by keeping their row and column position the same
+ */
+export const maintainBookPositionsOnRowChange = (
+  activeShelfId: string,
+  oldColumns: number,
+  books: Record<string, BookData>
+): Record<string, BookData> => {
+  const updatedBooks = { ...books };
+  
+  // We don't need to change any positions when adding rows
+  // Books stay at the same row and column
   
   return updatedBooks;
 };

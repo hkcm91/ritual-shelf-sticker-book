@@ -33,4 +33,20 @@ export const createShelvesSlice: CustomizationSliceCreator = (set) => ({
       dividers: { ...state.shelfStyling.dividers, [property]: value } 
     }
   })),
+  
+  // Helper function to update all divider settings at once
+  updateAllDividerSettings: (settings: {
+    enabled?: boolean;
+    booksPerSection?: number;
+    thickness?: number;
+    color?: string;
+  }) => set((state) => ({
+    shelfStyling: {
+      ...state.shelfStyling,
+      dividers: { 
+        ...state.shelfStyling.dividers,
+        ...settings
+      }
+    }
+  })),
 });

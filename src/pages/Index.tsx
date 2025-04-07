@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useBookshelfStore, initializeDefaultShelf } from '../store/bookshelfStore';
 import BookshelfGrid from '../components/BookshelfGrid';
@@ -49,13 +48,11 @@ const Index = () => {
   // Sync with store for modal state
   useEffect(() => {
     console.log("[Index] Setting up subscription");
-    const unsubscribe = useBookshelfStore.subscribe(
-      (state) => state.ui.isCustomizationModalOpen,
-      (isOpen) => {
-        console.log("[Index] Store subscription triggered - modal state changed to:", isOpen);
-        setIsCustomModalOpen(isOpen);
-      }
-    );
+    const unsubscribe = useBookshelfStore.subscribe((state) => {
+      const isOpen = state.ui?.isCustomizationModalOpen;
+      console.log("[Index] Store subscription triggered - modal state changed to:", isOpen);
+      setIsCustomModalOpen(isOpen);
+    });
     
     return () => {
       console.log("[Index] Cleaning up subscription");

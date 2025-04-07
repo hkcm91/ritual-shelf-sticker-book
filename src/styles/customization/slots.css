@@ -36,3 +36,38 @@
   z-index: 5;
   box-shadow: 0 5px 15px rgba(0,0,0,0.15);
 }
+
+/* Realistic book slot styling */
+.realistic-book-slot {
+  background-color: rgba(255, 255, 255, 0.02);
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+  border-radius: 2px;
+}
+
+.realistic-book-slot:empty {
+  background: linear-gradient(to right, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.02) 50%, rgba(0,0,0,0.05) 100%);
+}
+
+/* Add depth to the slot when empty */
+.realistic-book-slot:empty::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  box-shadow: inset 0 0 40px rgba(0,0,0,0.1);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Enhance the book appearance */
+.book {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.book:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+}

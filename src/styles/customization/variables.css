@@ -10,25 +10,25 @@
   --page-bg-attachment: fixed;
 
   /* Container */
-  --container-bg: #a47148;
+  --container-bg: #d8bd93;
   --container-bg-image: none;
   --container-opacity: 1;
-  --container-border-width: 0px;
+  --container-border-width: 1px;
   --container-border-style: solid;
-  --container-border-color: #e0e0e0;
-  --container-border-radius: 8px;
+  --container-border-color: rgba(0,0,0,0.2);
+  --container-border-radius: 4px;
   --container-padding: 16px;
 
   /* Shelves */
   --shelf-thickness: 20px;
-  --shelf-color: #8B5A2B;
+  --shelf-color: #d2b48c;
   --shelf-bg-image: none;
-  --shelf-texture: url(/textures/default/wood.jpg);
+  --shelf-texture: url('/lovable-uploads/df4e485f-c6a6-48d8-990d-9ee89fcc76d0.png');
   --shelf-opacity: 1;
   
   /* Dividers */
   --divider-thickness: 4px;
-  --divider-color: #714621;
+  --divider-color: #a37d4f;
   --divider-orientation: vertical;
   
   /* Slots */
@@ -47,4 +47,12 @@
 
   /* Transitions for smoother theme changes */
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Realistic bookshelf theme */
+.theme-realistic {
+  --container-bg: #d8bd93;
+  --shelf-color: #d2b48c;
+  --shelf-texture: url('/lovable-uploads/df4e485f-c6a6-48d8-990d-9ee89fcc76d0.png');
+  --page-bg: #f0e9e0;
 }

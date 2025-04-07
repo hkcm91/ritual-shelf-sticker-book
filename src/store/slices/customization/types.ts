@@ -1,3 +1,4 @@
+
 import { StateCreator } from 'zustand';
 import { BookshelfState } from '../../bookshelfStore';
 import { ThemeName } from '@/themes';
@@ -138,25 +139,25 @@ export const defaultCustomization: CustomizationState = {
     backgroundAttachment: 'fixed',
   },
   container: {
-    background: '#a47148',
+    background: '#d8bd93',
     backgroundImage: '',
     opacity: 1,
-    borderWidth: 0,
+    borderWidth: 1,
     borderStyle: 'solid',
-    borderColor: '#e0e0e0',
-    borderRadius: 8,
+    borderColor: 'rgba(0,0,0,0.2)',
+    borderRadius: 4,
     padding: 16,
   },
   shelfStyling: {
     thickness: 20,
-    color: '#8B5A2B',
+    color: '#d2b48c',
     opacity: 1,
     dividers: {
       enabled: false,
       booksPerSection: 6,
       booksPerRow: 2,
       thickness: 2,
-      color: '#714621',
+      color: '#a37d4f',
       orientation: 'vertical'
     },
   },

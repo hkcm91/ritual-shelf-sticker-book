@@ -14,7 +14,8 @@ const BookshelfGrid: React.FC = () => {
     shelves, 
     zoomLevel, 
     ui,
-    loadCustomization
+    loadCustomization,
+    activeTheme
   } = useBookshelfStore();
   
   const activeShelf = shelves[activeShelfId];
@@ -85,6 +86,9 @@ const BookshelfGrid: React.FC = () => {
     return grid;
   };
   
+  // Determine if we should use the realistic bookshelf styling
+  const useRealisticStyle = activeTheme === 'default' || activeTheme === 'custom';
+  
   return (
     <>
       <div 
@@ -105,7 +109,7 @@ const BookshelfGrid: React.FC = () => {
         </div>
         
         <div 
-          className="bookshelf-container relative flex flex-col items-center rounded-md p-6 shadow-lg mx-auto"
+          className={`bookshelf-container relative flex flex-col items-center rounded-md p-6 shadow-lg mx-auto ${useRealisticStyle ? 'realistic-bookshelf' : ''}`}
           style={{ 
             transform: `scale(${zoomLevel})`,
             transformOrigin: 'top center',
@@ -115,14 +119,21 @@ const BookshelfGrid: React.FC = () => {
             transition: 'transform 0.2s ease' // Smooth transition for zoom
           }}
         >
+          {/* Back panel for realistic look */}
+          <div className="bookshelf-back-panel"></div>
+          
           {/* Add storage usage indicator */}
           <div className="absolute bottom-1 right-1 w-48 z-10 bg-white/90 rounded shadow">
             <StorageUsage />
           </div>
           
-          <div className="grid-container w-full">
+          <div className="grid-container w-full relative z-1">
             {renderGrid()}
           </div>
+          
+          {/* Side panels for realistic look */}
+          <div className="shelf-side-left"></div>
+          <div className="shelf-side-right"></div>
         </div>
         
         {/* Add zoom controls at the bottom right */}

@@ -9,6 +9,7 @@ import EmptySlot from './EmptySlot';
 import { useBookSlot } from '../hooks/useBookSlot';
 import SlotTypeToggle from './SlotTypeToggle';
 import ContextMenuWrapper from './ContextMenuWrapper';
+import { useBookshelfStore } from '@/store/bookshelfStore';
 
 type BookSlotProps = {
   position: number;
@@ -16,6 +17,7 @@ type BookSlotProps = {
 
 const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   const [slotType, setSlotType] = useState<"book" | "sticker">("book");
+  const { activeTheme } = useBookshelfStore();
   
   const {
     book,
@@ -52,6 +54,9 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
       handleClick();
     }
   };
+  
+  // Check if we should use realistic styling
+  const useRealisticStyle = activeTheme === 'default' || activeTheme === 'custom';
   
   // Render book content based on type
   const renderBookContent = () => {
@@ -97,12 +102,16 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
       <div 
         className={`book-slot relative h-[220px] w-[150px] mx-1 rounded-sm
           ${!book ? 'hover:bg-gray-50/10' : 'hover:border hover:border-primary/30'}
+          ${useRealisticStyle ? 'realistic-book-slot' : ''}
           transition-colors duration-200 cursor-pointer`}
         data-position={position}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
         onMouseMove={handleStickerMouseMove}
         onMouseUp={handleStickerMouseUp}
+        style={{
+          boxShadow: useRealisticStyle && !book ? 'inset 0 0 20px rgba(0,0,0,0.1)' : 'none'
+        }}
       >
         {book ? (
           renderBookContent()

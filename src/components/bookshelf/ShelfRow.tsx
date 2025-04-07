@@ -10,7 +10,7 @@ type ShelfRowProps = {
 };
 
 const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
-  const { activeShelfId, shelves: shelvesData, shelfStyling } = useBookshelfStore();
+  const { activeShelfId, shelves: shelvesData, shelfStyling, activeTheme } = useBookshelfStore();
   const shelf = shelvesData[activeShelfId] as ShelfData;
   
   // Generate slots for this row
@@ -89,25 +89,33 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
     return slots;
   };
 
+  // Determine if we should use realistic shelf styling
+  const useRealisticStyle = activeTheme === 'default' || activeTheme === 'custom';
+  
+  // Get custom shelf texture or use default
+  const shelfTexture = shelf?.textureImage || 
+                      (useRealisticStyle ? '/lovable-uploads/df4e485f-c6a6-48d8-990d-9ee89fcc76d0.png' : 
+                      '/textures/default/wood.jpg');
+
   return (
-    <div className="flex flex-col w-full">
+    <div className={`shelf-row flex flex-col w-full relative ${useRealisticStyle ? 'realistic-shelf' : ''}`}>
       {/* Books row with potential dividers */}
-      <div className="flex justify-start items-stretch flex-nowrap gap-2 p-2 min-h-[220px]">
+      <div className="flex justify-start items-stretch flex-nowrap gap-2 p-2 min-h-[220px] relative z-2">
         {renderSlots()}
       </div>
       
       {/* Shelf */}
       <div 
-        className="wood-shelf w-full mb-6"
+        className="wood-shelf w-full mb-6 relative"
         style={{
           height: `${shelfStyling?.thickness || 20}px`,
-          backgroundImage: shelf?.textureImage ? `url(${shelf.textureImage})` : 'var(--shelf-texture, url(/textures/default/wood.jpg))',
+          backgroundImage: `url(${shelfTexture})`,
           backgroundSize: '100% 100%',
           backgroundRepeat: 'repeat-x',
           backgroundPosition: 'center',
           backgroundColor: shelfStyling?.color || '#8B5A2B',
           opacity: shelfStyling?.opacity || 1,
-          boxShadow: '0px 4px 6px -2px rgba(0,0,0,0.3)'
+          boxShadow: useRealisticStyle ? '0 6px 10px -2px rgba(0,0,0,0.4)' : '0px 4px 6px -2px rgba(0,0,0,0.3)'
         }}
       ></div>
     </div>

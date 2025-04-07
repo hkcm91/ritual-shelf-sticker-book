@@ -8,6 +8,8 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
 
 const ShelvesTab: React.FC = () => {
   const { 
@@ -16,13 +18,12 @@ const ShelvesTab: React.FC = () => {
     updateShelfColor,
     updateShelfOpacity,
     toggleDividers,
-    updateDividersSetting,
-    updateAllDividerSettings
+    updateDividersSetting
   } = useBookshelfStore();
 
   // Handle orientation change with the correct type
-  const handleOrientationChange = (value: 'vertical' | 'horizontal' | 'both') => {
-    updateDividersSetting('orientation', value);
+  const handleOrientationChange = (value: string) => {
+    updateDividersSetting('orientation', value as 'vertical' | 'horizontal' | 'both');
   };
 
   // Handle books per row change with the correct type
@@ -30,10 +31,39 @@ const ShelvesTab: React.FC = () => {
     updateDividersSetting('booksPerRow', value);
   };
 
+  // Handle background texture selection
+  const handleTextureSelection = (value: string) => {
+    const textures = {
+      'light-oak': '/lovable-uploads/df4e485f-c6a6-48d8-990d-9ee89fcc76d0.png',
+      'dark-oak': '/lovable-uploads/bde4bb25-8c74-4447-82c9-08783b8d0056.png',
+      'mahogany': '/lovable-uploads/1325adda-a404-4af6-9549-1925cd1394be.png',
+      'none': ''
+    };
+    
+    updateShelfColor(value === 'mahogany' ? '#7d4b32' : 
+                    value === 'dark-oak' ? '#5c4033' : 
+                    value === 'light-oak' ? '#d2b48c' : '#8B5A2B');
+  };
+
   return (
     <div className="space-y-6">
       <div className="rounded-md border p-4 space-y-4">
         <h3 className="font-medium text-lg">Shelf Appearance</h3>
+        
+        <div className="space-y-2">
+          <Label>Wood Style</Label>
+          <Select onValueChange={handleTextureSelection} defaultValue="light-oak">
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select wood style" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="light-oak">Light Oak</SelectItem>
+              <SelectItem value="dark-oak">Dark Oak</SelectItem>
+              <SelectItem value="mahogany">Mahogany</SelectItem>
+              <SelectItem value="none">Custom Color</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
         
         <div className="space-y-2">
           <Label>Shelf Color</Label>
@@ -122,19 +152,21 @@ const ShelvesTab: React.FC = () => {
                 onChange={(e) => updateDividersSetting('booksPerSection', parseInt(e.target.value))}
                 className="w-full"
               />
+              <p className="text-xs text-muted-foreground">Number of books between vertical dividers</p>
             </div>
             
             <div className="space-y-2">
               <Label>Books Per Row</Label>
               <Input
                 type="number"
-                min={2}
+                min={1}
                 max={10}
                 value={shelfStyling?.dividers?.booksPerRow || 2}
                 onChange={(e) => handleBooksPerRowChange(parseInt(e.target.value))}
                 className="w-full"
                 disabled={!['horizontal', 'both'].includes(shelfStyling?.dividers?.orientation || 'vertical')}
               />
+              <p className="text-xs text-muted-foreground">Number of rows between horizontal dividers</p>
             </div>
             
             <div className="space-y-2">
@@ -159,6 +191,22 @@ const ShelvesTab: React.FC = () => {
                   onChange={(color) => updateDividersSetting('color', color)} 
                 />
               </div>
+            </div>
+            
+            <div className="mt-4">
+              <Card className="bg-muted/40">
+                <CardContent className="p-4">
+                  <div className="text-sm text-muted-foreground">
+                    <p className="mb-2 font-medium">Tips:</p>
+                    <ul className="list-disc pl-5 space-y-1">
+                      <li>Vertical dividers appear between sections of books</li>
+                      <li>Horizontal dividers appear between rows of books</li>
+                      <li>Choose "Both" for a grid-like appearance</li>
+                      <li>For a realistic bookcase look, use darker wood colors for dividers</li>
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </>
         )}

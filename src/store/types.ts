@@ -13,6 +13,7 @@ export interface BookData {
   rotation?: number;
   date?: string;
   color?: string;
+  zIndex?: number;
   // Add missing properties that are causing TypeScript errors
   hidden?: boolean;
   originalPosition?: number;
@@ -22,7 +23,6 @@ export interface BookData {
   characters?: string[];
   plot?: string;
   quizzes?: any[]; // Consider using a more specific type if available
-  collection?: string; // Add support for collections
 }
 
 export interface ShelfData {
@@ -36,5 +36,4 @@ export interface ShelfData {
   backgroundOpacity?: number;
   shelfColor?: string;
   shelfOpacity?: number;
-  collection?: string; // Add support for collections
 }

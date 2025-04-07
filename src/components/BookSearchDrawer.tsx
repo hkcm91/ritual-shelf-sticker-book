@@ -13,22 +13,26 @@ const BookSearchDrawer = () => {
   const [query, setQuery] = useState('');
   const [searchResults, setSearchResults] = useState<OpenLibraryBook[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const { activeShelfId, addBook } = useBookshelfStore();
+  const { activeShelfId, addBook, findEmptyPosition } = useBookshelfStore();
 
   const handleSearch = async () => {
     if (!query.trim()) return;
     
     setIsSearching(true);
+    setSearchResults([]);
+    
     try {
       const results = await searchBooks(query);
       console.log('Search results:', results);
       setSearchResults(results);
+      
       if (results.length === 0) {
         toast.info('No books found. Try a different search term.');
       }
     } catch (error) {
       console.error('Search failed:', error);
       toast.error('Failed to search books. The Open Library API might be experiencing issues.');
+      setSearchResults([]);
     } finally {
       setIsSearching(false);
     }
@@ -50,6 +54,13 @@ const BookSearchDrawer = () => {
       return;
     }
     
+    // Find first empty position
+    const emptyPosition = findEmptyPosition(activeShelfId);
+    if (emptyPosition === -1) {
+      toast.error('No empty slots available on this shelf');
+      return;
+    }
+    
     // Create book data object for store
     const bookDataForStore = {
       title: book.title || 'Unknown Title',
@@ -57,17 +68,19 @@ const BookSearchDrawer = () => {
       coverURL: coverUrl,
       progress: 0,
       rating: 0,
-      position: -1, // The store will find an empty slot
+      position: emptyPosition, // Explicitly use the found empty position
       shelfId: activeShelfId,
       series: book.series && book.series[0] ? book.series[0] : '',
+      isSticker: false // Explicitly set this to false
     };
     
+    console.log('Adding book to position:', emptyPosition);
     console.log('Data being sent to Zustand from API Search:', {
       ...bookDataForStore,
       coverURL: bookDataForStore.coverURL || 'missing'
     });
     
-    // Find first empty slot
+    // Add the book
     const newBookId = addBook(bookDataForStore);
     console.log('After API book add, newBookId:', newBookId);
     

@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import { useDragAndDrop } from './useDragAndDrop';
@@ -15,6 +14,7 @@ export const useBookSlot = ({ position, slotType }: UseBookSlotProps) => {
   const { activeShelfId, getBookByPosition, deleteBook } = useBookshelfStore();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isAltDrag, setIsAltDrag] = useState(false);
+  const [forceRender, setForceRender] = useState(0);
   
   // Log hook initialization
   useEffect(() => {
@@ -24,6 +24,11 @@ export const useBookSlot = ({ position, slotType }: UseBookSlotProps) => {
   
   // Get book from store by position, explicitly passing the activeShelfId
   const book = getBookByPosition(position, activeShelfId);
+  
+  // Force re-render when activeShelfId changes
+  useEffect(() => {
+    setForceRender(prev => prev + 1);
+  }, [activeShelfId]);
   
   // Log for debugging
   useEffect(() => {
@@ -35,11 +40,10 @@ export const useBookSlot = ({ position, slotType }: UseBookSlotProps) => {
         author: book.author || 'No author',
         hasCoverURL: !!book.coverURL,
         coverURLLength: book.coverURL ? book.coverURL.length : 0,
-        coverURLValue: book.coverURL,
         isSticker: !!book.isSticker
       });
     }
-  }, [book, position]);
+  }, [book, position, forceRender]);
   
   // For stickers, keep track of 2D position, scale, rotation
   const [position2D, setPosition2D] = useState({ x: 0, y: 0 });

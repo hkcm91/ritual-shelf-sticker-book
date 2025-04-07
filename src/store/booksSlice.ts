@@ -45,11 +45,20 @@ export const createBooksSlice: StateCreator<
         return "";
       }
       
-      // Create the new book object with ID
-      const newBook = { ...bookData, id, position };
+      // Create the new book object with ID and ensure isSticker is defined
+      const newBook = { 
+        ...bookData, 
+        id, 
+        position,
+        isSticker: bookData.isSticker || false,
+        hidden: false // Explicitly set hidden to false
+      };
+      
       console.log('New book object created:', {
         id,
         position,
+        isSticker: newBook.isSticker,
+        hidden: newBook.hidden,
         hasCoverURL: !!newBook.coverURL,
         coverURLLength: newBook.coverURL ? newBook.coverURL.length : 0,
         coverURLSample: newBook.coverURL ? `${newBook.coverURL.substring(0, 100)}...` : 'undefined'
@@ -70,6 +79,8 @@ export const createBooksSlice: StateCreator<
         console.log('Book being stored in state:', {
           id,
           title: newBook.title,
+          isSticker: newBook.isSticker,
+          hidden: newBook.hidden,
           hasCoverURL: !!newBook.coverURL,
           coverURLLength: newBook.coverURL ? newBook.coverURL.length : 0
         });
@@ -100,6 +111,8 @@ export const createBooksSlice: StateCreator<
       console.log('Verification - Book in store after update:', {
         id,
         exists: !!storedBook,
+        isSticker: storedBook ? storedBook.isSticker : 'unknown',
+        hidden: storedBook ? storedBook.hidden : 'unknown',
         hasCoverURL: storedBook ? !!storedBook.coverURL : false,
         coverURLLength: storedBook && storedBook.coverURL ? storedBook.coverURL.length : 0
       });
@@ -177,10 +190,24 @@ export const createBooksSlice: StateCreator<
       // Get activeShelfId from state
       const currentShelfId = shelfId || (state as any).activeShelfId;
       
+      if (!currentShelfId) {
+        console.warn('No shelf ID provided to getBookByPosition');
+        return undefined;
+      }
+      
       // Find the book with the specified position on the specified shelf
-      return Object.values(books).find(
+      const foundBook = Object.values(books).find(
         (book: BookData) => book.position === position && book.shelfId === currentShelfId
       );
+      
+      if (foundBook) {
+        console.log(`Found book at position ${position} on shelf ${currentShelfId}:`, 
+          foundBook.id, foundBook.title);
+      } else {
+        console.log(`No book found at position ${position} on shelf ${currentShelfId}`);
+      }
+      
+      return foundBook;
     }
   };
 };

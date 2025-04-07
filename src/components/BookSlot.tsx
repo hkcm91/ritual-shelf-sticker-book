@@ -44,6 +44,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
         id: book.id,
         title: book.title,
         isSticker: book.isSticker,
+        hidden: book.hidden,
         hasCoverURL: !!book.coverURL,
         coverURL: book.coverURL ? `${book.coverURL.substring(0, 30)}...` : 'undefined'
       });

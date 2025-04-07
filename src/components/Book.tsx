@@ -26,9 +26,9 @@ const Book: React.FC<BookProps> = ({ data }) => {
     });
   }, [data]);
   
-  // Don't render hidden books or items that should be stickers
-  if (data.hidden || data.isSticker) {
-    console.log('Book not rendered - hidden or sticker:', data.id);
+  // The hidden check was causing valid books to not render
+  if (data.isSticker) {
+    console.log('Book not rendered - is sticker:', data.id);
     return null;
   }
   

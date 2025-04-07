@@ -71,7 +71,8 @@ export const defaultCustomization: CustomizationState = {
       thickness: 6,
       color: '#a37d4f',
       opacity: 0.8,
-      orientation: 'vertical'
+      orientation: 'vertical',
+      height: 200  // Added the missing height property with default value 200
     },
   },
   slots: {

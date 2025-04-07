@@ -1,31 +1,17 @@
 
 import React from 'react';
-import { useBookshelfStore, BookData } from '../store/bookshelfStore';
+import { BookData } from '../store/bookshelfStore';
+import { useBookInteractions } from '../hooks/useBookInteractions';
 
 type BookProps = {
   data: BookData;
 };
 
 const Book: React.FC<BookProps> = ({ data }) => {
-  const { openModal, setDraggedBook } = useBookshelfStore();
+  const { handleDragStart, handleDragEnd, handleClick } = useBookInteractions(data.id);
   
   // Don't render hidden books or items that should be stickers
   if (data.hidden || data.isSticker) return null;
-  
-  const handleDragStart = (e: React.DragEvent) => {
-    e.dataTransfer.setData('bookId', data.id);
-    e.dataTransfer.effectAllowed = 'move';
-    setDraggedBook(data.id);
-  };
-  
-  const handleDragEnd = () => {
-    setDraggedBook(null);
-  };
-  
-  const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    openModal(data.id);
-  };
   
   // Check if coverURL is valid
   const hasCover = data.coverURL && data.coverURL !== '';

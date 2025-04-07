@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useBookshelfStore } from "@/store/bookshelfStore";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
@@ -23,6 +23,8 @@ const ShelfAppearanceSection: React.FC<ShelfAppearanceSectionProps> = ({ linkDiv
     updateDividersSetting
   } = useBookshelfStore();
   
+  const [isImageLoading, setIsImageLoading] = useState(false);
+  
   // Handle shelf color change with linked styling
   const handleShelfColorChange = (color: string) => {
     updateShelfColor(color);
@@ -33,15 +35,22 @@ const ShelfAppearanceSection: React.FC<ShelfAppearanceSectionProps> = ({ linkDiv
     }
   };
   
-  // Handle texture image upload
+  // Handle texture image upload - convert File to string URL
   const handleTextureChange = (file: File) => {
+    setIsImageLoading(true);
     const reader = new FileReader();
     reader.onload = (e) => {
       if (e.target?.result) {
         updateShelfBackgroundImage(e.target.result as string);
       }
+      setIsImageLoading(false);
     };
     reader.readAsDataURL(file);
+  };
+  
+  // This is the adapter function that converts string URL to the expected format
+  const handleTextureUrl = (url: string) => {
+    updateShelfBackgroundImage(url);
   };
 
   return (
@@ -113,8 +122,12 @@ const ShelfAppearanceSection: React.FC<ShelfAppearanceSectionProps> = ({ linkDiv
           <div className="space-y-2">
             <Label>Shelf Texture</Label>
             <FileInputField
+              value={shelfStyling?.backgroundImage || ""}
+              onChange={handleTextureUrl}
               accept="image/*"
-              onChange={handleTextureChange}
+              isLoading={isImageLoading}
+              setIsLoading={setIsImageLoading}
+              placeholder="Enter texture URL or upload image"
               helpText="Upload a texture for your shelves"
             />
           </div>

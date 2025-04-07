@@ -5,13 +5,17 @@ import { useBookshelfStore } from '../../store/bookshelfStore';
 
 const BookshelfGrid: React.FC = () => {
   const { 
-    columnsPerRow, 
-    rowsPerShelf, 
     activeShelfId, 
     container, 
     shelfStyling,
-    activeTheme
+    activeTheme,
+    shelves
   } = useBookshelfStore();
+  
+  // Get the current shelf data to access rows and columns
+  const currentShelf = activeShelfId ? shelves[activeShelfId] : null;
+  const columnsPerRow = currentShelf?.columns || 4;
+  const rowsPerShelf = currentShelf?.rows || 2;
   
   // Generate rows for the grid
   const renderShelfRows = () => {

@@ -14,6 +14,7 @@ interface FileInputFieldProps {
   isLoading?: boolean;
   setIsLoading?: React.Dispatch<React.SetStateAction<boolean>>;
   accept?: string;
+  helpText?: string;
 }
 
 const FileInputField: React.FC<FileInputFieldProps> = ({
@@ -24,7 +25,8 @@ const FileInputField: React.FC<FileInputFieldProps> = ({
   uploadLabel = "Upload Image",
   isLoading = false,
   setIsLoading,
-  accept = "image/*"
+  accept = "image/*",
+  helpText
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -102,6 +104,10 @@ const FileInputField: React.FC<FileInputFieldProps> = ({
           disabled={isLoading}
         />
       </div>
+      
+      {helpText && (
+        <p className="text-xs text-muted-foreground">{helpText}</p>
+      )}
     </div>
   );
 };

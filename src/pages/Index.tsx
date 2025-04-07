@@ -32,7 +32,7 @@ const Index = () => {
       const loadSavedCustomization = useBookshelfStore.getState().loadCustomization;
       if (loadSavedCustomization) {
         console.log("[Index] Loading saved customization");
-        loadSavedCustomization(); // Fixed - now calling with no arguments
+        loadSavedCustomization();
       }
       
       if (shelfId) {

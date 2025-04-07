@@ -10,6 +10,7 @@ interface ThemeListProps {
   availableThemes: string[];
   isSelecting: string | null;
   onThemeSelect: (themeName: ThemeName) => void;
+  onThemeDelete?: (themeName: ThemeName) => void;
   isValidTheme: (themeName: string) => boolean;
 }
 
@@ -19,6 +20,7 @@ const ThemeList: React.FC<ThemeListProps> = ({
   availableThemes,
   isSelecting,
   onThemeSelect,
+  onThemeDelete,
   isValidTheme
 }) => {
   // Helper function to get display name
@@ -28,6 +30,13 @@ const ThemeList: React.FC<ThemeListProps> = ({
     const isValid = isValidTheme(themeName);
     const theme = isValid ? themes[themeName as keyof typeof themes] : themes.default;
     return isValid ? theme?.name || "Unknown Theme" : "Invalid Theme";
+  };
+
+  // Helper function to determine if a theme is deletable
+  const isDeletableTheme = (themeName: string): boolean => {
+    // Prevent deletion of default, custom, and core themes
+    const nonDeletableThemes = ['default', 'custom', 'dark-academia', 'cozy-cottage', 'modern-library'];
+    return !nonDeletableThemes.includes(themeName);
   };
   
   return (
@@ -44,7 +53,9 @@ const ThemeList: React.FC<ThemeListProps> = ({
           theme={isValidTheme(themeName) ? themes[themeName as keyof typeof themes] : themes.default}
           isActive={activeTheme === themeName}
           isLoading={isSelecting === themeName}
+          isDeletable={isDeletableTheme(themeName)}
           onSelect={onThemeSelect}
+          onDelete={onThemeDelete}
         />
       ))}
       
@@ -55,6 +66,7 @@ const ThemeList: React.FC<ThemeListProps> = ({
         theme={themes.custom}
         isActive={activeTheme === 'custom'}
         isLoading={isSelecting === 'custom'}
+        isDeletable={false}
         onSelect={onThemeSelect}
       />
     </RadioGroup>

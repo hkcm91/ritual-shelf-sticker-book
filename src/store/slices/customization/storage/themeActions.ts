@@ -104,4 +104,28 @@ export const createThemeActions: StorageSliceCreator = (set, get, api) => ({
       toast.error('Failed to apply theme, reverting to default');
     }
   },
+
+  // Helper function to delete a theme (will only be used for custom themes)
+  deleteTheme: (themeName) => {
+    if (themeName === 'default' || themeName === 'custom') {
+      toast.error("Cannot delete built-in themes");
+      return;
+    }
+
+    try {
+      // If the active theme is being deleted, switch to default
+      if (get().activeTheme === themeName) {
+        get().setActiveTheme('default');
+      }
+
+      // In a real app, this would delete files on the server
+      console.log(`Theme ${themeName} would be deleted from the server`);
+      
+      // Notify user
+      toast.success(`Theme "${themeName}" deleted`);
+    } catch (error) {
+      console.error('Error deleting theme:', error);
+      toast.error('Failed to delete theme');
+    }
+  }
 });

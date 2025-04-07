@@ -30,6 +30,15 @@ export function useThemeSelector() {
     }
   }, [activeTheme, store]);
   
+  // Handle theme deletion
+  const handleDeleteTheme = useCallback((theme: ThemeName) => {
+    if (typeof store.deleteTheme === 'function') {
+      store.deleteTheme(theme);
+    } else {
+      console.warn('deleteTheme function not available in store');
+    }
+  }, [store]);
+  
   // Get theme availability information
   const availableThemes = Object.keys(themes) as ThemeName[];
   
@@ -41,6 +50,7 @@ export function useThemeSelector() {
   return {
     activeTheme: activeTheme as ThemeName || 'default',
     setActiveTheme: handleSetActiveTheme,
+    deleteTheme: handleDeleteTheme,
     availableThemes,
     isValidTheme,
     loadSavedTheme: loadCustomization

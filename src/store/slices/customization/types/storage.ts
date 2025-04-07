@@ -8,6 +8,7 @@ export interface StorageState {
 
 export interface ThemeActions {
   setActiveTheme: (themeName: ThemeName | string) => void;
+  deleteTheme?: (themeName: ThemeName) => void;
 }
 
 export interface StorageActions {

@@ -15,6 +15,7 @@ export function useTheme() {
   const { 
     activeTheme, 
     setActiveTheme, 
+    deleteTheme,
     availableThemes, 
     isValidTheme, 
     loadSavedTheme 
@@ -29,6 +30,7 @@ export function useTheme() {
   return {
     activeTheme,
     setActiveTheme,
+    deleteTheme,
     themes: allThemes,
     availableThemes,
     isCustomTheme: isCustomTheme,

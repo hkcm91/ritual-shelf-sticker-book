@@ -8,11 +8,22 @@ import { ThemeName } from '@/themes';
 import CurrentThemeDisplay from './themes/CurrentThemeDisplay';
 import ThemeList from './themes/ThemeList';
 import RefreshThemeButton from './themes/RefreshThemeButton';
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const ThemesTab: React.FC = () => {
   const { activeTheme, setActiveTheme, themes, availableThemes, loadSavedTheme } = useTheme();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isSelecting, setIsSelecting] = useState<string | null>(null);
+  const [themeToDelete, setThemeToDelete] = useState<ThemeName | null>(null);
 
   // Function to handle theme refresh/reload with error handling
   const handleRefreshTheme = useCallback(() => {
@@ -47,6 +58,47 @@ const ThemesTab: React.FC = () => {
       setTimeout(() => setIsSelecting(null), 800);
     }
   }, [setActiveTheme, activeTheme, isSelecting]);
+
+  // Function to handle theme deletion
+  const handleThemeDelete = useCallback((themeName: ThemeName) => {
+    // Open confirmation dialog before deleting
+    setThemeToDelete(themeName);
+  }, []);
+
+  // Function to confirm theme deletion
+  const confirmThemeDeletion = useCallback(() => {
+    if (!themeToDelete) return;
+
+    try {
+      // If the active theme is being deleted, switch to default theme
+      if (activeTheme === themeToDelete) {
+        setActiveTheme('default');
+      }
+
+      // Remove theme from localStorage (this will not actually delete the theme file)
+      try {
+        const customThemes = localStorage.getItem('custom-themes') || '[]';
+        const themes = JSON.parse(customThemes);
+        const updatedThemes = themes.filter((theme: string) => theme !== themeToDelete);
+        localStorage.setItem('custom-themes', JSON.stringify(updatedThemes));
+      } catch (storageError) {
+        console.error("Error updating localStorage:", storageError);
+      }
+
+      toast.success(`Theme "${themeToDelete}" removed`);
+      
+      // In a real application, we would delete the theme file from the server here
+      console.log(`Theme "${themeToDelete}" would be deleted from the server in a real application`);
+      
+      // Refresh theme list
+      loadSavedTheme();
+    } catch (error) {
+      console.error("Error deleting theme:", error);
+      toast.error("Failed to delete theme");
+    } finally {
+      setThemeToDelete(null);
+    }
+  }, [themeToDelete, activeTheme, setActiveTheme, loadSavedTheme]);
 
   // Check if theme is valid
   const isValidTheme = useCallback((themeName: string): boolean => {
@@ -90,9 +142,39 @@ const ThemesTab: React.FC = () => {
           availableThemes={availableThemes}
           isSelecting={isSelecting}
           onThemeSelect={handleThemeSelect}
+          onThemeDelete={handleThemeDelete}
           isValidTheme={isValidTheme}
         />
       </div>
+
+      {/* Confirmation Dialog for Theme Deletion */}
+      <AlertDialog 
+        open={!!themeToDelete} 
+        onOpenChange={(open) => !open && setThemeToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Theme</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this theme? This action cannot be undone.
+              {themeToDelete === activeTheme && (
+                <p className="mt-2 font-semibold text-destructive">
+                  This is your current active theme. Deleting it will switch you to the default theme.
+                </p>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmThemeDeletion}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

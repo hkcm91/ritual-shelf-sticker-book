@@ -39,5 +39,4 @@ export const createCustomizationSlice: StateCreator<
 };
 
 // Export types
-export type { CustomizationState } from './types';
-export type { ShelfStyling } from './types';
+export type { CustomizationState, ShelfStyling } from './types';

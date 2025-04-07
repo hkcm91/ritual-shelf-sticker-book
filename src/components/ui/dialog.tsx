@@ -30,18 +30,17 @@ DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
 
 interface DialogContentProps extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> {
   hideCloseButton?: boolean;
-  forceMount?: boolean;
 }
 
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   DialogContentProps
->(({ className, children, hideCloseButton = false, forceMount = false, ...props }, ref) => {
+>(({ className, children, hideCloseButton = false, ...props }, ref) => {
   console.log("[DialogContent] Rendering with state:", props['data-state']);
   
   return (
-    <DialogPortal forceMount={forceMount}>
-      <DialogOverlay forceMount={forceMount} />
+    <DialogPortal>
+      <DialogOverlay />
       <DialogPrimitive.Content
         ref={ref}
         className={cn(
@@ -49,7 +48,6 @@ const DialogContent = React.forwardRef<
           className
         )}
         {...props}
-        forceMount={forceMount}
       >
         {children}
         {!hideCloseButton && (

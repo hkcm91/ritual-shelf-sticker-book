@@ -83,7 +83,6 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
       open={open} 
       onOpenChange={handleOpenChange}
       modal={true}
-      forceMount={true}
     >
       <DialogContent 
         className={`${isFullscreen ? 'max-w-[95vw] h-[95vh] max-h-[95vh]' : 'max-w-4xl max-h-[90vh]'} 
@@ -95,7 +94,6 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
         }}
         hideCloseButton={true}
         data-customization-modal="true"
-        forceMount={true}
       >
         <ModalBackground />
         

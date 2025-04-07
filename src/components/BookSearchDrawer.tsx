@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
@@ -145,7 +144,7 @@ const BookSearchDrawer = () => {
                   {book.first_publish_year && ` (${book.first_publish_year})`}
                 </p>
                 <div className="absolute top-1.5 left-1.5 bg-background/80 rounded-full p-1">
-                  <BookIcon size={14} className="text-muted-foreground" />
+                  <Book size={14} className="text-muted-foreground" />
                 </div>
               </div>
             ))}

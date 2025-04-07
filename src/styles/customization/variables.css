@@ -44,7 +44,7 @@
   --slot-empty-hover-bg: rgba(255, 255, 255, 0.1);
   
   /* Header */
-  --header-bg: #413125;
+  --header-bg: rgba(65, 49, 37, 0.75);
   --header-bg-image: none;
   --header-text-color: #ffffff;
   --header-hover-bg: rgba(255, 255, 255, 0.1);
@@ -70,4 +70,5 @@
 .dark {
   --page-text-color: #f0f0f0;
   --header-hover-bg: rgba(255, 255, 255, 0.15);
+  --header-bg: rgba(33, 25, 19, 0.8);
 }

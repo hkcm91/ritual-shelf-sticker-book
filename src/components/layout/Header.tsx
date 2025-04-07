@@ -38,7 +38,7 @@ const Header: React.FC = () => {
   
   return (
     <header 
-      className={`px-4 sm:px-6 py-3 flex justify-between items-center bg-[color:var(--header-bg,#413125)] sticky top-0 z-50 transition-all duration-200 ${scrolled ? 'shadow-md' : ''}`}
+      className={`px-4 sm:px-6 py-3 flex justify-between items-center bg-[color:var(--header-bg,#41312580)] backdrop-blur-sm sticky top-0 z-50 transition-all duration-200 ${scrolled ? 'shadow-lg' : ''}`}
       style={{
         backgroundImage: 'var(--header-bg-image, none)',
         color: 'var(--header-text-color, white)'

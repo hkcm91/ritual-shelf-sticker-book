@@ -49,6 +49,12 @@ const BookModal: React.FC = () => {
         coverURL: coverURL || '',
         quizzes: quizzes || []
       });
+      
+      console.log('Loaded book data from store:', {
+        id: activeBookId,
+        hasCover: !!coverURL,
+        coverLength: coverURL ? coverURL.length : 0
+      });
     } else {
       // Reset form for new books
       setBookData({
@@ -82,6 +88,7 @@ const BookModal: React.FC = () => {
   };
   
   const handleCoverChange = (imageUrl: string) => {
+    console.log('Cover changed, new length:', imageUrl ? imageUrl.length : 0);
     setBookData(prev => ({
       ...prev,
       coverURL: imageUrl
@@ -90,7 +97,17 @@ const BookModal: React.FC = () => {
   
   const handleSave = () => {
     if (activeBookId) {
+      console.log('Saving book with cover:', bookData.coverURL ? `present (${bookData.coverURL.length} chars)` : 'missing');
       updateBook(activeBookId, bookData);
+      
+      // Verify cover was included
+      setTimeout(() => {
+        const savedBook = books[activeBookId];
+        if (savedBook) {
+          console.log('After save - Book cover in store:', 
+            savedBook.coverURL ? `present (${savedBook.coverURL.length} chars)` : 'missing');
+        }
+      }, 100);
     }
     closeModal();
   };

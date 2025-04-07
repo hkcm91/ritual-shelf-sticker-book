@@ -35,25 +35,26 @@ const BookCover: React.FC<BookCoverProps> = ({
           try {
             console.log("Book cover loaded, length:", event.target.result.length);
             
-            // Compress the image to ensure it can be stored
+            // Always compress the image to ensure it can be stored
             let imageData = event.target.result;
-            if (file.size > 200 * 1024) { // If over 200KB, compress
-              try {
-                imageData = await compressImage(imageData, {
-                  quality: 0.7,
-                  maxWidth: 600,
-                  maxHeight: 900
-                });
-                console.log("Book cover compressed, new length:", imageData.length);
-              } catch (err) {
-                console.warn('Failed to compress book cover:', err);
-                // Continue with original if compression fails
-              }
+            try {
+              imageData = await compressImage(imageData, {
+                quality: 0.7,
+                maxWidth: 600,
+                maxHeight: 900
+              });
+              console.log("Book cover compressed, new length:", imageData.length);
+            } catch (err) {
+              console.warn('Failed to compress book cover:', err);
+              // Continue with original if compression fails
             }
             
             // Apply the change
             onCoverChange(imageData);
             toast.success('Cover image updated');
+            
+            // Verify that the cover was applied
+            console.log("Cover URL after change:", imageData ? "Set (length: " + imageData.length + ")" : "Not set");
           } catch (error) {
             console.error('Error processing image:', error);
             toast.error('Failed to process image');

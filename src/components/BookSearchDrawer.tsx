@@ -45,10 +45,15 @@ const BookSearchDrawer = () => {
     const coverUrl = book.cover_i ? getCoverImageUrl(book.cover_i, 'M') : '/placeholder.svg';
     console.log('API Book - Cover URL:', coverUrl);
     
+    if (!activeShelfId) {
+      toast.error('No active shelf selected');
+      return;
+    }
+    
     // Create book data object for store
     const bookDataForStore = {
-      title: book.title,
-      author: book.author_name ? book.author_name[0] : 'Unknown Author',
+      title: book.title || 'Unknown Title',
+      author: book.author_name && book.author_name[0] ? book.author_name[0] : 'Unknown Author',
       coverURL: coverUrl,
       progress: 0,
       rating: 0,

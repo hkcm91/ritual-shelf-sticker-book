@@ -23,7 +23,9 @@ const BookshelfGrid: React.FC = () => {
   // Load saved customization on initial render
   useEffect(() => {
     try {
-      loadCustomization();
+      if (loadCustomization) {
+        loadCustomization();
+      }
     } catch (error) {
       console.error('Failed to load customization:', error);
       toast.error('Failed to load saved theme');

@@ -6,7 +6,7 @@ import App from './App.tsx'
 
 // Import styles
 import './index.css'
-import './styles/customization.css'
+import './styles/customization/index.css'
 
 // Import components for router
 import Index from './pages/Index.tsx';

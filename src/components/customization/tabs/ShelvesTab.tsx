@@ -16,8 +16,19 @@ const ShelvesTab: React.FC = () => {
     updateShelfColor,
     updateShelfOpacity,
     toggleDividers,
-    updateDividersSetting
+    updateDividersSetting,
+    updateAllDividerSettings
   } = useBookshelfStore();
+
+  // Handle orientation change with the correct type
+  const handleOrientationChange = (value: 'vertical' | 'horizontal' | 'both') => {
+    updateAllDividerSettings({ orientation: value });
+  };
+
+  // Handle books per row change with the correct type
+  const handleBooksPerRowChange = (value: number) => {
+    updateAllDividerSettings({ booksPerRow: value });
+  };
 
   return (
     <div className="space-y-6">
@@ -83,7 +94,7 @@ const ShelvesTab: React.FC = () => {
               <Label>Divider Orientation</Label>
               <RadioGroup 
                 value={shelfStyling?.dividers?.orientation || 'vertical'} 
-                onValueChange={(value) => updateDividersSetting('orientation', value)}
+                onValueChange={handleOrientationChange}
                 className="flex space-x-4"
               >
                 <div className="flex items-center space-x-2">
@@ -120,7 +131,7 @@ const ShelvesTab: React.FC = () => {
                 min={2}
                 max={10}
                 value={shelfStyling?.dividers?.booksPerRow || 2}
-                onChange={(e) => updateDividersSetting('booksPerRow', parseInt(e.target.value))}
+                onChange={(e) => handleBooksPerRowChange(parseInt(e.target.value))}
                 className="w-full"
                 disabled={!['horizontal', 'both'].includes(shelfStyling?.dividers?.orientation || 'vertical')}
               />

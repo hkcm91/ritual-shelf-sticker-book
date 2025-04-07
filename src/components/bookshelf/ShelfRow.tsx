@@ -22,23 +22,24 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
       enabled: false, 
       booksPerSection: 6,
       booksPerRow: 2,
-      orientation: 'vertical'
+      orientation: 'vertical',
+      thickness: 2,
+      color: '#714621'
     };
     
-    // Create a container for this row that will include horizontal dividers if needed
+    // Add a horizontal divider for this row if needed
     const needsHorizontalDivider = dividers.enabled && 
       ['horizontal', 'both'].includes(dividers.orientation) &&
       rowIndex > 0 && 
       rowIndex % (dividers.booksPerRow || 2) === 0;
     
-    // Add a horizontal divider for this row if needed
     if (needsHorizontalDivider) {
       slots.push(
         <div 
           key={`hdivider-${rowIndex}`}
           className="horizontal-shelf-divider w-full" 
           style={{
-            height: `${dividers.thickness || 4}px`,
+            height: `${dividers.thickness || 2}px`,
             backgroundColor: dividers.color || '#714621',
             marginBottom: '12px'
           }}
@@ -47,6 +48,7 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
     }
     
     // Add the book slots with vertical dividers if needed
+    const slotRow = [];
     for (let col = 0; col < columns; col++) {
       const position = rowIndex * columns + col;
       
@@ -54,28 +56,34 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
       if (dividers.enabled && 
           ['vertical', 'both'].includes(dividers.orientation) && 
           col > 0 && 
-          col % dividers.booksPerSection === 0) {
-        slots.push(
+          col % (dividers.booksPerSection || 6) === 0) {
+        slotRow.push(
           <div 
             key={`vdivider-${rowIndex}-${col}`}
             className="vertical-shelf-divider" 
             style={{
-              width: `${dividers.thickness || 4}px`,
+              width: `${dividers.thickness || 2}px`,
               backgroundColor: dividers.color || '#714621',
               height: '100%',
-              minHeight: '220px',
-              margin: '0 8px'
+              minHeight: '220px'
             }}
           />
         );
       }
       
-      slots.push(
+      slotRow.push(
         <BookSlot
           key={`slot-${position}`}
           position={position}
         />
       );
+    }
+    
+    // Add horizontal divider to the top of slots if needed
+    if (needsHorizontalDivider) {
+      slots.push(<div key="hdivider-slots" className="w-full">{slotRow}</div>);
+    } else {
+      slots.push(...slotRow);
     }
     
     return slots;

@@ -26,7 +26,7 @@ const CustomizationContent: React.FC = () => {
   
   return (
     <div className="space-y-6">
-      <Tabs defaultValue="themes" className="w-full">
+      <Tabs defaultValue="shelves" className="w-full">
         <TabsList className="w-full justify-start mb-4 overflow-x-auto">
           <TabsTrigger value="themes" className="flex items-center">
             <Brush className="mr-1 h-4 w-4" /> Themes
@@ -78,6 +78,15 @@ const CustomizationContent: React.FC = () => {
           <HeaderTab />
         </TabsContent>
       </Tabs>
+      
+      <div className="flex justify-between">
+        <Button variant="outline" onClick={resetCustomization}>
+          Reset to Defaults
+        </Button>
+        <Button onClick={saveCustomization}>
+          Save Changes
+        </Button>
+      </div>
     </div>
   );
 };

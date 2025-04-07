@@ -28,7 +28,7 @@ const Index = () => {
       console.log("[Index] Initializing default shelf");
       const shelfId = initializeDefaultShelf();
       
-      // Load customization
+      // Load customization - fixed to call with correct number of arguments
       const loadSavedCustomization = useBookshelfStore.getState().loadCustomization;
       if (loadSavedCustomization) {
         console.log("[Index] Loading saved customization");

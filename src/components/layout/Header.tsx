@@ -1,7 +1,6 @@
-
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Palette, BookOpen, Search, Sparkles } from 'lucide-react';
+import { BookOpen, Search } from 'lucide-react';
 import ShelfSelector from './ShelfSelector';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 import BookSearchDrawer from '../BookSearchDrawer';
@@ -23,7 +22,7 @@ import HeaderAuthButton from '../Header';
 import SettingsDrawer from '../settings/SettingsDrawer';
 
 const Header: React.FC = () => {
-  const { openCustomizationModal, setBookSearchOpen } = useBookshelfStore();
+  const { setBookSearchOpen } = useBookshelfStore();
   const isMobile = useIsMobile();
   const [scrolled, setScrolled] = useState(false);
   
@@ -86,29 +85,8 @@ const Header: React.FC = () => {
       </div>
       
       <div className="flex items-center gap-3">
-        {/* Settings Drawer */}
+        {/* Settings Drawer - keeping this as our single entry point to settings/customization */}
         <SettingsDrawer />
-        
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="icon"
-                className="game-btn from-amber-900/40 to-amber-950/40 hover:from-amber-900/50 hover:to-amber-950/50"
-                onClick={() => {
-                  console.log("Customize button clicked");
-                  openCustomizationModal();
-                }}
-              >
-                <Palette className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent className="bg-[#1A1F2C] border border-amber-600/20 text-amber-100">
-              <p>Customize</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
         
         <HeaderAuthButton />
       </div>

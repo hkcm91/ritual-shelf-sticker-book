@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import {
   Sheet,
@@ -38,25 +37,25 @@ const SettingsDrawer: React.FC = () => {
   
   const handleAddRow = () => {
     if (activeShelfId) {
-      addRow();
+      addRow(activeShelfId);
     }
   };
   
   const handleRemoveRow = () => {
     if (activeShelfId && activeShelf && activeShelf.rows > 1) {
-      removeRow();
+      removeRow(activeShelfId);
     }
   };
   
   const handleAddColumn = () => {
     if (activeShelfId) {
-      addColumn();
+      addColumn(activeShelfId);
     }
   };
   
   const handleRemoveColumn = () => {
     if (activeShelfId && activeShelf && activeShelf.columns > 1) {
-      removeColumn();
+      removeColumn(activeShelfId);
     }
   };
   

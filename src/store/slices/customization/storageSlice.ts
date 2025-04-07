@@ -1,4 +1,3 @@
-
 import { CustomizationSliceCreator, defaultCustomization } from './types';
 import { toast } from 'sonner';
 import themes from '@/themes';
@@ -13,6 +12,8 @@ export const createStorageSlice: CustomizationSliceCreator = (set, get, api) => 
     const currentState = get();
     
     try {
+      console.log(`Setting active theme: ${themeName}`);
+      
       // Get the selected theme configuration
       if (themeName === 'custom') {
         // Just set the theme name for custom themes
@@ -39,17 +40,24 @@ export const createStorageSlice: CustomizationSliceCreator = (set, get, api) => 
         page: {
           ...currentState.page,
           background: themeConfig.variables['--page-bg'] || defaultCustomization.page.background,
-          backgroundImage: themeConfig.textures.background || ''
+          backgroundImage: themeConfig.textures.background || '',
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed'
         },
         container: {
           ...currentState.container,
           background: themeConfig.variables['--container-bg'] || defaultCustomization.container.background,
-          backgroundImage: themeConfig.textures.background || ''
+          backgroundImage: themeConfig.variables['--container-bg-image'] === 'none' ? '' 
+            : themeConfig.variables['--container-bg-image'] || ''
         },
         shelfStyling: {
           ...currentState.shelfStyling,
           color: themeConfig.variables['--shelf-color'] || defaultCustomization.shelfStyling.color,
-          backgroundImage: themeConfig.textures.shelf || ''
+          backgroundImage: themeConfig.textures.shelf || '',
+          thickness: parseInt(themeConfig.variables['--shelf-thickness'] || '20'),
+          opacity: parseFloat(themeConfig.variables['--shelf-opacity'] || '1')
         },
         // Keep other existing customization properties
       });
@@ -96,9 +104,16 @@ export const createStorageSlice: CustomizationSliceCreator = (set, get, api) => 
       const savedCustomization = localStorage.getItem('bookshelf-customization');
       const savedTheme = localStorage.getItem('bookshelf-active-theme') || 'default';
       
+      console.log('Loading saved theme:', savedTheme);
+      
       if (savedCustomization) {
-        const parsed = JSON.parse(savedCustomization);
-        set(parsed);
+        try {
+          const parsed = JSON.parse(savedCustomization);
+          set(parsed);
+          console.log('Loaded custom theme data from localStorage');
+        } catch (parseError) {
+          console.error('Error parsing saved customization:', parseError);
+        }
       }
       
       // If it's not a custom theme, apply the theme settings
@@ -109,9 +124,11 @@ export const createStorageSlice: CustomizationSliceCreator = (set, get, api) => 
       } else if (savedTheme === 'custom' && savedCustomization) {
         // Just set the theme name for custom themes
         set({ activeTheme: 'custom' });
+        console.log('Applied custom theme from localStorage');
       } else {
         // Default case
         set({ activeTheme: 'default' });
+        console.log('Applied default theme (no saved theme found)');
       }
       
     } catch (error) {

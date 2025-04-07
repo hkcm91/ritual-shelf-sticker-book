@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Label } from "@/components/ui/label";
 import { useBookshelfStore } from "@/store/bookshelfStore";
 import ColorPicker from "../ColorPicker";
@@ -7,6 +7,9 @@ import FileInputField from "../FileInputField";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
+import { Image, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 const GeneralTab: React.FC = () => {
   const { 
@@ -15,6 +18,18 @@ const GeneralTab: React.FC = () => {
     updatePageBackgroundImage,
     updatePageSetting
   } = useBookshelfStore();
+
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleImageUpload = (url: string) => {
+    updatePageBackgroundImage(url);
+    toast.success("Background image updated");
+  };
+
+  const handleRemoveImage = () => {
+    updatePageBackgroundImage("");
+    toast.success("Background image removed");
+  };
 
   return (
     <div className="space-y-6">
@@ -37,17 +52,37 @@ const GeneralTab: React.FC = () => {
             <Label>Background Image</Label>
             <FileInputField
               value={page?.backgroundImage || ''} 
-              onChange={(url) => updatePageBackgroundImage(url)}
+              onChange={handleImageUpload}
               placeholder="Enter image URL"
               uploadLabel="Upload Image"
+              isLoading={isUploading}
+              setIsLoading={setIsUploading}
+              accept="image/*"
             />
-            <p className="text-xs text-muted-foreground">
-              Image will be applied as background to the entire page
-            </p>
+            <div className="flex justify-between items-center">
+              <p className="text-xs text-muted-foreground">
+                Image will be applied as background to the entire page
+              </p>
+              {page?.backgroundImage && (
+                <Button 
+                  variant="destructive" 
+                  size="sm" 
+                  onClick={handleRemoveImage}
+                  className="h-7 text-xs"
+                >
+                  <Trash2 className="h-3 w-3 mr-1" />
+                  Remove
+                </Button>
+              )}
+            </div>
           </div>
 
           {page?.backgroundImage && (
-            <>
+            <div className="space-y-4 pt-2 border-t">
+              <div className="rounded-md border overflow-hidden h-32 bg-center bg-no-repeat" 
+                style={{backgroundImage: `url(${page.backgroundImage})`, backgroundSize: page.backgroundSize || 'cover'}}>
+              </div>
+            
               <div className="space-y-2">
                 <Label>Background Size</Label>
                 <Select 
@@ -117,7 +152,7 @@ const GeneralTab: React.FC = () => {
                 />
                 <Label htmlFor="fixed-bg">Fixed Background (doesn't scroll)</Label>
               </div>
-            </>
+            </div>
           )}
         </div>
       </div>

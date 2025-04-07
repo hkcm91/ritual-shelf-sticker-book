@@ -1,11 +1,11 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Image, Link } from "lucide-react";
+import { Image, Link, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { toast } from 'sonner';
 
 interface BackgroundTabContentProps {
   backgroundFileRef: React.RefObject<HTMLInputElement>;
@@ -28,11 +28,19 @@ const BackgroundTabContent: React.FC<BackgroundTabContentProps> = ({
   backgroundImageUrl = '',
   setBackgroundImageUrl = () => {},
 }) => {
-  const [urlInput, setUrlInput] = React.useState(backgroundImageUrl);
+  const [urlInput, setUrlInput] = useState(backgroundImageUrl);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleUrlSubmit = () => {
     if (urlInput.trim()) {
       setBackgroundImageUrl(urlInput);
+      toast.success("Background image URL applied");
+    }
+  };
+
+  const triggerFileUpload = () => {
+    if (backgroundFileRef.current) {
+      backgroundFileRef.current.click();
     }
   };
 
@@ -65,24 +73,31 @@ const BackgroundTabContent: React.FC<BackgroundTabContentProps> = ({
       </div>
       
       <div className="space-y-2">
-        <Label htmlFor="bgImage">Background Image</Label>
-        <div className="flex gap-2">
-          <Input
-            ref={backgroundFileRef}
-            id="bgImage"
-            type="file"
-            accept="image/*"
-            onChange={handleBackgroundFileChange}
-            className="flex-1"
-          />
+        <Label>Background Image</Label>
+        <div className="flex flex-col gap-2">
           <Button 
             type="button" 
             variant="outline"
-            size="icon"
-            onClick={() => backgroundFileRef.current?.click()}
+            size="sm"
+            onClick={triggerFileUpload}
+            className="w-full justify-start"
+            disabled={isLoading}
           >
-            <Image className="h-4 w-4" />
+            <Upload className="h-4 w-4 mr-2" />
+            Choose Image File
           </Button>
+          
+          <input
+            ref={backgroundFileRef}
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              setIsLoading(true);
+              handleBackgroundFileChange(e);
+              setTimeout(() => setIsLoading(false), 1000);
+            }}
+            className="hidden"
+          />
         </div>
       </div>
       
@@ -106,6 +121,7 @@ const BackgroundTabContent: React.FC<BackgroundTabContentProps> = ({
             variant="outline"
             size="icon"
             onClick={handleUrlSubmit}
+            disabled={!urlInput.trim()}
           >
             <Link className="h-4 w-4" />
           </Button>

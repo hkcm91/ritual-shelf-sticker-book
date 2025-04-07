@@ -43,6 +43,9 @@
   --header-bg: #a47148;
   --header-bg-image: none;
   --header-text-color: #ffffff;
+
+  /* Transitions for smoother theme changes */
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Apply variables to components */
@@ -54,6 +57,7 @@ body {
   background-position: var(--page-bg-position);
   background-attachment: var(--page-bg-attachment);
   min-height: 100vh;
+  transition: background 0.3s ease;
 }
 
 .bookshelf-container {
@@ -67,17 +71,19 @@ body {
   border-color: var(--container-border-color);
   border-radius: var(--container-border-radius);
   padding: var(--container-padding);
+  transition: background-color 0.3s ease, border 0.3s ease, opacity 0.3s ease;
 }
 
 .wood-shelf {
   background-color: var(--shelf-color);
   background-image: var(--shelf-bg-image), var(--shelf-texture);
-  background-size: 100% 100%; /* Changed to prevent stretching */
+  background-size: cover;
   background-repeat: repeat-x;
   background-position: center;
   opacity: var(--shelf-opacity);
   height: var(--shelf-thickness);
   box-shadow: 0px 4px 6px -2px rgba(0,0,0,0.3);
+  transition: background-color 0.3s ease, opacity 0.3s ease, height 0.3s ease;
 }
 
 .shelf-divider {
@@ -85,6 +91,7 @@ body {
   background-color: var(--divider-color);
   box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
   margin: 0 8px;
+  transition: background-color 0.3s ease, width 0.3s ease;
 }
 
 .book-slot.empty:hover {
@@ -113,6 +120,20 @@ header {
   background-color: var(--header-bg);
   background-image: var(--header-bg-image);
   color: var(--header-text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Additional styles for theme previews */
+.theme-preview {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+}
+
+.theme-preview:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 /* Additional responsive styles for bookshelf */
@@ -171,7 +192,7 @@ header {
 /* Wheel scrolling improvements */
 .bookshelf-wrapper {
   scrollbar-width: thin;
-  scrollbar-color: #a47148 transparent;
+  scrollbar-color: var(--container-bg) transparent;
 }
 
 .bookshelf-wrapper::-webkit-scrollbar {
@@ -184,7 +205,7 @@ header {
 }
 
 .bookshelf-wrapper::-webkit-scrollbar-thumb {
-  background-color: #a47148;
+  background-color: var(--container-bg);
   border-radius: 4px;
   border: 2px solid transparent;
 }

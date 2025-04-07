@@ -5,11 +5,31 @@ import ShelfRow from './ShelfRow';
 import StorageUsage from '../StorageUsage';
 import ShelfControls from '../ShelfControls';
 import ZoomControls from '../ZoomControls';
+import { toast } from 'sonner';
+import CustomizationModal from '../customization/CustomizationModal';
 
 const BookshelfGrid: React.FC = () => {
-  const { activeShelfId, shelves, zoomLevel } = useBookshelfStore();
+  const { 
+    activeShelfId, 
+    shelves, 
+    zoomLevel, 
+    isCustomizationModalOpen, 
+    closeCustomizationModal,
+    loadCustomization
+  } = useBookshelfStore();
+  
   const activeShelf = shelves[activeShelfId];
   const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Load saved customization on initial render
+  useEffect(() => {
+    try {
+      loadCustomization();
+    } catch (error) {
+      console.error('Failed to load customization:', error);
+      toast.error('Failed to load saved theme');
+    }
+  }, [loadCustomization]);
   
   // Add wheel event listener for zooming
   useEffect(() => {
@@ -65,48 +85,57 @@ const BookshelfGrid: React.FC = () => {
   };
   
   return (
-    <div 
-      ref={containerRef}
-      className="bookshelf-wrapper p-4 md:p-8 overflow-auto h-full w-full"
-      style={{ 
-        backgroundColor: 'var(--page-bg)',
-        backgroundImage: 'var(--page-bg-image)',
-        backgroundSize: 'var(--page-bg-size, cover)',
-        backgroundPosition: 'var(--page-bg-position, center)',
-        backgroundAttachment: 'var(--page-bg-attachment, fixed)'
-      }}
-    >
-      {/* Shelf controls */}
-      <div className="absolute top-4 right-4 z-10">
-        <ShelfControls />
-      </div>
-      
+    <>
       <div 
-        className="bookshelf-container relative flex flex-col items-center rounded-md p-6 shadow-lg mx-auto"
+        ref={containerRef}
+        className="bookshelf-wrapper p-4 md:p-8 overflow-auto h-full w-full"
         style={{ 
-          transform: `scale(${zoomLevel})`,
-          transformOrigin: 'top center',
-          width: 'fit-content',
-          minWidth: `${columns * 160}px`, // Ensure minimum width based on columns
-          maxWidth: '100%',
-          transition: 'transform 0.2s ease' // Smooth transition for zoom
+          backgroundColor: 'var(--page-bg)',
+          backgroundImage: 'var(--page-bg-image)',
+          backgroundSize: 'var(--page-bg-size, cover)',
+          backgroundPosition: 'var(--page-bg-position, center)',
+          backgroundRepeat: 'var(--page-bg-repeat, no-repeat)',
+          backgroundAttachment: 'var(--page-bg-attachment, fixed)'
         }}
       >
-        {/* Add storage usage indicator */}
-        <div className="absolute bottom-1 right-1 w-48 z-10 bg-white/90 rounded shadow">
-          <StorageUsage />
+        {/* Shelf controls */}
+        <div className="absolute top-4 right-4 z-10">
+          <ShelfControls />
         </div>
         
-        <div className="grid-container w-full">
-          {renderGrid()}
+        <div 
+          className="bookshelf-container relative flex flex-col items-center rounded-md p-6 shadow-lg mx-auto"
+          style={{ 
+            transform: `scale(${zoomLevel})`,
+            transformOrigin: 'top center',
+            width: 'fit-content',
+            minWidth: `${columns * 160}px`, // Ensure minimum width based on columns
+            maxWidth: '100%',
+            transition: 'transform 0.2s ease' // Smooth transition for zoom
+          }}
+        >
+          {/* Add storage usage indicator */}
+          <div className="absolute bottom-1 right-1 w-48 z-10 bg-white/90 rounded shadow">
+            <StorageUsage />
+          </div>
+          
+          <div className="grid-container w-full">
+            {renderGrid()}
+          </div>
+        </div>
+        
+        {/* Add zoom controls at the bottom right */}
+        <div className="fixed bottom-4 right-4 z-20">
+          <ZoomControls />
         </div>
       </div>
       
-      {/* Add zoom controls at the bottom right */}
-      <div className="fixed bottom-4 right-4 z-20">
-        <ZoomControls />
-      </div>
-    </div>
+      {/* Customization Modal */}
+      <CustomizationModal 
+        open={isCustomizationModalOpen} 
+        onOpenChange={closeCustomizationModal} 
+      />
+    </>
   );
 };
 

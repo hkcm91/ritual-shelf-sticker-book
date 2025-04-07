@@ -6,15 +6,33 @@ import { useTheme } from '@/hooks/useTheme';
 import { Card } from "@/components/ui/card";
 import { ThemeName } from '@/themes';
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Info } from "lucide-react";
+import { Info, Palette } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const ThemesTab: React.FC = () => {
-  const { activeTheme, setActiveTheme, themes, availableThemes } = useTheme();
+  const { activeTheme, setActiveTheme, themes, availableThemes, loadSavedTheme } = useTheme();
+
+  // Function to handle theme refresh/reload
+  const handleRefreshTheme = () => {
+    loadSavedTheme();
+  };
 
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium">Theme Presets</h3>
+        <div className="flex justify-between items-center mb-2">
+          <h3 className="text-lg font-medium">Theme Presets</h3>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleRefreshTheme}
+            className="text-xs"
+          >
+            <Palette className="h-3 w-3 mr-1" />
+            Refresh Theme
+          </Button>
+        </div>
+        
         <p className="text-sm text-muted-foreground mb-4">
           Choose a preset theme for your bookshelf
         </p>
@@ -54,7 +72,7 @@ const ThemesTab: React.FC = () => {
         <RadioGroup 
           value={activeTheme} 
           onValueChange={(value) => setActiveTheme(value as ThemeName)}
-          className="grid grid-cols-1 md:grid-cols-2 gap-4"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
         >
           {availableThemes.map((themeName) => (
             <Card 

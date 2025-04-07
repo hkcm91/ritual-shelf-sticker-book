@@ -119,6 +119,7 @@ header {
   width: 100%;
   overflow: auto; /* Allow scrolling in all directions */
   scroll-behavior: smooth; /* Smooth scrolling */
+  -webkit-overflow-scrolling: touch; /* Better touch scrolling */
 }
 
 /* Ensure book slots maintain proper sizing */
@@ -150,8 +151,37 @@ header {
   }
 }
 
-/* Wheel-based zoom support */
+/* Zoom controls */
+.zoom-controls {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  display: flex;
+  gap: 8px;
+  z-index: 20;
+  background-color: white;
+  border-radius: 8px;
+  padding: 4px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Wheel scrolling improvements */
 .bookshelf-wrapper {
-  /* Add wheel event support */
-  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #a47148 transparent;
+}
+
+.bookshelf-wrapper::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.bookshelf-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.bookshelf-wrapper::-webkit-scrollbar-thumb {
+  background-color: #a47148;
+  border-radius: 4px;
+  border: 2px solid transparent;
 }

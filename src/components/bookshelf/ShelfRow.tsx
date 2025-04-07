@@ -30,8 +30,8 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
             key={`divider-${rowIndex}-${col}`}
             className="shelf-divider" 
             style={{
-              width: `var(--divider-thickness, 2px)`,
-              backgroundColor: `var(--divider-color, #714621)`,
+              width: `${dividers.thickness}px`,
+              backgroundColor: dividers.color,
               height: '100%',
               minHeight: '220px'
             }}
@@ -52,21 +52,21 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
 
   return (
     <div className="flex flex-col w-full">
-      {/* Books row - removed overflow-x-auto to prevent individual row scrolling */}
+      {/* Books row */}
       <div className="flex justify-start items-stretch flex-nowrap gap-2 p-2 min-h-[220px]">
         {renderSlots()}
       </div>
       
-      {/* Shelf - using CSS variables */}
+      {/* Shelf */}
       <div 
         className="wood-shelf w-full mb-6"
         style={{
-          height: `var(--shelf-thickness, 20px)`,
-          backgroundImage: `var(--shelf-bg-image, none), var(--shelf-texture, url(/textures/default/wood.jpg))`,
+          height: `${shelfStyling?.thickness || 20}px`,
+          backgroundImage: shelf?.textureImage ? `url(${shelf.textureImage})` : 'var(--shelf-texture, url(/textures/default/wood.jpg))',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundColor: `var(--shelf-color, #8B5A2B)`,
-          opacity: `var(--shelf-opacity, 1)`,
+          backgroundColor: shelfStyling?.color || '#8B5A2B',
+          opacity: shelfStyling?.opacity || 1,
           boxShadow: '0px 4px 6px -2px rgba(0,0,0,0.3)'
         }}
       ></div>

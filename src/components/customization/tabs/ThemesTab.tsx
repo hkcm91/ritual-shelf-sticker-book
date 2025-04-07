@@ -26,6 +26,31 @@ const ThemesTab: React.FC = () => {
           </AlertDescription>
         </Alert>
         
+        <div className="theme-preview-grid grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          {activeTheme && (
+            <Card className="p-4 border-2 border-primary">
+              <h4 className="font-medium mb-2">
+                Current Theme: {themes[activeTheme as keyof typeof themes]?.name || "Custom Theme"}
+              </h4>
+              <div 
+                className="h-24 w-full rounded-md border overflow-hidden bg-cover bg-center"
+                style={{ 
+                  backgroundImage: `url(${themes[activeTheme as keyof typeof themes]?.textures?.background})`,
+                  backgroundColor: themes[activeTheme as keyof typeof themes]?.variables?.['--container-bg'] || '#a47148'
+                }}
+              >
+                <div 
+                  className="w-full h-6 mt-12"
+                  style={{ 
+                    backgroundColor: themes[activeTheme as keyof typeof themes]?.variables?.['--shelf-color'] || '#8B5A2B',
+                    opacity: 0.9
+                  }}
+                />
+              </div>
+            </Card>
+          )}
+        </div>
+        
         <RadioGroup 
           value={activeTheme} 
           onValueChange={(value) => setActiveTheme(value as ThemeName)}
@@ -42,21 +67,21 @@ const ThemesTab: React.FC = () => {
               <div className="flex items-center gap-2">
                 <RadioGroupItem value={themeName} id={`theme-${themeName}`} />
                 <Label htmlFor={`theme-${themeName}`} className="text-base font-medium">
-                  {themes[themeName].name}
+                  {themes[themeName]?.name || "Unknown Theme"}
                 </Label>
               </div>
               
               <div 
                 className="h-20 w-full rounded-md border overflow-hidden bg-cover bg-center"
                 style={{ 
-                  backgroundImage: `url(${themes[themeName].textures.background})`,
-                  backgroundColor: themes[themeName].variables['--container-bg'] || '#a47148'
+                  backgroundImage: `url(${themes[themeName]?.textures?.background})`,
+                  backgroundColor: themes[themeName]?.variables?.['--container-bg'] || '#a47148'
                 }}
               >
                 <div 
                   className="w-full h-4 mt-10"
                   style={{ 
-                    backgroundColor: themes[themeName].variables['--shelf-color'] || '#8B5A2B',
+                    backgroundColor: themes[themeName]?.variables?.['--shelf-color'] || '#8B5A2B',
                     opacity: 0.9
                   }}
                 />

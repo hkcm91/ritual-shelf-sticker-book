@@ -1,3 +1,4 @@
+
 import { CustomizationSliceCreator, defaultCustomization } from './types';
 import { toast } from 'sonner';
 import themes from '@/themes';
@@ -17,13 +18,19 @@ export const createStorageSlice: CustomizationSliceCreator = (set, get, api) => 
         // Just set the theme name for custom themes
         set({ activeTheme: themeName });
         localStorage.setItem('bookshelf-active-theme', themeName);
-        toast.success(`Theme changed to ${themeName}`);
+        toast.success(`Applied custom theme`);
         return;
       }
       
       // Handle built-in themes
       const themeKey = themeName as keyof typeof themes;
-      const themeConfig = themes[themeKey] || themes.default;
+      if (!(themeKey in themes)) {
+        toast.error(`Theme '${themeName}' not found, using default`);
+        set({ activeTheme: 'default' });
+        return;
+      }
+      
+      const themeConfig = themes[themeKey];
       
       // Apply theme settings to customization state
       set({ 
@@ -61,22 +68,22 @@ export const createStorageSlice: CustomizationSliceCreator = (set, get, api) => 
       // Save current state to localStorage
       const { page, container, shelfStyling, slots, header, activeTheme } = get();
       
-      localStorage.setItem('bookshelf-customization', JSON.stringify({
+      const customizationData = {
         page, 
         container, 
         shelfStyling, 
         slots, 
         header,
-        activeTheme
-      }));
+        activeTheme: 'custom' // Always save as custom theme
+      };
       
-      // Save as custom theme
-      if (activeTheme !== 'custom') {
-        set({ activeTheme: 'custom' });
-        localStorage.setItem('bookshelf-active-theme', 'custom');
-      }
+      localStorage.setItem('bookshelf-customization', JSON.stringify(customizationData));
       
-      toast.success('Customization settings saved');
+      // Set activeTheme to custom
+      set({ activeTheme: 'custom' });
+      localStorage.setItem('bookshelf-active-theme', 'custom');
+      
+      toast.success('Customization settings saved as custom theme');
     } catch (error) {
       console.error('Failed to save customization:', error);
       toast.error('Failed to save customization settings');
@@ -99,14 +106,19 @@ export const createStorageSlice: CustomizationSliceCreator = (set, get, api) => 
         // We call setActiveTheme through API to ensure proper theme application
         const { setActiveTheme } = get();
         setActiveTheme(savedTheme as ThemeName);
-      } else {
+      } else if (savedTheme === 'custom' && savedCustomization) {
         // Just set the theme name for custom themes
-        set({ activeTheme: savedTheme });
+        set({ activeTheme: 'custom' });
+      } else {
+        // Default case
+        set({ activeTheme: 'default' });
       }
       
     } catch (error) {
       console.error('Failed to load customization:', error);
       toast.error('Failed to load saved customization settings');
+      // Fallback to default theme
+      set({ activeTheme: 'default' });
     }
   },
   
@@ -121,6 +133,11 @@ export const createStorageSlice: CustomizationSliceCreator = (set, get, api) => 
       // Remove from localStorage
       localStorage.removeItem('bookshelf-customization');
       localStorage.removeItem('bookshelf-active-theme');
+      
+      // Apply default theme CSS variables
+      Object.entries(themes.default.variables).forEach(([key, value]) => {
+        document.documentElement.style.setProperty(key, value as string);
+      });
       
       toast.success('Customization settings reset to defaults');
     } catch (error) {

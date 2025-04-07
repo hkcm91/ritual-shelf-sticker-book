@@ -5,10 +5,10 @@ import { BooksSlice, createBooksSlice } from './booksSlice';
 import { CompleteShelvesSlice, createShelvesSlice } from './shelvesSlice';
 import { UISlice, createUISlice } from './uiSlice';
 import { CustomizationState, createCustomizationSlice, defaultCustomization } from './slices/customization';
+import { ZoomSlice, createZoomSlice } from './slices/zoomSlice';
 import { BookData, ShelfData } from './types';
-import { StateCreator, StoreApi } from 'zustand';
 
-export type BookshelfState = BooksSlice & CompleteShelvesSlice & UISlice & CustomizationState & {
+export type BookshelfState = BooksSlice & CompleteShelvesSlice & UISlice & CustomizationState & ZoomSlice & {
   findEmptyPosition: (shelfId: string) => number;
 };
 
@@ -44,6 +44,7 @@ export const useBookshelfStore = create<BookshelfState>()((set, get, api) => {
     ...createShelvesSlice(set, get, api),
     ...createUISlice(set, get, api),
     ...createCustomizationSlice(set, get, api),
+    ...createZoomSlice(set, get, api),
   };
 });
 

@@ -1,13 +1,37 @@
 
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useBookshelfStore } from '../../store/bookshelfStore';
 import ShelfRow from './ShelfRow';
 import StorageUsage from '../StorageUsage';
-import { ScrollArea } from '../ui/scroll-area';
+import ShelfControls from '../ShelfControls';
 
 const BookshelfGrid: React.FC = () => {
   const { activeShelfId, shelves, zoomLevel } = useBookshelfStore();
   const activeShelf = shelves[activeShelfId];
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Add wheel event listener for zooming
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      if (e.ctrlKey) {
+        e.preventDefault();
+        const { adjustZoomLevel } = useBookshelfStore.getState();
+        // Zoom in or out based on wheel direction
+        adjustZoomLevel(e.deltaY > 0 ? -0.05 : 0.05);
+      }
+    };
+    
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('wheel', handleWheel, { passive: false });
+    }
+    
+    return () => {
+      if (container) {
+        container.removeEventListener('wheel', handleWheel);
+      }
+    };
+  }, []);
   
   if (!activeShelf) {
     return (
@@ -40,6 +64,7 @@ const BookshelfGrid: React.FC = () => {
   
   return (
     <div 
+      ref={containerRef}
       className="bookshelf-wrapper p-4 md:p-8 overflow-auto h-full w-full"
       style={{ 
         backgroundColor: 'var(--page-bg)',
@@ -49,6 +74,11 @@ const BookshelfGrid: React.FC = () => {
         backgroundAttachment: 'var(--page-bg-attachment, fixed)'
       }}
     >
+      {/* Shelf controls */}
+      <div className="absolute top-4 right-4 z-10">
+        <ShelfControls />
+      </div>
+      
       <div 
         className="bookshelf-container relative flex flex-col items-center rounded-md p-6 shadow-lg mx-auto"
         style={{ 

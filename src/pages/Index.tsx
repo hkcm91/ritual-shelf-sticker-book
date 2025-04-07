@@ -9,6 +9,7 @@ import ShelfDialogs from '../components/shelf/ShelfDialogs';
 import { ShelfData } from '../store/types';
 import { useTheme } from '@/hooks/useTheme';
 import CustomizationModal from '@/components/customization/CustomizationModal';
+import ZoomControls from '@/components/ZoomControls';
 
 const Index = () => {
   const { shelves, activeShelfId, ui } = useBookshelfStore();
@@ -47,6 +48,9 @@ const Index = () => {
       <div className="flex-grow w-full overflow-auto">
         <BookshelfGrid />
       </div>
+      
+      {/* Zoom Controls */}
+      <ZoomControls />
       
       <BookModal />
       

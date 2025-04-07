@@ -33,7 +33,7 @@ const Index = () => {
       if (loadSavedCustomization) {
         console.log("[Index] Loading saved customization");
         // Call without parameters - the function doesn't accept any arguments
-        loadSavedCustomization();
+        loadSavedCustomization(); // Fixed: removed extra arguments
       }
       
       if (shelfId) {

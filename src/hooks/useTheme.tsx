@@ -58,12 +58,15 @@ export function useTheme() {
           );
         }
         
-        // Enable dividers by default in themes
+        // Enable dividers by default in themes with more consistent styling
         if (themeToApply.variables['--divider-thickness']) {
           const dividerThickness = parseInt(themeToApply.variables['--divider-thickness']);
           if (dividerThickness > 0) {
             // Auto-enable dividers for the theme if thickness is set
             useBookshelfStore.getState().toggleDividers(true);
+            
+            // Use same color for all dividers for consistency
+            useBookshelfStore.getState().updateDividersSetting('color', themeToApply.variables['--divider-color'] || '#714621');
           }
         }
       } else if (activeTheme === 'custom') {
@@ -108,7 +111,7 @@ export function useTheme() {
           shelfStyling?.backgroundImage ? `url(${shelfStyling.backgroundImage})` : `url(/lovable-uploads/7a437784-0910-4719-b52b-6564c3004ebe.png)`
         );
         
-        // Dividers
+        // Dividers - ensure consistent styling
         if (shelfStyling?.dividers) {
           document.documentElement.style.setProperty('--divider-thickness', `${shelfStyling.dividers.thickness || 10}px`);
           document.documentElement.style.setProperty('--divider-color', shelfStyling.dividers.color || '#714621');

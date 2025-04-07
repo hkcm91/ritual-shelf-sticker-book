@@ -69,10 +69,10 @@
   background-size: 100% 200%;
   background-position: center;
   box-shadow: 0px 0px 5px rgba(0,0,0,0.2);
-  margin: 8px -16px 8px -16px;
+  margin: 8px 0;
   padding: 0;
   transition: all 0.3s ease;
-  width: calc(100% + 32px);
+  width: 100%;
   display: block;
   position: relative;
   opacity: var(--divider-opacity, 1);

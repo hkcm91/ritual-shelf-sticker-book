@@ -65,17 +65,17 @@ const BookshelfGrid: React.FC = () => {
         <div 
           className="bookshelf-frame"
           style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
             borderWidth: `${dividers.thickness || 8}px`,
             borderColor: dividers.color || '#714621',
             backgroundImage: `url(${shelfTexture})`,
             backgroundSize: '100% 100%',
             opacity: dividers.opacity || 1,
             borderRadius: `${container?.borderRadius ? container.borderRadius - 4 : 4}px`,
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
             pointerEvents: 'none',
             zIndex: 20,
             boxShadow: 'inset 0 0 15px rgba(0,0,0,0.3)'

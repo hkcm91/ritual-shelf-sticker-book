@@ -1,4 +1,3 @@
-
 import { StateCreator } from 'zustand';
 import { BookshelfState } from '../../bookshelfStore';
 import { ThemeName } from '@/themes';
@@ -192,7 +191,7 @@ export const defaultCustomization: CustomizationState = {
   resetCustomization: () => {},
 };
 
-// Type for slice creators
+// Type for slice creators - update to match the change in index.ts
 export type CustomizationSliceCreator = StateCreator<
   BookshelfState,
   [],

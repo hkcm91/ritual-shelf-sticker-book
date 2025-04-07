@@ -14,7 +14,7 @@ const ThemesTab: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium">Theme Selection</h3>
+        <h3 className="text-lg font-medium">Theme Presets</h3>
         <p className="text-sm text-muted-foreground mb-4">
           Choose a preset theme for your bookshelf
         </p>

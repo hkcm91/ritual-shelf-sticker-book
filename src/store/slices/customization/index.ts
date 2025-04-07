@@ -14,12 +14,12 @@ import { BookshelfState } from '../../bookshelfStore';
 // Export the default customization for use in the main store
 export { defaultCustomization } from './types';
 
-// Make sure activeTheme is treated as required
+// Correct the type signature to return only the CustomizationState part, not the full BookshelfState
 export const createCustomizationSlice: StateCreator<
   BookshelfState,
   [],
   [],
-  BookshelfState
+  Partial<BookshelfState>
 > = (set, get, api) => {
   // Start with the base customization state to ensure all required properties are present
   const baseState = {

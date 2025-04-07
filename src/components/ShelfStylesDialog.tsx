@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import {
   Dialog,
@@ -6,16 +7,17 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Slider } from "@/components/ui/slider";
+import { Paintbrush } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useBookshelfStore } from "@/store/bookshelfStore";
 import { toast } from "sonner";
-import { Paintbrush, Image, RefreshCw } from "lucide-react";
+
+// Import our new components
+import BackgroundTabContent from './shelf-styles/BackgroundTabContent';
+import ShelvesTabContent from './shelf-styles/ShelvesTabContent';
+import StylesDialogFooter from './shelf-styles/DialogFooter';
 
 const ShelfStylesDialog = () => {
   const { activeShelfId, shelves, updateShelf, resetShelfStyle } = useBookshelfStore();
@@ -120,123 +122,33 @@ const ShelfStylesDialog = () => {
             <TabsTrigger value="shelves">Shelves</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="background" className="space-y-4 pt-4">
-            <div className="grid grid-cols-3 items-center gap-4">
-              <Label htmlFor="bgColor">Color</Label>
-              <Input
-                id="bgColor"
-                type="color"
-                value={tempBackgroundColor}
-                onChange={(e) => setTempBackgroundColor(e.target.value)}
-                className="col-span-2 h-10"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <Label htmlFor="bgOpacity">Opacity</Label>
-                <span className="text-sm text-muted-foreground">{Math.round(tempBackgroundOpacity * 100)}%</span>
-              </div>
-              <Slider
-                id="bgOpacity"
-                min={0}
-                max={1}
-                step={0.01}
-                value={[tempBackgroundOpacity]}
-                onValueChange={(values) => setTempBackgroundOpacity(values[0])}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="bgImage">Background Image</Label>
-              <div className="flex gap-2">
-                <Input
-                  ref={backgroundFileRef}
-                  id="bgImage"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleBackgroundFileChange}
-                  className="flex-1"
-                />
-                <Button 
-                  type="button" 
-                  variant="outline"
-                  size="icon"
-                  onClick={() => backgroundFileRef.current?.click()}
-                >
-                  <Image className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
+          <TabsContent value="background">
+            <BackgroundTabContent 
+              backgroundFileRef={backgroundFileRef}
+              tempBackgroundColor={tempBackgroundColor}
+              tempBackgroundOpacity={tempBackgroundOpacity}
+              setTempBackgroundColor={setTempBackgroundColor}
+              setTempBackgroundOpacity={setTempBackgroundOpacity}
+              handleBackgroundFileChange={handleBackgroundFileChange}
+            />
           </TabsContent>
           
-          <TabsContent value="shelves" className="space-y-4 pt-4">
-            <div className="grid grid-cols-3 items-center gap-4">
-              <Label htmlFor="shelfColor">Color</Label>
-              <Input
-                id="shelfColor"
-                type="color"
-                value={tempShelfColor}
-                onChange={(e) => setTempShelfColor(e.target.value)}
-                className="col-span-2 h-10"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <Label htmlFor="shelfOpacity">Opacity</Label>
-                <span className="text-sm text-muted-foreground">{Math.round(tempShelfOpacity * 100)}%</span>
-              </div>
-              <Slider
-                id="shelfOpacity"
-                min={0}
-                max={1}
-                step={0.01}
-                value={[tempShelfOpacity]}
-                onValueChange={(values) => setTempShelfOpacity(values[0])}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="textureImage">Shelf Texture</Label>
-              <div className="flex gap-2">
-                <Input
-                  ref={textureFileRef}
-                  id="textureImage"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleTextureFileChange}
-                  className="flex-1"
-                />
-                <Button 
-                  type="button" 
-                  variant="outline"
-                  size="icon"
-                  onClick={() => textureFileRef.current?.click()}
-                >
-                  <Image className="h-4 w-4" />
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Texture will be tiled across shelves
-              </p>
-            </div>
+          <TabsContent value="shelves">
+            <ShelvesTabContent 
+              textureFileRef={textureFileRef}
+              tempShelfColor={tempShelfColor}
+              tempShelfOpacity={tempShelfOpacity}
+              setTempShelfColor={setTempShelfColor}
+              setTempShelfOpacity={setTempShelfOpacity}
+              handleTextureFileChange={handleTextureFileChange}
+            />
           </TabsContent>
         </Tabs>
         
-        <DialogFooter className="flex justify-between sm:justify-between">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleReset}
-          >
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Reset to Default
-          </Button>
-          <Button type="button" onClick={handleApplyStyles}>
-            Apply Changes
-          </Button>
-        </DialogFooter>
+        <StylesDialogFooter 
+          handleReset={handleReset}
+          handleApply={handleApplyStyles}
+        />
       </DialogContent>
     </Dialog>
   );

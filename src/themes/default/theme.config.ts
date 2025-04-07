@@ -2,7 +2,9 @@
 import { Theme } from '../types';
 
 const defaultTheme: Theme = {
+  id: 'default',
   name: 'Default',
+  description: 'The classic wooden bookshelf theme with natural wood tones.',
   variables: {
     // Page
     '--page-bg': '#f5f5f5',

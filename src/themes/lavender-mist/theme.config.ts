@@ -2,7 +2,9 @@
 import { Theme } from '../types';
 
 const lavenderMistTheme: Theme = {
+  id: 'lavender-mist',
   name: 'Lavender Mist',
+  description: 'A soft, dreamy theme with lavender and deep purple accents.',
   variables: {
     // Page
     '--page-bg': '#f5e8f2',

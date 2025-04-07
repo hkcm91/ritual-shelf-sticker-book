@@ -13,6 +13,7 @@ export interface BookData {
   rotation?: number;
   date?: string;
   color?: string;
+  zIndex?: number;
   // Add missing properties that are causing TypeScript errors
   hidden?: boolean;
   originalPosition?: number;

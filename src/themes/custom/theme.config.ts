@@ -2,7 +2,9 @@
 import { Theme } from '../types';
 
 const customTheme: Theme = {
+  id: 'custom',
   name: 'Custom Theme',
+  description: 'Your personalized theme with custom colors and styling.',
   variables: {
     // These are just placeholders as the custom theme will use the current customization values
     '--page-bg': '#f5f5f5',

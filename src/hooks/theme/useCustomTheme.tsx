@@ -21,7 +21,9 @@ export function useCustomTheme() {
   
   // Get current custom theme definition
   const currentCustomTheme: Theme = useMemo(() => ({
+    id: 'custom',
     name: "Custom Theme",
+    description: "A personalized theme with custom colors and styling.",
     variables: {
       '--page-bg': page?.background || '#f5f5f5',
       '--container-bg': container?.background || '#8B5A2B',

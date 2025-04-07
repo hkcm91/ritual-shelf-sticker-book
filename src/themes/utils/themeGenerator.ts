@@ -33,8 +33,14 @@ export const generateThemeFromPalette = (
   const headerBg = palette.headerBg || palette.primary;
   const headerText = palette.headerText || getContrastingColor(headerBg);
   
+  // Generate a simple ID from the name
+  const id = name.toLowerCase().replace(/\s+/g, '-');
+  const description = `${name} theme featuring ${palette.primary} as the primary color with ${palette.shelfWood} shelves.`;
+  
   return {
+    id,
     name,
+    description,
     variables: {
       // Page
       '--page-bg': palette.background,

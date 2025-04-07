@@ -2,7 +2,9 @@
 import { Theme } from '../types';
 
 const retroAutumnTheme: Theme = {
+  id: 'retro-autumn',
   name: 'Retro Autumn',
+  description: 'A nostalgic autumn theme with warm oranges and deep browns.',
   variables: {
     // Page
     '--page-bg': '#f5eed6',

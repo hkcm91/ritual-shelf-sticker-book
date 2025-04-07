@@ -2,7 +2,9 @@
 import { Theme } from '../types';
 
 const cozyCottage: Theme = {
+  id: 'cozy-cottage',
   name: 'Cozy Cottage',
+  description: 'A warm, inviting theme with honey-colored woods and soft textures.',
   variables: {
     // Page
     '--page-bg': '#faf6ed',

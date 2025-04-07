@@ -2,7 +2,9 @@
 import { Theme } from '../types';
 
 const sunriseHorizonTheme: Theme = {
+  id: 'sunrise-horizon',
   name: 'Sunrise Horizon',
+  description: 'A vibrant theme with coral pinks and deep blues reminiscent of sunrise.',
   variables: {
     // Page
     '--page-bg': '#f2f5fa',

@@ -2,7 +2,9 @@
 import { Theme } from '../types';
 
 const tealTerraTheme: Theme = {
+  id: 'teal-terra',
   name: 'Teal Terra',
+  description: 'A refreshing blend of teal blue and earthy terracotta tones.',
   variables: {
     // Page
     '--page-bg': '#f5eed6',

@@ -2,7 +2,9 @@
 import { Theme } from '../types';
 
 const modernLibrary: Theme = {
+  id: 'modern-library',
   name: 'Modern Library',
+  description: 'A contemporary bookshelf with sleek materials and cool tones.',
   variables: {
     // Page
     '--page-bg': '#f0f2f5',

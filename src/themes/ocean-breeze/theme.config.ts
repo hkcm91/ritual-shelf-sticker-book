@@ -2,7 +2,9 @@
 import { Theme } from '../types';
 
 const oceanBreezeTheme: Theme = {
+  id: 'ocean-breeze',
   name: 'Ocean Breeze',
+  description: 'A refreshing seaside theme with blues and navy accents.',
   variables: {
     // Page
     '--page-bg': '#e6f2f5',

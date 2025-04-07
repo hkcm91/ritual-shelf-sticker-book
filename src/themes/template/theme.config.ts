@@ -11,7 +11,9 @@ import { Theme } from '../types';
  */
 
 const templateTheme: Theme = {
+  id: 'template',
   name: 'Your Theme Name',
+  description: 'A brief description of your theme and its features.',
   variables: {
     // Page (background and text)
     '--page-bg': '#f5f5f5',             // Main background color

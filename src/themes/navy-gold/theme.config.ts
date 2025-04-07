@@ -2,7 +2,9 @@
 import { Theme } from '../types';
 
 const navyGoldTheme: Theme = {
+  id: 'navy-gold',
   name: 'Navy & Gold',
+  description: 'An elegant theme featuring deep navy blue with luxurious gold accents.',
   variables: {
     // Page
     '--page-bg': '#f5f5f5',

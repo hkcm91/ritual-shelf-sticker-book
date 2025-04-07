@@ -2,7 +2,9 @@
 import { Theme } from '../types';
 
 const darkAcademia: Theme = {
+  id: 'dark-academia',
   name: 'Dark Academia',
+  description: 'A moody, scholarly aesthetic with dark wood and vintage vibes.',
   variables: {
     // Page
     '--page-bg': '#2a2a2a',

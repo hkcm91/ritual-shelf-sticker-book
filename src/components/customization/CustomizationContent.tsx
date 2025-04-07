@@ -17,14 +17,16 @@ const CustomizationContent: React.FC = () => {
   }
   
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 h-full">
       <ErrorBoundary 
         componentName="CustomizationTabs"
         onReset={handleErrorReset}
       >
-        <Tabs defaultValue="themes" className="w-full">
+        <Tabs defaultValue="themes" className="w-full h-full">
           <TabsList />
-          <TabsContent />
+          <div className="overflow-y-auto pr-1 max-h-[calc(100%-60px)]">
+            <TabsContent />
+          </div>
         </Tabs>
       </ErrorBoundary>
       

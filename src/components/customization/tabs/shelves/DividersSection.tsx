@@ -65,7 +65,7 @@ const DividersSection: React.FC<DividersSectionProps> = ({
   }
   
   return (
-    <div className="rounded-md border p-4 space-y-4">
+    <div className="rounded-md border p-4 space-y-4 mt-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h3 className="font-medium text-lg">Dividers</h3>
@@ -91,56 +91,67 @@ const DividersSection: React.FC<DividersSectionProps> = ({
         <>
           <Separator className="my-2" />
           
-          <div className="space-y-3">
-            <Label className="font-medium">Style</Label>
-            <SimpleOrientationSelector 
-              value={shelfStyling.dividers.orientation || 'vertical'} 
-              onChange={(value) => handleUpdateDividerSetting('orientation', value)} 
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <Label>Spacing</Label>
-              <span className="text-sm text-muted-foreground">
-                {shelfStyling.dividers.booksPerSection || 4} books
-              </span>
-            </div>
-            <Slider
-              value={[shelfStyling.dividers.booksPerSection || 4]}
-              min={2}
-              max={6}
-              step={1}
-              onValueChange={(value) => handleUpdateDividerSetting('booksPerSection', value[0])}
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <Label>Thickness</Label>
-              <span className="text-sm text-muted-foreground">{shelfStyling.dividers.thickness || 6}px</span>
-            </div>
-            <Slider
-              value={[shelfStyling.dividers.thickness || 6]}
-              min={2}
-              max={8}
-              step={1}
-              onValueChange={(value) => handleUpdateDividerSetting('thickness', value[0])}
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="link-divider-color">Match shelf appearance</Label>
-              <Switch 
-                id="link-divider-color"
-                checked={linkDividerStyling}
-                onCheckedChange={setLinkDividerStyling}
+          <div className="space-y-6 pl-0.5">
+            <div className="space-y-3">
+              <h4 className="font-medium text-sm text-muted-foreground">Divider Style</h4>
+              <SimpleOrientationSelector 
+                value={shelfStyling.dividers.orientation || 'vertical'} 
+                onChange={(value) => handleUpdateDividerSetting('orientation', value)} 
               />
             </div>
-            <p className="text-xs text-muted-foreground italic">
-              When enabled, dividers will automatically match your shelf color and texture
-            </p>
+            
+            <div className="space-y-5">
+              <h4 className="font-medium text-sm text-muted-foreground">Divider Layout</h4>
+              
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <Label>Spacing</Label>
+                  <span className="text-sm text-muted-foreground">
+                    {shelfStyling.dividers.booksPerSection || 4} books
+                  </span>
+                </div>
+                <Slider
+                  value={[shelfStyling.dividers.booksPerSection || 4]}
+                  min={2}
+                  max={6}
+                  step={1}
+                  onValueChange={(value) => handleUpdateDividerSetting('booksPerSection', value[0])}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Number of book slots between dividers
+                </p>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <Label>Thickness</Label>
+                  <span className="text-sm text-muted-foreground">{shelfStyling.dividers.thickness || 6}px</span>
+                </div>
+                <Slider
+                  value={[shelfStyling.dividers.thickness || 6]}
+                  min={2}
+                  max={8}
+                  step={1}
+                  onValueChange={(value) => handleUpdateDividerSetting('thickness', value[0])}
+                />
+              </div>
+            </div>
+            
+            <div className="mt-4 p-3 bg-muted/40 rounded-md">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="link-divider-color">Match shelf appearance</Label>
+                  <Switch 
+                    id="link-divider-color"
+                    checked={linkDividerStyling}
+                    onCheckedChange={setLinkDividerStyling}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground italic">
+                  When enabled, dividers will automatically match your shelf color and texture
+                </p>
+              </div>
+            </div>
           </div>
         </>
       )}

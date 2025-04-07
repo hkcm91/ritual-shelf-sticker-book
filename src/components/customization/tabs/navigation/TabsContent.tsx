@@ -12,32 +12,32 @@ const TabsContent: React.FC = () => {
   return (
     <>
       {/* Themes Tab */}
-      <UITabsContent value="themes" className="space-y-6">
+      <UITabsContent value="themes" className="pb-6 mt-4">
         <ThemesTab />
       </UITabsContent>
       
       {/* General Tab */}
-      <UITabsContent value="general" className="space-y-6">
+      <UITabsContent value="general" className="pb-6 mt-4">
         <GeneralTab />
       </UITabsContent>
       
       {/* Container Tab */}
-      <UITabsContent value="container" className="space-y-6">
+      <UITabsContent value="container" className="pb-6 mt-4">
         <ContainerTab />
       </UITabsContent>
       
       {/* Shelves Tab */}
-      <UITabsContent value="shelves" className="space-y-6">
+      <UITabsContent value="shelves" className="pb-6 mt-4">
         <ShelvesTab />
       </UITabsContent>
       
       {/* Slots Tab */}
-      <UITabsContent value="slots" className="space-y-6">
+      <UITabsContent value="slots" className="pb-6 mt-4">
         <SlotsTab />
       </UITabsContent>
       
       {/* Header Tab */}
-      <UITabsContent value="header" className="space-y-6">
+      <UITabsContent value="header" className="pb-6 mt-4">
         <HeaderTab />
       </UITabsContent>
     </>

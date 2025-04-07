@@ -63,52 +63,59 @@ const ContainerTab: React.FC = () => {
       
       <div className="rounded-md border p-4 space-y-4">
         <h3 className="font-medium text-lg">Border</h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          Customize the border appearance of your bookshelf container
+        </p>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <Label>Width</Label>
-              <span className="text-sm">{container?.borderWidth || 0}px</span>
+        <div className="bg-muted/40 rounded-md p-3 space-y-4">
+          <h4 className="font-medium text-base mb-2">Border Appearance</h4>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <Label>Width</Label>
+                <span className="text-sm">{container?.borderWidth || 0}px</span>
+              </div>
+              <Slider
+                value={[container?.borderWidth || 0]}
+                min={0}
+                max={10}
+                step={1}
+                onValueChange={(value) => updateContainerBorder('borderWidth', value[0])}
+              />
             </div>
-            <Slider
-              value={[container?.borderWidth || 0]}
-              min={0}
-              max={10}
-              step={1}
-              onValueChange={(value) => updateContainerBorder('borderWidth', value[0])}
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label>Style</Label>
-            <BorderStyleSelector
-              value={container?.borderStyle || 'solid'}
-              onChange={(value) => updateContainerBorder('borderStyle', value)}
-              disabled={!container?.borderWidth}
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label>Color</Label>
-            <ColorPicker 
-              color={container?.borderColor || '#e0e0e0'} 
-              onChange={(color) => updateContainerBorder('borderColor', color)}
-              disabled={!container?.borderWidth}
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <Label>Radius</Label>
-              <span className="text-sm">{container?.borderRadius || 8}px</span>
+            
+            <div className="space-y-2">
+              <Label>Style</Label>
+              <BorderStyleSelector
+                value={container?.borderStyle || 'solid'}
+                onChange={(value) => updateContainerBorder('borderStyle', value)}
+                disabled={!container?.borderWidth}
+              />
             </div>
-            <Slider
-              value={[container?.borderRadius || 8]}
-              min={0}
-              max={40}
-              step={2}
-              onValueChange={(value) => updateContainerBorder('borderRadius', value[0])}
-            />
+            
+            <div className="space-y-2">
+              <Label>Color</Label>
+              <ColorPicker 
+                color={container?.borderColor || '#e0e0e0'} 
+                onChange={(color) => updateContainerBorder('borderColor', color)}
+                disabled={!container?.borderWidth}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <Label>Radius</Label>
+                <span className="text-sm">{container?.borderRadius || 8}px</span>
+              </div>
+              <Slider
+                value={[container?.borderRadius || 8]}
+                min={0}
+                max={40}
+                step={2}
+                onValueChange={(value) => updateContainerBorder('borderRadius', value[0])}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -128,6 +135,9 @@ const ContainerTab: React.FC = () => {
             step={4}
             onValueChange={(value) => updateContainerPadding(value[0])}
           />
+          <p className="text-xs text-muted-foreground">
+            Adjusts the internal spacing between the container edge and the shelves
+          </p>
         </div>
       </div>
     </div>

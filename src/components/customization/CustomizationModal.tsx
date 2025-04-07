@@ -46,10 +46,10 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent 
-        className={`${isFullscreen ? 'max-w-[95vw] h-[95vh] max-h-[95vh]' : 'max-w-3xl max-h-[80vh]'} transition-all duration-300`}
+        className={`${isFullscreen ? 'max-w-[95vw] h-[95vh] max-h-[95vh]' : 'max-w-3xl max-h-[80vh]'} transition-all duration-300 flex flex-col`}
         style={{ minWidth: isFullscreen ? '95vw' : 'auto' }}
       >
-        <DialogHeader className="flex-row justify-between items-center space-y-0 pb-2">
+        <DialogHeader className="flex-row justify-between items-center space-y-0 pb-2 flex-shrink-0">
           <div>
             <DialogTitle className="flex items-center text-xl">
               <Palette className="mr-2 h-5 w-5" /> 
@@ -74,7 +74,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
         </DialogHeader>
         
         {/* Live Preview Section - Updated */}
-        <div className="mb-4 border rounded-md p-3 bg-background/50">
+        <div className="mb-4 border rounded-md p-3 bg-background/50 flex-shrink-0">
           <h4 className="text-sm font-medium mb-2 flex items-center">
             <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></span>
             Live Preview
@@ -86,7 +86,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
           <CustomizationContent />
         </div>
         
-        <DialogFooter className="flex justify-between mt-4 pt-2 border-t space-x-2">
+        <DialogFooter className="flex justify-between mt-4 pt-2 border-t space-x-2 flex-shrink-0">
           <div>
             <Button
               variant="outline"

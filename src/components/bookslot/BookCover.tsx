@@ -7,27 +7,36 @@ type BookCoverProps = {
 };
 
 const BookCover: React.FC<BookCoverProps> = ({ coverURL, progress = 0 }) => {
-  // Check if coverURL is valid
-  const hasCover = coverURL && coverURL !== '';
+  // Check if coverURL is valid and not empty
+  const hasCover = coverURL && coverURL.trim() !== '';
+
+  // For debugging
+  console.log("Rendering book cover with URL:", coverURL?.substring(0, 50), "...", hasCover ? "valid" : "invalid");
 
   return (
-    <div className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden rounded-sm">
+    <div className="w-full h-full">
       {hasCover ? (
         <div 
-          className="absolute inset-0 w-full h-full"
+          className="w-full h-full"
           style={{
             backgroundImage: `url(${coverURL})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat'
+            backgroundRepeat: 'no-repeat',
+            height: '100%',
+            width: '100%'
           }}
-        />
+        >
+          {/* Empty div that takes full space to ensure the background shows */}
+          <div className="w-full h-full"></div>
+        </div>
       ) : (
-        <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-amber-800">
-          <div className="text-amber-200 text-xs">No cover</div>
+        <div className="w-full h-full flex items-center justify-center bg-amber-800">
+          <span className="text-amber-200 text-xs">No cover</span>
         </div>
       )}
       
+      {/* Progress bar */}
       {typeof progress === 'number' && progress > 0 && (
         <div 
           className="absolute bottom-0 left-0 right-0 h-1 bg-green-500 z-10"

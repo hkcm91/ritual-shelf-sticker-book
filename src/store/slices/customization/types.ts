@@ -27,6 +27,10 @@ export interface CustomizationState {
   page: {
     background: string;
     backgroundImage: string;
+    backgroundSize?: string;
+    backgroundRepeat?: string;
+    backgroundPosition?: string;
+    backgroundAttachment?: string;
   };
   // Bookshelf container settings
   container: {
@@ -69,6 +73,10 @@ export interface CustomizationState {
   // Page settings
   updatePageBackground: (color: string) => void;
   updatePageBackgroundImage: (url: string) => void;
+  updatePageSetting: (
+    property: 'backgroundSize' | 'backgroundRepeat' | 'backgroundPosition' | 'backgroundAttachment',
+    value: string
+  ) => void;
   
   // Container settings
   updateContainerBackground: (color: string) => void;
@@ -114,6 +122,10 @@ export const defaultCustomization: CustomizationState = {
   page: {
     background: '#f5f5f5',
     backgroundImage: '',
+    backgroundSize: 'cover',
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'center',
+    backgroundAttachment: 'fixed',
   },
   container: {
     background: '#a47148',
@@ -160,6 +172,7 @@ export const defaultCustomization: CustomizationState = {
   closeCustomizationModal: () => {},
   updatePageBackground: () => {},
   updatePageBackgroundImage: () => {},
+  updatePageSetting: () => {},
   updateContainerBackground: () => {},
   updateContainerBackgroundImage: () => {},
   updateContainerOpacity: () => {},

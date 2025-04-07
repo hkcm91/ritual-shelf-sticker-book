@@ -20,6 +20,20 @@ export const useTheme = () => {
       document.documentElement.style.setProperty('--page-bg', page.background);
       document.documentElement.style.setProperty('--page-bg-image', page.backgroundImage ? `url(${page.backgroundImage})` : 'none');
       
+      // Additional page background properties
+      if (page.backgroundSize) {
+        document.documentElement.style.setProperty('--page-bg-size', page.backgroundSize);
+      }
+      if (page.backgroundRepeat) {
+        document.documentElement.style.setProperty('--page-bg-repeat', page.backgroundRepeat);
+      }
+      if (page.backgroundPosition) {
+        document.documentElement.style.setProperty('--page-bg-position', page.backgroundPosition);
+      }
+      if (page.backgroundAttachment) {
+        document.documentElement.style.setProperty('--page-bg-attachment', page.backgroundAttachment);
+      }
+      
       // Container
       document.documentElement.style.setProperty('--container-bg', container.background);
       document.documentElement.style.setProperty('--container-bg-image', container.backgroundImage ? `url(${container.backgroundImage})` : 'none');

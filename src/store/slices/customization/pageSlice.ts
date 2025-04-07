@@ -10,4 +10,11 @@ export const createPageSlice: CustomizationSliceCreator = (set) => ({
   updatePageBackgroundImage: (url: string) => set((state) => ({ 
     page: { ...state.page, backgroundImage: url } 
   })),
+
+  updatePageSetting: (
+    property: 'backgroundSize' | 'backgroundRepeat' | 'backgroundPosition' | 'backgroundAttachment',
+    value: string
+  ) => set((state) => ({
+    page: { ...state.page, [property]: value }
+  })),
 });

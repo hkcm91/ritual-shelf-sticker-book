@@ -1,4 +1,3 @@
-
 import { create } from 'zustand';
 import { toast } from 'sonner';
 import { BooksSlice, createBooksSlice } from './booksSlice';
@@ -7,19 +6,16 @@ import { UISlice, createUISlice } from './uiSlice';
 import { CustomizationState, createCustomizationSlice, defaultCustomization } from './slices/customization';
 import { BookData, ShelfData } from './types';
 
-// Define the complete store type that includes all slices
 export type BookshelfState = BooksSlice & CompleteShelvesSlice & UISlice & CustomizationState & {
   findEmptyPosition: (shelfId: string) => number;
 };
 
-// Create and export the store with all slices
 export const useBookshelfStore = create<BookshelfState>()((set, get, api) => ({
   ...createBooksSlice(set, get, api),
   ...createShelvesSlice(set, get, api),
   ...createUISlice(set, get, api),
   ...createCustomizationSlice(set, get, api),
   
-  // Include all required properties from CustomizationState with their default values
   activeTheme: defaultCustomization.activeTheme,
   setActiveTheme: defaultCustomization.setActiveTheme,
   page: defaultCustomization.page,
@@ -43,6 +39,13 @@ export const useBookshelfStore = create<BookshelfState>()((set, get, api) => ({
   
   updatePageBackgroundImage: (url: string) => set((state) => ({ 
     page: { ...state.page, backgroundImage: url } 
+  })),
+  
+  updatePageSetting: (
+    property: 'backgroundSize' | 'backgroundRepeat' | 'backgroundPosition' | 'backgroundAttachment',
+    value: string
+  ) => set((state) => ({
+    page: { ...state.page, [property]: value }
   })),
   
   updateContainerBackground: (color: string) => set((state) => ({ 
@@ -158,7 +161,6 @@ export const useBookshelfStore = create<BookshelfState>()((set, get, api) => ({
     toast.success('Customization settings reset to defaults');
   },
   
-  // Utility function to find empty position
   findEmptyPosition: (shelfId: string) => {
     const { books, shelves } = get();
     const shelvesData = shelves as Record<string, ShelfData>;
@@ -172,21 +174,18 @@ export const useBookshelfStore = create<BookshelfState>()((set, get, api) => ({
         .map(book => book.position)
     );
     
-    // Find the first available position
     for (let i = 0; i < maxPositions; i++) {
       if (!occupiedPositions.has(i)) {
         return i;
       }
     }
     
-    return -1; // No positions available
+    return -1;
   },
 }));
 
-// Re-export types properly
 export type { BookData, ShelfData } from './types';
 
-// Helper to initialize a default shelf if none exists
 export const initializeDefaultShelf = () => {
   const { shelves, addShelf } = useBookshelfStore.getState();
   const shelvesData = shelves as Record<string, ShelfData>;

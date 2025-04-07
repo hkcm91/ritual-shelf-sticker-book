@@ -4,6 +4,10 @@
   /* Page */
   --page-bg: #f5f5f5;
   --page-bg-image: none;
+  --page-bg-size: cover;
+  --page-bg-repeat: no-repeat;
+  --page-bg-position: center;
+  --page-bg-attachment: fixed;
 
   /* Container */
   --container-bg: #a47148;
@@ -40,8 +44,10 @@
 body {
   background-color: var(--page-bg);
   background-image: var(--page-bg-image);
-  background-size: cover;
-  background-attachment: fixed;
+  background-size: var(--page-bg-size);
+  background-repeat: var(--page-bg-repeat);
+  background-position: var(--page-bg-position);
+  background-attachment: var(--page-bg-attachment);
   min-height: 100vh;
 }
 

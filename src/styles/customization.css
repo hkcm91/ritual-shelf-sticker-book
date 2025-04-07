@@ -116,6 +116,9 @@ header {
 /* Additional responsive styles for bookshelf */
 .bookshelf-wrapper {
   height: calc(100vh - 64px); /* Adjust for header height */
+  width: 100%;
+  overflow: auto; /* Allow scrolling in all directions */
+  scroll-behavior: smooth; /* Smooth scrolling */
 }
 
 /* Ensure book slots maintain proper sizing */
@@ -124,6 +127,7 @@ header {
   min-height: 220px;
   max-width: 180px;
   position: relative;
+  flex-shrink: 0; /* Prevent slots from shrinking */
 }
 
 /* Make sure the grid container adapts to available space */
@@ -144,4 +148,10 @@ header {
     min-width: 120px;
     min-height: 180px;
   }
+}
+
+/* Wheel-based zoom support */
+.bookshelf-wrapper {
+  /* Add wheel event support */
+  -webkit-overflow-scrolling: touch;
 }

@@ -3,6 +3,7 @@ import React from 'react';
 import { useBookshelfStore } from '../../store/bookshelfStore';
 import ShelfRow from './ShelfRow';
 import StorageUsage from '../StorageUsage';
+import { ScrollArea } from '../ui/scroll-area';
 
 const BookshelfGrid: React.FC = () => {
   const { activeShelfId, shelves, zoomLevel } = useBookshelfStore();
@@ -39,7 +40,7 @@ const BookshelfGrid: React.FC = () => {
   
   return (
     <div 
-      className="bookshelf-wrapper p-4 md:p-8 overflow-auto max-w-full w-full h-full"
+      className="bookshelf-wrapper p-4 md:p-8 overflow-auto h-full w-full"
       style={{ 
         backgroundColor: 'var(--page-bg)',
         backgroundImage: 'var(--page-bg-image)',

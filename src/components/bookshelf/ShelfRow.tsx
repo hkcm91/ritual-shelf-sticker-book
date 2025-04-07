@@ -52,8 +52,8 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
 
   return (
     <div className="flex flex-col w-full">
-      {/* Books row */}
-      <div className="flex justify-start items-stretch flex-nowrap gap-2 p-2 min-h-[220px] overflow-x-auto">
+      {/* Books row - removed overflow-x-auto to prevent individual row scrolling */}
+      <div className="flex justify-start items-stretch flex-nowrap gap-2 p-2 min-h-[220px]">
         {renderSlots()}
       </div>
       

@@ -1,14 +1,10 @@
 
 import React, { useState } from 'react';
-import Book from './Book';
-import { Popover, PopoverTrigger } from '@/components/ui/popover';
-import SlotControls from './SlotControls';
 import DeleteDialog from './DeleteDialog';
-import StickerContent from './StickerContent';
 import EmptySlot from './EmptySlot';
 import { useBookSlot } from '../hooks/useBookSlot';
 import SlotTypeToggle from './SlotTypeToggle';
-import ContextMenuWrapper from './ContextMenuWrapper';
+import { BookContent, SlotContainer } from './bookslot';
 
 type BookSlotProps = {
   position: number;
@@ -46,66 +42,37 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     }
   };
 
-  // Special handler for the empty slot click, separate from toggle clicks
+  // Special handler for the empty slot click
   const handleEmptySlotClick = () => {
     if (!book) {
       handleClick();
     }
   };
   
-  // Render book content based on type
-  const renderBookContent = () => {
-    if (!book) return null;
-    
-    if (book.isSticker) {
-      return (
-        <ContextMenuWrapper
-          book={book}
-          handleRotate={handleRotate}
-          handleResetTransform={handleResetTransform}
-          setShowDeleteDialog={setShowDeleteDialog}
-        >
-          <Popover>
-            <PopoverTrigger asChild>
-              <StickerContent 
-                book={book}
-                scale={scale}
-                position2D={position2D}
-                rotation={rotation}
-                handleStickerMouseDown={handleStickerMouseDown}
-                isAltDrag={isAltDrag}
-              />
-            </PopoverTrigger>
-            <SlotControls 
-              scale={scale}
-              onScaleChange={handleScaleChange}
-              onRotate={handleRotate}
-              onResetTransform={handleResetTransform}
-              onShowDeleteDialog={() => setShowDeleteDialog(true)}
-              isLottie={typeof book.coverURL === 'string' && book.coverURL.startsWith('{')}
-            />
-          </Popover>
-        </ContextMenuWrapper>
-      );
-    } else {
-      return <Book data={book} />;
-    }
-  };
-  
   return (
     <>
-      <div 
-        className={`book-slot relative h-[220px] w-[150px] mx-1 rounded-sm
-          ${!book ? 'hover:bg-gray-50/10' : 'hover:border hover:border-primary/30'}
-          transition-colors duration-200 cursor-pointer`}
-        data-position={position}
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
-        onMouseMove={handleStickerMouseMove}
-        onMouseUp={handleStickerMouseUp}
+      <SlotContainer
+        position={position}
+        hasBook={!!book}
+        handleDragOver={handleDragOver}
+        handleDrop={handleDrop}
+        handleMouseMove={handleStickerMouseMove}
+        handleMouseUp={handleStickerMouseUp}
       >
+        {/* Render book content or empty slot */}
         {book ? (
-          renderBookContent()
+          <BookContent
+            book={book}
+            scale={scale}
+            position2D={position2D}
+            rotation={rotation}
+            handleStickerMouseDown={handleStickerMouseDown}
+            handleRotate={handleRotate}
+            handleResetTransform={handleResetTransform}
+            handleScaleChange={handleScaleChange}
+            setShowDeleteDialog={setShowDeleteDialog}
+            isAltDrag={isAltDrag}
+          />
         ) : (
           <EmptySlot 
             fileInputRef={fileInputRef} 
@@ -122,7 +89,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
           handleTypeToggle={handleTypeToggle}
           isVisible={!book} 
         />
-      </div>
+      </SlotContainer>
       
       {/* Delete Confirmation Dialog */}
       <DeleteDialog

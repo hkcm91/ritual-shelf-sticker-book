@@ -71,10 +71,7 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
               width: `${dividers.thickness}px`,
               backgroundColor: dividers.color,
               backgroundImage: `url(${shelfTexture})`,
-              opacity: dividers.opacity,
-              height: '100%',
-              minHeight: '220px',
-              alignSelf: 'stretch'
+              opacity: dividers.opacity
             }}
           />
         );

@@ -44,7 +44,7 @@
   filter: brightness(0.7);
 }
 
-/* Updated divider styling to match wood-shelf */
+/* Improved divider styling to match wood-shelf */
 .vertical-shelf-divider,
 .horizontal-shelf-divider {
   background-color: var(--divider-color, #714621);
@@ -58,30 +58,31 @@
   border-bottom: 1px solid rgba(0,0,0,0.2);
   border-top: 1px solid rgba(255,255,255,0.1);
   transition: background-color 0.3s ease, opacity 0.3s ease;
+  z-index: 3;
 }
 
 .vertical-shelf-divider {
   width: var(--divider-thickness, 6px);
-  align-self: stretch;
-  margin: 0;
+  align-self: stretch;  /* This ensures it stretches to fill parent height */
+  height: 100%;  /* Explicitly set height to 100% */
   min-height: 220px;
-  z-index: 3;
+  margin: 0;
 }
 
 .horizontal-shelf-divider {
   height: var(--divider-thickness, 6px);
   width: 100%;
   margin: 0;
-  z-index: 3;
 }
 
-/* Shelf sides styling */
+/* Improved shelf sides styling on their own layer */
 .shelf-side-left,
 .shelf-side-right {
   position: absolute;
   top: 0;
+  bottom: 0;  /* Make sure it extends to the bottom */
   width: var(--divider-thickness, 8px);
-  height: 100%;
+  height: 100%;  /* Full height */
   background-color: var(--divider-color, #714621);
   background-image: var(--shelf-texture);
   background-size: 200% 100%;
@@ -117,6 +118,8 @@
   padding-top: 6px;
   min-height: 240px;
   border-bottom: none;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Add a subtle shadow at the back of each shelf to create depth */

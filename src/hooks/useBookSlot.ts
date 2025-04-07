@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import { useDragAndDrop } from './useDragAndDrop';
@@ -104,4 +103,3 @@ export const useBookSlot = ({ position, slotType }: UseBookSlotProps) => {
     isAltDrag
   };
 };
-

@@ -36,6 +36,8 @@ const Header: React.FC = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  console.log("Header rendering");
   
   return (
     <header 
@@ -46,7 +48,7 @@ const Header: React.FC = () => {
       }}
     >
       <div className="flex items-center gap-4">
-        {/* Library Search button moved to the left */}
+        {/* Library Search button */}
         <BookSearchDrawer />
         
         {!isMobile && (
@@ -80,7 +82,10 @@ const Header: React.FC = () => {
                 variant="ghost" 
                 size="icon"
                 className="text-[color:var(--header-text-color,white)] hover:text-[color:var(--header-text-color,white)] hover:bg-[color:var(--header-hover-bg,rgba(255,255,255,0.1))]"
-                onClick={() => openCustomizationModal()}
+                onClick={() => {
+                  console.log("Customize button clicked");
+                  openCustomizationModal();
+                }}
               >
                 <Palette className="h-4 w-4" />
               </Button>

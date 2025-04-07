@@ -43,24 +43,28 @@ const SettingsDrawer: React.FC = () => {
   const activeShelf = shelves[activeShelfId];
   
   const handleAddRow = () => {
+    console.log("Add row clicked, activeShelfId:", activeShelfId);
     if (activeShelfId) {
       addRow();
     }
   };
   
   const handleRemoveRow = () => {
+    console.log("Remove row clicked, activeShelfId:", activeShelfId);
     if (activeShelfId && activeShelf && activeShelf.rows > 1) {
       removeRow();
     }
   };
   
   const handleAddColumn = () => {
+    console.log("Add column clicked, activeShelfId:", activeShelfId);
     if (activeShelfId) {
       addColumn();
     }
   };
   
   const handleRemoveColumn = () => {
+    console.log("Remove column clicked, activeShelfId:", activeShelfId);
     if (activeShelfId && activeShelf && activeShelf.columns > 1) {
       removeColumn();
     }
@@ -72,6 +76,9 @@ const SettingsDrawer: React.FC = () => {
       openCustomizationModal();
     }, 100);
   };
+
+  console.log("SettingsDrawer rendered, open state:", open);
+  console.log("Active shelf:", activeShelf);
   
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -83,6 +90,11 @@ const SettingsDrawer: React.FC = () => {
                 variant="ghost" 
                 size="icon" 
                 className="text-[color:var(--header-text-color,white)] hover:text-[color:var(--header-text-color,white)] hover:bg-[color:var(--header-hover-bg,rgba(255,255,255,0.1))]"
+                onClick={() => {
+                  console.log("Settings button clicked");
+                  // This is essentially a no-op because Sheet's onOpenChange will handle this
+                  // But we add it to trace the click
+                }}
               >
                 <Settings className="h-4 w-4" />
               </Button>

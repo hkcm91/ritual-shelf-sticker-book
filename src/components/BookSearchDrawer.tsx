@@ -58,6 +58,9 @@ const BookSearchDrawer = () => {
     toast.success(`"${book.title}" added to shelf!`);
   };
 
+  // Add console logs for debugging
+  console.log("BookSearchDrawer rendered, open state:", open);
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
@@ -68,6 +71,11 @@ const BookSearchDrawer = () => {
                 variant="ghost" 
                 size="icon" 
                 className="text-[color:var(--header-text-color,white)] hover:text-[color:var(--header-text-color,white)] hover:bg-[color:var(--header-hover-bg,rgba(255,255,255,0.1))]"
+                onClick={() => {
+                  console.log("Book search button clicked");
+                  // This is essentially a no-op because Sheet's onOpenChange will handle this
+                  // But we add it to trace the click
+                }}
               >
                 <BookOpen className="h-5 w-5" />
               </Button>

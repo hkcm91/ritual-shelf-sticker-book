@@ -26,10 +26,12 @@ export const createColumnOperationsSlice: StateCreator<
   return {
     addColumn: () => {
       const { activeShelfId, shelves, books } = get();
+      console.log("addColumn called, activeShelfId:", activeShelfId);
       if (!activeShelfId) return;
       
       const shelf = shelves[activeShelfId];
       const newColumns = shelf.columns + 1;
+      console.log(`Increasing columns from ${shelf.columns} to ${newColumns}`);
       
       // Restore hidden books from previous column removals that can now be visible
       let updatedBooks = restoreHiddenBooksForColumns(activeShelfId, shelf, newColumns, books);
@@ -58,12 +60,14 @@ export const createColumnOperationsSlice: StateCreator<
     
     removeColumn: () => {
       const { activeShelfId, shelves, books } = get();
+      console.log("removeColumn called, activeShelfId:", activeShelfId);
       if (!activeShelfId) return;
       
       const shelf = shelves[activeShelfId];
       if (shelf.columns <= 1) return;
       
       const newColumns = shelf.columns - 1;
+      console.log(`Decreasing columns from ${shelf.columns} to ${newColumns}`);
       
       // Find books in the last column - but we won't delete them
       const booksInLastColumn = getBooksInLastColumn(activeShelfId, shelf, books);

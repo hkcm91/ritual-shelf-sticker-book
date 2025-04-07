@@ -75,20 +75,25 @@ const ColorChart: React.FC<ColorChartProps> = ({ color, onChange, onClose }) => 
     const { h, s, v } = hsv;
     const hi = Math.floor(h / 60) % 6;
     const f = h / 60 - Math.floor(h / 60);
-    const value = v * 255 / 100;
-    const p = (v * (1 - s / 100)) * 255 / 100;
-    const q = (v * (1 - f * s / 100)) * 255 / 100;
-    const t = (v * (1 - (1 - f) * s / 100)) * 255 / 100;
+    
+    const initialP = v * (1 - s / 100);
+    const initialQ = v * (1 - f * s / 100);
+    const initialT = v * (1 - (1 - f) * s / 100);
+    
+    const scaledV = v * 255 / 100;
+    const scaledP = initialP * 255 / 100;
+    const scaledQ = initialQ * 255 / 100;
+    const scaledT = initialT * 255 / 100;
     
     let r = 0, g = 0, b = 0;
     
     switch (hi) {
-      case 0: r = value; g = t; b = p; break;
-      case 1: r = q; g = value; b = p; break;
-      case 2: r = p; g = value; b = t; break;
-      case 3: r = p; g = q; b = value; break;
-      case 4: r = t; g = p; b = value; break;
-      case 5: r = value; g = p; b = q; break;
+      case 0: r = scaledV; g = scaledT; b = scaledP; break;
+      case 1: r = scaledQ; g = scaledV; b = scaledP; break;
+      case 2: r = scaledP; g = scaledV; b = scaledT; break;
+      case 3: r = scaledP; g = scaledQ; b = scaledV; break;
+      case 4: r = scaledT; g = scaledP; b = scaledV; break;
+      case 5: r = scaledV; g = scaledP; b = scaledQ; break;
     }
     
     return rgbToHex(Math.round(r), Math.round(g), Math.round(b));

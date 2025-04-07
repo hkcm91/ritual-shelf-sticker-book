@@ -19,8 +19,15 @@ export const useBookshelfStore = create<BookshelfState>()((set, get, api) => ({
   ...createUISlice(set, get, api),
   ...createCustomizationSlice(set, get, api),
   
-  // Make sure required properties from CustomizationState are explicitly included
+  // Include all required properties from CustomizationState
   activeTheme: defaultCustomization.activeTheme,
+  setActiveTheme: defaultCustomization.setActiveTheme,
+  page: defaultCustomization.page,
+  container: defaultCustomization.container,
+  shelfStyling: defaultCustomization.shelfStyling,
+  slots: defaultCustomization.slots,
+  header: defaultCustomization.header,
+  ui: defaultCustomization.ui,
   
   // Utility function to find empty position
   findEmptyPosition: (shelfId: string) => {

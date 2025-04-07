@@ -42,12 +42,7 @@ const Index = () => {
   
   return (
     <div className="min-h-screen flex flex-col">
-      <Header 
-        currentShelf={currentShelf}
-        setIsNewShelfModalOpen={setIsNewShelfModalOpen}
-        setIsRenameModalOpen={setIsRenameModalOpen}
-        setRenameValue={setRenameValue}
-      />
+      <Header />
       
       <div className="flex-grow w-full overflow-auto">
         <BookshelfGrid />

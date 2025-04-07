@@ -1,19 +1,14 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import ShelfSelector from './ShelfSelector';
 import { useBookshelfStore } from '@/store/bookshelfStore';
+import ShelfControls from '../ShelfControls';
 
 const Header: React.FC = () => {
-  const { shelves, activeShelfId } = useBookshelfStore();
-  const [isNewShelfModalOpen, setIsNewShelfModalOpen] = useState(false);
-  const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
-  const [renameValue, setRenameValue] = useState('');
-
-  // Get the current shelf from the store
-  const currentShelf = activeShelfId ? shelves[activeShelfId] : null;
-
+  const { openCustomizationModal } = useBookshelfStore();
+  
   return (
     <header className="px-4 py-2 flex justify-between items-center shadow-sm">
       <div className="flex items-center gap-4">
@@ -25,13 +20,7 @@ const Header: React.FC = () => {
       </div>
       
       <div className="flex items-center gap-2">
-        <Button 
-          size="sm"
-          onClick={() => setIsNewShelfModalOpen(true)}
-        >
-          <PlusCircle className="h-4 w-4 mr-2" />
-          New Shelf
-        </Button>
+        <ShelfControls />
       </div>
     </header>
   );

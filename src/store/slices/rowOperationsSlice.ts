@@ -27,6 +27,7 @@ export const createRowOperationsSlice: StateCreator<
     addRow: () => {
       const { activeShelfId, shelves, books } = get();
       console.log("addRow called, activeShelfId:", activeShelfId);
+      console.log("shelves data:", shelves);
       
       if (!activeShelfId) {
         console.error("Cannot add row: No active shelf");
@@ -35,7 +36,21 @@ export const createRowOperationsSlice: StateCreator<
       
       const shelf = shelves[activeShelfId];
       if (!shelf) {
-        console.error("Cannot add row: Active shelf not found", activeShelfId);
+        console.error(`Cannot add row: Active shelf not found "${activeShelfId}"`);
+        console.error("Available shelves:", Object.keys(shelves));
+        
+        // If we have shelves but the active one isn't found, select the first available
+        if (Object.keys(shelves).length > 0) {
+          const firstShelfId = Object.keys(shelves)[0];
+          console.log(`Using first available shelf: ${firstShelfId}`);
+          
+          // Update active shelf ID and continue with this shelf
+          set({ activeShelfId: firstShelfId });
+          
+          // Re-attempt with the new shelf
+          setTimeout(() => get().addRow(), 0);
+          return;
+        }
         return;
       }
       
@@ -70,6 +85,7 @@ export const createRowOperationsSlice: StateCreator<
     removeRow: () => {
       const { activeShelfId, shelves, books } = get();
       console.log("removeRow called, activeShelfId:", activeShelfId);
+      console.log("shelves data:", shelves);
       
       if (!activeShelfId) {
         console.error("Cannot remove row: No active shelf");
@@ -78,7 +94,21 @@ export const createRowOperationsSlice: StateCreator<
       
       const shelf = shelves[activeShelfId];
       if (!shelf) {
-        console.error("Cannot remove row: Active shelf not found", activeShelfId);
+        console.error(`Cannot remove row: Active shelf not found "${activeShelfId}"`);
+        console.error("Available shelves:", Object.keys(shelves));
+        
+        // If we have shelves but the active one isn't found, select the first available
+        if (Object.keys(shelves).length > 0) {
+          const firstShelfId = Object.keys(shelves)[0];
+          console.log(`Using first available shelf: ${firstShelfId}`);
+          
+          // Update active shelf ID and continue with this shelf
+          set({ activeShelfId: firstShelfId });
+          
+          // Re-attempt with the new shelf
+          setTimeout(() => get().removeRow(), 0);
+          return;
+        }
         return;
       }
       

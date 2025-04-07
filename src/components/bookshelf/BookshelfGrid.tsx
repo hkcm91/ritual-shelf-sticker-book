@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import ShelfRow from './ShelfRow';
 import { useBookshelfStore } from '../../store/bookshelfStore';
 import { useThemeApplication } from '@/hooks/theme/useThemeApplication';
@@ -9,14 +9,26 @@ const BookshelfGrid: React.FC = () => {
     activeShelfId, 
     shelfStyling,
     activeTheme,
-    shelves
+    shelves,
+    initializeDefaultShelf
   } = useBookshelfStore();
   
   // Apply theme styles
   useThemeApplication();
   
+  // Ensure we have a default shelf
+  useEffect(() => {
+    // If there are no shelves, initialize a default shelf
+    if (!shelves || Object.keys(shelves).length === 0) {
+      console.log("BookshelfGrid: Initializing default shelf");
+      initializeDefaultShelf();
+    }
+  }, [shelves, initializeDefaultShelf]);
+  
   // Get the current shelf data to access rows and columns
   const currentShelf = activeShelfId ? shelves[activeShelfId] : null;
+  console.log("BookshelfGrid - currentShelf:", currentShelf, "activeShelfId:", activeShelfId);
+  
   const columnsPerRow = currentShelf?.columns || 4;
   const rowsPerShelf = currentShelf?.rows || 2;
   

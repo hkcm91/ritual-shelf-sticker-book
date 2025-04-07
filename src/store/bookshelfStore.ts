@@ -10,6 +10,7 @@ import { BookData, ShelfData } from './types';
 
 export type BookshelfState = BooksSlice & CompleteShelvesSlice & UISlice & CustomizationState & ZoomSlice & {
   findEmptyPosition: (shelfId: string) => number;
+  initializeDefaultShelf: () => string | null;
 };
 
 export const useBookshelfStore = create<BookshelfState>()((set, get, api) => {
@@ -37,6 +38,36 @@ export const useBookshelfStore = create<BookshelfState>()((set, get, api) => {
       
       return -1;
     },
+    
+    initializeDefaultShelf: () => {
+      const { shelves, addShelf, setActiveShelf } = get();
+      const shelvesData = shelves as Record<string, ShelfData>;
+      
+      console.log("initializeDefaultShelf called, current shelves:", shelvesData);
+      
+      if (Object.keys(shelvesData).length === 0) {
+        const defaultShelfId = addShelf({
+          name: 'My First Shelf',
+          rows: 2,
+          columns: 4
+        });
+        
+        console.log("Default shelf created:", defaultShelfId);
+        
+        // Ensure the active shelf is set
+        setActiveShelf(defaultShelfId);
+        
+        return defaultShelfId;
+      } else if (get().activeShelfId && !shelvesData[get().activeShelfId]) {
+        // If active shelf ID exists but doesn't match any shelf, set to first available
+        const firstShelfId = Object.keys(shelvesData)[0];
+        console.log("Setting active shelf to first available:", firstShelfId);
+        setActiveShelf(firstShelfId);
+        return firstShelfId;
+      }
+      
+      return get().activeShelfId || null;
+    },
 
     // Include all necessary slices ensuring required properties are included
     ...defaultCustomization, // Add default values for all required properties
@@ -51,17 +82,5 @@ export const useBookshelfStore = create<BookshelfState>()((set, get, api) => {
 export type { BookData, ShelfData } from './types';
 
 export const initializeDefaultShelf = () => {
-  const { shelves, addShelf } = useBookshelfStore.getState();
-  const shelvesData = shelves as Record<string, ShelfData>;
-  
-  if (Object.keys(shelvesData).length === 0) {
-    const defaultShelfId = addShelf({
-      name: 'My First Shelf',
-      rows: 2,
-      columns: 4
-    });
-    return defaultShelfId;
-  }
-  
-  return null;
+  return useBookshelfStore.getState().initializeDefaultShelf();
 };

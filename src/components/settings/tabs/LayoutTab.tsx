@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Rows3, Columns } from 'lucide-react';
 import { useBookshelfStore } from '@/store/bookshelfStore';
@@ -13,7 +13,21 @@ const LayoutTab: React.FC = () => {
     removeColumn,
     activeShelfId,
     shelves,
+    initializeDefaultShelf,
   } = useBookshelfStore();
+  
+  // Ensure we have a default shelf
+  useEffect(() => {
+    console.log("Current shelves:", shelves);
+    console.log("Current activeShelfId:", activeShelfId);
+    
+    // If there are no shelves or the active shelf is missing, initialize a default shelf
+    if (!activeShelfId || !shelves || Object.keys(shelves).length === 0) {
+      console.log("Initializing default shelf...");
+      const shelfId = initializeDefaultShelf();
+      console.log("Created default shelf with ID:", shelfId);
+    }
+  }, [shelves, activeShelfId, initializeDefaultShelf]);
   
   const shelvesData = shelves || {};
   const activeShelf = activeShelfId ? shelvesData[activeShelfId] : null;

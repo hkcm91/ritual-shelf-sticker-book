@@ -1,5 +1,5 @@
 
-import { CustomizationSliceCreator } from './types';
+import { CustomizationSliceCreator, defaultCustomization } from './types';
 import { toast } from 'sonner';
 
 export const createStorageSlice: CustomizationSliceCreator = (set, get) => ({
@@ -56,9 +56,10 @@ export const createStorageSlice: CustomizationSliceCreator = (set, get) => ({
   resetCustomization: () => {
     try {
       // Reset to default values
-      const { defaultCustomization } = require('./types');
-      set(defaultCustomization);
-      set({ activeTheme: 'default' });
+      set({
+        ...defaultCustomization,
+        activeTheme: 'default'
+      });
       
       // Remove from localStorage
       localStorage.removeItem('bookshelf-customization');

@@ -118,6 +118,7 @@ export interface CustomizationState {
 // Default values
 export const defaultCustomization: CustomizationState = {
   activeTheme: 'default',
+  setActiveTheme: () => {},
   
   page: {
     background: '#f5f5f5',
@@ -186,7 +187,6 @@ export const defaultCustomization: CustomizationState = {
   updateDividersSetting: () => {},
   updateSlotSetting: () => {},
   updateHeaderSetting: () => {},
-  setActiveTheme: () => {},
   saveCustomization: () => {},
   loadCustomization: () => {},
   resetCustomization: () => {},

@@ -154,8 +154,8 @@ export type CustomizationSliceCreator = StateCreator<
   BookshelfState,
   [],
   [],
-  Partial<CustomizationState>
+  CustomizationActionSlice
 >;
 
-// New type for slice actions only
+// Type for slice actions only
 export type CustomizationActionSlice = Partial<CustomizationState>;

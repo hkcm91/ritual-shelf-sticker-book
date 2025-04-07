@@ -17,9 +17,10 @@ export const createZoomSlice: StateCreator<
   zoomLevel: 1,
   
   adjustZoomLevel: (delta) => set((state) => {
-    // Calculate new zoom level
-    const newZoom = Math.max(0.25, Math.min(2, state.zoomLevel + delta));
-    return { zoomLevel: newZoom };
+    // Calculate new zoom level with smoother steps
+    const newZoom = Math.round((state.zoomLevel + delta) * 100) / 100;
+    // Clamp zoom between 0.25 and 2
+    return { zoomLevel: Math.max(0.25, Math.min(2, newZoom)) };
   }),
   
   setZoomLevel: (level) => set(() => ({ 

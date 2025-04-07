@@ -5,9 +5,10 @@ import ShelfRow from './ShelfRow';
 import StorageUsage from '../StorageUsage';
 import ShelfControls from '../ShelfControls';
 import ZoomControls from '../ZoomControls';
+import StickerCanvas from '../stickers/StickerCanvas';
 
 const BookshelfGrid: React.FC = () => {
-  const { activeShelfId, shelves, zoomLevel } = useBookshelfStore();
+  const { activeShelfId, shelves, zoomLevel, adjustZoomLevel } = useBookshelfStore();
   const activeShelf = shelves[activeShelfId];
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -17,7 +18,6 @@ const BookshelfGrid: React.FC = () => {
       // Only zoom when ctrl key is pressed
       if (e.ctrlKey) {
         e.preventDefault();
-        const { adjustZoomLevel } = useBookshelfStore.getState();
         // Zoom in or out based on wheel direction
         adjustZoomLevel(e.deltaY > 0 ? -0.05 : 0.05);
       }
@@ -33,7 +33,7 @@ const BookshelfGrid: React.FC = () => {
         container.removeEventListener('wheel', handleWheel);
       }
     };
-  }, []);
+  }, [adjustZoomLevel]);
   
   if (!activeShelf) {
     return (
@@ -50,7 +50,7 @@ const BookshelfGrid: React.FC = () => {
   return (
     <div 
       ref={containerRef}
-      className="bookshelf-wrapper p-4 md:p-8 overflow-auto h-full w-full"
+      className="bookshelf-wrapper p-4 md:p-8 overflow-auto h-full w-full relative"
       style={{ 
         backgroundColor: 'var(--page-bg)',
         backgroundImage: 'var(--page-bg-image)',
@@ -65,7 +65,7 @@ const BookshelfGrid: React.FC = () => {
       </div>
       
       <div 
-        className="bookshelf-container relative flex flex-col items-center rounded-md p-6 shadow-lg mx-auto"
+        className="bookshelf-container relative flex flex-col items-center rounded-md p-6 shadow-lg mx-auto overflow-visible"
         style={{ 
           transform: `scale(${zoomLevel})`,
           transformOrigin: 'top center',
@@ -79,6 +79,9 @@ const BookshelfGrid: React.FC = () => {
         <div className="absolute bottom-1 right-1 w-48 z-10 bg-white/90 rounded shadow">
           <StorageUsage />
         </div>
+        
+        {/* Add sticker canvas for floating stickers */}
+        <StickerCanvas shelfId={activeShelfId} />
         
         <div className="grid-container w-full flex flex-col">
           {Array.from({ length: rows }).map((_, index) => (

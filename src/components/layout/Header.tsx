@@ -48,8 +48,7 @@ const Header: React.FC = () => {
       }}
     >
       <div className="flex items-center gap-4">
-        {/* Library Search button */}
-        <BookSearchDrawer />
+        {/* Library Search button was here - now removed */}
         
         {!isMobile && (
           <NavigationMenu>
@@ -72,6 +71,9 @@ const Header: React.FC = () => {
       </div>
       
       <div className="flex items-center gap-3">
+        {/* Adding back the Library Search button */}
+        <BookSearchDrawer />
+        
         {/* Settings Drawer */}
         <SettingsDrawer />
         

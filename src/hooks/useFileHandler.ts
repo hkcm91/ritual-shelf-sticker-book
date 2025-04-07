@@ -35,6 +35,7 @@ export const useFileHandler = ({ position, slotType = "book" }: UseFileHandlerPr
           try {
             // Compress the image before adding
             let imageData = event.target.result;
+            console.log('FileReader Result (Data URL):', imageData ? `${imageData.substring(0, 100)}... (length: ${imageData.length})` : 'null/undefined');
             
             // Only compress if over 200KB
             if (file.size > 200 * 1024) {
@@ -45,13 +46,15 @@ export const useFileHandler = ({ position, slotType = "book" }: UseFileHandlerPr
                   maxHeight: 900
                 });
                 console.log("Book cover compressed successfully");
+                console.log('Compressed Data URL:', imageData ? `${imageData.substring(0, 100)}... (length: ${imageData.length})` : 'null/undefined');
               } catch (err) {
                 console.warn('Failed to compress book cover:', err);
                 // Continue with original image
               }
             }
             
-            const newBookId = addBook({
+            // Log the book data we're about to send to the store
+            const bookDataForStore = {
               title: '',
               author: '',
               coverURL: imageData,
@@ -60,7 +63,17 @@ export const useFileHandler = ({ position, slotType = "book" }: UseFileHandlerPr
               position,
               shelfId: activeShelfId,
               isSticker: false
+            };
+            
+            console.log('Data being sent to Zustand for Manual Upload:', {
+              ...bookDataForStore,
+              coverURL: bookDataForStore.coverURL ? `${bookDataForStore.coverURL.substring(0, 100)}... (length: ${bookDataForStore.coverURL.length})` : 'missing'
             });
+            
+            const newBookId = addBook(bookDataForStore);
+            
+            // Now let's log what was returned
+            console.log('After addBook call, newBookId:', newBookId);
             
             if (newBookId) {
               // Open modal for book editing

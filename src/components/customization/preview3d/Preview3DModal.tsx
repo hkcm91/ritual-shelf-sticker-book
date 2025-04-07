@@ -20,27 +20,6 @@ const Preview3DModal: React.FC<Preview3DModalProps> = ({ open, onOpenChange }) =
     setIsFullscreen(!isFullscreen);
   };
 
-  // Force a specific z-index here
-  useEffect(() => {
-    if (open) {
-      // Find any open dialogs and set their z-index
-      const dialogOverlays = document.querySelectorAll('[data-radix-dialog-overlay]');
-      const dialogContents = document.querySelectorAll('[data-radix-dialog-content]');
-      
-      dialogOverlays.forEach(overlay => {
-        if (overlay.parentElement?.hasAttribute('data-preview-3d')) {
-          (overlay as HTMLElement).style.zIndex = '999';
-        }
-      });
-      
-      dialogContents.forEach(content => {
-        if (content.parentElement?.parentElement?.hasAttribute('data-preview-3d')) {
-          (content as HTMLElement).style.zIndex = '1000';
-        }
-      });
-    }
-  }, [open]);
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange} data-preview-3d="true">
       <DialogContent 
@@ -50,7 +29,6 @@ const Preview3DModal: React.FC<Preview3DModalProps> = ({ open, onOpenChange }) =
         style={{ 
           minWidth: isFullscreen ? '95vw' : 'auto',
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.45)',
-          zIndex: 1000 // Force a high z-index
         }}
         hideCloseButton={true}
       >

@@ -21,8 +21,6 @@ const Index = () => {
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
   
   console.log("[Index] Rendering with UI state:", ui);
-  console.log("[Index] Store modal state:", useBookshelfStore.getState().ui?.isCustomizationModalOpen);
-  console.log("[Index] Local modal state:", isCustomModalOpen);
   
   // Initialize the store and load customization only once
   useEffect(() => {
@@ -49,36 +47,20 @@ const Index = () => {
 
   // Sync with store for modal state
   useEffect(() => {
-    const storeState = useBookshelfStore.getState().ui?.isCustomizationModalOpen;
-    console.log("[Index] Syncing modal state with store:", storeState);
-    if (storeState !== isCustomModalOpen) {
-      setIsCustomModalOpen(!!storeState);
-    }
-  }, []);
-
-  // Subscribe to store changes for modal state
-  useEffect(() => {
-    console.log("[Index] Setting up subscription to customization modal state");
     const unsubscribe = useBookshelfStore.subscribe((state) => {
       const isOpen = state.ui?.isCustomizationModalOpen;
       console.log("[Index] Store subscription triggered - modal state changed to:", isOpen);
-      if (isOpen !== isCustomModalOpen) {
-        console.log("[Index] Updating local state to match store");
-        setIsCustomModalOpen(!!isOpen);
-      }
+      setIsCustomModalOpen(!!isOpen);
     });
     
     return unsubscribe;
-  }, [isCustomModalOpen]);
-
+  }, []);
+  
   const shelvesData = shelves as Record<string, ShelfData>;
   const currentShelf = activeShelfId ? shelvesData[activeShelfId] : null;
   
   const handleCustomizationOpenChange = (newOpen: boolean) => {
     console.log("[Index] handleCustomizationOpenChange called with:", newOpen);
-    console.log("[Index] Current store state before change:", useBookshelfStore.getState().ui?.isCustomizationModalOpen);
-    
-    setIsCustomModalOpen(newOpen);
     
     if (newOpen) {
       openCustomizationModal();
@@ -86,22 +68,10 @@ const Index = () => {
       closeCustomizationModal();
     }
     
-    // Force a store update to ensure reactivity
-    useBookshelfStore.setState(state => ({
-      ...state,
-      ui: {
-        ...state.ui,
-        isCustomizationModalOpen: newOpen
-      }
-    }));
-    
-    // Check if state was updated correctly
-    setTimeout(() => {
-      console.log("[Index] Store state after change:", useBookshelfStore.getState().ui?.isCustomizationModalOpen);
-    }, 100);
+    setIsCustomModalOpen(newOpen);
   };
   
-  // Force open modal with ESC key debugging
+  // Force open modal with keyboard debugging
   useEffect(() => {
     const forceOpenWithKeyboard = (e: KeyboardEvent) => {
       if (e.key === 'o' && e.ctrlKey && e.altKey) {
@@ -163,6 +133,7 @@ const Index = () => {
         Store state: {ui?.isCustomizationModalOpen ? 'Open' : 'Closed'} | 
         <button 
           onClick={() => {
+            console.log("[Index] Force open button clicked");
             openCustomizationModal();
             setIsCustomModalOpen(true);
           }}

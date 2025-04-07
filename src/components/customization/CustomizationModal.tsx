@@ -23,41 +23,14 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
 }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showSaveAnimation, setShowSaveAnimation] = useState(false);
-  const { saveCustomization, resetCustomization, ui } = useBookshelfStore();
+  const { saveCustomization, resetCustomization, closeCustomizationModal } = useBookshelfStore();
   
-  console.log("[CustomizationModal] RENDER CHECKING state - Dialog open:", open);
-  console.log("[CustomizationModal] RENDER CHECKING store state:", useBookshelfStore.getState().ui?.isCustomizationModalOpen);
+  console.log("[CustomizationModal] Rendering with open state:", open);
   
   // Direct synchronization with store on component mount and updates
   useEffect(() => {
-    const storeState = useBookshelfStore.getState().ui?.isCustomizationModalOpen;
-    console.log("[CustomizationModal] Effect on mount/update - store state:", storeState, "open prop:", open);
-    
-    if (storeState !== open) {
-      console.log("[CustomizationModal] Updating prop to match store");
-      onOpenChange(!!storeState);
-    }
-  }, [open, onOpenChange]);
-  
-  // Subscribe to store changes
-  useEffect(() => {
-    console.log("[CustomizationModal] Setting up subscription");
-    const unsubscribe = useBookshelfStore.subscribe((state) => {
-      console.log("[CustomizationModal] Store changed, checking modal state");
-      const storeState = state.ui?.isCustomizationModalOpen;
-      console.log("[CustomizationModal] Store state:", storeState, "current open prop:", open);
-      
-      if (storeState !== open) {
-        console.log("[CustomizationModal] Store and prop mismatch, updating via onOpenChange");
-        onOpenChange(!!storeState);
-      }
-    });
-    
-    return () => {
-      console.log("[CustomizationModal] Cleaning up subscription");
-      unsubscribe();
-    };
-  }, [open, onOpenChange]);
+    console.log("[CustomizationModal] Effect on mount/update - open prop:", open);
+  }, [open]);
   
   const handleSave = () => {
     saveCustomization();
@@ -98,18 +71,14 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
   // Debug-enhanced dialog open change handler
   const handleOpenChange = (newOpenState: boolean) => {
     console.log("[CustomizationModal] Dialog onOpenChange called with:", newOpenState);
-    console.log("[CustomizationModal] Current props.open value:", open);
     
     onOpenChange(newOpenState);
     
     // If dialog is being closed via UI interaction, update the store
     if (!newOpenState && open) {
       console.log("[CustomizationModal] Dialog closing via UI, updating store");
-      useBookshelfStore.getState().closeCustomizationModal();
+      closeCustomizationModal();
     }
-    
-    console.log("[CustomizationModal] After onOpenChange, store state:", 
-      useBookshelfStore.getState().ui?.isCustomizationModalOpen);
   };
 
   return (
@@ -126,6 +95,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.45)'
         }}
         hideCloseButton={true}
+        data-customization-modal="true"
       >
         {/* Background subtle animation */}
         <ModalBackground />

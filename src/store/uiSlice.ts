@@ -60,18 +60,12 @@ export const createUISlice: StateCreator<
   },
   
   openCustomizationModal: () => {
-    console.log("[UISlice] FIXING: Opening customization modal");
-    // Force a complete state replacement to ensure reactivity
-    const currentState = get();
-    set({ ...currentState, isCustomizationModalOpen: true });
-    console.log("[UISlice] State after opening:", get().isCustomizationModalOpen);
+    console.log("[UISlice] Opening customization modal");
+    set({ isCustomizationModalOpen: true });
   },
   
   closeCustomizationModal: () => {
-    console.log("[UISlice] FIXING: Closing customization modal");
-    // Force a complete state replacement to ensure reactivity
-    const currentState = get();
-    set({ ...currentState, isCustomizationModalOpen: false });
-    console.log("[UISlice] State after closing:", get().isCustomizationModalOpen);
+    console.log("[UISlice] Closing customization modal");
+    set({ isCustomizationModalOpen: false });
   }
 });

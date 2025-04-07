@@ -78,3 +78,54 @@
   --header-hover-bg: rgba(255, 255, 255, 0.15);
   --header-bg: rgba(33, 25, 19, 0.8);
 }
+
+/* Customizer UI classes */
+.customizer-section {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.customizer-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 0.5rem 0;
+}
+
+.customizer-section-content {
+  padding-left: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.color-preview {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+}
+
+.customizer-card {
+  background-color: var(--background);
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: all 0.2s ease;
+}
+
+.customizer-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Dialog size adjustment for better usability */
+.customizer-dialog {
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+.customizer-dialog-content {
+  max-height: calc(90vh - 6rem);
+  overflow-y: auto;
+}

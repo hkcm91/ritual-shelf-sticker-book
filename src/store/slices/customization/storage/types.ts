@@ -16,4 +16,5 @@ export interface StorageActions {
   resetCustomization: () => void;
 }
 
-export type StorageSliceCreator = CustomizationSliceCreator;
+// Use export type for re-exporting types with isolatedModules enabled
+export type { CustomizationSliceCreator as StorageSliceCreator };

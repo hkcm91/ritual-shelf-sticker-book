@@ -1,11 +1,11 @@
-
 import { toast } from 'sonner';
-import { StorageSliceCreator, defaultCustomization } from '../types';
+import { CustomizationSliceCreator } from '../types';
+import { defaultCustomization } from '../types';
 
 /**
  * Creates a slice with localStorage-related actions
  */
-export const createStorageActions: StorageSliceCreator = (set, get, api) => ({
+export const createStorageActions: CustomizationSliceCreator = (set, get, api) => ({
   saveCustomization: () => {
     try {
       // Save current state to localStorage

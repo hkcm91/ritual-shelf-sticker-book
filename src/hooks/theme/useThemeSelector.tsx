@@ -14,7 +14,7 @@ export function useThemeSelector() {
   
   // Safely set active theme
   const handleSetActiveTheme = useCallback((theme: ThemeName) => {
-    if (theme !== activeTheme && store.setActiveTheme) {
+    if (theme !== activeTheme && typeof store.setActiveTheme === 'function') {
       store.setActiveTheme(theme);
     } else if (theme !== activeTheme) {
       console.warn('setActiveTheme function not available in store');

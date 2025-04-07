@@ -156,7 +156,7 @@ export function useThemeApplication() {
         // If theme is not found, reset to default - but don't create an infinite loop
         if (activeTheme !== 'default') {
           const store = useBookshelfStore.getState();
-          if (store.setActiveTheme) {
+          if (typeof store.setActiveTheme === 'function') {
             setTimeout(() => {
               try {
                 store.setActiveTheme('default' as ThemeName);
@@ -175,7 +175,7 @@ export function useThemeApplication() {
       // Recover by setting to default theme, but avoid infinite loops
       if (activeTheme !== 'default') {
         const store = useBookshelfStore.getState();
-        if (store.setActiveTheme) {
+        if (typeof store.setActiveTheme === 'function') {
           setTimeout(() => {
             try {
               store.setActiveTheme('default' as ThemeName);

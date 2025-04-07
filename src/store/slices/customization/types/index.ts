@@ -5,7 +5,7 @@ import { ShelfStyling, ShelfDividers, ShelfStylingActions } from './shelfStyling
 import { PageStyle, PageStyleActions } from './page';
 import { ContainerStyle, ContainerStyleActions } from './container';
 import { SlotStyle, HeaderStyle, ElementStyleActions } from './elements';
-import { StorageActions } from './storage';
+import { StorageActions, ThemeActions } from './storage';
 
 // Define customization state structure - combining all interfaces
 export interface CustomizationState extends 
@@ -14,7 +14,8 @@ export interface CustomizationState extends
   PageStyleActions, 
   ContainerStyleActions,
   ElementStyleActions,
-  StorageActions {
+  StorageActions,
+  ThemeActions {
   // Theme - explicitly required, not optional
   activeTheme: ThemeName | string;
   
@@ -116,6 +117,7 @@ export const defaultCustomization: CustomizationState = {
   saveCustomization: () => {},
   loadCustomization: () => {},
   resetCustomization: () => {},
+  setActiveTheme: () => {},
 };
 
 // Re-export types for use in other files
@@ -133,5 +135,6 @@ export type {
   SlotStyle, 
   HeaderStyle, 
   ElementStyleActions,
-  StorageActions
+  StorageActions,
+  ThemeActions
 };

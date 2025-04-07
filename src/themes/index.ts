@@ -10,6 +10,7 @@ export const themes = {
   'cozy-cottage': cozyCottage,
 };
 
+// Add 'custom' to ThemeName type
 export type ThemeName = keyof typeof themes | 'custom';
 export type { Theme };
 

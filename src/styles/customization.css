@@ -23,7 +23,12 @@
   --shelf-thickness: 20px;
   --shelf-color: #8B5A2B;
   --shelf-bg-image: none;
+  --shelf-texture: url(/textures/default/wood.jpg);
   --shelf-opacity: 1;
+  
+  /* Dividers */
+  --divider-thickness: 2px;
+  --divider-color: #714621;
   
   /* Slots */
   --slot-add-button-bg: rgba(255, 255, 255, 0.9);
@@ -66,8 +71,9 @@ body {
 
 .wood-shelf {
   background-color: var(--shelf-color);
-  background-image: var(--shelf-bg-image);
+  background-image: var(--shelf-bg-image), var(--shelf-texture);
   background-size: cover;
+  background-position: center;
   opacity: var(--shelf-opacity);
   height: var(--shelf-thickness);
 }
@@ -98,4 +104,36 @@ header {
   background-color: var(--header-bg);
   background-image: var(--header-bg-image);
   color: var(--header-text-color);
+}
+
+/* Additional responsive styles for bookshelf */
+.bookshelf-wrapper {
+  height: calc(100vh - 64px); /* Adjust for header height */
+}
+
+/* Ensure book slots maintain proper sizing */
+.book-slot {
+  min-width: 150px;
+  min-height: 220px;
+  max-width: 180px;
+}
+
+/* Make sure the grid container adapts to available space */
+.grid-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: var(--shelf-thickness, 20px);
+}
+
+/* Improve responsive behavior */
+@media (max-width: 640px) {
+  .bookshelf-container {
+    padding: 8px;
+  }
+  
+  .book-slot {
+    min-width: 120px;
+    min-height: 180px;
+  }
 }

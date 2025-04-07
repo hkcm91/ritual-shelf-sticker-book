@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useBookshelfStore } from '../../store/bookshelfStore';
 import ShelfRow from './ShelfRow';
 import StorageUsage from '../StorageUsage';
@@ -39,21 +39,24 @@ const BookshelfGrid: React.FC = () => {
   
   return (
     <div 
-      className="bookshelf-wrapper p-4 md:p-8 overflow-auto max-w-full w-full"
+      className="bookshelf-wrapper p-4 md:p-8 overflow-auto max-w-full w-full h-full"
       style={{ 
         backgroundColor: 'var(--page-bg)',
         backgroundImage: 'var(--page-bg-image)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed'
+        backgroundSize: 'var(--page-bg-size, cover)',
+        backgroundPosition: 'var(--page-bg-position, center)',
+        backgroundAttachment: 'var(--page-bg-attachment, fixed)'
       }}
     >
       <div 
-        className="bookshelf-container relative flex flex-col items-center rounded-md p-6 shadow-lg max-w-full mx-auto transform-gpu"
+        className="bookshelf-container relative flex flex-col items-center rounded-md p-6 shadow-lg mx-auto transform-gpu min-w-fit"
         style={{ 
           transform: `scale(${zoomLevel})`,
           transformOrigin: 'top center',
-          width: 'max-content'
+          width: 'fit-content',
+          minWidth: `${columns * 160}px`, // Ensure minimum width based on columns
+          maxWidth: '100%',
+          overflow: 'hidden' // Prevent content from overflowing container
         }}
       >
         {/* Add storage usage indicator */}
@@ -61,7 +64,9 @@ const BookshelfGrid: React.FC = () => {
           <StorageUsage />
         </div>
         
-        {renderGrid()}
+        <div className="grid-container w-full">
+          {renderGrid()}
+        </div>
       </div>
     </div>
   );

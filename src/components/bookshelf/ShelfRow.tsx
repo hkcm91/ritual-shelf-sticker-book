@@ -18,7 +18,7 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
     const slots = [];
     
     // Access dividers from the customization state
-    const dividers = shelfStyling.dividers || { enabled: false, booksPerSection: 6 };
+    const dividers = shelfStyling?.dividers || { enabled: false, booksPerSection: 6 };
     
     for (let col = 0; col < columns; col++) {
       const position = rowIndex * columns + col;
@@ -30,8 +30,8 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
             key={`divider-${rowIndex}-${col}`}
             className="shelf-divider" 
             style={{
-              width: `var(--divider-thickness)`,
-              backgroundColor: `var(--divider-color)`,
+              width: `var(--divider-thickness, 2px)`,
+              backgroundColor: `var(--divider-color, #714621)`,
               height: '100%'
             }}
           />
@@ -50,13 +50,23 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
   };
 
   return (
-    <div className="flex flex-col">
-      <div className="flex justify-center space-x-2 p-2">
+    <div className="flex flex-col w-full">
+      <div className="flex justify-center items-stretch flex-wrap gap-2 p-2 min-h-[220px]">
         {renderSlots()}
       </div>
       
       {/* Shelf - using CSS variables */}
-      <div className="wood-shelf w-full mb-6"></div>
+      <div 
+        className="wood-shelf w-full mb-6"
+        style={{
+          height: `var(--shelf-thickness, 20px)`,
+          backgroundImage: `var(--shelf-bg-image, none), var(--shelf-texture, url(/textures/default/wood.jpg))`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundColor: `var(--shelf-color, #8B5A2B)`,
+          opacity: `var(--shelf-opacity, 1)`
+        }}
+      ></div>
     </div>
   );
 };

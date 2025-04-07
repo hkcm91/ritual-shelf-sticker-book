@@ -47,23 +47,6 @@ const BookshelfGrid: React.FC = () => {
   
   const { rows, columns } = activeShelf;
   
-  // Generate grid rows
-  const renderGrid = () => {
-    const grid = [];
-    
-    for (let row = 0; row < rows; row++) {
-      grid.push(
-        <ShelfRow
-          key={`row-${row}`}
-          rowIndex={row}
-          columns={columns}
-        />
-      );
-    }
-    
-    return grid;
-  };
-  
   return (
     <div 
       ref={containerRef}
@@ -97,8 +80,14 @@ const BookshelfGrid: React.FC = () => {
           <StorageUsage />
         </div>
         
-        <div className="grid-container w-full">
-          {renderGrid()}
+        <div className="grid-container w-full flex flex-col">
+          {Array.from({ length: rows }).map((_, index) => (
+            <ShelfRow
+              key={`row-${index}`}
+              rowIndex={index}
+              columns={columns}
+            />
+          ))}
         </div>
       </div>
       

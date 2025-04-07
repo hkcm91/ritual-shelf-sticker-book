@@ -106,12 +106,18 @@
 
 /* Bookshelf grid styles */
 .bookshelf-grid {
-  display: grid;
-  width: 100%;
   margin: 0 auto;
   padding: 1rem;
-  grid-gap: 0;
-  grid-auto-rows: minmax(150px, auto);
+  gap: 1rem;
+}
+
+/* Fix for row visibility - ensure rows are properly displayed */
+.shelf-row {
+  margin-bottom: 2rem;
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
 /* Book slot styles */
@@ -147,21 +153,8 @@
 }
 
 /* Shelf styling */
-.shelf-row {
-  position: relative;
+.wood-shelf {
+  margin-top: 0.5rem;
   margin-bottom: 1rem;
-}
-
-.shelf-background {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: var(--shelf-thickness, 20px);
-  background-color: var(--shelf-color, #8B5A2B);
-  background-image: var(--shelf-texture, none);
-  background-size: 100px 100px;
-  background-repeat: repeat;
-  opacity: var(--shelf-opacity, 1);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  min-height: 20px;
 }

@@ -32,9 +32,9 @@ const BookshelfGrid: React.FC = () => {
       style={containerStyles}
     >
       <div 
-        className="bookshelf-grid"
+        className="bookshelf-grid flex flex-col"
         style={{ 
-          gridTemplateColumns: `repeat(${columns}, 1fr)` 
+          width: `calc(${columns} * 160px + 2rem)`
         }}
       >
         {Array.from({ length: rows }).map((_, rowIndex) => (

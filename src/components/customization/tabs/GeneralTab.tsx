@@ -3,15 +3,13 @@ import React from 'react';
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import ColorPicker from "@/components/customization/ColorPicker";
-import FileInputField from "@/components/customization/FileInputField";
 import { useBookshelfStore } from "@/store/bookshelfStore";
 import ThemeSelector from '@/components/settings/ThemeSelector';
 
 const GeneralTab: React.FC = () => {
   const { 
     page, 
-    updatePageBackground, 
-    updatePageBackgroundImage 
+    updatePageBackground
   } = useBookshelfStore();
 
   return (
@@ -31,24 +29,15 @@ const GeneralTab: React.FC = () => {
       <div>
         <h3 className="text-lg font-medium">Page Background</h3>
         <p className="text-sm text-muted-foreground">
-          Customize the background of the entire page.
+          Customize the background color of the entire page.
         </p>
         
         <div className="space-y-4 mt-4">
           <div className="space-y-2">
             <Label>Background Color</Label>
             <ColorPicker 
-              color={page.background} 
+              color={page?.background || '#f5f5f5'} 
               onChange={updatePageBackground}
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label>Background Image</Label>
-            <FileInputField
-              value={page.backgroundImage}
-              onChange={updatePageBackgroundImage}
-              placeholder="Enter background image URL"
             />
           </div>
         </div>

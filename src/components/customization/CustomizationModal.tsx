@@ -6,27 +6,24 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useBookshelfStore } from "@/store/bookshelfStore";
 import { 
   Palette, 
-  Image, 
   CircleOff,
   CircleDashed,
   SquareDashedBottomCode,
   SquareStack,
-  Layers,
   AppWindow
 } from "lucide-react";
 
-// Import tab content components
+// Import tab content components (we'll focus on only the most important ones)
 import GeneralTab from './tabs/GeneralTab';
 import ContainerTab from './tabs/ContainerTab';
 import ShelvesTab from './tabs/ShelvesTab';
-import SlotsTab from './tabs/SlotsTab';
-import HeaderTab from './tabs/HeaderTab';
 
 export interface CustomizationModalProps {
   open: boolean;
@@ -48,6 +45,9 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
             <Palette className="mr-2 h-5 w-5" /> 
             Ritual Shelf Customization
           </DialogTitle>
+          <DialogDescription>
+            Customize the appearance of your bookshelf
+          </DialogDescription>
         </DialogHeader>
         
         <Tabs defaultValue="general" className="w-full">
@@ -59,13 +59,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
               <SquareDashedBottomCode className="mr-1 h-4 w-4" /> Bookshelf Container
             </TabsTrigger>
             <TabsTrigger value="shelves" className="flex items-center">
-              <SquareStack className="mr-1 h-4 w-4" /> Shelves & Dividers
-            </TabsTrigger>
-            <TabsTrigger value="slots" className="flex items-center">
-              <Layers className="mr-1 h-4 w-4" /> Slots & Interactions
-            </TabsTrigger>
-            <TabsTrigger value="header" className="flex items-center">
-              <Image className="mr-1 h-4 w-4" /> Header
+              <SquareStack className="mr-1 h-4 w-4" /> Shelves
             </TabsTrigger>
           </TabsList>
           
@@ -82,16 +76,6 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
           {/* Shelves Tab */}
           <TabsContent value="shelves" className="space-y-6">
             <ShelvesTab />
-          </TabsContent>
-          
-          {/* Slots Tab */}
-          <TabsContent value="slots" className="space-y-6">
-            <SlotsTab />
-          </TabsContent>
-          
-          {/* Header Tab */}
-          <TabsContent value="header" className="space-y-6">
-            <HeaderTab />
           </TabsContent>
         </Tabs>
         

@@ -108,7 +108,7 @@ export interface CustomizationState {
 }
 
 // Default values
-export const defaultCustomization = {
+export const defaultCustomization: CustomizationState = {
   activeTheme: 'default',
   
   page: {
@@ -153,7 +153,30 @@ export const defaultCustomization = {
   },
   ui: {
     isCustomizationModalOpen: false,
-  }
+  },
+  
+  // These will be implemented by the slices
+  openCustomizationModal: () => {},
+  closeCustomizationModal: () => {},
+  updatePageBackground: () => {},
+  updatePageBackgroundImage: () => {},
+  updateContainerBackground: () => {},
+  updateContainerBackgroundImage: () => {},
+  updateContainerOpacity: () => {},
+  updateContainerBorder: () => {},
+  updateContainerPadding: () => {},
+  updateShelfThickness: () => {},
+  updateShelfColor: () => {},
+  updateShelfBackgroundImage: () => {},
+  updateShelfOpacity: () => {},
+  toggleDividers: () => {},
+  updateDividersSetting: () => {},
+  updateSlotSetting: () => {},
+  updateHeaderSetting: () => {},
+  setActiveTheme: () => {},
+  saveCustomization: () => {},
+  loadCustomization: () => {},
+  resetCustomization: () => {},
 };
 
 // Type for slice creators
@@ -161,7 +184,7 @@ export type CustomizationSliceCreator = StateCreator<
   BookshelfState,
   [],
   [],
-  CustomizationState
+  Partial<CustomizationState>
 >;
 
 // Type for slice actions only

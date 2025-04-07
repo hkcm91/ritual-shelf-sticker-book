@@ -1,41 +1,29 @@
 
-import { z } from 'zod';
-
-// Types
-export type BookData = {
+export interface BookData {
   id: string;
   title: string;
   author: string;
-  coverURL: string;
-  series?: string;
-  progress: number;
-  rating: number;
+  coverURL: string | undefined;
+  notes?: string;
   position: number;
   shelfId: string;
-  characters?: string;
-  plot?: string;
-  notes?: string;
-  quizzes?: {question: string, answer: string}[];
   isSticker?: boolean;
-  opacity?: number;
-  hidden?: boolean;
-  originalPosition?: number;
-};
+  position2D?: { x: number; y: number };
+  scale?: number;
+  rotation?: number;
+  date?: string;
+  color?: string;
+}
 
-export type ShelfData = {
+export interface ShelfData {
   id: string;
   name: string;
   rows: number;
   columns: number;
-  backgroundColor?: string;
-  backgroundOpacity?: number;
   backgroundImage?: string;
   textureImage?: string;
+  backgroundColor?: string;
+  backgroundOpacity?: number;
   shelfColor?: string;
   shelfOpacity?: number;
-};
-
-export type StickerScale = number;
-export type StickerRotation = number;
-
-// Validation schemas can be added here if needed
+}

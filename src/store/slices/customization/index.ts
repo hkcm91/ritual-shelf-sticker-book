@@ -7,11 +7,11 @@ import { createShelvesSlice } from './shelvesSlice';
 import { createSlotsSlice } from './slotsSlice';
 import { createHeaderSlice } from './headerSlice';
 import { createStorageSlice } from './storageSlice';
-import { CustomizationSliceCreator, CustomizationState } from './types';
+import { CustomizationSliceCreator } from './types';
 
 export const createCustomizationSlice: CustomizationSliceCreator = (set, get, api) => {
-  // Combine all slices with default values, ensuring all required properties are present
-  const sliceWithActions = {
+  // Combine all slices with default values
+  return {
     // Default state values first (these are all the required properties)
     ...defaultCustomization,
     
@@ -24,9 +24,6 @@ export const createCustomizationSlice: CustomizationSliceCreator = (set, get, ap
     ...createHeaderSlice(set, get, api),
     ...createStorageSlice(set, get, api)
   };
-  
-  // Make sure this is a complete CustomizationState
-  return sliceWithActions as CustomizationState;
 };
 
 // Export types

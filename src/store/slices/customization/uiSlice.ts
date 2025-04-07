@@ -1,5 +1,5 @@
 
-import { CustomizationSliceCreator, CustomizationActionSlice } from './types';
+import { CustomizationSliceCreator } from './types';
 
 export const createUISlice: CustomizationSliceCreator = (set) => ({
   // UI actions

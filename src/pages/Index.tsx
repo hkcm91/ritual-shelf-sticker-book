@@ -8,9 +8,10 @@ import Header from '../components/layout/Header';
 import ShelfDialogs from '../components/shelf/ShelfDialogs';
 import { ShelfData } from '../store/types';
 import { useTheme } from '@/hooks/useTheme';
+import CustomizationModal from '@/components/customization/CustomizationModal';
 
 const Index = () => {
-  const { shelves, activeShelfId } = useBookshelfStore();
+  const { shelves, activeShelfId, ui } = useBookshelfStore();
   const [isNewShelfModalOpen, setIsNewShelfModalOpen] = useState(false);
   const [newShelfName, setNewShelfName] = useState("");
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
@@ -63,6 +64,18 @@ const Index = () => {
         setIsRenameModalOpen={setIsRenameModalOpen}
         renameValue={renameValue}
         setRenameValue={setRenameValue}
+      />
+      
+      <CustomizationModal 
+        open={ui?.isCustomizationModalOpen || false} 
+        onOpenChange={(open) => {
+          const { openCustomizationModal, closeCustomizationModal } = useBookshelfStore.getState();
+          if (open) {
+            openCustomizationModal();
+          } else {
+            closeCustomizationModal();
+          }
+        }} 
       />
     </div>
   );

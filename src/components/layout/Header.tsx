@@ -1,70 +1,61 @@
 
 import React from 'react';
-import { Button } from "@/components/ui/button";
-import { Palette } from "lucide-react";
+import { Button } from '@/components/ui/button';
+import { PlusCircle, Pencil } from 'lucide-react';
 import ShelfSelector from './ShelfSelector';
-import HeaderAuthButton from '../Header';
-import ShelfControls from '../ShelfControls';
-import BookSearchDrawer from '../BookSearchDrawer';
-import { useBookshelfStore } from '../../store/bookshelfStore';
-import CustomizationModal from '../customization/CustomizationModal';
-import { ShelfData } from '../../store/types';
+import { ShelfData } from '@/store/types';
 
-type HeaderProps = {
+export interface HeaderProps {
   currentShelf: ShelfData | null;
-  setIsNewShelfModalOpen: (open: boolean) => void;
-  setIsRenameModalOpen: (open: boolean) => void;
+  setIsNewShelfModalOpen: (isOpen: boolean) => void;
+  setIsRenameModalOpen: (isOpen: boolean) => void;
   setRenameValue: (value: string) => void;
-  setShowBgImageDialog: (show: boolean) => void;
-};
+}
 
 const Header: React.FC<HeaderProps> = ({
   currentShelf,
   setIsNewShelfModalOpen,
   setIsRenameModalOpen,
-  setRenameValue,
-  setShowBgImageDialog
+  setRenameValue
 }) => {
-  const { ui, openCustomizationModal, closeCustomizationModal } = useBookshelfStore();
-  
+  const handleRenameClick = () => {
+    if (currentShelf) {
+      setRenameValue(currentShelf.name);
+      setIsRenameModalOpen(true);
+    }
+  };
+
   return (
-    <header className="shadow-md sticky top-0 z-30 px-4 py-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <ShelfSelector 
-            currentShelf={currentShelf}
-            setIsRenameModalOpen={setIsRenameModalOpen}
-            setRenameValue={setRenameValue}
-            setIsNewShelfModalOpen={setIsNewShelfModalOpen}
-          />
-        </div>
+    <header className="px-4 py-2 flex justify-between items-center shadow-sm">
+      <div className="flex items-center gap-4">
+        <h1 className="text-xl font-semibold">Ritual Bookshelf</h1>
         
-        <div className="flex items-center space-x-3">
-          <HeaderAuthButton />
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => openCustomizationModal()}
-            className="bg-white/90 hover:bg-white text-gray-700"
-            title="Customize Appearance"
-          >
-            <Palette className="h-4 w-4" />
-          </Button>
-          <ShelfControls />
-          <BookSearchDrawer />
+        <div className="flex items-center gap-2">
+          <ShelfSelector />
+          
+          {currentShelf && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleRenameClick}
+              className="rounded-full"
+              title="Rename Shelf"
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+          )}
         </div>
       </div>
       
-      <CustomizationModal 
-        open={ui?.isCustomizationModalOpen || false} 
-        onOpenChange={(open) => {
-          if (open) {
-            openCustomizationModal();
-          } else {
-            closeCustomizationModal();
-          }
-        }} 
-      />
+      <div className="flex items-center gap-2">
+        <Button 
+          size="sm"
+          onClick={() => setIsNewShelfModalOpen(true)}
+        >
+          <PlusCircle className="h-4 w-4 mr-2" />
+          New Shelf
+        </Button>
+      </div>
     </header>
   );
 };

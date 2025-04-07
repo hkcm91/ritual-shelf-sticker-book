@@ -32,13 +32,6 @@ const BookshelfGrid: React.FC = () => {
     return rows;
   };
   
-  // Get divider settings for the frame
-  const dividers = shelfStyling?.dividers || {
-    thickness: 8,
-    color: '#714621',
-    opacity: 1
-  };
-  
   // Determine if we should use realistic shelf styling
   const useRealisticStyle = activeTheme === 'default' || activeTheme === 'custom';
   
@@ -60,23 +53,6 @@ const BookshelfGrid: React.FC = () => {
         overflow: 'hidden'
       }}
     >
-      {/* Only show frame if dividers are enabled */}
-      {shelfStyling?.dividers?.enabled && (
-        <div 
-          className="bookshelf-frame absolute inset-0 pointer-events-none z-20"
-          style={{
-            borderWidth: `${dividers.thickness || 8}px`,
-            borderStyle: 'solid',
-            borderColor: dividers.color || '#714621',
-            backgroundImage: `url(${shelfTexture})`,
-            backgroundSize: '100% 100%',
-            opacity: dividers.opacity || 1,
-            borderRadius: `${container?.borderRadius ? container.borderRadius - 4 : 4}px`,
-            boxShadow: 'inset 0 0 15px rgba(0,0,0,0.3)'
-          }}
-        />
-      )}
-      
       <div className="bookshelf-rows relative z-10">
         {renderShelfRows()}
       </div>

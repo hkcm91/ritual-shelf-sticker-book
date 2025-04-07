@@ -1,26 +1,22 @@
 
-import { StateCreator } from 'zustand';
-import { BookshelfState } from '../../../bookshelfStore';
-import { ThemeName } from '@/themes';
-
-// Update the type for slice creators to match the change in index.ts
-export type CustomizationSliceCreator = StateCreator<
-  BookshelfState,
-  [],
-  [],
-  Partial<BookshelfState>
->;
-
-// Type for slice actions only
-export type CustomizationActionSlice = Partial<BookshelfState>;
-
-// Base interface for UI state
+// Base customization state interfaces
 export interface UIState {
   isCustomizationModalOpen: boolean;
+  linkDividerToShelfColor: boolean;
 }
 
-// UI Actions
 export interface UIActions {
   openCustomizationModal: () => void;
   closeCustomizationModal: () => void;
+  setLinkDividerToShelfColor: (linked: boolean) => void;
 }
+
+// Type for customization slice creation functions
+export type CustomizationSliceCreator = (
+  set: <T extends Object>(
+    partial: T | ((state: any) => T),
+    replace?: boolean | undefined
+  ) => void,
+  get: () => any,
+  api: any
+) => any;

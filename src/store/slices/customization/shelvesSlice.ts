@@ -7,9 +7,22 @@ export const createShelvesSlice: CustomizationSliceCreator = (set) => ({
     shelfStyling: { ...state.shelfStyling, thickness }
   })),
   
-  updateShelfColor: (color: string) => set((state) => ({
-    shelfStyling: { ...state.shelfStyling, color }
-  })),
+  updateShelfColor: (color: string) => set((state) => {
+    const newState = {
+      shelfStyling: { ...state.shelfStyling, color }
+    };
+    
+    // Auto-update divider color if they are linked
+    if (state.shelfStyling.dividers.enabled && 
+        state.ui.linkDividerToShelfColor) {
+      newState.shelfStyling.dividers = {
+        ...state.shelfStyling.dividers,
+        color: color
+      };
+    }
+    
+    return newState;
+  }),
   
   updateShelfBackgroundImage: (url: string) => set((state) => ({
     shelfStyling: { ...state.shelfStyling, backgroundImage: url }
@@ -20,12 +33,26 @@ export const createShelvesSlice: CustomizationSliceCreator = (set) => ({
   })),
   
   // Divider settings
-  toggleDividers: (enabled: boolean) => set((state) => ({
-    shelfStyling: { 
-      ...state.shelfStyling, 
-      dividers: { ...state.shelfStyling.dividers, enabled } 
-    }
-  })),
+  toggleDividers: (enabled: boolean) => set((state) => {
+    // When enabling dividers, set defaults that look good
+    const dividers = enabled ? {
+      ...state.shelfStyling.dividers,
+      enabled,
+      // If this is the first time enabling, use good defaults
+      thickness: state.shelfStyling.dividers.thickness || a6,
+      color: state.shelfStyling.dividers.color || state.shelfStyling.color,
+      opacity: state.shelfStyling.dividers.opacity || 0.8
+    } : { ...state.shelfStyling.dividers, enabled };
+    
+    return {
+      shelfStyling: { 
+        ...state.shelfStyling, 
+        dividers 
+      },
+      // When enabling, also turn on linking by default
+      ui: enabled ? { ...state.ui, linkDividerToShelfColor: true } : state.ui
+    };
+  }),
   
   updateDividersSetting: (property: 'booksPerSection' | 'booksPerRow' | 'thickness' | 'color' | 'orientation' | 'opacity', value: any) => set((state) => ({
     shelfStyling: { 

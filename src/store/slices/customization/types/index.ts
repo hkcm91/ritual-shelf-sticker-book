@@ -66,11 +66,11 @@ export const defaultCustomization: CustomizationState = {
     opacity: 1,
     dividers: {
       enabled: false,
-      booksPerSection: 6,
-      booksPerRow: 2,
-      thickness: 2,
+      booksPerSection: 4,
+      booksPerRow: 1,
+      thickness: 6,
       color: '#a37d4f',
-      opacity: 1,
+      opacity: 0.8,
       orientation: 'vertical'
     },
   },
@@ -90,11 +90,13 @@ export const defaultCustomization: CustomizationState = {
   },
   ui: {
     isCustomizationModalOpen: false,
+    linkDividerToShelfColor: true,
   },
   
   // Initialize all action functions
   openCustomizationModal: () => {},
   closeCustomizationModal: () => {},
+  setLinkDividerToShelfColor: () => {},
   updatePageBackground: () => {},
   updatePageBackgroundImage: () => {},
   updatePageSetting: () => {},

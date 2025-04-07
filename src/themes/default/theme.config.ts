@@ -25,9 +25,9 @@ const defaultTheme: Theme = {
     '--shelf-opacity': '1',
     
     // Dividers - match with shelf color for consistency
-    '--divider-thickness': '8px',
+    '--divider-thickness': '6px',
     '--divider-color': '#714621',
-    '--divider-opacity': '1',
+    '--divider-opacity': '0.8',
     
     // Slots
     '--add-button-bg': 'rgba(255, 255, 255, 0.9)',

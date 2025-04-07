@@ -20,34 +20,13 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
     // Access dividers from the customization state
     const dividers = shelfStyling?.dividers || { 
       enabled: false, 
-      booksPerSection: 6,
-      booksPerRow: 2,
+      booksPerSection: 4,
+      booksPerRow: 1,
       orientation: 'vertical',
-      thickness: 2,
+      thickness: 6,
       color: '#714621',
-      opacity: 1
+      opacity: 0.8
     };
-    
-    // Add a horizontal divider for this row if needed
-    const needsHorizontalDivider = dividers.enabled && 
-      ['horizontal', 'both'].includes(dividers.orientation) &&
-      rowIndex > 0 && 
-      rowIndex % (dividers.booksPerRow || 2) === 0;
-    
-    if (needsHorizontalDivider) {
-      slots.push(
-        <div 
-          key={`hdivider-${rowIndex}`}
-          className="horizontal-shelf-divider" 
-          style={{
-            height: `${dividers.thickness || 2}px`,
-            backgroundColor: dividers.color || '#714621',
-            backgroundImage: `url(${shelf?.textureImage || '/lovable-uploads/7a437784-0910-4719-b52b-6564c3004ebe.png'})`,
-            opacity: dividers.opacity
-          }}
-        />
-      );
-    }
     
     // Add the book slots with vertical dividers if needed
     const slotRow = [];
@@ -56,17 +35,16 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
       
       // Add vertical divider if needed and if it's not the first column
       if (dividers.enabled && 
-          ['vertical', 'both'].includes(dividers.orientation) && 
+          (dividers.orientation === 'vertical' || dividers.orientation === 'both') && 
           col > 0 && 
-          col % (dividers.booksPerSection || 6) === 0) {
+          col % dividers.booksPerSection === 0) {
         slotRow.push(
           <div 
             key={`vdivider-${rowIndex}-${col}`}
             className="vertical-shelf-divider" 
             style={{
-              width: `${dividers.thickness || 2}px`,
-              backgroundColor: dividers.color || '#714621',
-              backgroundImage: `url(${shelf?.textureImage || '/lovable-uploads/7a437784-0910-4719-b52b-6564c3004ebe.png'})`,
+              width: `${dividers.thickness}px`,
+              backgroundColor: dividers.color,
               opacity: dividers.opacity
             }}
           />
@@ -115,6 +93,24 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
       
       {/* Render books and dividers */}
       {renderSlots()}
+      
+      {/* Add horizontal divider if needed and it's not the last row */}
+      {shelfStyling?.dividers?.enabled && 
+       (shelfStyling.dividers.orientation === 'horizontal' || shelfStyling.dividers.orientation === 'both') && 
+       rowIndex < shelf?.rows - 1 &&
+       (rowIndex + 1) % (shelfStyling.dividers.booksPerRow || 1) === 0 && (
+        <div 
+          className="horizontal-shelf-divider"
+          style={{
+            height: `${shelfStyling.dividers.thickness}px`,
+            backgroundColor: shelfStyling.dividers.color,
+            opacity: shelfStyling.dividers.opacity,
+            width: '100%',
+            position: 'relative',
+            zIndex: 5
+          }}
+        />
+      )}
       
       {/* Shelf */}
       <div 

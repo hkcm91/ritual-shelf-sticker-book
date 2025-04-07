@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Library, Palette, Settings } from 'lucide-react';
+import { Palette, Settings, Book } from 'lucide-react';
 import ShelfSelector from './ShelfSelector';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 import BookSearchDrawer from '../BookSearchDrawer';
@@ -45,6 +45,9 @@ const Header: React.FC = () => {
       }}
     >
       <div className="flex items-center gap-4">
+        {/* Library Search button moved to the left */}
+        <BookSearchDrawer />
+        
         {!isMobile && (
           <NavigationMenu>
             <NavigationMenuList>
@@ -66,8 +69,6 @@ const Header: React.FC = () => {
       </div>
       
       <div className="flex items-center gap-3">
-        <BookSearchDrawer />
-        
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>

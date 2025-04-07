@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, Book as BookIcon, Plus, Library } from 'lucide-react';
+import { Search, Book, Plus, Library } from 'lucide-react';
 import { searchBooks, getCoverImageUrl, OpenLibraryBook } from '@/services/openLibraryService';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 import { toast } from 'sonner';
@@ -64,13 +64,16 @@ const BookSearchDrawer = () => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="outline" size="sm" className="flex items-center gap-2">
-                <Library size={16} />
-                <span className="hidden md:inline">Library Search</span>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="text-[color:var(--header-text-color,white)] hover:text-[color:var(--header-text-color,white)] hover:bg-[color:var(--header-hover-bg,rgba(255,255,255,0.1))]"
+              >
+                <Book size={18} className="animate-pulse" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Search books to add</p>
+              <p>Library Search</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

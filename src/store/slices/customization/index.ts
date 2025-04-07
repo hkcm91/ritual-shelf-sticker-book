@@ -11,7 +11,7 @@ import { CustomizationSliceCreator, CustomizationState } from './types';
 
 export const createCustomizationSlice: CustomizationSliceCreator = (set, get, api) => {
   // Combine all slices with default values, ensuring all required properties are present
-  return {
+  const sliceWithActions = {
     // Default state values first (these are all the required properties)
     ...defaultCustomization,
     
@@ -23,7 +23,10 @@ export const createCustomizationSlice: CustomizationSliceCreator = (set, get, ap
     ...createSlotsSlice(set, get, api),
     ...createHeaderSlice(set, get, api),
     ...createStorageSlice(set, get, api)
-  } as CustomizationState; // Assert this is a complete CustomizationState
+  };
+  
+  // Make sure this is a complete CustomizationState
+  return sliceWithActions as CustomizationState;
 };
 
 // Export types

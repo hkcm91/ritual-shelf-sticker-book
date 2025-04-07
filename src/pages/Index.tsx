@@ -6,8 +6,8 @@ import BookModal from '../components/BookModal';
 import { toast } from 'sonner';
 import Header from '../components/layout/Header';
 import ShelfDialogs from '../components/shelf/ShelfDialogs';
-import BackgroundSettings from '../components/settings/BackgroundSettings';
 import { ShelfData } from '../store/types';
+import { useTheme } from '@/hooks/useTheme';
 
 const Index = () => {
   const { shelves, activeShelfId } = useBookshelfStore();
@@ -16,10 +16,8 @@ const Index = () => {
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [renameValue, setRenameValue] = useState("");
   
-  // Background customization (kept for backward compatibility)
-  const [showBgImageDialog, setShowBgImageDialog] = useState<boolean>(false);
-  const [bgImage, setBgImage] = useState<string | null>(null);
-  const [bgImageUrl, setBgImageUrl] = useState<string>('');
+  // Initialize the theme
+  useTheme();
   
   // Initialize the store and load customization
   useEffect(() => {
@@ -37,18 +35,6 @@ const Index = () => {
       });
     }
   }, []);
-  
-  // Load background from localStorage (for backward compatibility)
-  useEffect(() => {
-    try {
-      const savedBgImage = localStorage.getItem('webpage-background-image');
-      if (savedBgImage) {
-        setBgImage(savedBgImage);
-      }
-    } catch (error) {
-      console.error('Error loading background from localStorage:', error);
-    }
-  }, []);
 
   const shelvesData = shelves as Record<string, ShelfData>;
   const currentShelf = activeShelfId ? shelvesData[activeShelfId] : null;
@@ -60,7 +46,6 @@ const Index = () => {
         setIsNewShelfModalOpen={setIsNewShelfModalOpen}
         setIsRenameModalOpen={setIsRenameModalOpen}
         setRenameValue={setRenameValue}
-        setShowBgImageDialog={setShowBgImageDialog}
       />
       
       <div className="flex-grow w-full overflow-auto">
@@ -78,15 +63,6 @@ const Index = () => {
         setIsRenameModalOpen={setIsRenameModalOpen}
         renameValue={renameValue}
         setRenameValue={setRenameValue}
-      />
-      
-      <BackgroundSettings 
-        showBgImageDialog={showBgImageDialog}
-        setShowBgImageDialog={setShowBgImageDialog}
-        bgImage={bgImage}
-        setBgImage={setBgImage}
-        bgImageUrl={bgImageUrl}
-        setBgImageUrl={setBgImageUrl}
       />
     </div>
   );

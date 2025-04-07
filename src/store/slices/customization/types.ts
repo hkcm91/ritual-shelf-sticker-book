@@ -1,6 +1,7 @@
 
 import { StateCreator } from 'zustand';
 import { BookshelfState } from '../../bookshelfStore';
+import { ThemeName } from '@/themes';
 
 // Define styling interfaces
 export interface ShelfStyling {
@@ -18,6 +19,10 @@ export interface ShelfStyling {
 
 // Define customization state structure
 export interface CustomizationState {
+  // Theme
+  activeTheme: ThemeName | string;
+  setActiveTheme: (themeName: ThemeName | string) => void;
+  
   // General theme settings
   page: {
     background: string;
@@ -104,6 +109,8 @@ export interface CustomizationState {
 
 // Default values
 export const defaultCustomization = {
+  activeTheme: 'default',
+  
   page: {
     background: '#f5f5f5',
     backgroundImage: '',
@@ -154,7 +161,7 @@ export type CustomizationSliceCreator = StateCreator<
   BookshelfState,
   [],
   [],
-  CustomizationActionSlice
+  CustomizationState
 >;
 
 // Type for slice actions only

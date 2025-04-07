@@ -1,55 +1,73 @@
 
-import { toast } from 'sonner';
 import { CustomizationSliceCreator } from './types';
-import { defaultCustomization } from './types';
+import { toast } from 'sonner';
 
 export const createStorageSlice: CustomizationSliceCreator = (set, get) => ({
-  // Save all customization settings to localStorage
+  activeTheme: 'default',
+  
+  setActiveTheme: (themeName) => {
+    set({ activeTheme: themeName });
+    localStorage.setItem('bookshelf-active-theme', themeName);
+    toast.success(`Theme changed to ${themeName}`);
+  },
+  
   saveCustomization: () => {
     try {
-      const state = get();
-      const { page, container, shelfStyling, slots, header } = state;
+      // Save current state to localStorage
+      const { page, container, shelfStyling, slots, header, activeTheme } = get();
       
-      const settings = { page, container, shelfStyling, slots, header };
-      localStorage.setItem('ritual-shelf-customization', JSON.stringify(settings));
+      localStorage.setItem('bookshelf-customization', JSON.stringify({
+        page, 
+        container, 
+        shelfStyling, 
+        slots, 
+        header,
+        activeTheme
+      }));
+      
       toast.success('Customization settings saved');
     } catch (error) {
-      console.error('Error saving customization settings:', error);
+      console.error('Failed to save customization:', error);
       toast.error('Failed to save customization settings');
     }
   },
   
-  // Load customization settings from localStorage
   loadCustomization: () => {
     try {
-      const savedSettings = localStorage.getItem('ritual-shelf-customization');
-      if (savedSettings) {
-        const parsed = JSON.parse(savedSettings);
-        
-        set((state) => ({
-          page: parsed.page || state.page,
-          container: parsed.container || state.container,
-          shelfStyling: parsed.shelfStyling || state.shelfStyling,
-          slots: parsed.slots || state.slots,
-          header: parsed.header || state.header
-        }));
+      // Load from localStorage
+      const savedCustomization = localStorage.getItem('bookshelf-customization');
+      const savedTheme = localStorage.getItem('bookshelf-active-theme');
+      
+      if (savedCustomization) {
+        const parsed = JSON.parse(savedCustomization);
+        set(parsed);
       }
+      
+      if (savedTheme) {
+        set({ activeTheme: savedTheme });
+      }
+      
     } catch (error) {
-      console.error('Error loading customization settings:', error);
+      console.error('Failed to load customization:', error);
+      toast.error('Failed to load saved customization settings');
     }
   },
   
-  // Reset to default settings
   resetCustomization: () => {
-    set({
-      page: defaultCustomization.page,
-      container: defaultCustomization.container,
-      shelfStyling: defaultCustomization.shelfStyling,
-      slots: defaultCustomization.slots,
-      header: defaultCustomization.header
-    });
-    
-    localStorage.removeItem('ritual-shelf-customization');
-    toast.success('Customization settings reset to defaults');
-  }
+    try {
+      // Reset to default values
+      const { defaultCustomization } = require('./types');
+      set(defaultCustomization);
+      set({ activeTheme: 'default' });
+      
+      // Remove from localStorage
+      localStorage.removeItem('bookshelf-customization');
+      localStorage.removeItem('bookshelf-active-theme');
+      
+      toast.success('Customization settings reset to defaults');
+    } catch (error) {
+      console.error('Failed to reset customization:', error);
+      toast.error('Failed to reset customization settings');
+    }
+  },
 });

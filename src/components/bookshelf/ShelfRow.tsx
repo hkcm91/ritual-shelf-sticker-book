@@ -51,10 +51,10 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
           className="vertical-shelf-divider shelf-side-left" 
           style={{
             width: `${dividers.thickness}px`,
-            height: `${dividers.height}px`,
             backgroundColor: dividers.color,
             backgroundImage: `url(${shelfTexture})`,
-            opacity: dividers.opacity
+            opacity: dividers.opacity,
+            height: `${dividers.height}px`
           }} 
         />
       );
@@ -70,10 +70,10 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
             key={`vdivider-${rowIndex}-${col}`} 
             style={{
               width: `${dividers.thickness}px`,
-              height: `${dividers.height}px`,
               backgroundColor: dividers.color,
               backgroundImage: `url(${shelfTexture})`,
-              opacity: dividers.opacity
+              opacity: dividers.opacity,
+              height: `${dividers.height}px`
             }} 
             className="vertical-shelf-divider" 
           />
@@ -90,10 +90,10 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
           className="vertical-shelf-divider shelf-side-right" 
           style={{
             width: `${dividers.thickness}px`,
-            height: `${dividers.height}px`,
             backgroundColor: dividers.color,
             backgroundImage: `url(${shelfTexture})`,
-            opacity: dividers.opacity
+            opacity: dividers.opacity,
+            height: `${dividers.height}px`
           }} 
         />
       );
@@ -115,18 +115,15 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
   // Get custom shelf texture or use default
   const shelfTexture = shelf?.textureImage || (useRealisticStyle ? '/lovable-uploads/7a437784-0910-4719-b52b-6564c3004ebe.png' : '/textures/default/wood.jpg');
   
-  // Set CSS variables for divider styling
-  const dividerHeight = shelfStyling?.dividers?.height || 200;
-  
+  // Updated to not adjust the row height based on divider height
   return (
     <div 
       className={`shelf-row flex flex-col w-full relative ${useRealisticStyle ? 'realistic-shelf' : ''}`}
       style={{
-        "--divider-height": `${dividerHeight}px`,
+        "--divider-height": `${shelfStyling?.dividers?.height || 200}px`,
         "--divider-thickness": `${shelfStyling?.dividers?.thickness || 6}px`,
         "--divider-color": shelfStyling?.dividers?.color || '#714621',
         "--divider-opacity": shelfStyling?.dividers?.opacity || 1,
-        minHeight: `${Math.max(dividerHeight + 40, 220)}px`
       } as React.CSSProperties}
     >
       {/* Shelf back panel for realistic look */}

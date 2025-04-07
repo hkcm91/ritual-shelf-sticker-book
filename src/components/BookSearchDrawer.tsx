@@ -96,13 +96,18 @@ const BookSearchDrawer = () => {
         
         <div className="mt-6 space-y-6">
           <div className="flex gap-2">
-            <Input
-              placeholder="Book title, author, or ISBN..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyPress={handleKeyPress}
-              className="flex-1"
-            />
+            <div className="flex-1 relative">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                <BookOpen size={16} className="text-muted-foreground" />
+              </div>
+              <Input
+                placeholder="Book title, author, or ISBN..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyPress={handleKeyPress}
+                className="pl-10 pr-3"
+              />
+            </div>
             <Button onClick={handleSearch} disabled={isSearching}>
               <Search size={16} />
             </Button>

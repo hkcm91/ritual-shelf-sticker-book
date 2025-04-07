@@ -64,7 +64,6 @@
 .vertical-shelf-divider {
   width: var(--divider-thickness, 6px);
   height: var(--divider-height, 200px);
-  min-height: var(--divider-height, 200px);
   align-self: flex-start;
   margin: 0;
   margin-top: 0;

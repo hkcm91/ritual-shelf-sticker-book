@@ -9,7 +9,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
-import { Palette, ArrowsMaximize, ArrowsMinimize, Save, RotateCcw } from "lucide-react";
+import { Palette, Maximize2, Minimize2, Save, RotateCcw } from "lucide-react";
 import { useBookshelfStore } from "@/store/bookshelfStore";
 import CustomizationContent from './CustomizationContent';
 import { toast } from 'sonner';
@@ -66,8 +66,8 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
             title={isFullscreen ? "Exit fullscreen" : "Fullscreen mode"}
           >
             {isFullscreen ? 
-              <ArrowsMinimize className="h-4 w-4" /> : 
-              <ArrowsMaximize className="h-4 w-4" />
+              <Minimize2 className="h-4 w-4" /> : 
+              <Maximize2 className="h-4 w-4" />
             }
           </Button>
         </DialogHeader>

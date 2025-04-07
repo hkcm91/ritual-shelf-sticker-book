@@ -7,7 +7,7 @@ import ColorPicker from '../ColorPicker';
 import FileInputField from '../FileInputField';
 import ColorChart from '../ColorChart';
 import { toast } from 'sonner';
-import { PaintBrush, Image, ChevronUp, ChevronDown } from 'lucide-react';
+import { Paintbrush, Image, ChevronUp, ChevronDown } from 'lucide-react';
 
 const HeaderTab: React.FC = () => {
   const { header, updateHeaderSetting } = useBookshelfStore();
@@ -39,7 +39,7 @@ const HeaderTab: React.FC = () => {
       <div className="space-y-2 border-b pb-4">
         <div className="flex justify-between items-center cursor-pointer" onClick={() => toggleSection('background')}>
           <div className="flex items-center gap-2">
-            <PaintBrush className="h-4 w-4 text-muted-foreground" />
+            <Paintbrush className="h-4 w-4 text-muted-foreground" />
             <Label className="cursor-pointer">Background Color</Label>
           </div>
           <div className="flex items-center gap-2">
@@ -140,7 +140,7 @@ const HeaderTab: React.FC = () => {
       <div className="space-y-2 border-b pb-4">
         <div className="flex justify-between items-center cursor-pointer" onClick={() => toggleSection('textColor')}>
           <div className="flex items-center gap-2">
-            <PaintBrush className="h-4 w-4 text-muted-foreground" />
+            <Paintbrush className="h-4 w-4 text-muted-foreground" />
             <Label className="cursor-pointer">Text Color</Label>
           </div>
           <div className="flex items-center gap-2">

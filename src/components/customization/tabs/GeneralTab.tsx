@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Label } from "@/components/ui/label";
 import { useBookshelfStore } from "@/store/bookshelfStore";
@@ -8,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { PaintBrush, Image, Trash2, ChevronUp, ChevronDown, Palette } from "lucide-react";
+import { Paintbrush, Image, Trash2, ChevronUp, ChevronDown, Palette } from "lucide-react";
 import { toast } from "sonner";
 import ColorChart from "../ColorChart";
 
@@ -62,7 +61,7 @@ const GeneralTab: React.FC = () => {
         <div className="space-y-2 border-b pb-4">
           <div className="flex justify-between items-center cursor-pointer" onClick={() => toggleSection('backgroundColor')}>
             <div className="flex items-center gap-2">
-              <PaintBrush className="h-4 w-4 text-muted-foreground" />
+              <Paintbrush className="h-4 w-4 text-muted-foreground" />
               <Label className="cursor-pointer">Background Color</Label>
             </div>
             <div className="flex items-center gap-2">

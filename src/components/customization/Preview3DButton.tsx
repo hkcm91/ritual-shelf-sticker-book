@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Cube } from "lucide-react";
+import { Box } from "lucide-react";
 import Preview3DModal from './preview3d/Preview3DModal';
 
 const Preview3DButton: React.FC = () => {
@@ -14,7 +14,7 @@ const Preview3DButton: React.FC = () => {
         className="flex items-center gap-2 bg-gradient-to-r from-amber-800/30 to-amber-700/20 hover:from-amber-700/40 hover:to-amber-600/30 text-amber-100 border-amber-700/30"
         onClick={() => setShowPreview(true)}
       >
-        <Cube className="h-4 w-4" />
+        <Box className="h-4 w-4" />
         <span>3D Preview</span>
       </Button>
       

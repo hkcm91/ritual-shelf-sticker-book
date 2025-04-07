@@ -126,6 +126,12 @@ export function useThemeApplication() {
             
             // Dividers - ensure consistent styling
             if (shelfStyling.dividers) {
+              // Add visibility variable for preview
+              document.documentElement.style.setProperty(
+                '--dividers-visible', 
+                shelfStyling.dividers.enabled ? 'flex' : 'none'
+              );
+              
               document.documentElement.style.setProperty('--divider-thickness', `${shelfStyling.dividers.thickness || 10}px`);
               document.documentElement.style.setProperty('--divider-color', shelfStyling.dividers.color || '#714621');
               document.documentElement.style.setProperty('--divider-opacity', `${shelfStyling.dividers.opacity || 1}`);

@@ -73,7 +73,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
           </Button>
         </DialogHeader>
         
-        {/* Live Preview Section */}
+        {/* Live Preview Section - Updated */}
         <div className="mb-4 border rounded-md p-3 bg-background/50">
           <h4 className="text-sm font-medium mb-2 flex items-center">
             <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></span>

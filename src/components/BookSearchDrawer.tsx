@@ -7,6 +7,12 @@ import { Search, Book as BookIcon, Plus, Library } from 'lucide-react';
 import { searchBooks, getCoverImageUrl, OpenLibraryBook } from '@/services/openLibraryService';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 import { toast } from 'sonner';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const BookSearchDrawer = () => {
   const [open, setOpen] = useState(false);
@@ -55,11 +61,21 @@ const BookSearchDrawer = () => {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="outline" className="gap-2">
-          <Library size={16} />
-          <span className="hidden md:inline">Library Search</span>
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="outline" size="sm" className="flex items-center gap-2">
+                <Library size={16} />
+                <span className="hidden md:inline">Library Search</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Search books to add</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </SheetTrigger>
+      
       <SheetContent side="right" className="w-[90vw] sm:max-w-md overflow-y-auto">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">

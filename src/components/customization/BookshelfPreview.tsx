@@ -16,8 +16,7 @@ const BookshelfPreview: React.FC = () => {
 
   return (
     <motion.div 
-      className="relative w-full rounded-lg overflow-hidden border shadow-md" 
-      style={{ height: '240px' }}
+      className="relative w-full rounded-lg overflow-hidden border shadow-lg h-[240px] md:h-[280px] lg:h-[240px]" 
       key="bookshelf-preview"
       initial={{ opacity: 0.7 }}
       animate={{ opacity: 1 }}

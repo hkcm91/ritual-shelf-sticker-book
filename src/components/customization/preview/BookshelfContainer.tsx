@@ -1,6 +1,6 @@
 
 import React, { useEffect } from 'react';
-import { motion, useAnimation } from 'framer-motion';
+import { motion, useAnimation, AnimatePresence } from 'framer-motion';
 import ShelfRow from './ShelfRow';
 
 const BookshelfContainer: React.FC = () => {
@@ -21,7 +21,7 @@ const BookshelfContainer: React.FC = () => {
 
   return (
     <motion.div 
-      className="preview-container h-full w-full relative"
+      className="preview-container h-full w-full relative overflow-hidden"
       layout
       transition={{ duration: 0.5, ease: "easeInOut" }}
       style={{
@@ -35,6 +35,7 @@ const BookshelfContainer: React.FC = () => {
         borderColor: 'var(--container-border-color, transparent)',
         borderRadius: 'var(--container-border-radius, 0px)',
         padding: 'var(--container-padding, 16px)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
       }}
     >
       <SideDividers />
@@ -44,21 +45,22 @@ const BookshelfContainer: React.FC = () => {
         <ShelfRow position="bottom" />
       </div>
       
-      {/* Theme change indicator - animated pulse at bottom */}
-      <motion.div 
-        className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500/0 via-amber-500/70 to-amber-500/0"
-        initial={{ scaleX: 0, opacity: 0 }}
-        animate={{ 
-          scaleX: [0, 1, 1, 0], 
-          opacity: [0, 0.7, 0.7, 0],
-          transition: { 
-            times: [0, 0.2, 0.8, 1],
-            duration: 2,
-            repeat: 0,
-            ease: "easeInOut"
-          }
-        }}
-      />
+      <AnimatePresence>
+        <motion.div 
+          className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500/0 via-amber-500/70 to-amber-500/0"
+          initial={{ scaleX: 0, opacity: 0 }}
+          animate={{ 
+            scaleX: [0, 1, 1, 0], 
+            opacity: [0, 0.7, 0.7, 0],
+            transition: { 
+              times: [0, 0.2, 0.8, 1],
+              duration: 2,
+              repeat: 0,
+              ease: "easeInOut"
+            }
+          }}
+        />
+      </AnimatePresence>
     </motion.div>
   );
 };

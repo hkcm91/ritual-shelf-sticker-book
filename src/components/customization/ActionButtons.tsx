@@ -1,82 +1,33 @@
 
-import React, { useState, useCallback } from 'react';
+import React from 'react';
 import { Button } from "@/components/ui/button";
-import { useBookshelfStore } from "@/store/bookshelfStore";
-import { toast } from "sonner";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Loader2 } from "lucide-react";
+import { Save, RotateCcw } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-const ActionButtons: React.FC = () => {
-  const { saveCustomization, resetCustomization } = useBookshelfStore();
-  const [isSaving, setIsSaving] = useState(false);
-  const [isResetting, setIsResetting] = useState(false);
-  
-  // Handle save with error protection
-  const handleSave = useCallback(async () => {
-    try {
-      setIsSaving(true);
-      await saveCustomization();
-      toast.success("Customization saved successfully");
-    } catch (error) {
-      console.error("Error saving customization:", error);
-      toast.error("Failed to save customization");
-    } finally {
-      setIsSaving(false);
-    }
-  }, [saveCustomization]);
-  
-  // Handle reset with error protection
-  const handleReset = useCallback(async () => {
-    try {
-      setIsResetting(true);
-      await resetCustomization();
-      toast.success("Settings reset to defaults");
-    } catch (error) {
-      console.error("Error resetting customization:", error);
-      toast.error("Failed to reset customization");
-    } finally {
-      setIsResetting(false);
-    }
-  }, [resetCustomization]);
-  
+interface ActionButtonsProps {
+  className?: string;
+}
+
+const ActionButtons: React.FC<ActionButtonsProps> = ({ className }) => {
   return (
-    <div className="flex justify-between">
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button variant="outline" disabled={isResetting}>
-            {isResetting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Resetting...
-              </>
-            ) : (
-              "Reset to Defaults"
-            )}
-          </Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will reset all your customization settings to default values. This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleReset}>Reset</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+    <div className={cn("flex justify-between items-center", className)}>
+      <Button
+        variant="outline"
+        size="sm"
+        className="bg-slate-800/50 border-slate-700/50 text-amber-100 hover:bg-slate-700 hover:text-amber-200 group"
+      >
+        <RotateCcw className="mr-1.5 h-4 w-4 group-hover:animate-spin" />
+        Reset this section
+      </Button>
       
-      <Button onClick={handleSave} disabled={isSaving}>
-        {isSaving ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Saving...
-          </>
-        ) : (
-          "Save Changes"
-        )}
+      <Button
+        variant="default"
+        size="sm"
+        className="bg-gradient-to-r from-amber-600/90 to-amber-500/80 hover:from-amber-500/90 hover:to-amber-600/80 text-white border-none shadow-md relative group overflow-hidden"
+      >
+        <span className="absolute inset-0 w-full bg-gradient-to-r from-amber-400/0 via-amber-400/40 to-amber-400/0 opacity-0 group-hover:opacity-100 transform -translate-x-full group-hover:translate-x-full transition-all duration-1000" />
+        <Save className="mr-1.5 h-4 w-4 relative z-10" />
+        <span className="relative z-10">Apply Changes</span>
       </Button>
     </div>
   );

@@ -15,6 +15,7 @@ import CustomizationContent from './CustomizationContent';
 import BookshelfPreview from './BookshelfPreview';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from "framer-motion";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export interface CustomizationModalProps {
   open: boolean;
@@ -109,7 +110,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
           <DialogContent 
             className={`${isFullscreen ? 'max-w-[95vw] h-[95vh] max-h-[95vh]' : 'max-w-4xl max-h-[90vh]'} 
               transition-all duration-500 flex flex-col bg-gradient-to-b from-slate-950/95 to-slate-900/95 border-amber-950/30
-              backdrop-blur-md relative overflow-hidden`}
+              backdrop-blur-md relative overflow-hidden p-6`}
             style={{ 
               minWidth: isFullscreen ? '95vw' : 'auto',
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.45)'
@@ -225,9 +226,11 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
               
               <motion.div 
                 variants={childVariants}
-                className="overflow-y-auto flex-1 pr-1 relative"
+                className="flex-1 min-h-0 relative"
               >
-                <CustomizationContent />
+                <ScrollArea className="h-full pr-1">
+                  <CustomizationContent />
+                </ScrollArea>
               </motion.div>
               
               <motion.div variants={childVariants}>

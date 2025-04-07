@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Tabs } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import TabsList from './tabs/navigation/TabsList';
 import TabsContent from './tabs/navigation/TabsContent';
 import ActionButtons from './ActionButtons';
@@ -17,20 +18,20 @@ const CustomizationContent: React.FC = () => {
   }
   
   return (
-    <div className="space-y-6 h-full">
+    <div className="flex flex-col h-full">
       <ErrorBoundary 
         componentName="CustomizationTabs"
         onReset={handleErrorReset}
       >
-        <Tabs defaultValue="themes" className="w-full h-full">
+        <Tabs defaultValue="themes" className="w-full flex-1 flex flex-col">
           <TabsList />
-          <div className="overflow-y-auto pr-1 max-h-[calc(100%-60px)]">
+          <ScrollArea className="flex-1 pr-1">
             <TabsContent />
-          </div>
+          </ScrollArea>
         </Tabs>
       </ErrorBoundary>
       
-      <ActionButtons />
+      <ActionButtons className="mt-4" />
     </div>
   );
 };

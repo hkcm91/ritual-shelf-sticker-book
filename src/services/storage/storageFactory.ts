@@ -1,6 +1,7 @@
 
 import { storageService } from './storageService';
 import { cloudStorageService } from './cloudStorageService';
+import { StorageBackend } from './types';
 
 /**
  * Storage provider types
@@ -45,7 +46,7 @@ class StorageFactory {
       
       // Set the storage service backend
       storageService.setBackend(
-        config.defaultProvider === 'mobile' ? 'local' : config.defaultProvider
+        config.defaultProvider === 'mobile' ? 'local' : config.defaultProvider as StorageBackend
       );
       
       this.initialized = true;
@@ -62,8 +63,6 @@ class StorageFactory {
    * Get the appropriate storage service based on provider
    */
   public getStorage(provider?: StorageProvider) {
-    const currentProvider = provider || this.config.defaultProvider;
-    
     // Always return the main storage service, which delegates to the right implementation
     return storageService;
   }

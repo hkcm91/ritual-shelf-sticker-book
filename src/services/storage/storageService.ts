@@ -1,12 +1,6 @@
 import { compressImage } from '../../utils/imageUtils';
-
-// Define types for storage options
-type StorageOptions = {
-  compress?: boolean;
-  quality?: number;
-  maxWidth?: number;
-  maxHeight?: number;
-};
+import { StorageBackend, StorageOptions } from './types';
+import { resetAllStorage as resetAllStorageUtil, resetBookshelfData as resetBookshelfDataUtil } from '../../utils/storageUtils';
 
 // Get storage usage statistics
 const getUsageStats = () => {
@@ -31,18 +25,42 @@ const getUsageStats = () => {
     
     return {
       total,
-      used: `${(total / (1024 * 1024)).toFixed(2)} MB`,
+      used: total, // Return as number instead of string
       keys,
       percent
     };
   } catch (e) {
     console.error('Error calculating storage usage:', e);
-    return { total: 0, used: '0 MB', keys: 0, percent: 0 };
+    return { total: 0, used: 0, keys: 0, percent: 0 };
   }
 };
 
 // Storage service with compression support
 export const storageService = {
+  // Current backend (local by default)
+  private_backend: 'local' as StorageBackend,
+  
+  // Get current backend
+  getBackend: (): StorageBackend => {
+    return storageService.private_backend;
+  },
+  
+  // Set storage backend
+  setBackend: (backend: StorageBackend): void => {
+    storageService.private_backend = backend;
+    console.log(`Storage backend set to: ${backend}`);
+  },
+  
+  // Reset all storage
+  resetAllStorage: (): boolean => {
+    return resetAllStorageUtil();
+  },
+  
+  // Reset bookshelf data
+  resetBookshelfData: (): boolean => {
+    return resetBookshelfDataUtil();
+  },
+  
   // Get item from localStorage
   getItem: <T>(key: string): T | null => {
     try {

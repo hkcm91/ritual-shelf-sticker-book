@@ -116,7 +116,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
           />
         )}
         
-        {/* Only show toggle group when slot is empty */}
+        {/* Always show toggle group when slot is empty */}
         <SlotTypeToggle 
           slotType={slotType} 
           handleTypeToggle={handleTypeToggle}

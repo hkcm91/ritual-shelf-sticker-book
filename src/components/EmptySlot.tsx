@@ -23,7 +23,7 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
 }) => {
   const [showUrlDialog, setShowUrlDialog] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
-  const { addBook, openModal, activeShelfId } = useBookshelfStore();
+  const { addBook, openModal, activeShelfId, slots } = useBookshelfStore();
   
   // Set accept attribute based on slot type
   const acceptAttr = slotType === "book" 
@@ -114,16 +114,31 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
   return (
     <>
       <div 
-        className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer"
+        className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer transition-colors"
         onClick={handleClick}
+        style={{
+          background: `transparent`,
+          ":hover": {
+            background: slots.emptyHoverBg
+          }
+        }}
       >
-        <Plus className="w-6 h-6 text-gray-300/50" />
-        <span className="text-xs text-gray-300/50 mt-1">
+        <Plus 
+          className="w-6 h-6" 
+          style={{ color: slots.addButtonColor }}
+        />
+        <span 
+          className="text-xs mt-1"
+          style={{ color: slots.addButtonColor }}
+        >
           {slotType === "book" ? "Add Book" : "Add Sticker"}
         </span>
         
         {slotType === "sticker" && (
-          <span className="text-xs text-gray-300/30 mt-1">
+          <span 
+            className="text-xs mt-1 opacity-70"
+            style={{ color: slots.addButtonColor }}
+          >
             (Alt+Click for URL)
           </span>
         )}

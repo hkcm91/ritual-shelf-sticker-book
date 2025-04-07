@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useBookshelfStore, initializeDefaultShelf } from '../store/bookshelfStore';
 import BookshelfGrid from '../components/BookshelfGrid';
@@ -31,7 +32,7 @@ const Index = () => {
       const loadSavedCustomization = useBookshelfStore.getState().loadCustomization;
       if (loadSavedCustomization) {
         console.log("[Index] Loading saved customization");
-        // Call without any arguments - this was causing the TypeScript error
+        // The function expects no arguments according to its type definition
         loadSavedCustomization();
       }
       

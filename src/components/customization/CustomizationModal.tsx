@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -23,8 +23,16 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
 }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showSaveAnimation, setShowSaveAnimation] = useState(false);
-  const { saveCustomization, resetCustomization } = useBookshelfStore();
+  const { saveCustomization, resetCustomization, ui } = useBookshelfStore();
+  
+  // Debug log for component render
+  console.log("CustomizationModal rendering with open prop:", open);
+  console.log("Store UI customization modal state:", ui?.isCustomizationModalOpen);
 
+  useEffect(() => {
+    console.log("CustomizationModal - open changed to:", open);
+  }, [open]);
+  
   const handleSave = () => {
     saveCustomization();
     setShowSaveAnimation(true);
@@ -61,8 +69,15 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
     setIsFullscreen(!isFullscreen);
   };
 
+  // This ensures the Dialog component properly receives the open state
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog 
+      open={open} 
+      onOpenChange={(newOpenState) => {
+        console.log("Dialog onOpenChange called with:", newOpenState);
+        onOpenChange(newOpenState);
+      }}
+    >
       <DialogContent 
         className={`${isFullscreen ? 'max-w-[95vw] h-[95vh] max-h-[95vh]' : 'max-w-4xl max-h-[90vh]'} 
           transition-all duration-500 flex flex-col bg-gradient-to-b from-slate-950/95 to-slate-900/95 border-amber-950/30

@@ -58,12 +58,22 @@ export const createUISlice: StateCreator<
   },
   
   openCustomizationModal: () => {
-    console.log("Opening customization modal in UI slice");
-    set({ isCustomizationModalOpen: true });
+    console.log("Opening customization modal in UI slice - BEFORE:", get().isCustomizationModalOpen);
+    set((state) => {
+      const newState = { isCustomizationModalOpen: true };
+      console.log("New state in openCustomizationModal:", newState);
+      return newState;
+    });
+    console.log("Opening customization modal in UI slice - AFTER:", get().isCustomizationModalOpen);
   },
   
   closeCustomizationModal: () => {
-    console.log("Closing customization modal in UI slice");
-    set({ isCustomizationModalOpen: false });
+    console.log("Closing customization modal in UI slice - BEFORE:", get().isCustomizationModalOpen);
+    set((state) => {
+      const newState = { isCustomizationModalOpen: false };
+      console.log("New state in closeCustomizationModal:", newState);
+      return newState;
+    });
+    console.log("Closing customization modal in UI slice - AFTER:", get().isCustomizationModalOpen);
   }
 });

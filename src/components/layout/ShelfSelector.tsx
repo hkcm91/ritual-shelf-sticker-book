@@ -25,6 +25,13 @@ const ShelfSelector: React.FC = () => {
   // Find the current shelf from the store
   const currentShelf = activeShelfId ? shelvesData[activeShelfId] : null;
   
+  const handleShelfChange = (value: string) => {
+    // Add a small delay to prevent race conditions with selection events
+    setTimeout(() => {
+      switchShelf(value);
+    }, 50);
+  };
+  
   return (
     <>
       <div className="flex items-center gap-2">
@@ -33,7 +40,7 @@ const ShelfSelector: React.FC = () => {
         <div className="w-48">
           <Select
             value={activeShelfId}
-            onValueChange={(value) => switchShelf(value)}
+            onValueChange={handleShelfChange}
           >
             <SelectTrigger className="bg-white/90 border-0">
               <SelectValue placeholder="Select a shelf..." />

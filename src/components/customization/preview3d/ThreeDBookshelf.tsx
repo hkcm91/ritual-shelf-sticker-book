@@ -30,9 +30,9 @@ const BookshelfModel: React.FC = () => {
     if (!group.current) return;
     
     // Subtle automatic rotation if not being controlled
-    // Check if mouse buttons are pressed (OrbitControls sets this value)
-    const mouseButtons = state.mouse.buttons || 0;
-    if (mouseButtons === 0) {
+    // Check if mouse buttons are pressed (using any property to avoid TypeScript error)
+    const isControlActive = (state as any).mouse.buttons > 0;
+    if (!isControlActive) {
       group.current.rotation.y += delta * 0.05;
     }
   });

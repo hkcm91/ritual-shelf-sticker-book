@@ -6,13 +6,11 @@ import { Button } from './ui/button';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 
 const ShelfControls: React.FC = () => {
-  const { openCustomizationModal, ui } = useBookshelfStore();
+  const { openCustomizationModal } = useBookshelfStore();
   
   const handleOpenCustomization = () => {
     console.log("ShelfControls: Opening customization modal button clicked");
-    console.log("Current modal state before opening:", ui?.isCustomizationModalOpen);
     openCustomizationModal();
-    console.log("Modal state after calling openCustomizationModal:", useBookshelfStore.getState().ui?.isCustomizationModalOpen);
   };
   
   return (

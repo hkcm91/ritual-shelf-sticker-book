@@ -23,15 +23,9 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
 }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showSaveAnimation, setShowSaveAnimation] = useState(false);
-  const { saveCustomization, resetCustomization, ui } = useBookshelfStore();
+  const { saveCustomization, resetCustomization } = useBookshelfStore();
   
-  // Debug log for component render
   console.log("CustomizationModal rendering with open prop:", open);
-  console.log("Store UI customization modal state:", ui?.isCustomizationModalOpen);
-
-  useEffect(() => {
-    console.log("CustomizationModal - open changed to:", open);
-  }, [open]);
   
   const handleSave = () => {
     saveCustomization();
@@ -69,7 +63,11 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
     setIsFullscreen(!isFullscreen);
   };
 
-  // This ensures the Dialog component properly receives the open state
+  // Debugging to help track dialog rendering
+  useEffect(() => {
+    console.log("CustomizationModal - open state changed to:", open);
+  }, [open]);
+
   return (
     <Dialog 
       open={open} 
@@ -81,7 +79,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
       <DialogContent 
         className={`${isFullscreen ? 'max-w-[95vw] h-[95vh] max-h-[95vh]' : 'max-w-4xl max-h-[90vh]'} 
           transition-all duration-500 flex flex-col bg-gradient-to-b from-slate-950/95 to-slate-900/95 border-amber-950/30
-          backdrop-blur-md relative overflow-hidden p-6`}
+          backdrop-blur-md relative overflow-hidden p-6 z-50`}
         style={{ 
           minWidth: isFullscreen ? '95vw' : 'auto',
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.45)'

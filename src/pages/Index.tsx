@@ -17,7 +17,6 @@ const Index = () => {
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [renameValue, setRenameValue] = useState("");
   const [isInitialized, setIsInitialized] = useState(false);
-  const [localCustomizationOpen, setLocalCustomizationOpen] = useState(false);
   
   // Initialize the store and load customization only once
   useEffect(() => {
@@ -40,14 +39,11 @@ const Index = () => {
     }
   }, [isInitialized]);
 
-  // Sync store state with local state
-  useEffect(() => {
-    console.log("Index: UI customization modal state changed:", ui?.isCustomizationModalOpen);
-    setLocalCustomizationOpen(ui?.isCustomizationModalOpen || false);
-  }, [ui?.isCustomizationModalOpen]);
-
   const shelvesData = shelves as Record<string, ShelfData>;
   const currentShelf = activeShelfId ? shelvesData[activeShelfId] : null;
+  
+  const isCustomizationModalOpen = ui?.isCustomizationModalOpen || false;
+  console.log("Index: Customization modal state:", isCustomizationModalOpen);
   
   const handleCustomizationOpenChange = (newOpen: boolean) => {
     console.log("Index: handleCustomizationOpenChange called with:", newOpen);
@@ -56,7 +52,6 @@ const Index = () => {
     } else {
       closeCustomizationModal();
     }
-    setLocalCustomizationOpen(newOpen);
   };
   
   return (
@@ -94,9 +89,9 @@ const Index = () => {
         setRenameValue={setRenameValue}
       />
       
-      {/* Use local state to control the modal */}
+      {/* Use direct state from the store for the modal */}
       <CustomizationModal 
-        open={localCustomizationOpen} 
+        open={isCustomizationModalOpen} 
         onOpenChange={handleCustomizationOpenChange} 
       />
     </div>

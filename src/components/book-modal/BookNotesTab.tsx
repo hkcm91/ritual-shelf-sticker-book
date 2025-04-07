@@ -6,13 +6,16 @@ import { Textarea } from '@/components/ui/textarea';
 type BookNotesTabProps = {
   bookData: {
     plot: string;
-    characters: string;
+    characters: string[];
     notes: string;
   };
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 };
 
 const BookNotesTab: React.FC<BookNotesTabProps> = ({ bookData, handleInputChange }) => {
+  // Convert characters array to string for editing
+  const charactersString = bookData.characters.join(', ');
+  
   return (
     <div className="grid gap-4">
       <div className="grid grid-cols-4 items-start gap-4">
@@ -32,10 +35,11 @@ const BookNotesTab: React.FC<BookNotesTabProps> = ({ bookData, handleInputChange
         <Textarea
           id="characters"
           name="characters"
-          value={bookData.characters}
+          value={charactersString}
           onChange={handleInputChange}
           className="col-span-3"
           rows={3}
+          placeholder="Enter character names separated by commas"
         />
       </div>
       

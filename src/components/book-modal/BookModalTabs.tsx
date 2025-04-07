@@ -13,7 +13,7 @@ type BookModalTabsProps = {
     series: string;
     progress: number;
     rating: number;
-    characters: string;
+    characters: string[];
     plot: string;
     notes: string;
     quizzes: { question: string; answer: string }[];

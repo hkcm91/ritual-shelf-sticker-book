@@ -9,6 +9,9 @@ import { createHeaderSlice } from './headerSlice';
 import { createStorageSlice } from './storageSlice';
 import { CustomizationSliceCreator } from './types';
 
+// Export the default customization for use in the main store
+export { defaultCustomization } from './types';
+
 export const createCustomizationSlice: CustomizationSliceCreator = (set, get, api) => {
   // Combine all slices with default values
   return {

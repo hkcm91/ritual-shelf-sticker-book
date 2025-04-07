@@ -1,29 +1,18 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, Pencil } from 'lucide-react';
+import { PlusCircle } from 'lucide-react';
 import ShelfSelector from './ShelfSelector';
-import { ShelfData } from '@/store/types';
+import { useBookshelfStore } from '@/store/bookshelfStore';
 
-export interface HeaderProps {
-  currentShelf: ShelfData | null;
-  setIsNewShelfModalOpen: (isOpen: boolean) => void;
-  setIsRenameModalOpen: (isOpen: boolean) => void;
-  setRenameValue: (value: string) => void;
-}
+const Header: React.FC = () => {
+  const { shelves, activeShelfId } = useBookshelfStore();
+  const [isNewShelfModalOpen, setIsNewShelfModalOpen] = useState(false);
+  const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
+  const [renameValue, setRenameValue] = useState('');
 
-const Header: React.FC<HeaderProps> = ({
-  currentShelf,
-  setIsNewShelfModalOpen,
-  setIsRenameModalOpen,
-  setRenameValue
-}) => {
-  const handleRenameClick = () => {
-    if (currentShelf) {
-      setRenameValue(currentShelf.name);
-      setIsRenameModalOpen(true);
-    }
-  };
+  // Get the current shelf from the store
+  const currentShelf = activeShelfId ? shelves[activeShelfId] : null;
 
   return (
     <header className="px-4 py-2 flex justify-between items-center shadow-sm">
@@ -32,18 +21,6 @@ const Header: React.FC<HeaderProps> = ({
         
         <div className="flex items-center gap-2">
           <ShelfSelector />
-          
-          {currentShelf && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleRenameClick}
-              className="rounded-full"
-              title="Rename Shelf"
-            >
-              <Pencil className="h-4 w-4" />
-            </Button>
-          )}
         </div>
       </div>
       

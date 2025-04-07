@@ -15,7 +15,7 @@ const BookModal: React.FC = () => {
     series: '',
     progress: 0,
     rating: 0,
-    characters: '',
+    characters: [] as string[],
     plot: '',
     notes: '',
     coverURL: '',
@@ -43,7 +43,7 @@ const BookModal: React.FC = () => {
         series: series || '',
         progress: progress || 0,
         rating: rating || 0,
-        characters: characters || '',
+        characters: Array.isArray(characters) ? characters : [],
         plot: plot || '',
         notes: notes || '',
         coverURL: coverURL || '',
@@ -57,7 +57,7 @@ const BookModal: React.FC = () => {
         series: '',
         progress: 0,
         rating: 0,
-        characters: '',
+        characters: [],
         plot: '',
         notes: '',
         coverURL: '',
@@ -68,10 +68,17 @@ const BookModal: React.FC = () => {
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setBookData((prev) => ({
-      ...prev,
-      [name]: name === 'progress' ? Math.min(100, Math.max(0, parseInt(value) || 0)) : value,
-    }));
+    
+    if (name === 'characters') {
+      // Split the text input by commas to create an array of characters
+      const charactersArray = value.split(',').map(item => item.trim());
+      setBookData(prev => ({ ...prev, characters: charactersArray }));
+    } else {
+      setBookData((prev) => ({
+        ...prev,
+        [name]: name === 'progress' ? Math.min(100, Math.max(0, parseInt(value) || 0)) : value,
+      }));
+    }
   };
   
   const handleCoverChange = (imageUrl: string) => {

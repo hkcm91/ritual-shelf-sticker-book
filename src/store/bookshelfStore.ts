@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { BooksSlice, createBooksSlice } from './booksSlice';
 import { CompleteShelvesSlice, createShelvesSlice } from './shelvesSlice';
 import { UISlice, createUISlice } from './uiSlice';
-import { CustomizationState, createCustomizationSlice } from './slices/customization';
+import { CustomizationState, createCustomizationSlice, defaultCustomization } from './slices/customization';
 import { BookData, ShelfData } from './types';
 
 // Define the complete store type that includes all slices
@@ -18,6 +18,9 @@ export const useBookshelfStore = create<BookshelfState>()((set, get, api) => ({
   ...createShelvesSlice(set, get, api),
   ...createUISlice(set, get, api),
   ...createCustomizationSlice(set, get, api),
+  
+  // Make sure required properties from CustomizationState are explicitly included
+  activeTheme: defaultCustomization.activeTheme,
   
   // Utility function to find empty position
   findEmptyPosition: (shelfId: string) => {

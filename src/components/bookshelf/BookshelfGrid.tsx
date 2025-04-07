@@ -5,10 +5,9 @@ import ShelfRow from './ShelfRow';
 import StorageUsage from '../StorageUsage';
 import ShelfControls from '../ShelfControls';
 import ZoomControls from '../ZoomControls';
-import StickerCanvas from '../stickers/StickerCanvas';
 
 const BookshelfGrid: React.FC = () => {
-  const { activeShelfId, shelves, zoomLevel, adjustZoomLevel } = useBookshelfStore();
+  const { activeShelfId, shelves, zoomLevel } = useBookshelfStore();
   const activeShelf = shelves[activeShelfId];
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -18,6 +17,7 @@ const BookshelfGrid: React.FC = () => {
       // Only zoom when ctrl key is pressed
       if (e.ctrlKey) {
         e.preventDefault();
+        const { adjustZoomLevel } = useBookshelfStore.getState();
         // Zoom in or out based on wheel direction
         adjustZoomLevel(e.deltaY > 0 ? -0.05 : 0.05);
       }
@@ -33,7 +33,7 @@ const BookshelfGrid: React.FC = () => {
         container.removeEventListener('wheel', handleWheel);
       }
     };
-  }, [adjustZoomLevel]);
+  }, []);
   
   if (!activeShelf) {
     return (
@@ -47,10 +47,27 @@ const BookshelfGrid: React.FC = () => {
   
   const { rows, columns } = activeShelf;
   
+  // Generate grid rows
+  const renderGrid = () => {
+    const grid = [];
+    
+    for (let row = 0; row < rows; row++) {
+      grid.push(
+        <ShelfRow
+          key={`row-${row}`}
+          rowIndex={row}
+          columns={columns}
+        />
+      );
+    }
+    
+    return grid;
+  };
+  
   return (
     <div 
       ref={containerRef}
-      className="bookshelf-wrapper p-4 md:p-8 overflow-auto h-full w-full relative"
+      className="bookshelf-wrapper p-4 md:p-8 overflow-auto h-full w-full"
       style={{ 
         backgroundColor: 'var(--page-bg)',
         backgroundImage: 'var(--page-bg-image)',
@@ -65,7 +82,7 @@ const BookshelfGrid: React.FC = () => {
       </div>
       
       <div 
-        className="bookshelf-container relative flex flex-col items-center rounded-md p-6 shadow-lg mx-auto overflow-visible"
+        className="bookshelf-container relative flex flex-col items-center rounded-md p-6 shadow-lg mx-auto"
         style={{ 
           transform: `scale(${zoomLevel})`,
           transformOrigin: 'top center',
@@ -80,17 +97,8 @@ const BookshelfGrid: React.FC = () => {
           <StorageUsage />
         </div>
         
-        {/* Add sticker canvas for floating stickers */}
-        <StickerCanvas shelfId={activeShelfId} />
-        
-        <div className="grid-container w-full flex flex-col">
-          {Array.from({ length: rows }).map((_, index) => (
-            <ShelfRow
-              key={`row-${index}`}
-              rowIndex={index}
-              columns={columns}
-            />
-          ))}
+        <div className="grid-container w-full">
+          {renderGrid()}
         </div>
       </div>
       

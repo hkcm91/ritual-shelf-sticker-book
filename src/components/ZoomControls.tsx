@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 import { ZoomIn, ZoomOut, Minimize } from 'lucide-react';
@@ -8,36 +8,12 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 const ZoomControls: React.FC = () => {
   const { zoomLevel, adjustZoomLevel, setZoomLevel } = useBookshelfStore();
   
-  // Handle keyboard shortcuts for zooming
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Only handle when not in an input field
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
-        return;
-      }
-      
-      if (e.ctrlKey && e.key === '=') {
-        e.preventDefault();
-        adjustZoomLevel(0.1);
-      } else if (e.ctrlKey && e.key === '-') {
-        e.preventDefault();
-        adjustZoomLevel(-0.1);
-      } else if (e.ctrlKey && e.key === '0') {
-        e.preventDefault();
-        setZoomLevel(1);
-      }
-    };
-    
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [adjustZoomLevel, setZoomLevel]);
-  
   const handleZoomIn = () => adjustZoomLevel(0.1);
   const handleZoomOut = () => adjustZoomLevel(-0.1);
   const handleReset = () => setZoomLevel(1);
   
   return (
-    <div className="zoom-controls flex space-x-1">
+    <div className="zoom-controls">
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -51,7 +27,7 @@ const ZoomControls: React.FC = () => {
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Zoom Out (Ctrl+-)</p>
+            <p>Zoom Out</p>
           </TooltipContent>
         </Tooltip>
         
@@ -67,7 +43,7 @@ const ZoomControls: React.FC = () => {
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Reset Zoom {Math.round(zoomLevel * 100)}% (Ctrl+0)</p>
+            <p>Reset Zoom (Current: {Math.round(zoomLevel * 100)}%)</p>
           </TooltipContent>
         </Tooltip>
         
@@ -83,7 +59,7 @@ const ZoomControls: React.FC = () => {
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Zoom In (Ctrl+=)</p>
+            <p>Zoom In</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>

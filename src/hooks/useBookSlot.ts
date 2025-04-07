@@ -1,88 +1,57 @@
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
+import { useTransformControls } from './useTransformControls';
 import { useDragAndDrop } from './useDragAndDrop';
 import { useFileHandler } from './useFileHandler';
-import { useTransformControls } from './useTransformControls';
-import { BookData } from '../store/bookshelfStore';
+import { toast } from 'sonner';
 
 type UseBookSlotProps = {
   position: number;
-  slotType: "book" | "sticker";
+  slotType?: "book" | "sticker";
 };
 
-export const useBookSlot = ({ position, slotType }: UseBookSlotProps) => {
-  const { activeShelfId, getBookByPosition, deleteBook } = useBookshelfStore();
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [isAltDrag, setIsAltDrag] = useState(false);
-  const [forceRender, setForceRender] = useState(0);
+export const useBookSlot = ({ position, slotType = "book" }: UseBookSlotProps) => {
+  const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
+  const [isAltKeyPressed, setIsAltKeyPressed] = useState<boolean>(false);
+  const { books, activeShelfId, deleteBook } = useBookshelfStore();
+  const deleteInProgress = useRef(false);
   
-  // Log hook initialization
-  useEffect(() => {
-    console.log(`useBookSlot initialized for position ${position}, slotType: ${slotType}`);
-    console.log(`Current activeShelfId: ${activeShelfId}`);
-  }, [position, slotType, activeShelfId]);
+  // Get the book from the store
+  const book = Object.values(books).find(
+    (book) => book.shelfId === activeShelfId && book.position === position
+  );
   
-  // Get book from store by position, explicitly passing the activeShelfId
-  const book = getBookByPosition(position, activeShelfId);
-  
-  // Force re-render when activeShelfId changes
-  useEffect(() => {
-    setForceRender(prev => prev + 1);
-  }, [activeShelfId]);
-  
-  // Log for debugging
-  useEffect(() => {
-    console.log(`Slot ${position}: Book present: ${!!book}`, book ? `ID: ${book.id}` : '');
-    if (book) {
-      console.log(`Book details for slot ${position}:`, {
-        id: book.id,
-        title: book.title || 'No title',
-        author: book.author || 'No author',
-        hasCoverURL: !!book.coverURL,
-        coverURLLength: book.coverURL ? book.coverURL.length : 0,
-        isSticker: !!book.isSticker
-      });
-    }
-  }, [book, position, forceRender]);
-  
-  // For stickers, keep track of 2D position, scale, rotation
-  const [position2D, setPosition2D] = useState({ x: 0, y: 0 });
-  const { scale, rotation, handleScaleChange, handleRotate, handleResetTransform } = useTransformControls({ 
-    activeShelfId, // Pass the required activeShelfId argument here
-    position 
-  });
-  
-  // Handle file input for empty slots
-  const { fileInputRef, handleFileChange, handleClick, isUploading } = useFileHandler({ position, slotType });
-  
-  // For drag and drop functionality
-  const { 
-    handleStickerMouseDown,
-    handleStickerMouseMove,
-    handleStickerMouseUp,
-    handleDragOver,
-    handleDrop,
-    isDragging,
-    setIsDragging,
-  } = useDragAndDrop({
-    position,
+  // Use the transform controls hook
+  const {
+    scale,
+    position2D,
     setPosition2D,
-    book: book as BookData,
-    slotType
-  });
+    rotation,
+    handleRotate,
+    handleScaleChange,
+    handleResetTransform,
+    clearTransformData
+  } = useTransformControls({ activeShelfId, position });
   
-  // Alt key detection for special drag operations
+  // Use the file handler hook
+  const {
+    fileInputRef,
+    handleFileChange,
+    handleClick: handleFileClick
+  } = useFileHandler({ position, slotType });
+  
+  // Listen for Alt key press/release
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Alt') {
-        setIsAltDrag(true);
+        setIsAltKeyPressed(true);
       }
     };
     
     const handleKeyUp = (e: KeyboardEvent) => {
       if (e.key === 'Alt') {
-        setIsAltDrag(false);
+        setIsAltKeyPressed(false);
       }
     };
     
@@ -95,21 +64,62 @@ export const useBookSlot = ({ position, slotType }: UseBookSlotProps) => {
     };
   }, []);
   
-  // Handler for deleting a book or sticker
+  // Use the drag and drop hook
+  const {
+    handleStickerMouseDown,
+    handleStickerMouseMove,
+    handleStickerMouseUp,
+    handleDragOver,
+    handleDrop,
+    isDragging,
+    setIsDragging,
+    dragStart,
+    setDragStart
+  } = useDragAndDrop({
+    position,
+    setPosition2D,
+    book,
+    slotType
+  });
+  
+  // Handle deletion with safety checks
   const handleDeleteSticker = () => {
-    if (book) {
-      console.log(`Deleting book/sticker with ID: ${book.id}`);
-      deleteBook(book.id);
+    if (!book || deleteInProgress.current) return;
+    
+    try {
+      // Prevent multiple deletes
+      deleteInProgress.current = true;
+      
+      // Small timeout to ensure state updates have completed
+      setTimeout(() => {
+        deleteBook(book.id);
+        clearTransformData();
+        setShowDeleteDialog(false);
+        toast.success('Item removed');
+        deleteInProgress.current = false;
+      }, 10);
+    } catch (error) {
+      console.error("Error deleting book:", error);
+      deleteInProgress.current = false;
+      toast.error("Failed to delete. Please try again.");
       setShowDeleteDialog(false);
     }
   };
-  
+
+  // Handle click to either open the file input or do nothing if there's a book
+  const handleClick = () => {
+    if (!book) {
+      handleFileClick();
+    }
+  };
+
   return {
     book,
     fileInputRef,
     scale,
     position2D,
     rotation,
+    isDragging,
     showDeleteDialog,
     setShowDeleteDialog,
     handleFileChange,
@@ -123,7 +133,6 @@ export const useBookSlot = ({ position, slotType }: UseBookSlotProps) => {
     handleScaleChange,
     handleResetTransform,
     handleDeleteSticker,
-    isAltDrag,
-    isUploading
+    isAltDrag: isDragging && isAltKeyPressed
   };
 };

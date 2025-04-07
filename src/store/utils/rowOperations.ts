@@ -1,3 +1,4 @@
+
 import { BookData, ShelfData } from '../types';
 
 /**
@@ -46,7 +47,7 @@ export const hideLastRowBooks = (
   booksInLastRow.forEach(bookId => {
     updatedBooks[bookId] = {
       ...updatedBooks[bookId],
-      // Store the original position if not already stored
+      // Store the original position in a field so we can restore it later if needed
       originalPosition: updatedBooks[bookId].originalPosition || updatedBooks[bookId].position,
       // Mark as hidden but keep in storage
       hidden: true
@@ -57,15 +58,18 @@ export const hideLastRowBooks = (
 };
 
 /**
- * Ensures books maintain their positions when rows change
- * This preserves the row and column placement when possible
+ * Ensures books maintain their visual position when adding rows
+ * by keeping their row and column position the same
  */
 export const maintainBookPositionsOnRowChange = (
   activeShelfId: string,
   oldColumns: number,
   books: Record<string, BookData>
 ): Record<string, BookData> => {
-  // We don't need to recalculate positions when adding/removing rows
-  // Books stay at their same relative position
-  return books;
+  const updatedBooks = { ...books };
+  
+  // We don't need to change any positions when adding rows
+  // Books stay at the same row and column
+  
+  return updatedBooks;
 };

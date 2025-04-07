@@ -52,15 +52,15 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
   };
 
   return (
-    <div className="shelf-row flex flex-col w-full mb-10">
-      {/* Books row - Improved vertical alignment with better padding */}
-      <div className="flex justify-start items-center flex-nowrap gap-2 p-2 min-h-[220px] pb-4">
+    <div className="flex flex-col w-full">
+      {/* Books row */}
+      <div className="flex justify-start items-stretch flex-nowrap gap-2 p-2 min-h-[220px]">
         {renderSlots()}
       </div>
       
       {/* Shelf */}
       <div 
-        className="wood-shelf w-full"
+        className="wood-shelf w-full mb-6"
         style={{
           height: `${shelfStyling?.thickness || 20}px`,
           backgroundImage: shelf?.textureImage ? `url(${shelf.textureImage})` : 'var(--shelf-texture, url(/textures/default/wood.jpg))',

@@ -14,34 +14,28 @@ export const compressImage = async (
     const img = new Image();
     img.onload = () => {
       // Use provided options or defaults
-      const quality = options.quality || 0.6; // Default to more aggressive compression
-      const maxWidth = options.maxWidth || 600;
-      const maxHeight = options.maxHeight || 900;
+      const quality = options.quality || 0.7;
+      const maxWidth = options.maxWidth || 800;
+      const maxHeight = options.maxHeight || 1200;
       
       // Calculate new dimensions while maintaining aspect ratio
       let width = img.width;
       let height = img.height;
       
-      // More aggressive downscaling if original is very large
-      let scaleFactor = 1;
-      if (width > maxWidth*1.5 || height > maxHeight*1.5) {
-        scaleFactor = 0.6; // Reduce size more aggressively for large images
-      }
-      
       if (width > maxWidth) {
-        height = (height * maxWidth * scaleFactor) / width;
-        width = maxWidth * scaleFactor;
+        height = (height * maxWidth) / width;
+        width = maxWidth;
       }
       
       if (height > maxHeight) {
-        width = (width * maxHeight * scaleFactor) / height;
-        height = maxHeight * scaleFactor;
+        width = (width * maxHeight) / height;
+        height = maxHeight;
       }
       
       // Create canvas for resizing
       const canvas = document.createElement('canvas');
-      canvas.width = Math.round(width);
-      canvas.height = Math.round(height);
+      canvas.width = width;
+      canvas.height = height;
       
       // Draw and compress
       const ctx = canvas.getContext('2d');
@@ -52,14 +46,8 @@ export const compressImage = async (
       
       ctx.drawImage(img, 0, 0, width, height);
       
-      // Try to determine optimal format - prefer webp for better compression
-      let format = 'jpeg'; // Default to jpeg for better compression vs png
-      
-      // If browser supports webp, use it for even better compression
-      const isWebPSupported = canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0;
-      if (isWebPSupported) {
-        format = 'webp';
-      }
+      // Get the original image format from data URL
+      const format = dataUrl.split(';')[0].split('/')[1];
       
       // Convert to compressed data URL
       const compressedDataUrl = canvas.toDataURL(

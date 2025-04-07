@@ -60,7 +60,7 @@ export const hideLastColumnBooks = (
 
 /**
  * Ensures books maintain their visual positions when column count changes
- * Instead of recalculating positions, we preserve the books' original arrangement
+ * This requires recalculating positions to maintain the same row and column visually
  */
 export const maintainBookPositionsOnColumnChange = (
   activeShelfId: string,
@@ -70,10 +70,7 @@ export const maintainBookPositionsOnColumnChange = (
 ): Record<string, BookData> => {
   const updatedBooks = { ...books };
   
-  // Keep track of books that need to be hidden with the new column count
-  const booksToHide: string[] = [];
-  
-  // Preserve visual positions
+  // We need to recalculate positions when columns change to maintain visual positions
   Object.keys(updatedBooks).forEach(bookId => {
     const book = updatedBooks[bookId];
     
@@ -82,11 +79,8 @@ export const maintainBookPositionsOnColumnChange = (
       const currentRow = Math.floor(book.position / oldColumns);
       const currentCol = book.position % oldColumns;
       
-      // If the column is now out of bounds, hide it
-      if (currentCol >= newColumns) {
-        // Store original position and hide
-        booksToHide.push(bookId);
-      } else {
+      // If the column is less than the new column count, we can keep it in place
+      if (currentCol < newColumns) {
         // Calculate new position based on current row and column
         const newPosition = (currentRow * newColumns) + currentCol;
         updatedBooks[bookId] = {
@@ -97,17 +91,6 @@ export const maintainBookPositionsOnColumnChange = (
         };
       }
     }
-  });
-  
-  // Hide books that are now out of bounds
-  booksToHide.forEach(bookId => {
-    updatedBooks[bookId] = {
-      ...updatedBooks[bookId],
-      // Store the original position
-      originalPosition: updatedBooks[bookId].originalPosition || updatedBooks[bookId].position,
-      // Mark as hidden but keep in storage
-      hidden: true
-    };
   });
   
   return updatedBooks;

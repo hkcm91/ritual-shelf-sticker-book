@@ -2,7 +2,7 @@ import { StateCreator } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'sonner';
 import { ShelfData } from './types';
-import { BooksSlice } from './books/booksSlice';
+import { BooksSlice } from './booksSlice';
 import { saveShelvesToStorage, saveActiveShelfToStorage } from './utils/shelfUtils';
 import { ShelfStylesSlice, createShelfStylesSlice } from './slices/shelfStylesSlice';
 import { ShelfLayoutSlice, createShelfLayoutSlice } from './slices/shelfLayoutSlice';
@@ -17,6 +17,7 @@ export interface ShelvesSlice {
   switchShelf: (id: string) => void;
 }
 
+// Extend ShelvesSlice with layout and styles slices
 export type CompleteShelvesSlice = ShelvesSlice & ShelfLayoutSlice & ShelfStylesSlice;
 
 export const createShelvesSlice: StateCreator<
@@ -25,11 +26,13 @@ export const createShelvesSlice: StateCreator<
   [],
   CompleteShelvesSlice
 > = (set, get, store) => {
+  // Initialize with default or stored state
   const initialShelves = typeof window !== 'undefined' ? 
     JSON.parse(localStorage.getItem('ritual-bookshelf-shelves') || '{}') : {};
   const initialActiveShelf = typeof window !== 'undefined' ? 
     localStorage.getItem('ritual-bookshelf-active-shelf') || '' : '';
 
+  // Create the core shelves slice
   const coreSlice: ShelvesSlice = {
     shelves: initialShelves,
     activeShelfId: initialActiveShelf,
@@ -42,6 +45,7 @@ export const createShelvesSlice: StateCreator<
           [id]: { ...shelfData, id }
         };
         
+        // Save to localStorage
         saveShelvesToStorage(updatedShelves);
         saveActiveShelfToStorage(id);
         
@@ -60,6 +64,7 @@ export const createShelvesSlice: StateCreator<
           [id]: { ...state.shelves[id], ...data }
         };
         
+        // Save to localStorage
         saveShelvesToStorage(updatedShelves);
         
         return { shelves: updatedShelves };
@@ -72,6 +77,7 @@ export const createShelvesSlice: StateCreator<
         
         const { [id]: removed, ...remainingShelves } = state.shelves;
         
+        // Delete books on this shelf
         const updatedBooks = { ...state.books };
         Object.keys(updatedBooks).forEach(bookId => {
           if (updatedBooks[bookId].shelfId === id) {
@@ -79,8 +85,10 @@ export const createShelvesSlice: StateCreator<
           }
         });
         
+        // Set new active shelf
         const newActiveId = Object.keys(remainingShelves)[0];
         
+        // Save to localStorage
         saveShelvesToStorage(remainingShelves);
         localStorage.setItem('ritual-bookshelf-books', JSON.stringify(updatedBooks));
         saveActiveShelfToStorage(newActiveId);
@@ -104,6 +112,7 @@ export const createShelvesSlice: StateCreator<
     }
   };
   
+  // Combine with layout and styles slices
   return {
     ...coreSlice,
     ...createShelfLayoutSlice(set, get, store),

@@ -1,62 +1,118 @@
 
-import { IStorageService, StorageBackend, StorageOptions } from './types';
 import { localStorageService } from './localStorageService';
 import { cloudStorageService } from './cloudStorageService';
-import { createStorageService } from './storageFactory';
+import { StorageBackend, StorageOptions } from './types';
 
-// Initialize with local storage by default
-let currentBackend: StorageBackend = 'local';
-let storageProvider: IStorageService = localStorageService;
+/**
+ * Main storage service that delegates to the appropriate implementation
+ * based on the current backend setting
+ */
+class StorageService {
+  private currentBackend: StorageBackend = 'local';
 
-// Facade for all storage operations
-export const storageService: IStorageService = {
-  // Get current backend
-  getBackend: (): StorageBackend => {
-    return storageProvider.getBackend();
-  },
-  
-  // Set storage backend
-  setBackend: (backend: StorageBackend): void => {
-    currentBackend = backend;
-    storageProvider = createStorageService(backend);
-    storageProvider.setBackend(backend);
-  },
-  
-  // Reset all storage
-  resetAllStorage: (): boolean => {
-    return storageProvider.resetAllStorage();
-  },
-  
-  // Reset bookshelf data
-  resetBookshelfData: (): boolean => {
-    return storageProvider.resetBookshelfData();
-  },
-  
-  // Get item from storage
-  getItem: <T>(key: string): T | null => {
-    return storageProvider.getItem<T>(key);
-  },
-  
-  // Set item in storage with optional image compression
-  setItem: async (key: string, value: any, options?: StorageOptions): Promise<boolean> => {
-    return storageProvider.setItem(key, value, options);
-  },
-  
-  // Remove item from storage
-  removeItem: (key: string): boolean => {
-    return storageProvider.removeItem(key);
-  },
-  
-  // Clear all storage
-  clear: (): boolean => {
-    return storageProvider.clear();
-  },
-  
-  // Get storage usage statistics
-  getUsageStats: () => {
-    return storageProvider.getUsageStats();
+  /**
+   * Set the storage backend
+   */
+  public setBackend(backend: StorageBackend): void {
+    this.currentBackend = backend;
+    
+    // Also update the underlying service's backend
+    if (backend === 'local') {
+      localStorageService.setBackend(backend);
+    } else {
+      cloudStorageService.setBackend(backend);
+    }
+    
+    console.log(`Storage backend set to: ${backend}`);
   }
-};
 
-// Export the types for consumers
-export type { StorageOptions, StorageBackend } from './types';
+  /**
+   * Get current backend
+   */
+  public getBackend(): StorageBackend {
+    return this.currentBackend;
+  }
+  
+  /**
+   * Reset all storage
+   */
+  public resetAllStorage(): boolean {
+    if (this.currentBackend === 'local') {
+      return localStorageService.resetAllStorage();
+    } else {
+      return cloudStorageService.resetAllStorage();
+    }
+  }
+
+  /**
+   * Reset only bookshelf data, preserving settings
+   */
+  public resetBookshelfData(): boolean {
+    if (this.currentBackend === 'local') {
+      return localStorageService.resetBookshelfData();
+    } else {
+      return cloudStorageService.resetBookshelfData();
+    }
+  }
+
+  /**
+   * Get an item from storage
+   */
+  public getItem<T>(key: string): T | null {
+    if (this.currentBackend === 'local') {
+      return localStorageService.getItem<T>(key);
+    } else {
+      return cloudStorageService.getItem<T>(key);
+    }
+  }
+
+  /**
+   * Store an item with optional compression for images
+   */
+  public async setItem(key: string, value: any, options?: StorageOptions): Promise<boolean> {
+    if (this.currentBackend === 'local') {
+      return localStorageService.setItem(key, value, options);
+    } else {
+      return cloudStorageService.setItem(key, value, options);
+    }
+  }
+
+  /**
+   * Remove an item from storage
+   */
+  public removeItem(key: string): boolean {
+    if (this.currentBackend === 'local') {
+      return localStorageService.removeItem(key);
+    } else {
+      return cloudStorageService.removeItem(key);
+    }
+  }
+
+  /**
+   * Clear all storage for this app
+   */
+  public clear(): boolean {
+    if (this.currentBackend === 'local') {
+      return localStorageService.clear();
+    } else {
+      return cloudStorageService.clear();
+    }
+  }
+
+  /**
+   * Get approximate usage statistics
+   */
+  public getUsageStats(): { used: number, total: number, percent: number } {
+    if (this.currentBackend === 'local') {
+      return localStorageService.getUsageStats();
+    } else {
+      return cloudStorageService.getUsageStats();
+    }
+  }
+}
+
+// Export singleton instance
+export const storageService = new StorageService();
+
+// Re-export types
+export type { StorageBackend, StorageOptions } from './types';

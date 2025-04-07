@@ -2,11 +2,18 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { DialogFooter } from '@/components/ui/dialog';
-import { useBookModalContext } from '@/contexts/BookModalContext';
 
-const BookModalFooter: React.FC = () => {
-  const { handleSave, handleDelete, closeModal } = useBookModalContext();
-  
+type BookModalFooterProps = {
+  handleSave: () => void;
+  handleDelete: () => void;
+  closeModal: () => void;
+};
+
+const BookModalFooter: React.FC<BookModalFooterProps> = ({
+  handleSave,
+  handleDelete,
+  closeModal
+}) => {
   return (
     <DialogFooter className="sm:justify-between">
       <Button

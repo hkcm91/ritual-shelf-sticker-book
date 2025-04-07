@@ -1,9 +1,8 @@
 
-import React, { forwardRef } from 'react';
-import { useStickerContent } from '../hooks/useStickerContent';
-import LottieRenderer from './stickers/LottieRenderer';
-import ImageRenderer from './stickers/ImageRenderer';
-import AltKeyHelper from './stickers/AltKeyHelper';
+import React, { forwardRef, useRef, useEffect, useState } from 'react';
+import Lottie from 'lottie-react';
+import { useBookshelfStore } from '../store/bookshelfStore';
+import { toast } from 'sonner';
 
 type StickerContentProps = {
   book: any;
@@ -23,19 +22,108 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
   handleStickerMouseDown,
   isAltDrag = false
 }, ref) => {
-  const {
-    containerRef,
-    altKeyPressed,
-    isLottie,
-    animationData,
-    lottieError,
-    imageError
-  } = useStickerContent({ coverURL: book?.coverURL });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerSize, setContainerSize] = useState({ width: 150, height: 220 });
+  const { updateBook } = useBookshelfStore();
+  const [altKeyPressed, setAltKeyPressed] = useState(false);
+  const [lottieError, setLottieError] = useState(false);
+  const [isLottie, setIsLottie] = useState(false);
+  const [animationData, setAnimationData] = useState<any>(null);
+
+  // Measure container on mount and resize
+  useEffect(() => {
+    if (containerRef.current) {
+      const updateSize = () => {
+        const { width, height } = containerRef.current?.getBoundingClientRect() || { width: 150, height: 220 };
+        setContainerSize({ width, height });
+      };
+      
+      updateSize();
+      window.addEventListener('resize', updateSize);
+      return () => window.removeEventListener('resize', updateSize);
+    }
+  }, []);
+
+  // Listen for Alt key press/release
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Alt') {
+        setAltKeyPressed(true);
+      }
+    };
+    
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === 'Alt') {
+        setAltKeyPressed(false);
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
+
+  // Check if content is Lottie
+  useEffect(() => {
+    if (!book || !book.isSticker || !book.coverURL) return;
+    
+    let isLottieAnimation = false;
+    let lottieParsed = null;
+    
+    // Try to determine if this is a Lottie animation
+    try {
+      // If it's a URL that ends with .json
+      if (typeof book.coverURL === 'string') {
+        if (book.coverURL.startsWith('http') && book.coverURL.endsWith('.json')) {
+          // Fetch the JSON from URL
+          fetch(book.coverURL)
+            .then(response => response.json())
+            .then(data => {
+              if (data && (data.v !== undefined || data.animations)) {
+                setIsLottie(true);
+                setAnimationData(data);
+              } else {
+                setIsLottie(false);
+                setLottieError(true);
+              }
+            })
+            .catch(err => {
+              console.error("Failed to fetch Lottie JSON:", err);
+              setLottieError(true);
+            });
+          return;
+        }
+        
+        // If it's an inline JSON string
+        if (book.coverURL.startsWith('{') || book.coverURL.trim().startsWith('{')) {
+          try {
+            lottieParsed = JSON.parse(book.coverURL);
+            isLottieAnimation = Boolean(lottieParsed && (lottieParsed.v !== undefined || lottieParsed.animations));
+            if (isLottieAnimation) {
+              setIsLottie(true);
+              setAnimationData(lottieParsed);
+              return;
+            }
+          } catch (e) {
+            console.log("Not a valid JSON:", e);
+          }
+        }
+      }
+      
+      // Not a Lottie animation
+      setIsLottie(false);
+    } catch (e) {
+      console.error("Error checking for Lottie:", e);
+      setIsLottie(false);
+      setLottieError(true);
+    }
+  }, [book]);
 
   if (!book || !book.isSticker) return null;
-  
-  // Verify that the coverURL is valid
-  const hasCover = book.coverURL && book.coverURL !== '';
   
   try {
     // Common style for all stickers
@@ -63,30 +151,44 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
         className="w-full h-full cursor-move relative"
         onMouseDown={handleStickerMouseDown}
         style={isLottie ? stickerStyle : {
-          backgroundImage: hasCover ? `url(${book.coverURL})` : 'none',
+          backgroundImage: `url(${book.coverURL})`,
           backgroundSize: 'contain',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
           ...stickerStyle
         }}
       >
-        {/* Image renderer for non-Lottie content */}
-        {!isLottie && <ImageRenderer coverURL={book.coverURL} />}
-        
-        {/* Lottie renderer for Lottie content */}
         {isLottie && animationData && !lottieError && (
-          <LottieRenderer animationData={animationData} />
+          <div className="w-full h-full flex items-center justify-center">
+            <Lottie 
+              animationData={animationData} 
+              loop={true} 
+              autoplay={true}
+              style={{ 
+                width: '100%', 
+                height: '100%',
+                pointerEvents: 'none' // Make Lottie ignore pointer events
+              }}
+              onError={() => {
+                setLottieError(true);
+                toast.error("Failed to load Lottie animation");
+              }}
+            />
+          </div>
         )}
         
-        {/* Error state for Lottie */}
         {isLottie && lottieError && (
           <div className="w-full h-full flex items-center justify-center text-red-500 text-xs">
             Lottie error
           </div>
         )}
         
-        {/* Alt key helper */}
-        <AltKeyHelper visible={altKeyPressed} />
+        {/* Small helper tip that appears when holding Alt */}
+        {altKeyPressed && (
+          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white text-xs px-2 py-0.5 rounded whitespace-nowrap opacity-80">
+            Extended boundaries
+          </div>
+        )}
       </div>
     );
   } catch (e) {

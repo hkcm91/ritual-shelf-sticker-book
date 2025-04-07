@@ -4,7 +4,7 @@ import { storageService } from '../services/storage/storageService';
 import { toast } from 'sonner';
 import UrlDialog from './UrlDialog';
 import { useBookshelfStore } from '../store/bookshelfStore';
-import { Plus, Loader2 } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 type EmptySlotProps = {
   fileInputRef: React.RefObject<HTMLInputElement>;
@@ -12,7 +12,6 @@ type EmptySlotProps = {
   slotType?: "book" | "sticker";
   onClick?: () => void; 
   position: number;
-  isUploading?: boolean;
 };
 
 const EmptySlot: React.FC<EmptySlotProps> = ({ 
@@ -20,13 +19,11 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
   onFileSelect, 
   slotType = "book",
   onClick,
-  position,
-  isUploading = false
+  position
 }) => {
   const [showUrlDialog, setShowUrlDialog] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
-  const [isAddingFromUrl, setIsAddingFromUrl] = useState(false);
-  const { addBook, openModal, activeShelfId, slots } = useBookshelfStore();
+  const { addBook, openModal, activeShelfId } = useBookshelfStore();
   
   // Set accept attribute based on slot type
   const acceptAttr = slotType === "book" 
@@ -36,12 +33,6 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
   // Handle click on empty slot
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent event bubbling
-    
-    // Prevent actions if uploading
-    if (isUploading || isAddingFromUrl) {
-      toast.info('Please wait for the current operation to complete');
-      return;
-    }
     
     if (slotType === "book") {
       // For book slots, open the modal directly
@@ -68,8 +59,7 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
         setShowUrlDialog(true);
       } else {
         // Regular click opens file picker
-        if (onClick) onClick();
-        else fileInputRef.current?.click();
+        fileInputRef.current?.click();
       }
     }
   };
@@ -87,13 +77,11 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
   };
   
   // Handle URL submission for stickers
-  const handleUrlSubmit = async () => {
+  const handleUrlSubmit = () => {
     if (!imageUrl) {
       toast.error("Please enter a valid URL");
       return;
     }
-    
-    setIsAddingFromUrl(true);
     
     try {
       // For image URLs, add as sticker
@@ -116,59 +104,28 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
     } catch (error) {
       console.error('Error adding sticker from URL:', error);
       toast.error('Failed to add sticker from URL');
-    } finally {
-      setIsAddingFromUrl(false);
-      
-      // Reset and close dialog
-      setImageUrl('');
-      setShowUrlDialog(false);
     }
+    
+    // Reset and close dialog
+    setImageUrl('');
+    setShowUrlDialog(false);
   };
   
   return (
     <>
       <div 
-        className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer transition-colors hover:bg-gray-50/10"
+        className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer"
         onClick={handleClick}
-        style={{
-          backgroundColor: 'transparent'
-        }}
       >
-        {isUploading || isAddingFromUrl ? (
-          <>
-            <Loader2 
-              className="w-6 h-6 animate-spin" 
-              style={{ color: slots.addButtonColor }}
-            />
-            <span 
-              className="text-xs mt-1"
-              style={{ color: slots.addButtonColor }}
-            >
-              {isAddingFromUrl ? 'Adding from URL...' : 'Uploading...'}
-            </span>
-          </>
-        ) : (
-          <>
-            <Plus 
-              className="w-6 h-6" 
-              style={{ color: slots.addButtonColor }}
-            />
-            <span 
-              className="text-xs mt-1"
-              style={{ color: slots.addButtonColor }}
-            >
-              {slotType === "book" ? "Add Book" : "Add Sticker"}
-            </span>
-            
-            {slotType === "sticker" && (
-              <span 
-                className="text-xs mt-1 opacity-70"
-                style={{ color: slots.addButtonColor }}
-              >
-                (Alt+Click for URL)
-              </span>
-            )}
-          </>
+        <Plus className="w-6 h-6 text-gray-300/50" />
+        <span className="text-xs text-gray-300/50 mt-1">
+          {slotType === "book" ? "Add Book" : "Add Sticker"}
+        </span>
+        
+        {slotType === "sticker" && (
+          <span className="text-xs text-gray-300/30 mt-1">
+            (Alt+Click for URL)
+          </span>
         )}
       </div>
       <input
@@ -177,7 +134,6 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
         accept={acceptAttr}
         className="hidden"
         onChange={handleFileInput}
-        disabled={isUploading || isAddingFromUrl}
       />
       
       {/* URL Dialog for Stickers */}
@@ -187,7 +143,6 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
         imageUrl={imageUrl}
         onImageUrlChange={setImageUrl}
         onSubmit={handleUrlSubmit}
-        isSubmitting={isAddingFromUrl}
       />
     </>
   );

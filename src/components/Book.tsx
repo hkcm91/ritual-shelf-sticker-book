@@ -1,61 +1,50 @@
 
-import React, { useEffect } from 'react';
-import { BookData } from '../store/bookshelfStore';
-import { useBookInteractions } from '../hooks/useBookInteractions';
-import BookCover from './bookslot/BookCover';
+import React from 'react';
+import { useBookshelfStore, BookData } from '../store/bookshelfStore';
 
 type BookProps = {
   data: BookData;
 };
 
 const Book: React.FC<BookProps> = ({ data }) => {
-  const { handleDragStart, handleDragEnd, handleClick } = useBookInteractions(data.id);
+  const { openModal, setDraggedBook } = useBookshelfStore();
   
-  // Log when a book renders and its data
-  useEffect(() => {
-    console.log('Book component mounted for ID:', data.id);
-    console.log('Book data:', {
-      title: data.title,
-      author: data.author,
-      hasValidCoverURL: !!data.coverURL,
-      coverURLLength: data.coverURL ? data.coverURL.length : 0,
-      coverURLValue: data.coverURL ? `${data.coverURL.substring(0, 30)}...` : "undefined",
-      position: data.position,
-      hidden: data.hidden,
-      isSticker: data.isSticker
-    });
-  }, [data]);
+  // Don't render hidden books or items that should be stickers
+  if (data.hidden || data.isSticker) return null;
   
-  // Skip rendering stickers
-  if (data.isSticker) {
-    console.log('Book not rendered - is sticker:', data.id);
-    return null;
-  }
+  const handleDragStart = (e: React.DragEvent) => {
+    e.dataTransfer.setData('bookId', data.id);
+    e.dataTransfer.effectAllowed = 'move';
+    setDraggedBook(data.id);
+  };
   
-  // Add safety check - if book is somehow marked as hidden, render a placeholder anyway
-  // This ensures the book is still visible and clickable even if there's an issue
-  const isHidden = data.hidden === true;
+  const handleDragEnd = () => {
+    setDraggedBook(null);
+  };
+  
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    openModal(data.id);
+  };
   
   return (
     <div
-      className="relative w-full h-full cursor-grab"
+      className="relative w-full h-full rounded bg-bookshelf-wood flex items-center justify-center text-white text-xs font-bold text-center cursor-grab z-10 shadow-md transition-transform duration-200 hover:scale-105"
+      style={{ 
+        backgroundImage: `url(${data.coverURL})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
       draggable
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onClick={handleClick}
-      style={{ display: 'block', opacity: isHidden ? 0.5 : 1 }}
-      data-book-id={data.id}
     >
       <div 
-        className="w-full h-full overflow-hidden rounded shadow-md transition-transform duration-200 hover:scale-105"
-        style={{ opacity: 1, display: 'block' }}
-        data-has-cover={!!data.coverURL}
-      >
-        <BookCover 
-          coverURL={data.coverURL} 
-          progress={data.progress} 
-        />
-      </div>
+        className="absolute bottom-0 left-0 h-1 bg-green-500"
+        style={{ width: `${data.progress}%` }}
+      ></div>
     </div>
   );
 };

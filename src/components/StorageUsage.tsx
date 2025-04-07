@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Progress } from "@/components/ui/progress";
 import { storageService } from '../services/storage/storageService';
@@ -22,11 +21,7 @@ const StorageUsage: React.FC = () => {
   
   const updateStats = () => {
     const stats = storageService.getUsageStats();
-    setUsage({
-      percent: stats.percent,
-      used: stats.used,
-      total: stats.total
-    });
+    setUsage(stats);
   };
   
   // Format bytes to human-readable format with additional clarity for larger sizes

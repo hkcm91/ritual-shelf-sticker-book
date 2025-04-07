@@ -3,7 +3,7 @@ import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Globe, FileUp, Loader2 } from 'lucide-react';
+import { Globe, FileUp } from 'lucide-react';
 
 type UrlDialogProps = {
   open: boolean;
@@ -11,7 +11,6 @@ type UrlDialogProps = {
   imageUrl: string;
   onImageUrlChange: (url: string) => void;
   onSubmit: () => void;
-  isSubmitting?: boolean;
 };
 
 const UrlDialog: React.FC<UrlDialogProps> = ({
@@ -19,21 +18,16 @@ const UrlDialog: React.FC<UrlDialogProps> = ({
   onOpenChange,
   imageUrl,
   onImageUrlChange,
-  onSubmit,
-  isSubmitting = false
+  onSubmit
 }) => {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !isSubmitting) {
+    if (e.key === 'Enter') {
       onSubmit();
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => {
-      if (!isSubmitting) {
-        onOpenChange(isOpen);
-      }
-    }}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Add Image from URL</DialogTitle>
@@ -50,7 +44,6 @@ const UrlDialog: React.FC<UrlDialogProps> = ({
               onChange={(e) => onImageUrlChange(e.target.value)}
               onKeyDown={handleKeyDown}
               className="w-full"
-              disabled={isSubmitting}
             />
             <div className="text-xs text-muted-foreground">
               Supported formats: JPG, PNG, GIF, SVG, and Lottie JSON files
@@ -58,28 +51,12 @@ const UrlDialog: React.FC<UrlDialogProps> = ({
           </div>
         </div>
         <div className="flex justify-end space-x-2">
-          <Button 
-            variant="outline" 
-            onClick={() => onOpenChange(false)}
-            disabled={isSubmitting}
-          >
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button 
-            onClick={onSubmit} 
-            disabled={!imageUrl || isSubmitting}
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              <>
-                <Globe className="h-4 w-4 mr-2" />
-                Add from URL
-              </>
-            )}
+          <Button onClick={onSubmit} disabled={!imageUrl}>
+            <Globe className="h-4 w-4 mr-2" />
+            Add from URL
           </Button>
         </div>
       </DialogContent>

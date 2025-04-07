@@ -1,11 +1,14 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import Book from './Book';
+import { Popover, PopoverTrigger } from '@/components/ui/popover';
+import SlotControls from './SlotControls';
 import DeleteDialog from './DeleteDialog';
+import StickerContent from './StickerContent';
 import EmptySlot from './EmptySlot';
 import { useBookSlot } from '../hooks/useBookSlot';
 import SlotTypeToggle from './SlotTypeToggle';
-import { BookContent, SlotContainer } from './bookslot';
-import { toast } from 'sonner';
+import ContextMenuWrapper from './ContextMenuWrapper';
 
 type BookSlotProps = {
   position: number;
@@ -33,67 +36,76 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     handleScaleChange,
     handleResetTransform,
     handleDeleteSticker,
-    isAltDrag,
-    isUploading
+    isAltDrag
   } = useBookSlot({ position, slotType });
-
-  // Log slot rendering info
-  useEffect(() => {
-    console.log(`BookSlot ${position} rendering. Has book:`, !!book);
-    if (book) {
-      console.log(`BookSlot ${position} book data:`, {
-        id: book.id,
-        title: book.title,
-        isSticker: book.isSticker,
-        hidden: book.hidden,
-        hasCoverURL: !!book.coverURL,
-        coverURL: book.coverURL ? `${book.coverURL.substring(0, 30)}...` : 'undefined'
-      });
-    }
-  }, [position, book]);
 
   // Handle type toggle without triggering file input
   const handleTypeToggle = (value: string) => {
     if (value) {
       setSlotType(value as "book" | "sticker");
-      console.log(`Slot ${position} type changed to:`, value);
     }
   };
 
-  // Special handler for the empty slot click
+  // Special handler for the empty slot click, separate from toggle clicks
   const handleEmptySlotClick = () => {
     if (!book) {
-      console.log(`Empty slot ${position} clicked`);
       handleClick();
+    }
+  };
+  
+  // Render book content based on type
+  const renderBookContent = () => {
+    if (!book) return null;
+    
+    if (book.isSticker) {
+      return (
+        <ContextMenuWrapper
+          book={book}
+          handleRotate={handleRotate}
+          handleResetTransform={handleResetTransform}
+          setShowDeleteDialog={setShowDeleteDialog}
+        >
+          <Popover>
+            <PopoverTrigger asChild>
+              <StickerContent 
+                book={book}
+                scale={scale}
+                position2D={position2D}
+                rotation={rotation}
+                handleStickerMouseDown={handleStickerMouseDown}
+                isAltDrag={isAltDrag}
+              />
+            </PopoverTrigger>
+            <SlotControls 
+              scale={scale}
+              onScaleChange={handleScaleChange}
+              onRotate={handleRotate}
+              onResetTransform={handleResetTransform}
+              onShowDeleteDialog={() => setShowDeleteDialog(true)}
+              isLottie={typeof book.coverURL === 'string' && book.coverURL.startsWith('{')}
+            />
+          </Popover>
+        </ContextMenuWrapper>
+      );
+    } else {
+      return <Book data={book} />;
     }
   };
   
   return (
     <>
-      <SlotContainer
-        position={position}
-        hasBook={!!book}
-        handleDragOver={handleDragOver}
-        handleDrop={handleDrop}
-        handleMouseMove={handleStickerMouseMove}
-        handleMouseUp={handleStickerMouseUp}
+      <div 
+        className={`book-slot relative h-[220px] w-[150px] mx-1 rounded-sm
+          ${!book ? 'hover:bg-gray-50/10' : 'hover:border hover:border-primary/30'}
+          transition-colors duration-200 cursor-pointer`}
+        data-position={position}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
+        onMouseMove={handleStickerMouseMove}
+        onMouseUp={handleStickerMouseUp}
       >
-        {/* Render book content or empty slot */}
         {book ? (
-          <div className="w-full h-full" style={{ display: 'block' }}>
-            <BookContent
-              book={book}
-              scale={scale}
-              position2D={position2D}
-              rotation={rotation}
-              handleStickerMouseDown={handleStickerMouseDown}
-              handleRotate={handleRotate}
-              handleResetTransform={handleResetTransform}
-              handleScaleChange={handleScaleChange}
-              setShowDeleteDialog={setShowDeleteDialog}
-              isAltDrag={isAltDrag}
-            />
-          </div>
+          renderBookContent()
         ) : (
           <EmptySlot 
             fileInputRef={fileInputRef} 
@@ -101,28 +113,22 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
             slotType={slotType}
             onClick={handleEmptySlotClick}
             position={position}
-            isUploading={isUploading}
           />
         )}
         
-        {/* Always show toggle group when slot is empty */}
-        {!book && (
-          <SlotTypeToggle 
-            slotType={slotType} 
-            handleTypeToggle={handleTypeToggle}
-            isVisible={!isUploading} 
-          />
-        )}
-      </SlotContainer>
+        {/* Only show toggle group when slot is empty */}
+        <SlotTypeToggle 
+          slotType={slotType} 
+          handleTypeToggle={handleTypeToggle}
+          isVisible={!book} 
+        />
+      </div>
       
       {/* Delete Confirmation Dialog */}
       <DeleteDialog
         open={showDeleteDialog}
         onOpenChange={setShowDeleteDialog}
-        onConfirm={() => {
-          handleDeleteSticker();
-          toast.success("Item deleted successfully");
-        }}
+        onConfirm={handleDeleteSticker}
         title="Delete Item?"
         description="This action cannot be undone."
       />

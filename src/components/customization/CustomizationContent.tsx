@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { 
   Palette, 
@@ -10,6 +10,7 @@ import {
   Layers,
   Brush
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useBookshelfStore } from "@/store/bookshelfStore";
 
 // Import tab content components
@@ -21,11 +22,11 @@ import HeaderTab from './tabs/HeaderTab';
 import ThemesTab from './tabs/ThemesTab';
 
 const CustomizationContent: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('themes');
+  const { saveCustomization, resetCustomization, activeTheme } = useBookshelfStore();
   
   return (
     <div className="space-y-6">
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <Tabs defaultValue="themes" className="w-full">
         <TabsList className="w-full justify-start mb-4 overflow-x-auto">
           <TabsTrigger value="themes" className="flex items-center">
             <Brush className="mr-1 h-4 w-4" /> Themes

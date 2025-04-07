@@ -13,26 +13,18 @@ const BookSearchDrawer = () => {
   const [query, setQuery] = useState('');
   const [searchResults, setSearchResults] = useState<OpenLibraryBook[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const { activeShelfId, addBook, findEmptyPosition } = useBookshelfStore();
+  const { activeShelfId, addBook } = useBookshelfStore();
 
   const handleSearch = async () => {
     if (!query.trim()) return;
     
     setIsSearching(true);
-    setSearchResults([]);
-    
     try {
       const results = await searchBooks(query);
-      console.log('Search results:', results);
       setSearchResults(results);
-      
-      if (results.length === 0) {
-        toast.info('No books found. Try a different search term.');
-      }
     } catch (error) {
       console.error('Search failed:', error);
-      toast.error('Failed to search books. The Open Library API might be experiencing issues.');
-      setSearchResults([]);
+      toast.error('Failed to search books');
     } finally {
       setIsSearching(false);
     }
@@ -45,50 +37,19 @@ const BookSearchDrawer = () => {
   };
 
   const handleAddBook = (book: OpenLibraryBook) => {
-    // Get cover URL with fallback
-    const coverUrl = book.cover_i ? getCoverImageUrl(book.cover_i, 'M') : '/placeholder.svg';
-    console.log('API Book - Cover URL:', coverUrl);
-    
-    if (!activeShelfId) {
-      toast.error('No active shelf selected');
-      return;
-    }
-    
-    // Find first empty position
-    const emptyPosition = findEmptyPosition(activeShelfId);
-    if (emptyPosition === -1) {
-      toast.error('No empty slots available on this shelf');
-      return;
-    }
-    
-    // Create book data object for store
-    const bookDataForStore = {
-      title: book.title || 'Unknown Title',
-      author: book.author_name && book.author_name[0] ? book.author_name[0] : 'Unknown Author',
-      coverURL: coverUrl,
+    // Find first empty slot
+    const newBookId = addBook({
+      title: book.title,
+      author: book.author_name ? book.author_name[0] : 'Unknown Author',
+      coverURL: getCoverImageUrl(book.cover_i, 'M'),
       progress: 0,
       rating: 0,
-      position: emptyPosition, // Explicitly use the found empty position
+      position: -1, // The store will find an empty slot
       shelfId: activeShelfId,
       series: book.series && book.series[0] ? book.series[0] : '',
-      isSticker: false // Explicitly set this to false
-    };
-    
-    console.log('Adding book to position:', emptyPosition);
-    console.log('Data being sent to Zustand from API Search:', {
-      ...bookDataForStore,
-      coverURL: bookDataForStore.coverURL || 'missing'
     });
     
-    // Add the book
-    const newBookId = addBook(bookDataForStore);
-    console.log('After API book add, newBookId:', newBookId);
-    
-    if (newBookId) {
-      toast.success(`"${book.title}" added to shelf!`);
-    } else {
-      toast.error('Failed to add book to shelf');
-    }
+    toast.success(`"${book.title}" added to shelf!`);
   };
 
   return (
@@ -141,7 +102,7 @@ const BookSearchDrawer = () => {
               >
                 <div className="relative pt-[140%] mb-2 bg-muted rounded">
                   <img
-                    src={book.cover_i ? getCoverImageUrl(book.cover_i, 'M') : '/placeholder.svg'}
+                    src={getCoverImageUrl(book.cover_i, 'M')}
                     alt={book.title}
                     className="absolute inset-0 h-full w-full object-cover rounded"
                     onError={(e) => {

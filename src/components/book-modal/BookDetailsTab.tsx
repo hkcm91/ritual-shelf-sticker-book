@@ -3,11 +3,24 @@ import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Star } from 'lucide-react';
-import { useBookModalContext } from '@/contexts/BookModalContext';
 
-const BookDetailsTab: React.FC = () => {
-  const { bookData, handleInputChange, setRating } = useBookModalContext();
-  
+type BookDetailsTabProps = {
+  bookData: {
+    title: string;
+    author: string;
+    series: string;
+    progress: number;
+    rating: number;
+  };
+  handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  setRating: (rating: number) => void;
+};
+
+const BookDetailsTab: React.FC<BookDetailsTabProps> = ({ 
+  bookData, 
+  handleInputChange, 
+  setRating 
+}) => {
   return (
     <div className="grid gap-4">
       <div className="grid grid-cols-4 items-center gap-4">

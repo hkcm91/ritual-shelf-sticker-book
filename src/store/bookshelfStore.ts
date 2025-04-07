@@ -1,7 +1,7 @@
 
 import { create } from 'zustand';
 import { toast } from 'sonner';
-import { BooksSlice, createBooksSlice } from './books/booksSlice';
+import { BooksSlice, createBooksSlice } from './booksSlice';
 import { CompleteShelvesSlice, createShelvesSlice } from './shelvesSlice';
 import { UISlice, createUISlice } from './uiSlice';
 import { CustomizationState, createCustomizationSlice, defaultCustomization } from './slices/customization';

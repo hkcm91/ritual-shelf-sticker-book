@@ -1,108 +1,93 @@
+
 import { StateCreator } from 'zustand';
 import { ShelfData } from '../types';
-import { getBooksInLastColumn, recalculateBookPositions } from '../utils/shelfUtils';
-import { BooksSlice } from '../books/booksSlice';
-import { toast } from 'sonner';
+import { BooksSlice } from '../booksSlice';
+import { 
+  saveShelvesToStorage, 
+  getBooksInLastColumn
+} from '../utils/shelfUtils';
+import { 
+  restoreHiddenBooksForColumns, 
+  hideLastColumnBooks,
+  maintainBookPositionsOnColumnChange
+} from '../utils/columnOperations';
 
 export interface ColumnOperationsSlice {
-  addColumn: (shelfId: string) => void;
-  removeColumn: (shelfId: string) => void;
+  addColumn: () => void;
+  removeColumn: () => void;
 }
 
-/**
- * Creates the column operations slice
- */
 export const createColumnOperationsSlice: StateCreator<
-  { shelves: Record<string, ShelfData>; activeShelfId: string } & BooksSlice,
+  { shelves: Record<string, ShelfData>; activeShelfId: string } & BooksSlice & ColumnOperationsSlice,
   [],
   [],
   ColumnOperationsSlice
-> = (set, get) => ({
-  addColumn: (shelfId: string) => {
-    set((state) => {
-      const shelf = state.shelves[shelfId];
-      if (!shelf) return state;
+> = (set, get) => {
+  return {
+    addColumn: () => {
+      const { activeShelfId, shelves, books } = get();
+      if (!activeShelfId) return;
       
+      const shelf = shelves[activeShelfId];
       const newColumns = shelf.columns + 1;
-      if (newColumns > 10) {
-        toast.error("Maximum 10 columns allowed");
-        return state;
-      }
       
-      // Recalculate book positions
-      const updatedPositions = recalculateBookPositions(
-        shelfId,
-        shelf.columns,
-        newColumns,
-        state.books
-      );
+      // Restore hidden books from previous column removals that can now be visible
+      let updatedBooks = restoreHiddenBooksForColumns(activeShelfId, shelf, newColumns, books);
       
-      // Update books with new positions
-      const updatedBooks = { ...state.books };
-      Object.keys(updatedPositions).forEach(bookId => {
-        updatedBooks[bookId] = {
-          ...updatedBooks[bookId],
-          position: updatedPositions[bookId]
+      // Ensure books maintain their positions with the new column count
+      updatedBooks = maintainBookPositionsOnColumnChange(activeShelfId, shelf.columns, newColumns, updatedBooks);
+      
+      set((state) => {
+        const updatedShelves = {
+          ...state.shelves,
+          [activeShelfId]: {
+            ...shelf,
+            columns: newColumns
+          }
+        };
+        
+        saveShelvesToStorage(updatedShelves);
+        localStorage.setItem('ritual-bookshelf-books', JSON.stringify(updatedBooks));
+        
+        return {
+          shelves: updatedShelves,
+          books: updatedBooks
         };
       });
+    },
+    
+    removeColumn: () => {
+      const { activeShelfId, shelves, books } = get();
+      if (!activeShelfId) return;
       
-      const updatedShelves = {
-        ...state.shelves,
-        [shelfId]: { ...shelf, columns: newColumns }
-      };
+      const shelf = shelves[activeShelfId];
+      if (shelf.columns <= 1) return;
       
-      return {
-        shelves: updatedShelves,
-        books: updatedBooks
-      };
-    });
-  },
-  
-  removeColumn: (shelfId: string) => {
-    set((state) => {
-      const shelf = state.shelves[shelfId];
-      if (!shelf) return state;
-      
-      if (shelf.columns <= 1) {
-        toast.error("Cannot have less than 1 column");
-        return state;
-      }
-      
-      // Get books in the last column
-      const booksToRemove = getBooksInLastColumn(shelfId, shelf, state.books);
-      
-      // Remove books in the last column
-      const updatedBooks = { ...state.books };
-      booksToRemove.forEach(bookId => {
-        delete updatedBooks[bookId];
-      });
-      
-      // Recalculate book positions
       const newColumns = shelf.columns - 1;
-      const updatedPositions = recalculateBookPositions(
-        shelfId,
-        shelf.columns,
-        newColumns,
-        state.books
-      );
       
-      // Update books with new positions
-      Object.keys(updatedPositions).forEach(bookId => {
-        updatedBooks[bookId] = {
-          ...updatedBooks[bookId],
-          position: updatedPositions[bookId]
+      // Find books in the last column - but we won't delete them
+      const booksInLastColumn = getBooksInLastColumn(activeShelfId, shelf, books);
+      
+      // Hide books in the last column but preserve them
+      const updatedBooks = hideLastColumnBooks(activeShelfId, books, booksInLastColumn);
+      
+      set((state) => {
+        const updatedShelves = {
+          ...state.shelves,
+          [activeShelfId]: {
+            ...shelf,
+            columns: newColumns
+          }
+        };
+        
+        saveShelvesToStorage(updatedShelves);
+        localStorage.setItem('ritual-bookshelf-books', JSON.stringify(updatedBooks));
+        
+        return {
+          shelves: updatedShelves,
+          books: updatedBooks
         };
       });
-      
-      const updatedShelves = {
-        ...state.shelves,
-        [shelfId]: { ...shelf, columns: newColumns }
-      };
-      
-      return {
-        shelves: updatedShelves,
-        books: updatedBooks
-      };
-    });
-  }
-});
+    }
+  };
+};

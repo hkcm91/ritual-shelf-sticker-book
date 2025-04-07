@@ -52,7 +52,8 @@ export const useTransformControls = ({ activeShelfId, position }: UseTransformCo
   
   // Handle scale change
   const handleScaleChange = (newScale: number) => {
-    if (newScale > 0 && newScale <= 3) {
+    // Allow a wider range of scaling from 0.25x to 4x
+    if (newScale >= 0.25 && newScale <= 4) {
       setScale(newScale);
     }
   };

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 
@@ -51,9 +52,9 @@ export const useStickerDrag = ({
     let minX = -maxX;
     let minY = -maxY;
     
-    // If Alt key is pressed, extend boundaries by 20%
+    // Allow wider boundaries for stickers with Alt key
     if (isAlt) {
-      const extensionFactor = 0.2; // 20% extension
+      const extensionFactor = 0.4; // 40% extension for more freedom
       maxX += slotDimensions.width * extensionFactor;
       maxY += slotDimensions.height * extensionFactor;
       minX -= slotDimensions.width * extensionFactor;

@@ -28,9 +28,9 @@ const HeaderAuthButton: React.FC = () => {
         <Button 
           variant="ghost" 
           size="sm"
-          className="flex items-center gap-2 text-[color:var(--header-text-color)]"
+          className="bg-[#1A1F2C]/80 hover:bg-[#222836] text-[color:var(--header-text-color,white)] hover:text-white border border-white/10 shadow-md transition-all hover:translate-y-[-1px]"
         >
-          <UserCircle className="h-5 w-5" />
+          <UserCircle className="h-4 w-4 mr-2" />
           <span>Sign In</span>
         </Button>
       </Link>
@@ -43,20 +43,20 @@ const HeaderAuthButton: React.FC = () => {
         <Button 
           variant="ghost" 
           size="sm"
-          className="flex items-center gap-2 text-[color:var(--header-text-color)]"
+          className="bg-[#1A1F2C]/80 hover:bg-[#222836] text-[color:var(--header-text-color,white)] hover:text-white border border-white/10 shadow-md transition-all hover:translate-y-[-1px]"
         >
-          <UserCircle className="h-5 w-5" />
+          <UserCircle className="h-4 w-4 mr-2" />
           <span className="max-w-[100px] truncate">{user?.displayName || user?.email}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="flex items-center gap-2">
+      <DropdownMenuContent align="end" className="bg-[#1A1F2C] border border-white/10 text-white shadow-[0_8px_30px_rgba(0,0,0,0.4)]">
+        <DropdownMenuLabel className="text-white/70">My Account</DropdownMenuLabel>
+        <DropdownMenuSeparator className="bg-white/10" />
+        <DropdownMenuItem className="flex items-center gap-2 hover:bg-[#2C354A] focus:bg-[#2C354A] cursor-pointer">
           <Cloud className="h-4 w-4" />
           <span>Cloud Storage</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleSignOut} className="flex items-center gap-2 text-red-500">
+        <DropdownMenuItem onClick={handleSignOut} className="flex items-center gap-2 text-red-400 hover:bg-[#2C354A] focus:bg-[#2C354A] cursor-pointer">
           <LogOut className="h-4 w-4" />
           <span>Sign Out</span>
         </DropdownMenuItem>

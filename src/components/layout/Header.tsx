@@ -58,12 +58,12 @@ const Header: React.FC = () => {
             <NavigationMenuList>
               <NavigationMenuItem>
                 <NavigationMenuTrigger 
-                  className="navigation-menu-item bg-transparent h-9 px-3 text-[color:var(--header-text-color,white)] hover:text-[color:var(--header-text-color,white)] hover:bg-[color:var(--header-hover-bg,rgba(255,255,255,0.1))]"
+                  className="navigation-menu-item bg-[#1A1F2C]/90 h-9 px-4 text-[color:var(--header-text-color,white)] hover:text-[color:var(--header-text-color,white)] hover:bg-[#222836] border border-white/10 shadow-md rounded-md transition-all"
                 >
                   Collections
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <div className="p-4 w-[240px] rounded-md">
+                  <div className="p-4 w-[300px] rounded-md bg-[#1A1F2C]/95 backdrop-blur-md border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.4)]">
                     <ShelfSelector />
                   </div>
                 </NavigationMenuContent>
@@ -83,7 +83,7 @@ const Header: React.FC = () => {
               <Button 
                 variant="ghost" 
                 size="icon"
-                className="text-[color:var(--header-text-color,white)] hover:text-[color:var(--header-text-color,white)] hover:bg-[color:var(--header-hover-bg,rgba(255,255,255,0.1))]"
+                className="bg-[#1A1F2C]/80 hover:bg-[#222836] text-[color:var(--header-text-color,white)] hover:text-[color:var(--header-text-color,white)] border border-white/10 shadow-md"
                 onClick={() => {
                   console.log("Customize button clicked");
                   openCustomizationModal();
@@ -92,7 +92,7 @@ const Header: React.FC = () => {
                 <Palette className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>
+            <TooltipContent className="bg-[#1A1F2C] border border-white/10 text-white">
               <p>Customize</p>
             </TooltipContent>
           </Tooltip>

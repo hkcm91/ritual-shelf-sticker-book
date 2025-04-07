@@ -29,7 +29,7 @@ const ShelfSelector: React.FC = () => {
     // Add a small delay to prevent race conditions with selection events
     setTimeout(() => {
       switchShelf(value);
-    }, 50);
+    }, 100);
   };
   
   return (
@@ -42,12 +42,16 @@ const ShelfSelector: React.FC = () => {
             value={activeShelfId}
             onValueChange={handleShelfChange}
           >
-            <SelectTrigger className="bg-white/90 border-0">
-              <SelectValue placeholder="Select a shelf..." />
+            <SelectTrigger className="bg-[#1A1F2C]/90 border border-white/10 text-white hover:bg-[#222836] transition-colors shadow-[0_4px_12px_-2px_rgba(0,0,0,0.3)]">
+              <SelectValue placeholder="Select a collection..." />
             </SelectTrigger>
-            <SelectContent className="z-50 bg-white">
+            <SelectContent className="z-50 bg-[#1A1F2C] border border-white/10 text-white shadow-[0_8px_16px_rgba(0,0,0,0.5)]">
               {Object.values(shelvesData).map((shelf) => (
-                <SelectItem key={shelf.id} value={shelf.id}>
+                <SelectItem 
+                  key={shelf.id} 
+                  value={shelf.id}
+                  className="hover:bg-[#2C354A] focus:bg-[#2C354A] cursor-pointer"
+                >
                   {shelf.name}
                 </SelectItem>
               ))}
@@ -65,7 +69,7 @@ const ShelfSelector: React.FC = () => {
             }
           }}
           disabled={!currentShelf}
-          className="bg-white/90 hover:bg-white text-gray-700"
+          className="bg-[#1A1F2C]/80 hover:bg-[#222836] text-white/80 hover:text-white border border-white/10 shadow-md"
         >
           <Edit2 className="h-4 w-4" />
         </Button>
@@ -74,7 +78,7 @@ const ShelfSelector: React.FC = () => {
           variant="ghost"
           size="icon"
           onClick={() => setIsNewShelfModalOpen(true)}
-          className="bg-white/90 hover:bg-white text-gray-700"
+          className="bg-[#1A1F2C]/80 hover:bg-[#222836] text-white/80 hover:text-white border border-white/10 shadow-md"
         >
           <PlusCircle className="h-4 w-4" />
         </Button>

@@ -37,6 +37,16 @@
   box-shadow: 0 5px 15px rgba(0,0,0,0.15);
 }
 
+/* Book slot toggle buttons - make them subtle */
+.book-slot .slot-type-toggle {
+  opacity: 0.3;
+  transition: opacity 0.2s ease;
+}
+
+.book-slot:hover .slot-type-toggle {
+  opacity: 0.8;
+}
+
 /* Realistic book slot styling */
 .realistic-book-slot {
   background-color: rgba(255, 255, 255, 0.02);

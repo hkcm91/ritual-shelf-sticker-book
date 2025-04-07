@@ -21,7 +21,8 @@ header.scrolled {
 }
 
 .navigation-menu-item:hover {
-  background-color: var(--header-hover-bg, rgba(0, 0, 0, 0.03));
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .dark .navigation-menu-item:hover {
@@ -31,6 +32,12 @@ header.scrolled {
 header .button,
 header button {
   color: var(--header-text-color, white);
+  transition: all 0.2s ease;
+}
+
+header button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 /* Ensure NavigationMenu properly inherits theme colors */
@@ -48,4 +55,44 @@ header .navigation-menu-content {
   background-color: var(--header-bg, rgba(65, 49, 37, 0.95));
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  transform-origin: top center;
+  animation: menuAppear 0.2s ease forwards;
+}
+
+@keyframes menuAppear {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Game-menu style dropdown effects */
+.select-content {
+  animation: menuAppear 0.2s ease forwards;
+}
+
+/* Game-like button effects */
+button.game-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+button.game-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(255,255,255,0.1), rgba(255,255,255,0));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+button.game-btn:hover::after {
+  opacity: 1;
 }

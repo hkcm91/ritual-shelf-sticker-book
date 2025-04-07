@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Circle, Book, Sticker } from 'lucide-react';
+import { Circle } from 'lucide-react';
 
 type SlotTypeToggleProps = {
   slotType: "book" | "sticker";
@@ -17,23 +17,23 @@ const SlotTypeToggle: React.FC<SlotTypeToggleProps> = ({
   if (!isVisible) return null;
   
   return (
-    <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-background/80 backdrop-blur-sm rounded-full p-1 z-10">
-      <div className="flex items-center space-x-2">
+    <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-background/50 backdrop-blur-sm rounded-full p-0.5 z-10 opacity-60 hover:opacity-100 transition-opacity">
+      <div className="flex items-center space-x-1">
         <button
           type="button"
           onClick={() => handleTypeToggle('book')}
-          className={`rounded-full p-1 transition-colors ${slotType === 'book' ? 'bg-primary text-white' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'}`}
+          className={`rounded-full p-0.5 transition-colors ${slotType === 'book' ? 'bg-primary/70 text-white' : 'bg-gray-200/50 text-gray-500 hover:bg-gray-300/60'}`}
           aria-label="Book"
         >
-          <Circle className="h-3 w-3" />
+          <Circle className="h-2 w-2" />
         </button>
         <button
           type="button"
           onClick={() => handleTypeToggle('sticker')}
-          className={`rounded-full p-1 transition-colors ${slotType === 'sticker' ? 'bg-primary text-white' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'}`}
+          className={`rounded-full p-0.5 transition-colors ${slotType === 'sticker' ? 'bg-primary/70 text-white' : 'bg-gray-200/50 text-gray-500 hover:bg-gray-300/60'}`}
           aria-label="Sticker"
         >
-          <Circle className="h-3 w-3" />
+          <Circle className="h-2 w-2" />
         </button>
       </div>
     </div>

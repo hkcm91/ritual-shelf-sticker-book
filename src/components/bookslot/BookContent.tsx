@@ -40,6 +40,7 @@ const BookContent: React.FC<BookContentProps> = ({
       hasTitle: !!book.title,
       hasAuthor: !!book.author,
       hasCoverURL: !!book.coverURL,
+      coverURLValue: book.coverURL,
       position: book.position,
       shelfId: book.shelfId
     });
@@ -54,7 +55,7 @@ const BookContent: React.FC<BookContentProps> = ({
   if (!book.isSticker) {
     console.log('Rendering regular book component for:', book.id);
     return (
-      <div className="w-full h-full" style={{ display: 'block' }}>
+      <div className="w-full h-full" style={{ display: 'block', opacity: 1 }}>
         <Book data={book} />
       </div>
     );

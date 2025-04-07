@@ -19,6 +19,7 @@ const Book: React.FC<BookProps> = ({ data }) => {
       author: data.author,
       hasValidCoverURL: !!data.coverURL,
       coverURLLength: data.coverURL ? data.coverURL.length : 0,
+      coverURLValue: data.coverURL,
       position: data.position,
       hidden: data.hidden,
       isSticker: data.isSticker
@@ -43,11 +44,11 @@ const Book: React.FC<BookProps> = ({ data }) => {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onClick={handleClick}
-      style={{ display: 'block' }} // Force display block
+      style={{ display: 'block', opacity: 1 }} // Force display block
     >
       <div 
         className="w-full h-full overflow-hidden rounded shadow-md transition-transform duration-200 hover:scale-105"
-        style={{ opacity: 1 }} // Force opacity
+        style={{ opacity: 1, display: 'block' }} // Force opacity and display
       >
         <BookCover coverURL={data.coverURL} progress={data.progress} />
       </div>

@@ -38,7 +38,9 @@ const SlotContainer: React.FC<SlotContainerProps> = ({
       onMouseUp={handleMouseUp}
       style={{ 
         opacity: 1,
-        display: 'block'
+        display: 'block',
+        position: 'relative', // Ensure position is explicitly set
+        zIndex: 1 // Set a base z-index
       }}
     >
       {children}

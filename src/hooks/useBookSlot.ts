@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import { useDragAndDrop } from './useDragAndDrop';
@@ -34,6 +35,7 @@ export const useBookSlot = ({ position, slotType }: UseBookSlotProps) => {
         author: book.author || 'No author',
         hasCoverURL: !!book.coverURL,
         coverURLLength: book.coverURL ? book.coverURL.length : 0,
+        coverURLValue: book.coverURL,
         isSticker: !!book.isSticker
       });
     }

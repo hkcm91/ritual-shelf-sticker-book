@@ -24,6 +24,9 @@ const DividerAppearanceSliders: React.FC = () => {
           step={1}
           onValueChange={(value) => updateDividersSetting('thickness', value[0])}
         />
+        <p className="text-xs text-muted-foreground">
+          Adjust the width of divider lines
+        </p>
       </div>
       
       <div className="space-y-2 mt-4">
@@ -38,6 +41,9 @@ const DividerAppearanceSliders: React.FC = () => {
           step={10}
           onValueChange={(value) => updateDividersSetting('height', value[0])}
         />
+        <p className="text-xs text-muted-foreground">
+          Control how tall the dividers appear on the shelf
+        </p>
       </div>
       
       <div className="space-y-2 mt-4">
@@ -52,6 +58,9 @@ const DividerAppearanceSliders: React.FC = () => {
           step={5}
           onValueChange={(value) => updateDividersSetting('opacity', value[0] / 100)}
         />
+        <p className="text-xs text-muted-foreground">
+          Adjust the transparency of dividers
+        </p>
       </div>
     </>
   );

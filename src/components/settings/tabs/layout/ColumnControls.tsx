@@ -39,6 +39,9 @@ const ColumnControls: React.FC = () => {
   return (
     <div className="space-y-2">
       <h3 className="text-sm font-medium">Columns</h3>
+      <p className="text-xs text-muted-foreground mb-2">
+        Adjust the number of vertical columns on your bookshelf
+      </p>
       <div className="flex items-center space-x-2">
         <Button 
           variant="outline" 
@@ -46,18 +49,20 @@ const ColumnControls: React.FC = () => {
           onClick={handleRemoveColumn}
           disabled={!activeShelf || activeShelf.columns <= 1}
           className="px-2"
+          aria-label="Remove column"
         >
           -
         </Button>
         <div className="flex items-center space-x-1">
           <Columns className="h-4 w-4 text-gray-500" />
-          <span className="font-medium">{activeShelf ? activeShelf.columns : 0}</span>
+          <span className="font-medium">{activeShelf ? activeShelf.columns : 0} Columns</span>
         </div>
         <Button 
           variant="outline" 
           size="sm" 
           onClick={handleAddColumn}
           className="px-2"
+          aria-label="Add column"
         >
           +
         </Button>

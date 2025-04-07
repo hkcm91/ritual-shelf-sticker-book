@@ -54,6 +54,9 @@ const VerticalDividersControl: React.FC = () => {
   return (
     <div className="space-y-4">
       <h3 className="text-sm font-medium">Vertical Dividers</h3>
+      <p className="text-xs text-muted-foreground mb-2">
+        Add vertical dividers between groups of books on your shelf
+      </p>
       
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">

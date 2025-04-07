@@ -9,6 +9,7 @@ export interface BooksSlice {
   addBook: (bookData: Omit<BookData, 'id'>) => string;
   updateBook: (id: string, data: Partial<Omit<BookData, 'id'>>) => void;
   deleteBook: (id: string) => void;
+  getBookByPosition: (position: number, shelfId?: string) => BookData | undefined;
 }
 
 export const createBooksSlice: StateCreator<
@@ -98,6 +99,16 @@ export const createBooksSlice: StateCreator<
         
         return { books: remaining };
       });
+    },
+
+    getBookByPosition: (position: number, shelfId?: string) => {
+      const { books, activeShelfId } = get() as BooksSlice & { activeShelfId: string };
+      const currentShelfId = shelfId || activeShelfId;
+      
+      // Find the book with the specified position on the specified shelf
+      return Object.values(books).find(
+        book => book.position === position && book.shelfId === currentShelfId
+      );
     }
   };
 };

@@ -11,7 +11,9 @@ const BookCover: React.FC<BookCoverProps> = ({ coverURL, progress = 0 }) => {
   const hasCover = coverURL && coverURL.trim() !== '';
 
   // For debugging
-  console.log("Rendering book cover with URL:", coverURL ? coverURL.substring(0, 30) + '...' : 'undefined', hasCover ? "valid" : "invalid");
+  console.log("Rendering book cover with URL:", coverURL ? 
+    `${coverURL.substring(0, 30)}... (${coverURL.length} chars)` : 
+    'undefined', hasCover ? "valid" : "invalid");
 
   return (
     <div className="w-full h-full">
@@ -19,7 +21,7 @@ const BookCover: React.FC<BookCoverProps> = ({ coverURL, progress = 0 }) => {
         <div 
           className="w-full h-full"
           style={{
-            backgroundImage: `url(${coverURL})`,
+            backgroundImage: `url("${coverURL}")`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',

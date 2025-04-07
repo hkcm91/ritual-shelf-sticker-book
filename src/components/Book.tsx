@@ -15,7 +15,8 @@ const Book: React.FC<BookProps> = ({ data }) => {
   if (data.hidden || data.isSticker) return null;
   
   // Debug the cover URL rendering
-  console.log('Book rendering with coverURL:', data.coverURL ? 'Has cover' : 'No cover');
+  console.log('Book rendering with ID:', data.id);
+  console.log('Book cover URL:', data.coverURL ? data.coverURL.substring(0, 30) + '...' : 'undefined');
   
   return (
     <div

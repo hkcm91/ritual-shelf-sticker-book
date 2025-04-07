@@ -5,6 +5,7 @@ import { PlusCircle } from 'lucide-react';
 import ShelfSelector from './ShelfSelector';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 import ShelfControls from '../ShelfControls';
+import BookSearchDrawer from '../BookSearchDrawer';
 
 const Header: React.FC = () => {
   const { openCustomizationModal } = useBookshelfStore();
@@ -20,6 +21,7 @@ const Header: React.FC = () => {
       </div>
       
       <div className="flex items-center gap-2">
+        <BookSearchDrawer />
         <ShelfControls />
       </div>
     </header>

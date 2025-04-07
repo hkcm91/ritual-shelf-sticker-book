@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, Book as BookIcon, Plus } from 'lucide-react';
+import { Search, Book as BookIcon, Plus, Library } from 'lucide-react';
 import { searchBooks, getCoverImageUrl, OpenLibraryBook } from '@/services/openLibraryService';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 import { toast } from 'sonner';
@@ -50,21 +50,22 @@ const BookSearchDrawer = () => {
     });
     
     toast.success(`"${book.title}" added to shelf!`);
-    // Optionally close the drawer after adding
-    // setOpen(false);
   };
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button variant="outline" className="gap-2">
-          <Search size={16} />
-          <span>Search Books</span>
+          <Library size={16} />
+          <span className="hidden md:inline">Library Search</span>
         </Button>
       </SheetTrigger>
-      <SheetContent className="w-[90vw] sm:w-[450px] overflow-y-auto">
+      <SheetContent side="right" className="w-[90vw] sm:max-w-md overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>Search Books</SheetTitle>
+          <SheetTitle className="flex items-center gap-2">
+            <Library size={18} />
+            Search Open Library
+          </SheetTitle>
         </SheetHeader>
         
         <div className="mt-6 space-y-6">

@@ -3,6 +3,7 @@ import React from 'react';
 import { RadioGroup } from "@/components/ui/radio-group";
 import { ThemeName } from '@/themes';
 import ThemeCard from './ThemeCard';
+import { motion } from "framer-motion";
 
 interface ThemeListProps {
   activeTheme: ThemeName;
@@ -45,30 +46,51 @@ const ThemeList: React.FC<ThemeListProps> = ({
       onValueChange={(value) => onThemeSelect(value as ThemeName)}
       className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
     >
-      {availableThemes.map((themeName) => (
-        <ThemeCard
+      {/* Theme variants with staggered animation */}
+      {availableThemes.map((themeName, index) => (
+        <motion.div
           key={themeName}
-          themeName={themeName}
-          displayName={getDisplayName(themeName)}
-          theme={isValidTheme(themeName) ? themes[themeName as keyof typeof themes] : themes.default}
-          isActive={activeTheme === themeName}
-          isLoading={isSelecting === themeName}
-          isDeletable={isDeletableTheme(themeName)}
-          onSelect={onThemeSelect}
-          onDelete={onThemeDelete}
-        />
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ 
+            duration: 0.3, 
+            delay: 0.05 * index,
+            ease: "easeOut"
+          }}
+        >
+          <ThemeCard
+            themeName={themeName}
+            displayName={getDisplayName(themeName)}
+            theme={isValidTheme(themeName) ? themes[themeName as keyof typeof themes] : themes.default}
+            isActive={activeTheme === themeName}
+            isLoading={isSelecting === themeName}
+            isDeletable={isDeletableTheme(themeName)}
+            onSelect={onThemeSelect}
+            onDelete={onThemeDelete}
+          />
+        </motion.div>
       ))}
       
       {/* Add Custom Theme option */}
-      <ThemeCard
-        themeName="custom"
-        displayName="Custom Theme"
-        theme={themes.custom}
-        isActive={activeTheme === 'custom'}
-        isLoading={isSelecting === 'custom'}
-        isDeletable={false}
-        onSelect={onThemeSelect}
-      />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ 
+          duration: 0.3, 
+          delay: 0.05 * availableThemes.length,
+          ease: "easeOut"
+        }}
+      >
+        <ThemeCard
+          themeName="custom"
+          displayName="Custom Theme"
+          theme={themes.custom}
+          isActive={activeTheme === 'custom'}
+          isLoading={isSelecting === 'custom'}
+          isDeletable={false}
+          onSelect={onThemeSelect}
+        />
+      </motion.div>
     </RadioGroup>
   );
 };

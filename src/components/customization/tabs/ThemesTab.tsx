@@ -18,6 +18,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { motion } from "framer-motion";
 
 const ThemesTab: React.FC = () => {
   const { activeTheme, setActiveTheme, themes, availableThemes, loadSavedTheme } = useTheme();
@@ -30,7 +31,9 @@ const ThemesTab: React.FC = () => {
     setIsRefreshing(true);
     try {
       loadSavedTheme();
-      toast.success("Theme refreshed");
+      toast.success("Theme refreshed", {
+        icon: "🔄",
+      });
     } catch (error) {
       console.error("Error refreshing theme:", error);
       toast.error("Failed to refresh theme");
@@ -49,6 +52,13 @@ const ThemesTab: React.FC = () => {
       if (setActiveTheme) {
         console.log("Selecting theme:", value);
         setActiveTheme(value);
+        
+        // Add success toast with animation
+        toast.success(`Theme changed to ${themes[value]?.name || "Custom"}`, {
+          icon: "✨",
+          duration: 2000,
+          position: "bottom-center",
+        });
       }
     } catch (error) {
       console.error("Error selecting theme:", error);
@@ -57,7 +67,7 @@ const ThemesTab: React.FC = () => {
       // Add delay before allowing new selections
       setTimeout(() => setIsSelecting(null), 800);
     }
-  }, [setActiveTheme, activeTheme, isSelecting]);
+  }, [setActiveTheme, activeTheme, isSelecting, themes]);
 
   // Function to handle theme deletion
   const handleThemeDelete = useCallback((themeName: ThemeName) => {
@@ -85,7 +95,9 @@ const ThemesTab: React.FC = () => {
         console.error("Error updating localStorage:", storageError);
       }
 
-      toast.success(`Theme "${themeToDelete}" removed`);
+      toast.success(`Theme "${themeToDelete}" removed`, {
+        icon: "🗑️",
+      });
       
       // In a real application, we would delete the theme file from the server here
       console.log(`Theme "${themeToDelete}" would be deleted from the server in a real application`);
@@ -106,10 +118,15 @@ const ThemesTab: React.FC = () => {
   }, [themes]);
 
   return (
-    <div className="space-y-6">
+    <motion.div 
+      className="space-y-6"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
       <div>
         <div className="flex justify-between items-center mb-2">
-          <h3 className="text-lg font-medium">Theme Presets</h3>
+          <h3 className="text-lg font-medium">Theme Collection</h3>
           <RefreshThemeButton 
             isRefreshing={isRefreshing} 
             onRefresh={handleRefreshTheme} 
@@ -117,34 +134,46 @@ const ThemesTab: React.FC = () => {
         </div>
         
         <p className="text-sm text-muted-foreground mb-4">
-          Choose a preset theme for your bookshelf
+          Choose a magical theme for your bookshelf
         </p>
         
-        <Alert variant="default" className="mb-4">
-          <Info className="h-4 w-4" />
-          <AlertDescription>
-            Any changes made in other customization tabs will be saved as your "Custom" theme. You can always return to a preset theme using these options.
+        <Alert variant="default" className="mb-4 border-amber-200/30 bg-amber-50/10">
+          <Info className="h-4 w-4 text-amber-500" />
+          <AlertDescription className="text-muted-foreground">
+            Changes made in other tabs are saved as your "Custom" theme.
+            You can always return to a preset theme using the cards below.
           </AlertDescription>
         </Alert>
         
-        <div className="theme-preview-grid grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <motion.div 
+          className="theme-preview-grid grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+        >
           {activeTheme && (
             <CurrentThemeDisplay 
               activeTheme={activeTheme as ThemeName} 
               themes={themes} 
             />
           )}
-        </div>
+        </motion.div>
         
-        <ThemeList
-          activeTheme={activeTheme as ThemeName}
-          themes={themes}
-          availableThemes={availableThemes}
-          isSelecting={isSelecting}
-          onThemeSelect={handleThemeSelect}
-          onThemeDelete={handleThemeDelete}
-          isValidTheme={isValidTheme}
-        />
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <ThemeList
+            activeTheme={activeTheme as ThemeName}
+            themes={themes}
+            availableThemes={availableThemes}
+            isSelecting={isSelecting}
+            onThemeSelect={handleThemeSelect}
+            onThemeDelete={handleThemeDelete}
+            isValidTheme={isValidTheme}
+          />
+        </motion.div>
       </div>
 
       {/* Confirmation Dialog for Theme Deletion */}
@@ -152,30 +181,30 @@ const ThemesTab: React.FC = () => {
         open={!!themeToDelete} 
         onOpenChange={(open) => !open && setThemeToDelete(null)}
       >
-        <AlertDialogContent>
+        <AlertDialogContent className="border-amber-200/50 bg-gradient-to-b from-slate-900/90 to-slate-800/90 text-slate-100">
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Theme</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-amber-100">Delete Theme</AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-300">
               Are you sure you want to delete this theme? This action cannot be undone.
               {themeToDelete === activeTheme && (
-                <p className="mt-2 font-semibold text-destructive">
+                <p className="mt-2 font-semibold text-red-400">
                   This is your current active theme. Deleting it will switch you to the default theme.
                 </p>
               )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700">Cancel</AlertDialogCancel>
             <AlertDialogAction 
               onClick={confirmThemeDeletion}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-red-500/80 text-white hover:bg-red-600/90"
             >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </motion.div>
   );
 };
 

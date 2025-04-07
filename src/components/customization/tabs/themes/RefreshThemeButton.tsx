@@ -1,34 +1,36 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Loader2, Palette } from "lucide-react";
+import { RefreshCcw } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface RefreshThemeButtonProps {
   isRefreshing: boolean;
   onRefresh: () => void;
 }
 
-const RefreshThemeButton: React.FC<RefreshThemeButtonProps> = ({
-  isRefreshing,
-  onRefresh
-}) => {
+const RefreshThemeButton: React.FC<RefreshThemeButtonProps> = ({ isRefreshing, onRefresh }) => {
   return (
-    <Button 
-      variant="outline" 
-      size="sm" 
-      onClick={(e) => {
-        e.preventDefault();
-        onRefresh();
-      }}
-      disabled={isRefreshing}
-      className="text-xs"
+    <motion.div
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
     >
-      {isRefreshing 
-        ? <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-        : <Palette className="h-3 w-3 mr-1" />
-      }
-      {isRefreshing ? "Refreshing..." : "Refresh Theme"}
-    </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="text-amber-500 hover:text-amber-400 hover:bg-amber-950/20"
+        onClick={onRefresh}
+        disabled={isRefreshing}
+      >
+        <motion.div
+          animate={isRefreshing ? { rotate: 360 } : { rotate: 0 }}
+          transition={{ duration: 1, repeat: isRefreshing ? Infinity : 0, ease: "linear" }}
+        >
+          <RefreshCcw size={16} className={isRefreshing ? "text-amber-400" : ""} />
+        </motion.div>
+        <span className="ml-1">{isRefreshing ? "Refreshing..." : "Refresh"}</span>
+      </Button>
+    </motion.div>
   );
 };
 

@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { BookOpen, PlusCircle, Edit2 } from "lucide-react";
+import { BookOpen, PlusCircle, Edit2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { 
   Select, 
@@ -29,28 +29,42 @@ const ShelfSelector: React.FC = () => {
     // Add a small delay to prevent race conditions with selection events
     setTimeout(() => {
       switchShelf(value);
-    }, 100);
+    }, 150);
   };
   
   return (
     <>
-      <div className="flex items-center gap-2">
-        <BookOpen className="h-5 w-5 text-white/90" />
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between">
+          <h3 className="collections-title flex items-center gap-1.5 text-sm font-medium text-amber-300/90">
+            <Sparkles className="h-3.5 w-3.5" />
+            <span>Collections</span>
+          </h3>
+        </div>
         
-        <div className="w-48">
+        <div className="w-full">
           <Select
             value={activeShelfId}
             onValueChange={handleShelfChange}
           >
-            <SelectTrigger className="bg-[#1A1F2C]/90 border border-white/10 text-white hover:bg-[#222836] transition-colors shadow-[0_4px_12px_-2px_rgba(0,0,0,0.3)]">
+            <SelectTrigger 
+              className="w-full game-btn bg-gradient-to-b from-amber-900/40 to-amber-950/40 border border-amber-600/20 text-amber-100 
+                shadow-lg shadow-black/30 hover:from-amber-900/50 hover:to-amber-950/50 transition-all"
+            >
               <SelectValue placeholder="Select a collection..." />
             </SelectTrigger>
-            <SelectContent className="z-50 bg-[#1A1F2C] border border-white/10 text-white shadow-[0_8px_16px_rgba(0,0,0,0.5)]">
+            <SelectContent 
+              className="z-50 collections-dropdown min-w-[280px] p-1.5"
+              position="popper"
+              sideOffset={5}
+              align="center"
+            >
               {Object.values(shelvesData).map((shelf) => (
                 <SelectItem 
                   key={shelf.id} 
                   value={shelf.id}
-                  className="hover:bg-[#2C354A] focus:bg-[#2C354A] cursor-pointer"
+                  className="hover:bg-amber-800/30 px-3 py-2 rounded-md focus:bg-amber-800/30 cursor-pointer 
+                    border-l-2 border-transparent hover:border-amber-500/50 transition-all my-0.5 text-amber-100"
                 >
                   {shelf.name}
                 </SelectItem>
@@ -59,29 +73,31 @@ const ShelfSelector: React.FC = () => {
           </Select>
         </div>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => {
-            if (currentShelf) {
-              setRenameValue(currentShelf.name);
-              setIsRenameModalOpen(true);
-            }
-          }}
-          disabled={!currentShelf}
-          className="bg-[#1A1F2C]/80 hover:bg-[#222836] text-white/80 hover:text-white border border-white/10 shadow-md"
-        >
-          <Edit2 className="h-4 w-4" />
-        </Button>
+        <div className="flex justify-between gap-2 mt-1">
+          <Button
+            variant="ghost"
+            onClick={() => {
+              if (currentShelf) {
+                setRenameValue(currentShelf.name);
+                setIsRenameModalOpen(true);
+              }
+            }}
+            disabled={!currentShelf}
+            className="game-btn flex-1 text-xs h-8 from-amber-900/40 to-amber-950/40 hover:from-amber-900/50 hover:to-amber-950/50"
+          >
+            <Edit2 className="h-3.5 w-3.5 mr-1" />
+            <span>Rename</span>
+          </Button>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setIsNewShelfModalOpen(true)}
-          className="bg-[#1A1F2C]/80 hover:bg-[#222836] text-white/80 hover:text-white border border-white/10 shadow-md"
-        >
-          <PlusCircle className="h-4 w-4" />
-        </Button>
+          <Button
+            variant="ghost"
+            onClick={() => setIsNewShelfModalOpen(true)}
+            className="game-btn flex-1 text-xs h-8 from-amber-900/40 to-amber-950/40 hover:from-amber-900/50 hover:to-amber-950/50"
+          >
+            <PlusCircle className="h-3.5 w-3.5 mr-1" />
+            <span>Create New</span>
+          </Button>
+        </div>
       </div>
       
       <ShelfDialogs 

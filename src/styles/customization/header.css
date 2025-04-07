@@ -1,28 +1,35 @@
 
 header {
-  background-color: var(--header-bg, rgba(65, 49, 37, 0.75));
+  background-color: var(--header-bg, rgba(65, 49, 37, 0.85));
   background-image: var(--header-bg-image, none);
   color: var(--header-text-color, white);
   transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
-  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
 }
 
 .dark header {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 header.scrolled {
-  box-shadow: 0 4px 12px -1px rgba(0, 0, 0, 0.15), 0 2px 6px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px -1px rgba(0, 0, 0, 0.25), 0 2px 6px -1px rgba(0, 0, 0, 0.2);
 }
 
 .navigation-menu-item {
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(to bottom, rgba(50, 30, 20, 0.9), rgba(35, 20, 10, 0.9));
+  border: 1px solid rgba(255, 215, 165, 0.1);
 }
 
 .navigation-menu-item:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 8px rgba(255, 180, 120, 0.3);
+  border: 1px solid rgba(255, 215, 165, 0.2);
+  background: linear-gradient(to bottom, rgba(60, 35, 25, 0.95), rgba(45, 25, 15, 0.95));
 }
 
 .dark .navigation-menu-item:hover {
@@ -32,37 +39,45 @@ header.scrolled {
 header .button,
 header button {
   color: var(--header-text-color, white);
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
+  background: linear-gradient(to bottom, rgba(50, 30, 20, 0.9), rgba(35, 20, 10, 0.9));
+  border: 1px solid rgba(255, 215, 165, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 header button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3), 0 0 8px rgba(255, 180, 120, 0.2);
+  border: 1px solid rgba(255, 215, 165, 0.3);
+  background: linear-gradient(to bottom, rgba(60, 35, 25, 0.95), rgba(45, 25, 15, 0.95));
 }
 
 /* Ensure NavigationMenu properly inherits theme colors */
 header .navigation-menu-trigger {
   color: var(--header-text-color, white);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 header .navigation-menu-content {
-  background-color: var(--header-bg, rgba(65, 49, 37, 0.75));
+  background: linear-gradient(135deg, rgba(35, 25, 15, 0.95), rgba(55, 35, 25, 0.95));
   color: var(--header-text-color, white);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Make dropdowns use header colors */
 header .navigation-menu-content {
-  background-color: var(--header-bg, rgba(65, 49, 37, 0.95));
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, rgba(35, 25, 15, 0.95), rgba(55, 35, 25, 0.95));
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 215, 165, 0.1);
   transform-origin: top center;
-  animation: menuAppear 0.2s ease forwards;
+  animation: menuAppear 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.4) forwards;
+  border-radius: 12px;
 }
 
 @keyframes menuAppear {
   from {
     opacity: 0;
-    transform: translateY(-10px) scale(0.97);
+    transform: translateY(-15px) scale(0.95);
   }
   to {
     opacity: 1;
@@ -72,13 +87,32 @@ header .navigation-menu-content {
 
 /* Game-menu style dropdown effects */
 .select-content {
-  animation: menuAppear 0.2s ease forwards;
+  animation: menuAppear 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.4) forwards;
+  background: linear-gradient(135deg, rgba(35, 25, 15, 0.95), rgba(55, 35, 25, 0.95));
+  border: 1px solid rgba(255, 215, 165, 0.15);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+.select-content .select-item {
+  font-weight: 500;
+  border-radius: 6px;
+  margin: 2px 4px;
+  transition: all 0.2s ease;
+}
+
+.select-content .select-item:hover {
+  background: linear-gradient(to right, rgba(255, 180, 120, 0.1), transparent);
+  transform: translateX(2px);
 }
 
 /* Game-like button effects */
 button.game-btn {
   position: relative;
   overflow: hidden;
+  background: linear-gradient(to bottom, rgba(60, 40, 25, 0.95), rgba(45, 30, 15, 0.95));
+  border: 1px solid rgba(255, 215, 165, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: all 0.25s ease;
 }
 
 button.game-btn::after {
@@ -93,6 +127,28 @@ button.game-btn::after {
   transition: opacity 0.3s;
 }
 
+button.game-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 8px rgba(255, 180, 120, 0.3);
+  border: 1px solid rgba(255, 215, 165, 0.3);
+}
+
 button.game-btn:hover::after {
   opacity: 1;
+}
+
+/* Collections dropdown styling */
+.collections-dropdown {
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(35, 25, 15, 0.95), rgba(55, 35, 25, 0.95));
+  border: 1px solid rgba(255, 215, 165, 0.15);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.collections-title {
+  font-weight: 600;
+  color: rgba(255, 215, 165, 0.9);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.5px;
 }

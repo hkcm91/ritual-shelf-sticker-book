@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Settings } from 'lucide-react';
+import { Settings, Cog } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -21,16 +21,16 @@ const SettingsDrawerTrigger: React.FC<SettingsDrawerTriggerProps> = ({ onClick }
           <Button 
             variant="ghost" 
             size="icon" 
-            className="text-[color:var(--header-text-color,white)] hover:text-[color:var(--header-text-color,white)] hover:bg-[color:var(--header-hover-bg,rgba(255,255,255,0.1))]"
+            className="game-btn from-amber-900/40 to-amber-950/40 hover:from-amber-900/50 hover:to-amber-950/50 text-amber-100"
             onClick={() => {
               console.log("Settings button clicked directly");
               onClick();
             }}
           >
-            <Settings className="h-4 w-4" />
+            <Cog className="h-4 w-4 animate-[spin_10s_linear_infinite]" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>
+        <TooltipContent className="bg-[#1A1F2C] border border-amber-600/20 text-amber-100">
           <p>Settings</p>
         </TooltipContent>
       </Tooltip>

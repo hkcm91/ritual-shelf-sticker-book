@@ -1,3 +1,4 @@
+
 import { StateCreator } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'sonner';
@@ -102,13 +103,15 @@ export const createBooksSlice: StateCreator<
     },
 
     getBookByPosition: (position: number, shelfId?: string) => {
-      // Access the global state instead of using get()
-      const state = store.getState() as any; // Using any to bypass type checking temporarily
-      const currentShelfId = shelfId || state.activeShelfId;
+      // Access the global state safely with proper typing
+      const state = store.getState();
+      const books = state.books;
+      // Get activeShelfId from state
+      const currentShelfId = shelfId || (state as any).activeShelfId;
       
       // Find the book with the specified position on the specified shelf
-      return Object.values(state.books).find(
-        book => book.position === position && book.shelfId === currentShelfId
+      return Object.values(books).find(
+        (book: BookData) => book.position === position && book.shelfId === currentShelfId
       );
     }
   };

@@ -16,7 +16,9 @@ const Book: React.FC<BookProps> = ({ data }) => {
   
   // Debug the cover URL rendering
   console.log('Book rendering with ID:', data.id);
-  console.log('Book cover URL:', data.coverURL ? data.coverURL.substring(0, 30) + '...' : 'undefined');
+  console.log('Book cover URL:', data.coverURL ? 
+    `${data.coverURL.substring(0, 30)}... (${data.coverURL.length} chars)` : 
+    'undefined');
   
   return (
     <div

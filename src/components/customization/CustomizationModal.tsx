@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { useBookshelfStore } from "@/store/bookshelfStore";
 import { toast } from 'sonner';
@@ -64,43 +65,39 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
   };
 
   return (
-    <AnimatePresence>
-      {open && (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-          <DialogContent 
-            className={`${isFullscreen ? 'max-w-[95vw] h-[95vh] max-h-[95vh]' : 'max-w-4xl max-h-[90vh]'} 
-              transition-all duration-500 flex flex-col bg-gradient-to-b from-slate-950/95 to-slate-900/95 border-amber-950/30
-              backdrop-blur-md relative overflow-hidden p-6`}
-            style={{ 
-              minWidth: isFullscreen ? '95vw' : 'auto',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.45)'
-            }}
-          >
-            {/* Background subtle animation */}
-            <ModalBackground />
-            
-            <AnimatedContainer className="relative z-10 flex flex-col h-full">
-              <ModalHeader 
-                isFullscreen={isFullscreen} 
-                toggleFullscreen={toggleFullscreen} 
-              />
-              
-              {/* Live Preview Section */}
-              <PreviewSection showSaveAnimation={showSaveAnimation} />
-              
-              {/* Content Section */}
-              <ContentSection />
-              
-              {/* Footer Section */}
-              <ModalFooter 
-                handleSave={handleSave} 
-                handleReset={handleReset} 
-              />
-            </AnimatedContainer>
-          </DialogContent>
-        </Dialog>
-      )}
-    </AnimatePresence>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent 
+        className={`${isFullscreen ? 'max-w-[95vw] h-[95vh] max-h-[95vh]' : 'max-w-4xl max-h-[90vh]'} 
+          transition-all duration-500 flex flex-col bg-gradient-to-b from-slate-950/95 to-slate-900/95 border-amber-950/30
+          backdrop-blur-md relative overflow-hidden p-6`}
+        style={{ 
+          minWidth: isFullscreen ? '95vw' : 'auto',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.45)'
+        }}
+      >
+        {/* Background subtle animation */}
+        <ModalBackground />
+        
+        <AnimatedContainer className="relative z-10 flex flex-col h-full">
+          <ModalHeader 
+            isFullscreen={isFullscreen} 
+            toggleFullscreen={toggleFullscreen} 
+          />
+          
+          {/* Live Preview Section */}
+          <PreviewSection showSaveAnimation={showSaveAnimation} />
+          
+          {/* Content Section */}
+          <ContentSection />
+          
+          {/* Footer Section */}
+          <ModalFooter 
+            handleSave={handleSave} 
+            handleReset={handleReset} 
+          />
+        </AnimatedContainer>
+      </DialogContent>
+    </Dialog>
   );
 };
 

@@ -11,7 +11,7 @@ import CustomizationModal from '@/components/customization/CustomizationModal';
 import ZoomControls from '@/components/ZoomControls';
 
 const Index = () => {
-  const { shelves, activeShelfId, ui } = useBookshelfStore();
+  const { shelves, activeShelfId, ui, openCustomizationModal, closeCustomizationModal } = useBookshelfStore();
   const [isNewShelfModalOpen, setIsNewShelfModalOpen] = useState(false);
   const [newShelfName, setNewShelfName] = useState("");
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
@@ -80,7 +80,6 @@ const Index = () => {
       <CustomizationModal 
         open={ui?.isCustomizationModalOpen || false} 
         onOpenChange={(open) => {
-          const { openCustomizationModal, closeCustomizationModal } = useBookshelfStore.getState();
           if (open) {
             openCustomizationModal();
           } else {

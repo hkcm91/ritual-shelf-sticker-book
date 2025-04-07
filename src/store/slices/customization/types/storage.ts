@@ -1,9 +1,3 @@
 
-import { ThemeName } from '@/themes';
-
-export interface StorageActions {
-  saveCustomization: () => void;
-  loadCustomization: () => void;
-  resetCustomization: () => void;
-  setActiveTheme: (themeName: ThemeName | string) => void;
-}
+// Re-export storage types from the new location for backwards compatibility
+export { ThemeActions, StorageActions } from '../storage/types';

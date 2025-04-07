@@ -33,7 +33,8 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     handleScaleChange,
     handleResetTransform,
     handleDeleteSticker,
-    isAltDrag
+    isAltDrag,
+    isUploading
   } = useBookSlot({ position, slotType });
 
   // Log slot rendering info
@@ -100,6 +101,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
             slotType={slotType}
             onClick={handleEmptySlotClick}
             position={position}
+            isUploading={isUploading}
           />
         )}
         
@@ -108,7 +110,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
           <SlotTypeToggle 
             slotType={slotType} 
             handleTypeToggle={handleTypeToggle}
-            isVisible={true} 
+            isVisible={!isUploading} 
           />
         )}
       </SlotContainer>

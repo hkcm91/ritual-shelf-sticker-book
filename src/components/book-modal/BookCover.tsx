@@ -1,10 +1,11 @@
 
 import React, { useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Upload } from 'lucide-react';
+import { Upload, Loader2 } from 'lucide-react';
 import { compressImage } from '@/utils/imageUtils';
 import { toast } from 'sonner';
 import { useBookModalContext } from '@/contexts/BookModalContext';
+import { Progress } from '@/components/ui/progress';
 
 type BookCoverProps = {
   className?: string;
@@ -15,14 +16,15 @@ const BookCover: React.FC<BookCoverProps> = ({
 }) => {
   const { bookData, handleCoverChange } = useBookModalContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isCompressing, setIsCompressing] = React.useState(false);
   
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0] && handleCoverChange) {
       const file = e.target.files[0];
       
       // Check file size - enforce stricter limit
-      if (file.size > 3 * 1024 * 1024) { // 3MB max
-        toast.error('Image is too large. Maximum size is 3MB.');
+      if (file.size > 5 * 1024 * 1024) { // 5MB max
+        toast.error('Image is too large. Maximum size is 5MB.');
         return;
       }
       
@@ -31,6 +33,7 @@ const BookCover: React.FC<BookCoverProps> = ({
       reader.onload = async (event) => {
         if (typeof event.target?.result === 'string') {
           try {
+            setIsCompressing(true);
             console.log("Book cover loaded, length:", event.target.result.length);
             
             // Always compress the image to ensure it can be stored
@@ -57,6 +60,8 @@ const BookCover: React.FC<BookCoverProps> = ({
               console.warn('Failed to compress book cover:', err);
               toast.warning('Image could not be compressed. Storage issues may occur.');
               // Continue with original if compression fails
+            } finally {
+              setIsCompressing(false);
             }
             
             // Apply the change - make sure we're calling the context function
@@ -74,15 +79,22 @@ const BookCover: React.FC<BookCoverProps> = ({
           } catch (error) {
             console.error('Error processing image:', error);
             toast.error('Failed to process image');
+            setIsCompressing(false);
           }
         }
       };
       
       reader.onerror = () => {
         toast.error('Failed to read the image file');
+        setIsCompressing(false);
       };
       
       reader.readAsDataURL(file);
+    }
+    
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
   
@@ -102,6 +114,13 @@ const BookCover: React.FC<BookCoverProps> = ({
         {!hasCover && (
           <span className="text-gray-400 text-sm">No cover image</span>
         )}
+        
+        {isCompressing && (
+          <div className="absolute inset-0 bg-black/50 rounded-md flex flex-col items-center justify-center">
+            <Loader2 className="h-8 w-8 text-white animate-spin mb-2" />
+            <span className="text-white text-sm">Compressing image...</span>
+          </div>
+        )}
       </div>
       
       <Button 
@@ -110,9 +129,16 @@ const BookCover: React.FC<BookCoverProps> = ({
         size="sm"
         className="absolute bottom-2 right-2 bg-background/80 backdrop-blur-sm"
         onClick={handleUploadClick}
+        disabled={isCompressing}
       >
-        <Upload className="h-3 w-3 mr-1" />
-        <span className="text-xs">Upload Cover</span>
+        {isCompressing ? (
+          <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+        ) : (
+          <Upload className="h-3 w-3 mr-1" />
+        )}
+        <span className="text-xs">
+          {isCompressing ? 'Processing...' : 'Upload Cover'}
+        </span>
       </Button>
       
       <input

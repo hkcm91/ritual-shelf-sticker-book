@@ -39,19 +39,17 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
     }
   }, [open]);
   
-  // Force a re-render when the dialog state changes
+  // Force a re-render when the dialog state changes - Fixed subscription method
   useEffect(() => {
     console.log("[CustomizationModal] Subscribing to store changes");
-    const unsubscribe = useBookshelfStore.subscribe(
-      (state) => state.ui?.isCustomizationModalOpen,
-      (isOpen) => {
-        console.log("[CustomizationModal] Store subscription triggered, isOpen:", isOpen);
-        if (isOpen !== open) {
-          console.log("[CustomizationModal] Store and prop mismatch, updating via onOpenChange");
-          onOpenChange(isOpen);
-        }
+    const unsubscribe = useBookshelfStore.subscribe((state) => {
+      const isOpen = state.ui?.isCustomizationModalOpen;
+      console.log("[CustomizationModal] Store subscription triggered, isOpen:", isOpen);
+      if (isOpen !== open) {
+        console.log("[CustomizationModal] Store and prop mismatch, updating via onOpenChange");
+        onOpenChange(isOpen || false);
       }
-    );
+    });
     
     return () => {
       console.log("[CustomizationModal] Unsubscribing from store");

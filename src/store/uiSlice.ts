@@ -61,27 +61,13 @@ export const createUISlice: StateCreator<
   
   openCustomizationModal: () => {
     console.log("[UISlice] Opening customization modal - BEFORE:", get().isCustomizationModalOpen);
-    console.log("[UISlice] Opening customization modal - State before update:", JSON.stringify(get(), null, 2));
-    set((state) => {
-      console.log("[UISlice] Inside set function, current state:", state.isCustomizationModalOpen);
-      const newState = { isCustomizationModalOpen: true };
-      console.log("[UISlice] New state to apply:", newState);
-      return newState;
-    });
+    set({ isCustomizationModalOpen: true });
     console.log("[UISlice] Opening customization modal - AFTER:", get().isCustomizationModalOpen);
-    console.log("[UISlice] Full state after update:", JSON.stringify(get(), null, 2));
   },
   
   closeCustomizationModal: () => {
     console.log("[UISlice] Closing customization modal - BEFORE:", get().isCustomizationModalOpen);
-    console.log("[UISlice] Closing customization modal - State before update:", JSON.stringify(get(), null, 2));
-    set((state) => {
-      console.log("[UISlice] Inside close function, current state:", state.isCustomizationModalOpen);
-      const newState = { isCustomizationModalOpen: false };
-      console.log("[UISlice] New state to apply:", newState);
-      return newState;
-    });
+    set({ isCustomizationModalOpen: false });
     console.log("[UISlice] Closing customization modal - AFTER:", get().isCustomizationModalOpen);
-    console.log("[UISlice] Full state after update:", JSON.stringify(get(), null, 2));
   }
 });

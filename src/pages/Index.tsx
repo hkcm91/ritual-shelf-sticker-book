@@ -50,16 +50,14 @@ const Index = () => {
   const isCustomizationModalOpen = ui?.isCustomizationModalOpen || false;
   console.log("[Index] Customization modal state:", isCustomizationModalOpen);
   
-  // Force re-render when customization modal state changes
+  // Fixed subscription method - using a single callback function
   useEffect(() => {
     console.log("[Index] Setting up subscription to customization modal state");
-    const unsubscribe = useBookshelfStore.subscribe(
-      (state) => state.ui?.isCustomizationModalOpen,
-      (isOpen) => {
-        console.log("[Index] Customization modal state changed to:", isOpen);
-        // No action needed, just logging
-      }
-    );
+    const unsubscribe = useBookshelfStore.subscribe((state) => {
+      const isOpen = state.ui?.isCustomizationModalOpen;
+      console.log("[Index] Customization modal state changed to:", isOpen);
+      // No action needed, just logging
+    });
     
     return () => {
       console.log("[Index] Cleaning up subscription");

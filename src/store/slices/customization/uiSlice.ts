@@ -12,12 +12,13 @@ export const createUISlice: CustomizationSliceCreator = (set) => ({
   })),
   
   setLinkDividerToShelfColor: (linked: boolean) => set((state) => {
-    const newState = { 
+    // Create a copy of the state object
+    const newState: any = { 
       ui: { ...state.ui, linkDividerToShelfColor: linked } 
     };
     
     // When linking is enabled, update divider color to match shelf color
-    if (linked) {
+    if (linked && state.shelfStyling && state.shelfStyling.dividers) {
       newState.shelfStyling = {
         ...state.shelfStyling,
         dividers: {

@@ -2,7 +2,7 @@
 import React from 'react';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { LayoutHorizontal, LayoutVertical, LayoutGrid } from "lucide-react";
+import { RowsIcon, Columns, Grid2X2 } from "lucide-react";
 
 interface SimpleOrientationSelectorProps {
   value: 'vertical' | 'horizontal' | 'both';
@@ -17,7 +17,7 @@ const SimpleOrientationSelector: React.FC<SimpleOrientationSelectorProps> = ({ v
       className="flex justify-between"
     >
       <div className="flex flex-col items-center gap-1 p-2 border rounded-md hover:bg-accent cursor-pointer">
-        <LayoutVertical className="h-5 w-5 text-primary" />
+        <Columns className="h-5 w-5 text-primary" />
         <div className="flex items-center gap-1">
           <RadioGroupItem value="vertical" id="vertical" className="sr-only" />
           <Label htmlFor="vertical" className="text-xs cursor-pointer">Vertical</Label>
@@ -25,7 +25,7 @@ const SimpleOrientationSelector: React.FC<SimpleOrientationSelectorProps> = ({ v
       </div>
       
       <div className="flex flex-col items-center gap-1 p-2 border rounded-md hover:bg-accent cursor-pointer">
-        <LayoutHorizontal className="h-5 w-5 text-primary" />
+        <RowsIcon className="h-5 w-5 text-primary" />
         <div className="flex items-center gap-1">
           <RadioGroupItem value="horizontal" id="horizontal" className="sr-only" />
           <Label htmlFor="horizontal" className="text-xs cursor-pointer">Horizontal</Label>
@@ -33,7 +33,7 @@ const SimpleOrientationSelector: React.FC<SimpleOrientationSelectorProps> = ({ v
       </div>
       
       <div className="flex flex-col items-center gap-1 p-2 border rounded-md hover:bg-accent cursor-pointer">
-        <LayoutGrid className="h-5 w-5 text-primary" />
+        <Grid2X2 className="h-5 w-5 text-primary" />
         <div className="flex items-center gap-1">
           <RadioGroupItem value="both" id="both" className="sr-only" />
           <Label htmlFor="both" className="text-xs cursor-pointer">Both</Label>

@@ -39,7 +39,7 @@ export const createShelvesSlice: CustomizationSliceCreator = (set) => ({
       ...state.shelfStyling.dividers,
       enabled,
       // If this is the first time enabling, use good defaults
-      thickness: state.shelfStyling.dividers.thickness || a6,
+      thickness: state.shelfStyling.dividers.thickness || 6,
       color: state.shelfStyling.dividers.color || state.shelfStyling.color,
       opacity: state.shelfStyling.dividers.opacity || 0.8
     } : { ...state.shelfStyling.dividers, enabled };

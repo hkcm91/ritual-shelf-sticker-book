@@ -17,17 +17,17 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
-    errorElement: <NotFound />,
     children: [
       {
-        path: "/",
+        index: true,
         element: <Index />,
       },
       {
-        path: "/auth",
+        path: "auth",
         element: <Auth />,
       }
     ],
+    errorElement: <NotFound />,
   },
 ]);
 

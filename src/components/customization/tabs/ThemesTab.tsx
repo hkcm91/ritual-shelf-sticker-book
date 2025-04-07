@@ -17,6 +17,13 @@ const ThemesTab: React.FC = () => {
     loadSavedTheme();
   };
 
+  // Function to handle theme selection without causing navigation
+  const handleThemeSelect = (value: ThemeName) => {
+    if (setActiveTheme) {
+      setActiveTheme(value);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -71,7 +78,7 @@ const ThemesTab: React.FC = () => {
         
         <RadioGroup 
           value={activeTheme} 
-          onValueChange={(value) => setActiveTheme(value as ThemeName)}
+          onValueChange={(value) => handleThemeSelect(value as ThemeName)}
           className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
         >
           {availableThemes.map((themeName) => (
@@ -80,7 +87,10 @@ const ThemesTab: React.FC = () => {
               className={`relative p-4 flex flex-col gap-4 cursor-pointer hover:bg-accent/10 transition-colors ${
                 activeTheme === themeName ? 'border-2 border-primary' : ''
               }`}
-              onClick={() => setActiveTheme(themeName as ThemeName)}
+              onClick={(e) => {
+                e.preventDefault();
+                handleThemeSelect(themeName as ThemeName);
+              }}
             >
               <div className="flex items-center gap-2">
                 <RadioGroupItem value={themeName} id={`theme-${themeName}`} />
@@ -112,7 +122,10 @@ const ThemesTab: React.FC = () => {
             className={`relative p-4 flex flex-col gap-4 cursor-pointer hover:bg-accent/10 transition-colors ${
               activeTheme === 'custom' ? 'border-2 border-primary' : ''
             }`}
-            onClick={() => setActiveTheme('custom' as ThemeName)}
+            onClick={(e) => {
+              e.preventDefault();
+              handleThemeSelect('custom' as ThemeName);
+            }}
           >
             <div className="flex items-center gap-2">
               <RadioGroupItem value="custom" id="theme-custom" />

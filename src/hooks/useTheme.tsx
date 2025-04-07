@@ -60,7 +60,7 @@ export function useTheme() {
         
         // Enable dividers by default in themes with more consistent styling
         if (themeToApply.variables['--divider-thickness']) {
-          const dividerThickness = parseInt(themeToApply.variables['--divider-thickness']);
+          const dividerThickness = parseInt(themeToApply.variables['--divider-thickness'] as string);
           if (dividerThickness > 0) {
             // Auto-enable dividers for the theme if thickness is set
             useBookshelfStore.getState().toggleDividers(true);

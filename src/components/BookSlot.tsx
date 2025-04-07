@@ -65,6 +65,11 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     }
   };
   
+  // Log what we're rendering
+  useEffect(() => {
+    console.log(`Slot ${position} rendering content ${book ? 'BookContent' : 'EmptySlot'}`);
+  }, [position, book]);
+  
   return (
     <>
       <SlotContainer
@@ -75,9 +80,6 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
         handleMouseMove={handleStickerMouseMove}
         handleMouseUp={handleStickerMouseUp}
       >
-        {/* Debugging log */}
-        {console.log(`Slot ${position} rendering content ${book ? 'BookContent' : 'EmptySlot'}`)}
-        
         {/* Render book content or empty slot */}
         {book ? (
           <div className="w-full h-full" style={{ display: 'block' }}>

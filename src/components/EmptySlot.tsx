@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { storageService } from '../services/storage/storageService';
 import { toast } from 'sonner';
@@ -114,13 +113,10 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
   return (
     <>
       <div 
-        className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer transition-colors"
+        className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer transition-colors hover:bg-gray-50/10"
         onClick={handleClick}
         style={{
-          background: `transparent`,
-          ":hover": {
-            background: slots.emptyHoverBg
-          }
+          backgroundColor: 'transparent'
         }}
       >
         <Plus 

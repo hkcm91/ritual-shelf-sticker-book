@@ -12,7 +12,7 @@ import CustomizationModal from '@/components/customization/CustomizationModal';
 import ZoomControls from '@/components/ZoomControls';
 
 const Index = () => {
-  const { shelves, activeShelfId, ui } = useBookshelfStore();
+  const { shelves, activeShelfId, ui, page } = useBookshelfStore();
   const [isNewShelfModalOpen, setIsNewShelfModalOpen] = useState(false);
   const [newShelfName, setNewShelfName] = useState("");
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
@@ -41,8 +41,18 @@ const Index = () => {
   const shelvesData = shelves as Record<string, ShelfData>;
   const currentShelf = activeShelfId ? shelvesData[activeShelfId] : null;
   
+  // Apply page background styles
+  const pageStyles = {
+    backgroundColor: page?.background || '#f5f5f5',
+    backgroundImage: page?.backgroundImage ? `url(${page.backgroundImage})` : 'none',
+    backgroundSize: page?.backgroundSize || 'cover',
+    backgroundRepeat: page?.backgroundRepeat || 'no-repeat',
+    backgroundPosition: page?.backgroundPosition || 'center',
+    backgroundAttachment: page?.backgroundAttachment || 'fixed'
+  };
+  
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col" style={pageStyles}>
       <Header />
       
       <div className="flex-grow w-full overflow-auto">

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   Dialog,
@@ -30,6 +29,11 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
     onOpenChange(false);
   };
   
+  const handleReset = () => {
+    resetCustomization();
+    // Keep the modal open so users can see the changes
+  };
+  
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
@@ -48,7 +52,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
         <DialogFooter className="flex justify-between mt-6">
           <Button 
             variant="outline" 
-            onClick={resetCustomization}
+            onClick={handleReset}
           >
             <CircleOff className="mr-2 h-4 w-4" />
             Reset to Defaults

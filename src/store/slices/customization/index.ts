@@ -1,5 +1,5 @@
 
-import { CustomizationSliceCreator, CustomizationState, defaultCustomization } from './types';
+import { defaultCustomization } from './types';
 import { createUISlice } from './uiSlice';
 import { createPageSlice } from './pageSlice';
 import { createContainerSlice } from './containerSlice';
@@ -7,6 +7,7 @@ import { createShelvesSlice } from './shelvesSlice';
 import { createSlotsSlice } from './slotsSlice';
 import { createHeaderSlice } from './headerSlice';
 import { createStorageSlice } from './storageSlice';
+import { CustomizationSliceCreator } from './types';
 
 export const createCustomizationSlice: CustomizationSliceCreator = (set, get, api) => {
   // Combine all slices with default values

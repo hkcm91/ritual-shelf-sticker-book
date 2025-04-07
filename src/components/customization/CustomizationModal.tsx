@@ -25,7 +25,39 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
   const [showSaveAnimation, setShowSaveAnimation] = useState(false);
   const { saveCustomization, resetCustomization } = useBookshelfStore();
   
-  console.log("CustomizationModal rendering with open prop:", open);
+  console.log("[CustomizationModal] Rendering with open prop:", open);
+  console.log("[CustomizationModal] Current store state:", useBookshelfStore.getState().ui?.isCustomizationModalOpen);
+  
+  // Added debugging effect for dialog open state changes
+  useEffect(() => {
+    console.log("[CustomizationModal] Effect triggered - open state changed to:", open);
+    const storeState = useBookshelfStore.getState().ui?.isCustomizationModalOpen;
+    console.log("[CustomizationModal] Store state when effect runs:", storeState);
+    
+    if (open !== storeState) {
+      console.log("[CustomizationModal] Mismatch between prop and store state!", { prop: open, store: storeState });
+    }
+  }, [open]);
+  
+  // Force a re-render when the dialog state changes
+  useEffect(() => {
+    console.log("[CustomizationModal] Subscribing to store changes");
+    const unsubscribe = useBookshelfStore.subscribe(
+      (state) => state.ui?.isCustomizationModalOpen,
+      (isOpen) => {
+        console.log("[CustomizationModal] Store subscription triggered, isOpen:", isOpen);
+        if (isOpen !== open) {
+          console.log("[CustomizationModal] Store and prop mismatch, updating via onOpenChange");
+          onOpenChange(isOpen);
+        }
+      }
+    );
+    
+    return () => {
+      console.log("[CustomizationModal] Unsubscribing from store");
+      unsubscribe();
+    };
+  }, [onOpenChange, open]);
   
   const handleSave = () => {
     saveCustomization();
@@ -63,23 +95,30 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
     setIsFullscreen(!isFullscreen);
   };
 
-  // Debugging to help track dialog rendering
-  useEffect(() => {
-    console.log("CustomizationModal - open state changed to:", open);
-  }, [open]);
+  // Debug dialog open change handler
+  const handleOpenChange = (newOpenState: boolean) => {
+    console.log("[CustomizationModal] Dialog onOpenChange called with:", newOpenState);
+    console.log("[CustomizationModal] Current props.open value:", open);
+    console.log("[CustomizationModal] Current store state:", useBookshelfStore.getState().ui?.isCustomizationModalOpen);
+    
+    onOpenChange(newOpenState);
+    
+    // Give time for state to update, then check if it worked
+    setTimeout(() => {
+      console.log("[CustomizationModal] After onOpenChange, store state:", 
+        useBookshelfStore.getState().ui?.isCustomizationModalOpen);
+    }, 100);
+  };
 
   return (
     <Dialog 
       open={open} 
-      onOpenChange={(newOpenState) => {
-        console.log("Dialog onOpenChange called with:", newOpenState);
-        onOpenChange(newOpenState);
-      }}
+      onOpenChange={handleOpenChange}
     >
       <DialogContent 
         className={`${isFullscreen ? 'max-w-[95vw] h-[95vh] max-h-[95vh]' : 'max-w-4xl max-h-[90vh]'} 
           transition-all duration-500 flex flex-col bg-gradient-to-b from-slate-950/95 to-slate-900/95 border-amber-950/30
-          backdrop-blur-md relative overflow-hidden p-6 z-50`}
+          backdrop-blur-md relative overflow-hidden p-6 z-[100]`}
         style={{ 
           minWidth: isFullscreen ? '95vw' : 'auto',
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.45)'

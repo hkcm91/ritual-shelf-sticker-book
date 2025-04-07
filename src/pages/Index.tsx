@@ -18,14 +18,18 @@ const Index = () => {
   const [renameValue, setRenameValue] = useState("");
   const [isInitialized, setIsInitialized] = useState(false);
   
+  console.log("[Index] Rendering with UI state:", ui);
+  
   // Initialize the store and load customization only once
   useEffect(() => {
     if (!isInitialized) {
+      console.log("[Index] Initializing default shelf");
       const shelfId = initializeDefaultShelf();
       
       // Load customization
       const loadSavedCustomization = useBookshelfStore.getState().loadCustomization;
       if (loadSavedCustomization) {
+        console.log("[Index] Loading saved customization");
         loadSavedCustomization();
       }
       
@@ -42,16 +46,41 @@ const Index = () => {
   const shelvesData = shelves as Record<string, ShelfData>;
   const currentShelf = activeShelfId ? shelvesData[activeShelfId] : null;
   
+  // Get the customization modal state directly from the store
   const isCustomizationModalOpen = ui?.isCustomizationModalOpen || false;
-  console.log("Index: Customization modal state:", isCustomizationModalOpen);
+  console.log("[Index] Customization modal state:", isCustomizationModalOpen);
+  
+  // Force re-render when customization modal state changes
+  useEffect(() => {
+    console.log("[Index] Setting up subscription to customization modal state");
+    const unsubscribe = useBookshelfStore.subscribe(
+      (state) => state.ui?.isCustomizationModalOpen,
+      (isOpen) => {
+        console.log("[Index] Customization modal state changed to:", isOpen);
+        // No action needed, just logging
+      }
+    );
+    
+    return () => {
+      console.log("[Index] Cleaning up subscription");
+      unsubscribe();
+    };
+  }, []);
   
   const handleCustomizationOpenChange = (newOpen: boolean) => {
-    console.log("Index: handleCustomizationOpenChange called with:", newOpen);
+    console.log("[Index] handleCustomizationOpenChange called with:", newOpen);
+    console.log("[Index] Current store state before change:", useBookshelfStore.getState().ui?.isCustomizationModalOpen);
+    
     if (newOpen) {
       openCustomizationModal();
     } else {
       closeCustomizationModal();
     }
+    
+    // Check if state was updated correctly
+    setTimeout(() => {
+      console.log("[Index] Store state after change:", useBookshelfStore.getState().ui?.isCustomizationModalOpen);
+    }, 100);
   };
   
   return (
@@ -94,6 +123,11 @@ const Index = () => {
         open={isCustomizationModalOpen} 
         onOpenChange={handleCustomizationOpenChange} 
       />
+      
+      {/* Debug info at the bottom of the page */}
+      <div className="fixed bottom-0 left-0 bg-black/80 text-white text-xs p-1 z-50 max-w-[300px] overflow-hidden">
+        Modal state: {isCustomizationModalOpen ? 'Open' : 'Closed'}
+      </div>
     </div>
   );
 };

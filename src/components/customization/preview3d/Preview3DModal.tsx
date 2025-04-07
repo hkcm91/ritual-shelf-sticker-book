@@ -13,6 +13,8 @@ interface Preview3DModalProps {
 
 const Preview3DModal: React.FC<Preview3DModalProps> = ({ open, onOpenChange }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
+  
+  console.log("[Preview3DModal] Rendering with open state:", open);
 
   const toggleFullscreen = () => {
     setIsFullscreen(!isFullscreen);
@@ -23,7 +25,7 @@ const Preview3DModal: React.FC<Preview3DModalProps> = ({ open, onOpenChange }) =
       <DialogContent 
         className={`${isFullscreen ? 'max-w-[95vw] h-[95vh] p-6' : 'max-w-4xl p-6'} 
           bg-gradient-to-b from-slate-950/95 to-slate-900/95 border-amber-950/30
-          backdrop-blur-md overflow-hidden transition-all duration-300 z-50`}
+          backdrop-blur-md overflow-hidden transition-all duration-300 z-[101]`}
         style={{ 
           minWidth: isFullscreen ? '95vw' : 'auto',
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.45)'

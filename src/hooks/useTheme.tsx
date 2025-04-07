@@ -13,18 +13,22 @@ export function useTheme() {
     }
     
     // Fix for type safety
-    const themeKey = activeTheme as keyof typeof themes;
-    const theme = (themes[themeKey] || themes.default);
+    let themeToApply = themes.default; // Default fallback
+    
+    if (activeTheme !== 'custom' && activeTheme in themes) {
+      const themeKey = activeTheme as keyof typeof themes;
+      themeToApply = themes[themeKey];
+    }
     
     // Apply CSS variables to root
-    Object.entries(theme.variables).forEach(([key, value]) => {
+    Object.entries(themeToApply.variables).forEach(([key, value]) => {
       document.documentElement.style.setProperty(key, value as string);
     });
     
     // Apply textures for backgrounds if available
-    if (theme.textures) {
-      document.documentElement.style.setProperty('--shelf-texture', `url(${theme.textures.shelf || ''})`);
-      document.documentElement.style.setProperty('--bg-texture', `url(${theme.textures.background || ''})`);
+    if (themeToApply.textures) {
+      document.documentElement.style.setProperty('--shelf-texture', `url(${themeToApply.textures.shelf || ''})`);
+      document.documentElement.style.setProperty('--bg-texture', `url(${themeToApply.textures.background || ''})`);
     }
   }, [activeTheme]);
   

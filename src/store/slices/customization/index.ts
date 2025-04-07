@@ -7,14 +7,13 @@ import { createShelvesSlice } from './shelvesSlice';
 import { createSlotsSlice } from './slotsSlice';
 import { createHeaderSlice } from './headerSlice';
 import { createStorageSlice } from './storageSlice';
-import { CustomizationSliceCreator } from './types';
 import { StateCreator } from 'zustand';
 import { BookshelfState } from '../../bookshelfStore';
 
 // Export the default customization for use in the main store
 export { defaultCustomization } from './types';
 
-// Correct the type signature to return only the CustomizationState part, not the full BookshelfState
+// Correct the type signature to return only the CustomizationState part
 export const createCustomizationSlice: StateCreator<
   BookshelfState,
   [],

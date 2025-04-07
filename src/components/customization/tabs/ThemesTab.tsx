@@ -19,7 +19,7 @@ const ThemesTab: React.FC = () => {
           Choose a preset theme for your bookshelf
         </p>
         
-        <Alert className="mb-4">
+        <Alert variant="default" className="mb-4">
           <Info className="h-4 w-4" />
           <AlertDescription>
             Any changes made in other customization tabs will be saved as your "Custom" theme. You can always return to a preset theme using these options.

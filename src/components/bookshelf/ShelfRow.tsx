@@ -1,3 +1,4 @@
+
 import React from 'react';
 import BookSlot from '../BookSlot';
 import { useBookshelfStore } from '../../store/bookshelfStore';
@@ -30,7 +31,8 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
       orientation: 'vertical',
       thickness: 6,
       color: '#714621',
-      opacity: 0.8
+      opacity: 0.8,
+      height: 200
     };
 
     // Get shelf texture or use default
@@ -43,6 +45,7 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
     if (dividers.enabled && (dividers.orientation === 'vertical' || dividers.orientation === 'both')) {
       slotRow.push(<div key={`vdivider-left-${rowIndex}`} className="vertical-shelf-divider shelf-side-left" style={{
         width: `${dividers.thickness}px`,
+        height: `${dividers.height}px`,
         backgroundColor: dividers.color,
         backgroundImage: `url(${shelfTexture})`,
         opacity: dividers.opacity
@@ -55,6 +58,7 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
       if (dividers.enabled && (dividers.orientation === 'vertical' || dividers.orientation === 'both') && col > 0 && col % dividers.booksPerSection === 0) {
         slotRow.push(<div key={`vdivider-${rowIndex}-${col}`} style={{
           width: `${dividers.thickness}px`,
+          height: `${dividers.height}px`,
           backgroundColor: dividers.color,
           backgroundImage: `url(${shelfTexture})`,
           opacity: dividers.opacity
@@ -67,6 +71,7 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
     if (dividers.enabled && (dividers.orientation === 'vertical' || dividers.orientation === 'both')) {
       slotRow.push(<div key={`vdivider-right-${rowIndex}`} className="vertical-shelf-divider shelf-side-right" style={{
         width: `${dividers.thickness}px`,
+        height: `${dividers.height}px`,
         backgroundColor: dividers.color,
         backgroundImage: `url(${shelfTexture})`,
         opacity: dividers.opacity
@@ -85,7 +90,18 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
 
   // Get custom shelf texture or use default
   const shelfTexture = shelf?.textureImage || (useRealisticStyle ? '/lovable-uploads/7a437784-0910-4719-b52b-6564c3004ebe.png' : '/textures/default/wood.jpg');
-  return <div className={`shelf-row flex flex-col w-full relative ${useRealisticStyle ? 'realistic-shelf' : ''}`}>
+  
+  // Set CSS variables for divider styling
+  const dividerHeight = shelfStyling?.dividers?.height || 200;
+  
+  return <div className={`shelf-row flex flex-col w-full relative ${useRealisticStyle ? 'realistic-shelf' : ''}`}
+    style={{
+      "--divider-height": `${dividerHeight}px`,
+      "--divider-thickness": `${shelfStyling?.dividers?.thickness || 6}px`,
+      "--divider-color": shelfStyling?.dividers?.color || '#714621',
+      "--divider-opacity": shelfStyling?.dividers?.opacity || 1
+    } as React.CSSProperties}
+  >
       {/* Shelf back panel for realistic look */}
       <div className="bookshelf-back-panel" style={{
       backgroundColor: shelfStyling?.color || '#7c5738',

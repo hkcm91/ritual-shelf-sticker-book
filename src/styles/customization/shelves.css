@@ -63,9 +63,9 @@
 
 .vertical-shelf-divider {
   width: var(--divider-thickness, 6px);
-  align-self: stretch;  /* This ensures it stretches to fill parent height */
-  height: 100%;  /* Explicitly set height to 100% */
-  min-height: 220px;
+  height: var(--divider-height, 200px);
+  min-height: var(--divider-height, 200px);
+  align-self: flex-start;
   margin: 0;
 }
 
@@ -82,7 +82,7 @@
   top: 0;
   bottom: 0;  /* Make sure it extends to the bottom */
   width: var(--divider-thickness, 8px);
-  height: 100%;  /* Full height */
+  height: var(--divider-height, 100%);  /* Full height */
   background-color: var(--divider-color, #714621);
   background-image: var(--shelf-texture);
   background-size: 200% 100%;

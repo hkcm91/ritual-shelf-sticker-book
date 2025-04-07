@@ -20,9 +20,23 @@ const DividerAppearanceSliders: React.FC = () => {
         <Slider
           value={[shelfStyling?.dividers?.thickness || 2]}
           min={1}
-          max={12}
+          max={16}
           step={1}
           onValueChange={(value) => updateDividersSetting('thickness', value[0])}
+        />
+      </div>
+      
+      <div className="space-y-2 mt-4">
+        <div className="flex justify-between items-center">
+          <Label>Height</Label>
+          <span className="text-sm font-medium">{shelfStyling?.dividers?.height || 200}px</span>
+        </div>
+        <Slider
+          value={[shelfStyling?.dividers?.height || 200]}
+          min={100}
+          max={300}
+          step={10}
+          onValueChange={(value) => updateDividersSetting('height', value[0])}
         />
       </div>
       

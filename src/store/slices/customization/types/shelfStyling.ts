@@ -16,6 +16,7 @@ export interface ShelfDividers {
   color: string;
   opacity: number;
   orientation: 'vertical' | 'horizontal' | 'both';
+  height: number;
 }
 
 export interface ShelfStylingActions {
@@ -25,7 +26,7 @@ export interface ShelfStylingActions {
   updateShelfOpacity: (opacity: number) => void;
   toggleDividers: (enabled: boolean) => void;
   updateDividersSetting: (
-    property: 'booksPerSection' | 'booksPerRow' | 'thickness' | 'color' | 'orientation' | 'opacity',
+    property: 'booksPerSection' | 'booksPerRow' | 'thickness' | 'color' | 'orientation' | 'opacity' | 'height',
     value: any
   ) => void;
   updateAllDividerSettings: (settings: Partial<ShelfDividers>) => void;

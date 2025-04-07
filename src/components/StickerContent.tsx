@@ -9,6 +9,7 @@ type StickerContentProps = {
   scale: number;
   position2D: { x: number, y: number };
   rotation: number;
+  zIndex?: number;
   handleStickerMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
   isAltDrag?: boolean;
 };
@@ -19,6 +20,7 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
   scale,
   position2D,
   rotation,
+  zIndex = 1,
   handleStickerMouseDown,
   isAltDrag = false
 }, ref) => {
@@ -134,7 +136,8 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
       height: '100%',
       // Add a subtle border when alt key is pressed for extended movement
       boxShadow: altKeyPressed ? '0 0 0 2px rgba(255, 165, 0, 0.5)' : 'none',
-      transition: 'box-shadow 0.2s ease'
+      transition: 'box-shadow 0.2s ease',
+      zIndex: book.zIndex || zIndex
     };
     
     return (

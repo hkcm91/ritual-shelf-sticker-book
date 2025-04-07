@@ -64,8 +64,44 @@ export function useThemeApplication() {
             } else {
               document.documentElement.style.setProperty('--page-bg-image', 'none');
             }
+            
+            // Apply header texture if available
+            if (themeToApply.textures.header) {
+              document.documentElement.style.setProperty(
+                '--header-bg-image', 
+                `url(${themeToApply.textures.header})`
+              );
+            } else {
+              document.documentElement.style.setProperty('--header-bg-image', 'none');
+            }
           } catch (textureError) {
             console.error('Error applying theme textures:', textureError);
+          }
+        }
+        
+        // Apply header colors from theme if specified
+        if (themeToApply.header) {
+          try {
+            if (themeToApply.header.background) {
+              document.documentElement.style.setProperty('--header-bg', themeToApply.header.background);
+            }
+            if (themeToApply.header.textColor) {
+              document.documentElement.style.setProperty('--header-text-color', themeToApply.header.textColor);
+            }
+            // Calculate hover background based on text color
+            const textColor = themeToApply.header.textColor || '#ffffff';
+            if (textColor.match(/#[0-9a-f]{6}/i)) {
+              const r = parseInt(textColor.slice(1, 3), 16);
+              const g = parseInt(textColor.slice(3, 5), 16);
+              const b = parseInt(textColor.slice(5, 7), 16);
+              const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+              document.documentElement.style.setProperty(
+                '--header-hover-bg', 
+                brightness > 125 ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)'
+              );
+            }
+          } catch (headerError) {
+            console.error('Error applying header theme:', headerError);
           }
         }
       } else if (activeTheme === 'custom') {
@@ -146,7 +182,7 @@ export function useThemeApplication() {
           
           if (header) {
             // Header
-            document.documentElement.style.setProperty('--header-bg', header.background || '#8B5A2B');
+            document.documentElement.style.setProperty('--header-bg', header.background || 'rgba(65, 49, 37, 0.75)');
             document.documentElement.style.setProperty(
               '--header-bg-image', 
               header.backgroundImage ? `url(${header.backgroundImage})` : 'none'

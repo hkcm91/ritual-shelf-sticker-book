@@ -1,8 +1,8 @@
 
 header {
-  background-color: var(--header-bg);
-  background-image: var(--header-bg-image);
-  color: var(--header-text-color);
+  background-color: var(--header-bg, rgba(65, 49, 37, 0.75));
+  background-image: var(--header-bg-image, none);
+  color: var(--header-text-color, white);
   transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
   border-bottom: 1px solid rgba(0, 0, 0, 0.03);
   backdrop-filter: blur(8px);
@@ -30,15 +30,22 @@ header.scrolled {
 
 header .button,
 header button {
-  color: var(--header-text-color);
+  color: var(--header-text-color, white);
 }
 
 /* Ensure NavigationMenu properly inherits theme colors */
 header .navigation-menu-trigger {
-  color: var(--header-text-color);
+  color: var(--header-text-color, white);
 }
 
 header .navigation-menu-content {
-  background-color: var(--header-bg);
-  color: var(--header-text-color);
+  background-color: var(--header-bg, rgba(65, 49, 37, 0.75));
+  color: var(--header-text-color, white);
+}
+
+/* Make dropdowns use header colors */
+header .navigation-menu-content {
+  background-color: var(--header-bg, rgba(65, 49, 37, 0.95));
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }

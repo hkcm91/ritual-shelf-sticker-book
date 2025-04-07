@@ -41,10 +41,12 @@ const Header: React.FC = () => {
   
   return (
     <header 
-      className={`px-4 sm:px-6 py-3 flex justify-between items-center bg-[color:var(--header-bg,#41312580)] backdrop-blur-sm sticky top-0 z-50 transition-all duration-200 ${scrolled ? 'shadow-lg' : ''}`}
+      className={`px-4 sm:px-6 py-3 flex justify-between items-center sticky top-0 z-50 transition-all duration-200 ${scrolled ? 'shadow-lg' : ''}`}
       style={{
+        backgroundColor: 'var(--header-bg)',
         backgroundImage: 'var(--header-bg-image, none)',
-        color: 'var(--header-text-color, white)'
+        color: 'var(--header-text-color, white)',
+        backdropFilter: 'blur(8px)'
       }}
     >
       <div className="flex items-center gap-4">

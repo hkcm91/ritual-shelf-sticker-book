@@ -29,6 +29,7 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
   const [lottieError, setLottieError] = useState(false);
   const [isLottie, setIsLottie] = useState(false);
   const [animationData, setAnimationData] = useState<any>(null);
+  const [imageError, setImageError] = useState(false);
 
   // Measure container on mount and resize
   useEffect(() => {
@@ -73,6 +74,7 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
     
     let isLottieAnimation = false;
     let lottieParsed = null;
+    setImageError(false);
     
     // Try to determine if this is a Lottie animation
     try {
@@ -125,6 +127,9 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
 
   if (!book || !book.isSticker) return null;
   
+  // Verify that the coverURL is valid
+  const hasCover = book.coverURL && book.coverURL !== '';
+  
   try {
     // Common style for all stickers
     const stickerStyle = {
@@ -151,13 +156,21 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
         className="w-full h-full cursor-move relative"
         onMouseDown={handleStickerMouseDown}
         style={isLottie ? stickerStyle : {
-          backgroundImage: `url(${book.coverURL})`,
+          backgroundImage: hasCover ? `url(${book.coverURL})` : 'none',
           backgroundSize: 'contain',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
           ...stickerStyle
         }}
       >
+        {!hasCover && (
+          <div className="text-gray-400 text-xs text-center">No image</div>
+        )}
+        
+        {imageError && (
+          <div className="text-red-400 text-xs text-center">Image error</div>
+        )}
+        
         {isLottie && animationData && !lottieError && (
           <div className="w-full h-full flex items-center justify-center">
             <Lottie 

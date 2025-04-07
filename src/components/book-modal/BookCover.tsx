@@ -36,13 +36,16 @@ const BookCover: React.FC<BookCoverProps> = ({
     fileInputRef.current?.click();
   };
   
+  // Check if coverURL is valid and not empty
+  const hasCover = coverURL && coverURL.trim() !== '';
+  
   return (
     <div className="relative">
       <div 
         className={`w-full h-40 bg-muted rounded-md bg-cover bg-center ${className} flex items-center justify-center`} 
-        style={{ backgroundImage: coverURL ? `url(${coverURL})` : 'none' }}
+        style={{ backgroundImage: hasCover ? `url(${coverURL})` : 'none' }}
       >
-        {!coverURL && (
+        {!hasCover && (
           <span className="text-gray-400 text-sm">No cover image</span>
         )}
       </div>

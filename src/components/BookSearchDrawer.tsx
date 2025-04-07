@@ -37,11 +37,14 @@ const BookSearchDrawer = () => {
   };
 
   const handleAddBook = (book: OpenLibraryBook) => {
+    // Get cover URL with fallback
+    const coverUrl = book.cover_i ? getCoverImageUrl(book.cover_i, 'M') : '/placeholder.svg';
+    
     // Find first empty slot
     const newBookId = addBook({
       title: book.title,
       author: book.author_name ? book.author_name[0] : 'Unknown Author',
-      coverURL: getCoverImageUrl(book.cover_i, 'M'),
+      coverURL: coverUrl,
       progress: 0,
       rating: 0,
       position: -1, // The store will find an empty slot
@@ -102,7 +105,7 @@ const BookSearchDrawer = () => {
               >
                 <div className="relative pt-[140%] mb-2 bg-muted rounded">
                   <img
-                    src={getCoverImageUrl(book.cover_i, 'M')}
+                    src={book.cover_i ? getCoverImageUrl(book.cover_i, 'M') : '/placeholder.svg'}
                     alt={book.title}
                     className="absolute inset-0 h-full w-full object-cover rounded"
                     onError={(e) => {

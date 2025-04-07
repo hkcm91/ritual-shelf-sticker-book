@@ -53,6 +53,9 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
               backgroundColor: dividers.color,
               backgroundImage: `url(${shelfTexture})`,
               opacity: dividers.opacity,
+              height: '100%',
+              minHeight: '220px',
+              alignSelf: 'stretch',
               zIndex: 5 // Lower z-index so stickers appear above
             }}
           />

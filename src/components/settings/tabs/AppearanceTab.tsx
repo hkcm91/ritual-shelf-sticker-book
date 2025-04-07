@@ -18,6 +18,7 @@ const AppearanceTab: React.FC<AppearanceTabProps> = ({ onCloseDrawer }) => {
       
       <div className="text-sm text-muted-foreground">
         Select from our curated collection of themes to instantly transform your bookshelf's appearance.
+        Each theme includes matching dividers and shelf styling.
       </div>
     </div>
   );

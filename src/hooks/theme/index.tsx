@@ -18,9 +18,17 @@ export function useTheme() {
     loadSavedTheme 
   } = useThemeSelector();
 
+  // Ensure immediate theme application when changed
+  const changeTheme = useCallback((themeName: ThemeName) => {
+    if (isValidTheme(themeName)) {
+      setActiveTheme(themeName);
+      applyTheme(themeName);
+    }
+  }, [setActiveTheme, applyTheme, isValidTheme]);
+
   return {
     activeTheme,
-    setActiveTheme,
+    setActiveTheme: changeTheme,
     themes,
     availableThemes,
     loadSavedTheme,

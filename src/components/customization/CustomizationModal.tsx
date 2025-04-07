@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Palette, Maximize2, Minimize2, Save, RotateCcw } from "lucide-react";
 import { useBookshelfStore } from "@/store/bookshelfStore";
 import CustomizationContent from './CustomizationContent';
+import BookshelfPreview from './BookshelfPreview';
 import { toast } from 'sonner';
 
 export interface CustomizationModalProps {
@@ -71,6 +72,15 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
             }
           </Button>
         </DialogHeader>
+        
+        {/* Live Preview Section */}
+        <div className="mb-4 border rounded-md p-3 bg-background/50">
+          <h4 className="text-sm font-medium mb-2 flex items-center">
+            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></span>
+            Live Preview
+          </h4>
+          <BookshelfPreview />
+        </div>
         
         <div className="overflow-y-auto flex-1 pr-1">
           <CustomizationContent />

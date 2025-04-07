@@ -1,4 +1,3 @@
-
 import { useEffect, useCallback } from 'react';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 import themes from '@/themes';
@@ -10,7 +9,8 @@ import { toast } from 'sonner';
 export function useThemeApplication() {
   const { activeTheme, page, container, shelfStyling, header } = useBookshelfStore();
 
-  // Apply theme whenever activeTheme changes - avoiding dependency on the whole store state
+  // Apply theme whenever activeTheme changes or any of the theme settings change
+  // This is key for live updates in the preview
   const applyTheme = useCallback(() => {
     if (!activeTheme) {
       console.warn('No active theme set, using default');

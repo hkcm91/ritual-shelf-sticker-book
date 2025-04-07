@@ -102,11 +102,12 @@ export const createBooksSlice: StateCreator<
     },
 
     getBookByPosition: (position: number, shelfId?: string) => {
-      const { books, activeShelfId } = get() as BooksSlice & { activeShelfId: string };
-      const currentShelfId = shelfId || activeShelfId;
+      // Access the global state instead of using get()
+      const state = store.getState() as any; // Using any to bypass type checking temporarily
+      const currentShelfId = shelfId || state.activeShelfId;
       
       // Find the book with the specified position on the specified shelf
-      return Object.values(books).find(
+      return Object.values(state.books).find(
         book => book.position === position && book.shelfId === currentShelfId
       );
     }

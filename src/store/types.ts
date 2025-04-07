@@ -13,6 +13,15 @@ export interface BookData {
   rotation?: number;
   date?: string;
   color?: string;
+  // Add missing properties that are causing TypeScript errors
+  hidden?: boolean;
+  originalPosition?: number;
+  progress?: number;
+  series?: string;
+  rating?: number;
+  characters?: string[];
+  plot?: string;
+  quizzes?: any[]; // Consider using a more specific type if available
 }
 
 export interface ShelfData {

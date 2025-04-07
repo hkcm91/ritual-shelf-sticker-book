@@ -53,6 +53,12 @@
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Extra small text size */
+.text-xxs {
+  font-size: 0.625rem;
+  line-height: 0.75rem;
+}
+
 /* Realistic bookshelf theme */
 .theme-realistic {
   --container-bg: #5c3d26;

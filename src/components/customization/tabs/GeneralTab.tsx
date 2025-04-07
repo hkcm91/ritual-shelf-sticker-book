@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Image, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import ColorChart from "../ColorChart";
 
 const GeneralTab: React.FC = () => {
   const { 
@@ -20,6 +21,7 @@ const GeneralTab: React.FC = () => {
   } = useBookshelfStore();
 
   const [isUploading, setIsUploading] = useState(false);
+  const [showColorChart, setShowColorChart] = useState(false);
 
   const handleImageUpload = (url: string) => {
     updatePageBackgroundImage(url);
@@ -29,6 +31,11 @@ const GeneralTab: React.FC = () => {
   const handleRemoveImage = () => {
     updatePageBackgroundImage("");
     toast.success("Background image removed");
+  };
+
+  const handleColorSelect = (color: string) => {
+    updatePageBackground(color);
+    toast.success("Background color updated");
   };
 
   return (
@@ -41,11 +48,30 @@ const GeneralTab: React.FC = () => {
         
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label>Background Color</Label>
+            <div className="flex justify-between items-center">
+              <Label>Background Color</Label>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setShowColorChart(!showColorChart)}
+                className="h-7 text-xs"
+              >
+                {showColorChart ? "Hide Color Chart" : "Show Color Chart"}
+              </Button>
+            </div>
             <ColorPicker 
               color={page?.background || '#f5f5f5'} 
               onChange={updatePageBackground}
             />
+            
+            {showColorChart && (
+              <div className="rounded-lg border p-3 mt-2 bg-background">
+                <ColorChart
+                  baseColor={page?.background || '#f5f5f5'}
+                  onSelectColor={handleColorSelect}
+                />
+              </div>
+            )}
           </div>
           
           <div className="space-y-2">

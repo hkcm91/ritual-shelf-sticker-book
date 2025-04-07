@@ -13,9 +13,9 @@
   --container-bg: #d8bd93;
   --container-bg-image: none;
   --container-opacity: 1;
-  --container-border-width: 1px;
+  --container-border-width: 4px;
   --container-border-style: solid;
-  --container-border-color: rgba(0,0,0,0.2);
+  --container-border-color: #a47148;
   --container-border-radius: 4px;
   --container-padding: 16px;
 
@@ -23,7 +23,7 @@
   --shelf-thickness: 20px;
   --shelf-color: #d2b48c;
   --shelf-bg-image: none;
-  --shelf-texture: url('/lovable-uploads/df4e485f-c6a6-48d8-990d-9ee89fcc76d0.png');
+  --shelf-texture: url('/lovable-uploads/76a4e934-9979-4f17-9a6a-bbe647ea3836.png');
   --shelf-opacity: 1;
   
   /* Dividers */
@@ -53,6 +53,6 @@
 .theme-realistic {
   --container-bg: #d8bd93;
   --shelf-color: #d2b48c;
-  --shelf-texture: url('/lovable-uploads/df4e485f-c6a6-48d8-990d-9ee89fcc76d0.png');
+  --shelf-texture: url('/lovable-uploads/76a4e934-9979-4f17-9a6a-bbe647ea3836.png');
   --page-bg: #f0e9e0;
 }

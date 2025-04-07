@@ -23,6 +23,8 @@ body {
   border-radius: var(--container-border-radius);
   padding: var(--container-padding);
   transition: background-color 0.3s ease, border 0.3s ease, opacity 0.3s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), inset 0 0 30px rgba(0, 0, 0, 0.1);
+  overflow: hidden; /* Ensure dividers don't extend beyond container */
 }
 
 .bookshelf-wrapper {
@@ -31,6 +33,7 @@ body {
   overflow: auto; /* Allow scrolling in all directions */
   scroll-behavior: smooth; /* Smooth scrolling */
   -webkit-overflow-scrolling: touch; /* Better touch scrolling */
+  padding: 2rem;
 }
 
 /* Make sure the grid container adapts to available space */

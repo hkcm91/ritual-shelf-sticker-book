@@ -18,7 +18,8 @@ const ShelvesTab: React.FC = () => {
     updateShelfColor,
     updateShelfOpacity,
     toggleDividers,
-    updateDividersSetting
+    updateDividersSetting,
+    updateAllDividerSettings
   } = useBookshelfStore();
 
   // Handle orientation change with the correct type
@@ -34,7 +35,7 @@ const ShelvesTab: React.FC = () => {
   // Handle background texture selection
   const handleTextureSelection = (value: string) => {
     const textures = {
-      'light-oak': '/lovable-uploads/df4e485f-c6a6-48d8-990d-9ee89fcc76d0.png',
+      'light-oak': '/lovable-uploads/76a4e934-9979-4f17-9a6a-bbe647ea3836.png',
       'dark-oak': '/lovable-uploads/bde4bb25-8c74-4447-82c9-08783b8d0056.png',
       'mahogany': '/lovable-uploads/1325adda-a404-4af6-9549-1925cd1394be.png',
       'none': ''

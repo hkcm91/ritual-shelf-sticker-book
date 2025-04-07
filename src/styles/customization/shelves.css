@@ -13,6 +13,9 @@
   border-bottom: 1px solid rgba(0,0,0,0.2);
   border-top: 1px solid rgba(255,255,255,0.1);
   z-index: 10;
+  width: 100%;
+  margin: 0 -6px; /* Extend beyond container padding */
+  padding: 0 6px; /* Compensate for negative margin */
 }
 
 .wood-shelf:after {
@@ -50,28 +53,54 @@
   min-height: 220px;
   align-self: stretch;
   display: inline-block;
+  position: relative;
+  z-index: 5;
+}
+
+/* Make vertical dividers look like real wood */
+.vertical-shelf-divider:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: var(--shelf-texture);
+  background-size: 200% 100%;
+  opacity: 0.6;
+  z-index: -1;
 }
 
 .horizontal-shelf-divider {
   height: var(--divider-thickness, 2px);
   background-color: var(--divider-color, #714621);
   box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
-  margin: 8px 0;
+  margin: 8px -16px; /* Extend to container edges */
+  padding: 0 16px; /* Compensate for negative margin */
   transition: background-color 0.3s ease, height 0.3s ease;
-  width: 100%;
+  width: calc(100% + 32px); /* Ensure full width including margins */
   display: block;
+  position: relative;
 }
 
-/* Add animation for dividers */
-@keyframes divider-glow {
-  0% { box-shadow: 0 0 2px rgba(0,0,0,0.2); }
-  50% { box-shadow: 0 0 6px rgba(113, 70, 33, 0.4); }
-  100% { box-shadow: 0 0 2px rgba(0,0,0,0.2); }
+/* Make horizontal dividers look like real wood */
+.horizontal-shelf-divider:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: var(--shelf-texture);
+  background-size: 100% 200%;
+  opacity: 0.6;
+  z-index: -1;
 }
 
+/* Remove animation for dividers */
 .vertical-shelf-divider,
 .horizontal-shelf-divider {
-  animation: divider-glow 3s infinite;
+  animation: none;
 }
 
 /* Enhanced divider styles */
@@ -111,7 +140,7 @@
   border: 1px solid rgba(0,0,0,0.2);
   border-radius: 2px;
   background-color: #d8bd93;
-  background-image: url('/lovable-uploads/df4e485f-c6a6-48d8-990d-9ee89fcc76d0.png');
+  background-image: url('/lovable-uploads/76a4e934-9979-4f17-9a6a-bbe647ea3836.png');
   background-size: cover;
   position: relative;
 }

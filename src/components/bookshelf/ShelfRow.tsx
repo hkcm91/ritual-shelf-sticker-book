@@ -79,12 +79,12 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
       );
     }
     
-    // Add horizontal divider to the top of slots if needed
-    if (needsHorizontalDivider) {
-      slots.push(<div key="hdivider-slots" className="w-full">{slotRow}</div>);
-    } else {
-      slots.push(...slotRow);
-    }
+    // Add the row of slots
+    slots.push(
+      <div key={`slot-row-${rowIndex}`} className="flex justify-start items-stretch flex-nowrap gap-2 p-2 min-h-[220px] relative z-2">
+        {slotRow}
+      </div>
+    );
     
     return slots;
   };
@@ -94,15 +94,13 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
   
   // Get custom shelf texture or use default
   const shelfTexture = shelf?.textureImage || 
-                      (useRealisticStyle ? '/lovable-uploads/df4e485f-c6a6-48d8-990d-9ee89fcc76d0.png' : 
+                      (useRealisticStyle ? '/lovable-uploads/76a4e934-9979-4f17-9a6a-bbe647ea3836.png' : 
                       '/textures/default/wood.jpg');
 
   return (
     <div className={`shelf-row flex flex-col w-full relative ${useRealisticStyle ? 'realistic-shelf' : ''}`}>
-      {/* Books row with potential dividers */}
-      <div className="flex justify-start items-stretch flex-nowrap gap-2 p-2 min-h-[220px] relative z-2">
-        {renderSlots()}
-      </div>
+      {/* Render books and dividers */}
+      {renderSlots()}
       
       {/* Shelf */}
       <div 

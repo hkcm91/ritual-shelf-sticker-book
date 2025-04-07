@@ -2,7 +2,6 @@
 import { useEffect, useCallback } from 'react';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 import themes from '@/themes';
-import { ThemeName } from '@/themes';
 import { toast } from 'sonner';
 
 /**
@@ -43,11 +42,19 @@ export function useThemeApplication() {
         // Apply textures for backgrounds if available
         if (themeToApply.textures) {
           try {
-            document.documentElement.style.setProperty(
-              '--shelf-texture', 
-              `url(${themeToApply.textures.shelf || '/lovable-uploads/7a437784-0910-4719-b52b-6564c3004ebe.png'})`
-            );
+            // Apply shelf texture
+            if (themeToApply.textures.shelf) {
+              document.documentElement.style.setProperty(
+                '--shelf-texture', 
+                `url(${themeToApply.textures.shelf})`
+              );
+              document.documentElement.style.setProperty(
+                '--divider-bg-image', 
+                `url(${themeToApply.textures.shelf})`
+              );
+            }
             
+            // Apply background texture/image
             if (themeToApply.textures.background) {
               document.documentElement.style.setProperty(
                 '--page-bg-image', 
@@ -56,25 +63,10 @@ export function useThemeApplication() {
             } else {
               document.documentElement.style.setProperty('--page-bg-image', 'none');
             }
-            
-            // Set divider background image to match shelf texture
-            document.documentElement.style.setProperty(
-              '--divider-bg-image', 
-              `url(${themeToApply.textures.shelf || '/lovable-uploads/7a437784-0910-4719-b52b-6564c3004ebe.png'})`
-            );
           } catch (textureError) {
             console.error('Error applying theme textures:', textureError);
           }
         }
-        
-        // Apply page text color for contrast
-        document.documentElement.style.setProperty('--page-text-color', themeToApply.variables['--page-text-color'] || 
-          (themeToApply.variables['--page-bg'].includes('#f') ? '#333333' : '#f0f0f0'));
-        
-        // Set header hover background for better UX
-        document.documentElement.style.setProperty('--header-hover-bg', 
-          themeToApply.variables['--header-hover-bg'] || 
-          (themeToApply.variables['--header-text-color'].includes('#f') ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)'));
       } else if (activeTheme === 'custom') {
         // For custom theme, we apply the current state values directly
         try {

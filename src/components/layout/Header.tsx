@@ -37,13 +37,23 @@ const Header: React.FC = () => {
   }, []);
   
   return (
-    <header className={`px-4 sm:px-6 py-3 flex justify-between items-center backdrop-blur-sm bg-background/95 sticky top-0 z-50 transition-all duration-200 ${scrolled ? 'scrolled' : ''}`}>
+    <header 
+      className={`px-4 sm:px-6 py-3 flex justify-between items-center bg-[color:var(--header-bg,#413125)] sticky top-0 z-50 transition-all duration-200 ${scrolled ? 'shadow-md' : ''}`}
+      style={{
+        backgroundImage: 'var(--header-bg-image, none)',
+        color: 'var(--header-text-color, white)'
+      }}
+    >
       <div className="flex items-center gap-4">
         {!isMobile && (
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="navigation-menu-item bg-transparent h-9 px-3">Collections</NavigationMenuTrigger>
+                <NavigationMenuTrigger 
+                  className="navigation-menu-item bg-transparent h-9 px-3 text-[color:var(--header-text-color,white)] hover:text-[color:var(--header-text-color,white)] hover:bg-[color:var(--header-hover-bg,rgba(255,255,255,0.1))]"
+                >
+                  Collections
+                </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className="p-4 w-[240px] rounded-md">
                     <ShelfSelector />
@@ -64,7 +74,7 @@ const Header: React.FC = () => {
               <Button 
                 variant="ghost" 
                 size="icon"
-                className="text-[color:var(--header-text-color)] hover:text-[color:var(--header-text-color)] hover:bg-[color:var(--header-hover-bg,rgba(255,255,255,0.1))]"
+                className="text-[color:var(--header-text-color,white)] hover:text-[color:var(--header-text-color,white)] hover:bg-[color:var(--header-hover-bg,rgba(255,255,255,0.1))]"
                 onClick={() => openCustomizationModal()}
               >
                 <Palette className="h-4 w-4" />

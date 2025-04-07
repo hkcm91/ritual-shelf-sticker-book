@@ -23,6 +23,13 @@ const ThemeCard: React.FC<ThemeCardProps> = ({
   isLoading,
   onSelect
 }) => {
+  // Get the background color and texture for preview
+  const backgroundColor = theme?.variables?.['--container-bg'] || '#a47148';
+  const backgroundTexture = themeName !== 'custom' 
+    ? theme?.textures?.background 
+    : theme?.textures?.background;
+  const shelfColor = theme?.variables?.['--shelf-color'] || '#8B5A2B';
+
   return (
     <Card 
       className={`relative p-4 flex flex-col gap-4 cursor-pointer hover:bg-accent/10 transition-colors ${
@@ -47,20 +54,18 @@ const ThemeCard: React.FC<ThemeCardProps> = ({
       </div>
       
       <div 
-        className="h-20 w-full rounded-md border overflow-hidden bg-cover bg-center"
+        className="h-20 w-full rounded-md border overflow-hidden"
         style={{ 
-          backgroundImage: themeName === 'custom' 
-            ? theme?.textures?.background ? `url(${theme.textures.background})` : undefined
-            : theme?.textures?.background ? `url(${theme.textures.background})` : undefined,
-          backgroundColor: themeName === 'custom'
-            ? theme?.variables?.['--container-bg'] || '#a47148'
-            : theme?.variables?.['--container-bg'] || '#a47148'
+          backgroundImage: backgroundTexture ? `url(${backgroundTexture})` : 'none',
+          backgroundColor: backgroundTexture ? 'transparent' : backgroundColor,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
         }}
       >
         <div 
           className="w-full h-4 mt-10"
           style={{ 
-            backgroundColor: theme?.variables?.['--shelf-color'] || '#8B5A2B',
+            backgroundColor: shelfColor,
             opacity: 0.9
           }}
         />

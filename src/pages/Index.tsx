@@ -43,7 +43,18 @@ const Index = () => {
   const currentShelf = activeShelfId ? shelvesData[activeShelfId] : null;
   
   return (
-    <div className="min-h-screen flex flex-col">
+    <div 
+      className="min-h-screen flex flex-col"
+      style={{
+        backgroundColor: 'var(--page-bg, #f5f5f5)',
+        backgroundImage: 'var(--page-bg-image, none)',
+        backgroundSize: 'var(--page-bg-size, cover)',
+        backgroundRepeat: 'var(--page-bg-repeat, no-repeat)',
+        backgroundPosition: 'var(--page-bg-position, center)',
+        backgroundAttachment: 'var(--page-bg-attachment, fixed)',
+        color: 'var(--page-text-color, #333333)'
+      }}
+    >
       <Header />
       
       <div className="flex-grow w-full overflow-auto">

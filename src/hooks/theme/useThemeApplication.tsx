@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 export function useThemeApplication() {
   const { activeTheme, page, container, shelfStyling } = useBookshelfStore();
 
-  // Apply theme whenever activeTheme changes
+  // Apply theme whenever activeTheme changes - avoiding dependency on the whole store state
   const applyTheme = useCallback(() => {
     if (!activeTheme) {
       console.warn('No active theme set, using default');
@@ -67,27 +67,8 @@ export function useThemeApplication() {
           }
         }
         
-        // Enable dividers by default in themes with more consistent styling
-        if (themeToApply.variables['--divider-thickness']) {
-          try {
-            const dividerThickness = parseInt(themeToApply.variables['--divider-thickness'] as string) || 0;
-            if (dividerThickness > 0) {
-              // Auto-enable dividers for the theme if thickness is set
-              const store = useBookshelfStore.getState();
-              if (store.toggleDividers) {
-                store.toggleDividers(true);
-              }
-              
-              // Use same color for all dividers for consistency
-              const updateDividersSetting = store.updateDividersSetting;
-              if (updateDividersSetting) {
-                updateDividersSetting('color', themeToApply.variables['--divider-color'] || '#714621');
-              }
-            }
-          } catch (dividerError) {
-            console.error('Error setting up dividers:', dividerError);
-          }
-        }
+        // IMPORTANT: Removed the automatic divider setting to prevent infinite loops
+        // We'll let the theme action handle this instead
       } else if (activeTheme === 'custom') {
         // For custom theme, we apply the current state values directly
         try {
@@ -153,42 +134,16 @@ export function useThemeApplication() {
         }
       } else {
         console.warn(`Unknown theme: ${activeTheme}, falling back to default`);
-        // If theme is not found, reset to default - but don't create an infinite loop
-        if (activeTheme !== 'default') {
-          const store = useBookshelfStore.getState();
-          if (typeof store.setActiveTheme === 'function') {
-            setTimeout(() => {
-              try {
-                store.setActiveTheme('default' as ThemeName);
-              } catch (e) {
-                console.error('Failed to set default theme:', e);
-              }
-            }, 0);
-          }
-        }
       }
       
       console.log('Theme applied successfully');
     } catch (error) {
       console.error('Error applying theme:', error);
       toast.error('Error applying theme, using default');
-      // Recover by setting to default theme, but avoid infinite loops
-      if (activeTheme !== 'default') {
-        const store = useBookshelfStore.getState();
-        if (typeof store.setActiveTheme === 'function') {
-          setTimeout(() => {
-            try {
-              store.setActiveTheme('default' as ThemeName);
-            } catch (recoveryError) {
-              console.error('Recovery failed:', recoveryError);
-            }
-          }, 0);
-        }
-      }
     }
   }, [activeTheme, page, container, shelfStyling]);
 
-  // Apply theme when dependencies change
+  // Apply theme once when component mounts and when dependencies change
   useEffect(() => {
     applyTheme();
   }, [applyTheme]);

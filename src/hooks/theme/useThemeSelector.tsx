@@ -12,11 +12,20 @@ export function useThemeSelector() {
   const activeTheme = store.activeTheme;
   const loadCustomization = store.loadCustomization;
   
-  // Safely set active theme
+  // Safely set active theme - with guard against undefined or same theme
   const handleSetActiveTheme = useCallback((theme: ThemeName) => {
-    if (theme !== activeTheme && typeof store.setActiveTheme === 'function') {
-      store.setActiveTheme(theme);
-    } else if (theme !== activeTheme) {
+    // Don't do anything if the theme is already active - prevents unnecessary updates
+    if (theme === activeTheme) {
+      return;
+    }
+    
+    // Check if the function exists before calling it
+    if (typeof store.setActiveTheme === 'function') {
+      // Use setTimeout to break potential update cycles
+      setTimeout(() => {
+        store.setActiveTheme(theme);
+      }, 0);
+    } else {
       console.warn('setActiveTheme function not available in store');
     }
   }, [activeTheme, store]);

@@ -1,3 +1,4 @@
+
 import { toast } from 'sonner';
 import { StorageSliceCreator } from './types';
 import themes from '@/themes';
@@ -53,7 +54,8 @@ export const createThemeActions: StorageSliceCreator = (set, get, api) => ({
       
       const themeConfig = themes[themeKey];
       
-      // Apply theme settings to customization state
+      // Apply theme settings to customization state - do this in a single set()
+      // to avoid multiple renders and potential loops
       set({ 
         activeTheme: themeName,
         // Apply theme variables to our customization properties
@@ -77,9 +79,15 @@ export const createThemeActions: StorageSliceCreator = (set, get, api) => ({
           color: themeConfig.variables['--shelf-color'] || defaultCustomization.shelfStyling.color,
           backgroundImage: themeConfig.textures.shelf || '',
           thickness: parseInt(themeConfig.variables['--shelf-thickness'] as string || '20'),
-          opacity: parseFloat(themeConfig.variables['--shelf-opacity'] as string || '1')
+          opacity: parseFloat(themeConfig.variables['--shelf-opacity'] as string || '1'),
+          // If the theme has divider settings, apply them here too
+          dividers: themeConfig.variables['--divider-thickness'] ? {
+            ...currentState.shelfStyling.dividers,
+            enabled: parseInt(themeConfig.variables['--divider-thickness'] as string) > 0,
+            thickness: parseInt(themeConfig.variables['--divider-thickness'] as string || '6'),
+            color: themeConfig.variables['--divider-color'] || '#714621',
+          } : currentState.shelfStyling.dividers
         },
-        // Keep other existing customization properties
       });
       
       try {

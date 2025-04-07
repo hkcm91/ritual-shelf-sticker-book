@@ -28,27 +28,25 @@ const ThemesTab: React.FC = () => {
     }
   }, [loadSavedTheme]);
 
-  // Function to handle theme selection without causing navigation
+  // Function to handle theme selection - with debounce/throttling to prevent rapid changes
   const handleThemeSelect = useCallback((value: ThemeName) => {
-    if (value === activeTheme) return; // Don't reapply the same theme
+    // Skip if already selecting or selecting the same theme
+    if (isSelecting || value === activeTheme) return;
     
     setIsSelecting(value);
     try {
       if (setActiveTheme) {
         console.log("Selecting theme:", value);
         setActiveTheme(value);
-        // Prevent event propagation
-        setTimeout(() => setIsSelecting(null), 800); // Add delay for UI feedback
       }
     } catch (error) {
       console.error("Error selecting theme:", error);
       toast.error("Failed to select theme");
-      setIsSelecting(null);
+    } finally {
+      // Add delay before allowing new selections
+      setTimeout(() => setIsSelecting(null), 800);
     }
-    
-    // Prevent default and stop propagation
-    return false;
-  }, [setActiveTheme, activeTheme]);
+  }, [setActiveTheme, activeTheme, isSelecting]);
 
   // Check if theme is valid
   const isValidTheme = useCallback((themeName: string): boolean => {

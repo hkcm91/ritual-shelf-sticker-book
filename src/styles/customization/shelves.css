@@ -7,25 +7,25 @@
   background-position: center;
   opacity: var(--shelf-opacity);
   height: var(--shelf-thickness);
-  box-shadow: 0px 4px 8px rgba(0,0,0,0.4);
+  box-shadow: 0px 4px 8px rgba(0,0,0,0.3);
   transition: background-color 0.3s ease, opacity 0.3s ease, height 0.3s ease;
   position: relative;
   border-bottom: 1px solid rgba(0,0,0,0.2);
   border-top: 1px solid rgba(255,255,255,0.1);
   z-index: 10;
   width: 100%;
-  margin: 0 -6px; /* Extend beyond container padding */
-  padding: 0 6px; /* Compensate for negative margin */
+  margin: 0;
+  padding: 0;
 }
 
 .wood-shelf:after {
   content: "";
   position: absolute;
-  bottom: -4px;
+  bottom: -2px;
   left: 0;
   right: 0;
-  height: 4px;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.3), transparent);
+  height: 2px;
+  background: rgba(0,0,0,0.2);
   z-index: -1;
 }
 
@@ -47,7 +47,10 @@
 .vertical-shelf-divider {
   width: var(--divider-thickness, 2px);
   background-color: var(--divider-color, #714621);
-  box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+  background-image: var(--divider-bg-image, var(--shelf-texture));
+  background-size: 200% 100%;
+  background-position: center;
+  box-shadow: 0px 0px 4px rgba(0,0,0,0.1);
   margin: 0 8px;
   transition: background-color 0.3s ease, width 0.3s ease;
   min-height: 220px;
@@ -55,46 +58,23 @@
   display: inline-block;
   position: relative;
   z-index: 5;
-}
-
-/* Make vertical dividers look like real wood */
-.vertical-shelf-divider:before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: var(--shelf-texture);
-  background-size: 200% 100%;
-  opacity: 0.6;
-  z-index: -1;
+  opacity: var(--divider-opacity, 1);
 }
 
 .horizontal-shelf-divider {
   height: var(--divider-thickness, 2px);
   background-color: var(--divider-color, #714621);
-  box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
-  margin: 8px -16px; /* Extend to container edges */
-  padding: 0 16px; /* Compensate for negative margin */
+  background-image: var(--divider-bg-image, var(--shelf-texture));
+  background-size: 100% 200%;
+  background-position: center;
+  box-shadow: 0px 0px 4px rgba(0,0,0,0.1);
+  margin: 8px -16px 8px -16px;
+  padding: 0;
   transition: background-color 0.3s ease, height 0.3s ease;
-  width: calc(100% + 32px); /* Ensure full width including margins */
+  width: calc(100% + 32px);
   display: block;
   position: relative;
-}
-
-/* Make horizontal dividers look like real wood */
-.horizontal-shelf-divider:before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: var(--shelf-texture);
-  background-size: 100% 200%;
-  opacity: 0.6;
-  z-index: -1;
+  opacity: var(--divider-opacity, 1);
 }
 
 /* Remove animation for dividers */
@@ -116,33 +96,33 @@
 .shelf-side-right {
   position: absolute;
   top: 0;
-  width: 15px;
+  width: 12px;
   height: 100%;
   background-color: var(--shelf-color);
   background-image: var(--shelf-texture);
   opacity: var(--shelf-opacity);
   z-index: 5;
+  border-right: 1px solid rgba(0,0,0,0.15);
 }
 
 .shelf-side-left {
-  left: -15px;
+  left: 0;
   border-right: 1px solid rgba(0,0,0,0.15);
 }
 
 .shelf-side-right {
-  right: -15px;
+  right: 0;
   border-left: 1px solid rgba(0,0,0,0.15);
 }
 
 /* Realistic bookshelf styling */
 .realistic-bookshelf {
-  box-shadow: inset 0 0 50px rgba(0,0,0,0.3);
-  border: 1px solid rgba(0,0,0,0.2);
-  border-radius: 2px;
-  background-color: #d8bd93;
-  background-image: url('/lovable-uploads/76a4e934-9979-4f17-9a6a-bbe647ea3836.png');
+  box-shadow: inset 0 0 30px rgba(0,0,0,0.2);
+  background-color: #5c3d26;
+  background-image: var(--container-bg-image);
   background-size: cover;
   position: relative;
+  overflow: hidden;
 }
 
 .shelf-row {
@@ -161,7 +141,12 @@
   left: 0;
   right: 0;
   height: 100%;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.05) 15%, rgba(0,0,0,0) 40%);
+  background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 40%);
   z-index: 0;
   pointer-events: none;
+}
+
+.realistic-book-slot {
+  position: relative;
+  z-index: 1;
 }

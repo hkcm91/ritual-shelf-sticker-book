@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { useBookshelfStore } from "@/store/bookshelfStore";
@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
+import { HelpCircle, Link, Link2Off } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const ShelvesTab: React.FC = () => {
   const { 
@@ -21,6 +23,9 @@ const ShelvesTab: React.FC = () => {
     updateDividersSetting,
     updateAllDividerSettings
   } = useBookshelfStore();
+
+  // Add state to track if divider styling is linked
+  const [linkDividerStyling, setLinkDividerStyling] = useState(true);
 
   // Handle orientation change with the correct type
   const handleOrientationChange = (value: string) => {
@@ -38,12 +43,46 @@ const ShelvesTab: React.FC = () => {
       'light-oak': '/lovable-uploads/76a4e934-9979-4f17-9a6a-bbe647ea3836.png',
       'dark-oak': '/lovable-uploads/bde4bb25-8c74-4447-82c9-08783b8d0056.png',
       'mahogany': '/lovable-uploads/1325adda-a404-4af6-9549-1925cd1394be.png',
+      'dark-walnut': '/lovable-uploads/6583044d-0b9d-49ea-a8f6-a3ac405b78d5.png',
       'none': ''
     };
     
-    updateShelfColor(value === 'mahogany' ? '#7d4b32' : 
-                    value === 'dark-oak' ? '#5c4033' : 
-                    value === 'light-oak' ? '#d2b48c' : '#8B5A2B');
+    const colors = {
+      'light-oak': '#d2b48c',
+      'dark-oak': '#5c4033', 
+      'mahogany': '#7d4b32',
+      'dark-walnut': '#3b2314',
+      'none': '#8B5A2B'
+    };
+    
+    const newColor = colors[value as keyof typeof colors] || '#8B5A2B';
+    
+    updateShelfColor(newColor);
+    
+    // If divider styling is linked, update divider color as well
+    if (linkDividerStyling && shelfStyling?.dividers?.enabled) {
+      updateDividersSetting('color', newColor);
+    }
+  };
+  
+  // Handle divider color change with linked styling
+  const handleDividerColorChange = (color: string) => {
+    updateDividersSetting('color', color);
+    
+    // If divider styling is linked, update shelf color as well
+    if (linkDividerStyling) {
+      updateShelfColor(color);
+    }
+  };
+  
+  // Handle shelf color change with linked styling
+  const handleShelfColorChange = (color: string) => {
+    updateShelfColor(color);
+    
+    // If divider styling is linked, update divider color as well
+    if (linkDividerStyling && shelfStyling?.dividers?.enabled) {
+      updateDividersSetting('color', color);
+    }
   };
 
   return (
@@ -53,7 +92,7 @@ const ShelvesTab: React.FC = () => {
         
         <div className="space-y-2">
           <Label>Wood Style</Label>
-          <Select onValueChange={handleTextureSelection} defaultValue="light-oak">
+          <Select onValueChange={handleTextureSelection} defaultValue="dark-walnut">
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select wood style" />
             </SelectTrigger>
@@ -61,6 +100,7 @@ const ShelvesTab: React.FC = () => {
               <SelectItem value="light-oak">Light Oak</SelectItem>
               <SelectItem value="dark-oak">Dark Oak</SelectItem>
               <SelectItem value="mahogany">Mahogany</SelectItem>
+              <SelectItem value="dark-walnut">Dark Walnut</SelectItem>
               <SelectItem value="none">Custom Color</SelectItem>
             </SelectContent>
           </Select>
@@ -71,7 +111,7 @@ const ShelvesTab: React.FC = () => {
           <div className="flex items-center gap-2">
             <ColorPicker 
               color={shelfStyling?.color || '#8B5A2B'} 
-              onChange={updateShelfColor} 
+              onChange={handleShelfColorChange} 
             />
           </div>
         </div>
@@ -106,10 +146,8 @@ const ShelvesTab: React.FC = () => {
       </div>
 
       <div className="rounded-md border p-4 space-y-4">
-        <h3 className="font-medium text-lg">Dividers</h3>
-        
         <div className="flex items-center justify-between">
-          <Label htmlFor="enable-dividers">Enable Dividers</Label>
+          <h3 className="font-medium text-lg">Dividers</h3>
           <Switch 
             id="enable-dividers" 
             checked={shelfStyling?.dividers?.enabled || false}
@@ -120,6 +158,33 @@ const ShelvesTab: React.FC = () => {
         {shelfStyling?.dividers?.enabled && (
           <>
             <Separator />
+            
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Label>Link Divider Styling</Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="w-60 text-sm">When enabled, dividers will use the same color as shelves and update together</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <div className="flex items-center gap-2">
+                {linkDividerStyling ? (
+                  <Link className="h-4 w-4 text-primary" />
+                ) : (
+                  <Link2Off className="h-4 w-4 text-muted-foreground" />
+                )}
+                <Switch 
+                  checked={linkDividerStyling}
+                  onCheckedChange={setLinkDividerStyling}
+                />
+              </div>
+            </div>
             
             <div className="space-y-2">
               <Label>Divider Orientation</Label>
@@ -143,31 +208,33 @@ const ShelvesTab: React.FC = () => {
               </RadioGroup>
             </div>
             
-            <div className="space-y-2">
-              <Label>Books Per Section</Label>
-              <Input
-                type="number"
-                min={2}
-                max={10}
-                value={shelfStyling?.dividers?.booksPerSection || 6}
-                onChange={(e) => updateDividersSetting('booksPerSection', parseInt(e.target.value))}
-                className="w-full"
-              />
-              <p className="text-xs text-muted-foreground">Number of books between vertical dividers</p>
-            </div>
-            
-            <div className="space-y-2">
-              <Label>Books Per Row</Label>
-              <Input
-                type="number"
-                min={1}
-                max={10}
-                value={shelfStyling?.dividers?.booksPerRow || 2}
-                onChange={(e) => handleBooksPerRowChange(parseInt(e.target.value))}
-                className="w-full"
-                disabled={!['horizontal', 'both'].includes(shelfStyling?.dividers?.orientation || 'vertical')}
-              />
-              <p className="text-xs text-muted-foreground">Number of rows between horizontal dividers</p>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Books Per Section</Label>
+                <Input
+                  type="number"
+                  min={2}
+                  max={10}
+                  value={shelfStyling?.dividers?.booksPerSection || 6}
+                  onChange={(e) => updateDividersSetting('booksPerSection', parseInt(e.target.value))}
+                  className="w-full"
+                />
+                <p className="text-xs text-muted-foreground">Between vertical dividers</p>
+              </div>
+              
+              <div className="space-y-2">
+                <Label>Books Per Row</Label>
+                <Input
+                  type="number"
+                  min={1}
+                  max={10}
+                  value={shelfStyling?.dividers?.booksPerRow || 2}
+                  onChange={(e) => handleBooksPerRowChange(parseInt(e.target.value))}
+                  className="w-full"
+                  disabled={!['horizontal', 'both'].includes(shelfStyling?.dividers?.orientation || 'vertical')}
+                />
+                <p className="text-xs text-muted-foreground">Between horizontal dividers</p>
+              </div>
             </div>
             
             <div className="space-y-2">
@@ -178,37 +245,23 @@ const ShelvesTab: React.FC = () => {
               <Slider
                 value={[shelfStyling?.dividers?.thickness || 2]}
                 min={1}
-                max={8}
+                max={12}
                 step={1}
                 onValueChange={(value) => updateDividersSetting('thickness', value[0])}
               />
             </div>
             
-            <div className="space-y-2">
-              <Label>Divider Color</Label>
-              <div className="flex items-center gap-2">
-                <ColorPicker 
-                  color={shelfStyling?.dividers?.color || '#714621'} 
-                  onChange={(color) => updateDividersSetting('color', color)} 
-                />
+            {!linkDividerStyling && (
+              <div className="space-y-2">
+                <Label>Divider Color</Label>
+                <div className="flex items-center gap-2">
+                  <ColorPicker 
+                    color={shelfStyling?.dividers?.color || '#714621'} 
+                    onChange={handleDividerColorChange} 
+                  />
+                </div>
               </div>
-            </div>
-            
-            <div className="mt-4">
-              <Card className="bg-muted/40">
-                <CardContent className="p-4">
-                  <div className="text-sm text-muted-foreground">
-                    <p className="mb-2 font-medium">Tips:</p>
-                    <ul className="list-disc pl-5 space-y-1">
-                      <li>Vertical dividers appear between sections of books</li>
-                      <li>Horizontal dividers appear between rows of books</li>
-                      <li>Choose "Both" for a grid-like appearance</li>
-                      <li>For a realistic bookcase look, use darker wood colors for dividers</li>
-                    </ul>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            )}
           </>
         )}
       </div>

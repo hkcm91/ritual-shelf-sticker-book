@@ -109,22 +109,14 @@ const BookshelfGrid: React.FC = () => {
         </div>
         
         <div 
-          className={`bookshelf-container relative flex flex-col items-center rounded-md shadow-lg mx-auto ${useRealisticStyle ? 'realistic-bookshelf' : ''}`}
+          className={`bookshelf-container relative flex flex-col items-center rounded-md mx-auto ${useRealisticStyle ? 'realistic-bookshelf' : ''}`}
           style={{ 
             transform: `scale(${zoomLevel})`,
             transformOrigin: 'top center',
             width: 'fit-content',
             minWidth: `${columns * 160}px`, // Ensure minimum width based on columns
             maxWidth: '100%',
-            transition: 'transform 0.2s ease', // Smooth transition for zoom
-            borderWidth: 'var(--container-border-width)',
-            borderStyle: 'var(--container-border-style)',
-            borderColor: 'var(--container-border-color)',
-            borderRadius: 'var(--container-border-radius)',
-            padding: 'var(--container-padding)',
-            backgroundColor: 'var(--container-bg)',
-            backgroundImage: 'var(--container-bg-image)',
-            opacity: 'var(--container-opacity)'
+            transition: 'transform 0.2s ease' // Smooth transition for zoom
           }}
         >
           {/* Back panel for realistic look */}
@@ -140,8 +132,12 @@ const BookshelfGrid: React.FC = () => {
           </div>
           
           {/* Side panels for realistic look */}
-          <div className="shelf-side-left"></div>
-          <div className="shelf-side-right"></div>
+          {useRealisticStyle && (
+            <>
+              <div className="shelf-side-left"></div>
+              <div className="shelf-side-right"></div>
+            </>
+          )}
         </div>
         
         {/* Add zoom controls at the bottom right */}

@@ -10,29 +10,31 @@
   --page-bg-attachment: fixed;
 
   /* Container */
-  --container-bg: #d8bd93;
+  --container-bg: #5c3d26;
   --container-bg-image: none;
   --container-opacity: 1;
-  --container-border-width: 4px;
+  --container-border-width: 5px;
   --container-border-style: solid;
-  --container-border-color: #a47148;
+  --container-border-color: #413125;
   --container-border-radius: 4px;
-  --container-padding: 16px;
+  --container-padding: 12px;
 
   /* Shelves */
   --shelf-thickness: 20px;
-  --shelf-color: #d2b48c;
+  --shelf-color: #7c5738;
   --shelf-bg-image: none;
   --shelf-texture: url('/lovable-uploads/76a4e934-9979-4f17-9a6a-bbe647ea3836.png');
   --shelf-opacity: 1;
   
   /* Dividers */
-  --divider-thickness: 4px;
-  --divider-color: #a37d4f;
+  --divider-thickness: 8px;
+  --divider-color: #7c5738;
+  --divider-opacity: 1;
+  --divider-bg-image: var(--shelf-texture);
   --divider-orientation: vertical;
   
   /* Slots */
-  --slot-add-button-bg: rgba(255, 255, 255, 0.9);
+  --slot-add-button-bg: rgba(255, 255, 255, 0.7);
   --slot-add-button-color: #555555;
   --slot-add-button-hover-bg: #ffffff;
   --slot-toggle-inactive-color: rgba(200, 200, 200, 0.5);
@@ -41,7 +43,7 @@
   --slot-empty-hover-bg: rgba(255, 255, 255, 0.1);
   
   /* Header */
-  --header-bg: #a47148;
+  --header-bg: #413125;
   --header-bg-image: none;
   --header-text-color: #ffffff;
 
@@ -51,8 +53,12 @@
 
 /* Realistic bookshelf theme */
 .theme-realistic {
-  --container-bg: #d8bd93;
-  --shelf-color: #d2b48c;
+  --container-bg: #5c3d26;
+  --container-border-color: #413125;
+  --container-border-width: 5px;
+  --shelf-color: #7c5738;
+  --divider-color: #7c5738;
   --shelf-texture: url('/lovable-uploads/76a4e934-9979-4f17-9a6a-bbe647ea3836.png');
+  --divider-bg-image: var(--shelf-texture);
   --page-bg: #f0e9e0;
 }

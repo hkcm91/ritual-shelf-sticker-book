@@ -94,7 +94,7 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
   
   // Get custom shelf texture or use default
   const shelfTexture = shelf?.textureImage || 
-                      (useRealisticStyle ? '/lovable-uploads/76a4e934-9979-4f17-9a6a-bbe647ea3836.png' : 
+                      (useRealisticStyle ? '/lovable-uploads/6583044d-0b9d-49ea-a8f6-a3ac405b78d5.png' : 
                       '/textures/default/wood.jpg');
 
   return (
@@ -111,9 +111,9 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
           backgroundSize: '100% 100%',
           backgroundRepeat: 'repeat-x',
           backgroundPosition: 'center',
-          backgroundColor: shelfStyling?.color || '#8B5A2B',
+          backgroundColor: shelfStyling?.color || '#7c5738',
           opacity: shelfStyling?.opacity || 1,
-          boxShadow: useRealisticStyle ? '0 6px 10px -2px rgba(0,0,0,0.4)' : '0px 4px 6px -2px rgba(0,0,0,0.3)'
+          boxShadow: useRealisticStyle ? '0 4px 8px rgba(0,0,0,0.3)' : '0px 4px 6px -2px rgba(0,0,0,0.3)'
         }}
       ></div>
     </div>

@@ -22,12 +22,12 @@ const ShelvesTab: React.FC = () => {
 
   // Handle orientation change with the correct type
   const handleOrientationChange = (value: 'vertical' | 'horizontal' | 'both') => {
-    updateAllDividerSettings({ orientation: value });
+    updateDividersSetting('orientation', value);
   };
 
   // Handle books per row change with the correct type
   const handleBooksPerRowChange = (value: number) => {
-    updateAllDividerSettings({ booksPerRow: value });
+    updateDividersSetting('booksPerRow', value);
   };
 
   return (

@@ -94,7 +94,15 @@ export interface CustomizationState {
   
   // Divider settings
   toggleDividers: (enabled: boolean) => void;
-  updateDividersSetting: (property: 'booksPerSection' | 'thickness' | 'color', value: any) => void;
+  updateDividersSetting: (property: 'booksPerSection' | 'booksPerRow' | 'thickness' | 'color' | 'orientation', value: any) => void;
+  updateAllDividerSettings: (settings: {
+    enabled?: boolean;
+    booksPerSection?: number;
+    booksPerRow?: number;
+    thickness?: number;
+    color?: string;
+    orientation?: 'vertical' | 'horizontal' | 'both';
+  }) => void;
   
   // Slots settings
   updateSlotSetting: (
@@ -187,6 +195,7 @@ export const defaultCustomization: CustomizationState = {
   updateShelfOpacity: () => {},
   toggleDividers: () => {},
   updateDividersSetting: () => {},
+  updateAllDividerSettings: () => {},
   updateSlotSetting: () => {},
   updateHeaderSetting: () => {},
   saveCustomization: () => {},

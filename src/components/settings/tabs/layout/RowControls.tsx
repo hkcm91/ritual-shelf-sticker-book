@@ -37,10 +37,10 @@ const RowControls: React.FC = () => {
   };
 
   return (
-    <div className="space-y-2">
-      <h3 className="text-sm font-medium">Rows</h3>
+    <div className="space-y-3">
+      <h3 className="text-sm font-medium text-primary">Shelf Rows</h3>
       <p className="text-xs text-muted-foreground mb-2">
-        Adjust the number of horizontal rows on your bookshelf
+        Add or remove horizontal rows of book slots on your bookshelf
       </p>
       <div className="flex items-center space-x-2">
         <Button 
@@ -54,7 +54,7 @@ const RowControls: React.FC = () => {
           -
         </Button>
         <div className="flex items-center space-x-1">
-          <Rows3 className="h-4 w-4 text-gray-500" />
+          <Rows3 className="h-4 w-4 text-primary" />
           <span className="font-medium">{activeShelf ? activeShelf.rows : 0} Rows</span>
         </div>
         <Button 

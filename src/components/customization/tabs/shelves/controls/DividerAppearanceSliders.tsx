@@ -14,7 +14,7 @@ const DividerAppearanceSliders: React.FC = () => {
     <>
       <div className="space-y-2 mt-4">
         <div className="flex justify-between items-center">
-          <Label>Thickness</Label>
+          <Label>Divider Thickness</Label>
           <span className="text-sm font-medium">{shelfStyling?.dividers?.thickness || 2}px</span>
         </div>
         <Slider
@@ -25,13 +25,13 @@ const DividerAppearanceSliders: React.FC = () => {
           onValueChange={(value) => updateDividersSetting('thickness', value[0])}
         />
         <p className="text-xs text-muted-foreground">
-          Adjust the width of divider lines
+          Adjust the width of divider lines between book sections
         </p>
       </div>
       
       <div className="space-y-2 mt-4">
         <div className="flex justify-between items-center">
-          <Label>Height</Label>
+          <Label>Divider Height</Label>
           <span className="text-sm font-medium">{shelfStyling?.dividers?.height || 200}px</span>
         </div>
         <Slider
@@ -42,13 +42,13 @@ const DividerAppearanceSliders: React.FC = () => {
           onValueChange={(value) => updateDividersSetting('height', value[0])}
         />
         <p className="text-xs text-muted-foreground">
-          Control how tall the dividers appear on the shelf
+          Control how tall the vertical dividers appear on the shelf
         </p>
       </div>
       
       <div className="space-y-2 mt-4">
         <div className="flex justify-between items-center">
-          <Label>Opacity</Label>
+          <Label>Divider Opacity</Label>
           <span className="text-sm font-medium">{Math.round((shelfStyling?.dividers?.opacity || 1) * 100)}%</span>
         </div>
         <Slider
@@ -59,7 +59,7 @@ const DividerAppearanceSliders: React.FC = () => {
           onValueChange={(value) => updateDividersSetting('opacity', value[0] / 100)}
         />
         <p className="text-xs text-muted-foreground">
-          Adjust the transparency of dividers
+          Adjust the transparency of dividers on your bookshelf
         </p>
       </div>
     </>

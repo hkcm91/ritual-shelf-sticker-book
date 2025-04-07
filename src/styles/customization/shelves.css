@@ -57,7 +57,7 @@
   margin: 0;
   border-bottom: 1px solid rgba(0,0,0,0.2);
   border-top: 1px solid rgba(255,255,255,0.1);
-  transition: background-color 0.3s ease, opacity 0.3s ease;
+  transition: background-color 0.3s ease, opacity 0.3s ease, height 0.3s ease, width 0.3s ease;
   z-index: 3;
 }
 
@@ -67,6 +67,8 @@
   min-height: var(--divider-height, 200px);
   align-self: flex-start;
   margin: 0;
+  margin-top: 0;
+  display: inline-block;
 }
 
 .horizontal-shelf-divider {
@@ -80,9 +82,8 @@
 .shelf-side-right {
   position: absolute;
   top: 0;
-  bottom: 0;  /* Make sure it extends to the bottom */
+  height: var(--divider-height, 200px);
   width: var(--divider-thickness, 8px);
-  height: var(--divider-height, 100%);  /* Full height */
   background-color: var(--divider-color, #714621);
   background-image: var(--shelf-texture);
   background-size: 200% 100%;

@@ -53,14 +53,14 @@ const VerticalDividersControl: React.FC = () => {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-sm font-medium">Vertical Dividers</h3>
+      <h3 className="text-sm font-medium text-primary">Shelf Dividers</h3>
       <p className="text-xs text-muted-foreground mb-2">
-        Add vertical dividers between groups of books on your shelf
+        Add vertical dividers between groups of books on your shelf to organize your collection
       </p>
       
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <Divide className="h-4 w-4 text-gray-500" />
+          <Divide className="h-4 w-4 text-primary" />
           <Label htmlFor="vertical-dividers">Enable vertical dividers</Label>
         </div>
         <Switch 
@@ -71,11 +71,11 @@ const VerticalDividersControl: React.FC = () => {
       </div>
       
       {verticalDividersEnabled && (
-        <div className="space-y-4 pl-6">
+        <div className="space-y-4 pl-6 pt-2 border-l-2 border-muted">
           <div className="space-y-2">
             <div className="flex justify-between">
-              <Label>Books between dividers</Label>
-              <span className="text-sm text-muted-foreground">{booksPerSection}</span>
+              <Label>Books per section</Label>
+              <span className="text-sm text-muted-foreground">{booksPerSection} books</span>
             </div>
             <Slider
               value={[booksPerSection]}
@@ -90,7 +90,7 @@ const VerticalDividersControl: React.FC = () => {
           </div>
           
           {/* Add the divider appearance sliders */}
-          <div className="mt-4">
+          <div className="mt-4 pt-2 border-t border-muted">
             <h4 className="text-sm font-medium mb-2">Divider Appearance</h4>
             <DividerAppearanceSliders />
           </div>

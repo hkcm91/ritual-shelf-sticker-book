@@ -1,7 +1,6 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion, useAnimation } from 'framer-motion';
-import { useEffect } from 'react';
 
 interface SparkleEffectProps {
   sparkPosition: { x: number; y: number };

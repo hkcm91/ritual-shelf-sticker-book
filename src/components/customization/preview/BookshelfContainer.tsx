@@ -1,15 +1,14 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion, useAnimation } from 'framer-motion';
-import { useEffect } from 'react';
 import ShelfRow from './ShelfRow';
 
 const BookshelfContainer: React.FC = () => {
   const controls = useAnimation();
   
-  // Trigger sparkling effect on mount and theme changes
+  // Trigger animation effect on mount and theme changes
   useEffect(() => {
-    const triggerSparkle = async () => {
+    const triggerAnimation = async () => {
       await controls.start({
         opacity: [0.5, 0.8, 0.2, 0],
         scale: [0.8, 1.2, 1],
@@ -17,7 +16,7 @@ const BookshelfContainer: React.FC = () => {
       });
     };
     
-    triggerSparkle();
+    triggerAnimation();
   }, [controls]);
 
   return (

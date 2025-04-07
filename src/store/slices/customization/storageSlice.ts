@@ -1,3 +1,4 @@
+
 import { CustomizationSliceCreator, defaultCustomization } from './types';
 import { toast } from 'sonner';
 import themes from '@/themes';
@@ -10,6 +11,11 @@ export const createStorageSlice: CustomizationSliceCreator = (set, get, api) => 
   setActiveTheme: (themeName) => {
     // Get current customization state
     const currentState = get();
+    
+    // Prevent unnecessary state updates causing re-renders
+    if (currentState.activeTheme === themeName) {
+      return;
+    }
     
     try {
       console.log(`Setting active theme: ${themeName}`);
@@ -116,9 +122,11 @@ export const createStorageSlice: CustomizationSliceCreator = (set, get, api) => 
         return;
       }
       
-      // Set activeTheme to custom
-      set({ activeTheme: 'custom' });
-      localStorage.setItem('bookshelf-active-theme', 'custom');
+      // Only set theme to custom if it's not already custom
+      if (activeTheme !== 'custom') {
+        set({ activeTheme: 'custom' });
+        localStorage.setItem('bookshelf-active-theme', 'custom');
+      }
       
       toast.success('Customization settings saved as custom theme');
     } catch (error) {
@@ -150,8 +158,13 @@ export const createStorageSlice: CustomizationSliceCreator = (set, get, api) => 
           if (typeof parsed !== 'object' || parsed === null) {
             throw new Error('Invalid customization data format');
           }
-          set(parsed);
-          console.log('Loaded custom theme data from localStorage');
+          
+          // Apply saved state without triggering other side effects
+          const currentState = get();
+          if (JSON.stringify(parsed) !== JSON.stringify(currentState)) {
+            set(parsed);
+            console.log('Loaded custom theme data from localStorage');
+          }
         } catch (parseError) {
           console.error('Error parsing saved customization:', parseError);
           toast.error('Saved customization data was corrupted');
@@ -162,25 +175,33 @@ export const createStorageSlice: CustomizationSliceCreator = (set, get, api) => 
       
       // If it's not a custom theme, apply the theme settings
       if (savedTheme !== 'custom' && savedTheme in themes) {
-        // We call setActiveTheme through API to ensure proper theme application
-        const { setActiveTheme } = get();
-        setTimeout(() => {
-          try {
-            setActiveTheme(savedTheme as ThemeName);
-          } catch (themeError) {
-            console.error('Error setting theme:', themeError);
-            // Fallback to default
-            setActiveTheme('default' as ThemeName);
-          }
-        }, 0);
+        // Prevent circular dependencies by getting the function directly
+        const currentState = get();
+        // Only update if theme is different to prevent infinite loops
+        if (currentState.activeTheme !== savedTheme) {
+          setTimeout(() => {
+            try {
+              const { setActiveTheme } = get();
+              setActiveTheme(savedTheme as ThemeName);
+            } catch (themeError) {
+              console.error('Error setting theme:', themeError);
+              // Fallback to default
+              set({ activeTheme: 'default' });
+            }
+          }, 0);
+        }
       } else if (savedTheme === 'custom' && savedCustomization) {
-        // Just set the theme name for custom themes
-        set({ activeTheme: 'custom' });
-        console.log('Applied custom theme from localStorage');
+        // Just set the theme name for custom themes without triggering other effects
+        if (get().activeTheme !== 'custom') {
+          set({ activeTheme: 'custom' });
+          console.log('Applied custom theme from localStorage');
+        }
       } else {
-        // Default case
-        set({ activeTheme: 'default' });
-        console.log('Applied default theme (no saved theme found)');
+        // Default case - only set if different to prevent loops
+        if (get().activeTheme !== 'default') {
+          set({ activeTheme: 'default' });
+          console.log('Applied default theme (no saved theme found)');
+        }
       }
       
     } catch (error) {
@@ -193,30 +214,36 @@ export const createStorageSlice: CustomizationSliceCreator = (set, get, api) => 
   
   resetCustomization: () => {
     try {
-      // Reset to default values
-      set({
-        ...defaultCustomization,
-        activeTheme: 'default'
-      });
+      // Get current theme
+      const currentTheme = get().activeTheme;
       
-      // Remove from localStorage
-      try {
-        localStorage.removeItem('bookshelf-customization');
-        localStorage.removeItem('bookshelf-active-theme');
-      } catch (storageError) {
-        console.error('Error clearing localStorage:', storageError);
-      }
-      
-      // Apply default theme CSS variables
-      try {
-        Object.entries(themes.default.variables).forEach(([key, value]) => {
-          document.documentElement.style.setProperty(key, value as string);
+      // Only reset if needed
+      if (currentTheme !== 'default' || JSON.stringify(get()) !== JSON.stringify(defaultCustomization)) {
+        // Reset to default values
+        set({
+          ...defaultCustomization,
+          activeTheme: 'default'
         });
-      } catch (cssError) {
-        console.error('Error applying default CSS variables:', cssError);
+        
+        // Remove from localStorage
+        try {
+          localStorage.removeItem('bookshelf-customization');
+          localStorage.removeItem('bookshelf-active-theme');
+        } catch (storageError) {
+          console.error('Error clearing localStorage:', storageError);
+        }
+        
+        // Apply default theme CSS variables
+        try {
+          Object.entries(themes.default.variables).forEach(([key, value]) => {
+            document.documentElement.style.setProperty(key, value as string);
+          });
+        } catch (cssError) {
+          console.error('Error applying default CSS variables:', cssError);
+        }
+        
+        toast.success('Customization settings reset to defaults');
       }
-      
-      toast.success('Customization settings reset to defaults');
     } catch (error) {
       console.error('Failed to reset customization:', error);
       toast.error('Failed to reset customization settings');

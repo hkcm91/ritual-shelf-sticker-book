@@ -7,7 +7,6 @@ import { toast } from 'sonner';
 import Header from '../components/layout/Header';
 import ShelfDialogs from '../components/shelf/ShelfDialogs';
 import { ShelfData } from '../store/types';
-import { useTheme } from '@/hooks/useTheme';
 import CustomizationModal from '@/components/customization/CustomizationModal';
 import ZoomControls from '@/components/ZoomControls';
 
@@ -17,26 +16,28 @@ const Index = () => {
   const [newShelfName, setNewShelfName] = useState("");
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [renameValue, setRenameValue] = useState("");
+  const [isInitialized, setIsInitialized] = useState(false);
   
-  // Initialize the theme
-  useTheme();
-  
-  // Initialize the store and load customization
+  // Initialize the store and load customization only once
   useEffect(() => {
-    const shelfId = initializeDefaultShelf();
-    
-    // Load customization
-    const loadSavedCustomization = useBookshelfStore.getState().loadCustomization;
-    if (loadSavedCustomization) {
-      loadSavedCustomization();
+    if (!isInitialized) {
+      const shelfId = initializeDefaultShelf();
+      
+      // Load customization
+      const loadSavedCustomization = useBookshelfStore.getState().loadCustomization;
+      if (loadSavedCustomization) {
+        loadSavedCustomization();
+      }
+      
+      if (shelfId) {
+        toast.success('Welcome to Ritual Bookshelf!', {
+          description: 'Upload book covers by clicking on the "+" slots or drag and drop images.',
+        });
+      }
+      
+      setIsInitialized(true);
     }
-    
-    if (shelfId) {
-      toast.success('Welcome to Ritual Bookshelf!', {
-        description: 'Upload book covers by clicking on the "+" slots or drag and drop images.',
-      });
-    }
-  }, []);
+  }, [isInitialized]);
 
   const shelvesData = shelves as Record<string, ShelfData>;
   const currentShelf = activeShelfId ? shelvesData[activeShelfId] : null;

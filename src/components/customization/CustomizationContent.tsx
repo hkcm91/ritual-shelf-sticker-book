@@ -15,7 +15,7 @@ const CustomizationContent: React.FC = () => {
   const [hasError, setHasError] = useState(false);
   
   useEffect(() => {
-    // Load customization when component mounts
+    // Load customization when component mounts - only once
     const loadSettings = async () => {
       try {
         setIsLoading(true);
@@ -31,7 +31,8 @@ const CustomizationContent: React.FC = () => {
     };
     
     loadSettings();
-  }, [loadCustomization]);
+    // Important: Add empty dependency array to prevent infinite calls
+  }, []);
   
   // Function to handle error boundary reset
   const handleErrorReset = () => {

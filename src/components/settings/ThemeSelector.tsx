@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTheme } from '@/hooks/useTheme';
 import { ThemeName } from '@/themes';
@@ -7,12 +7,19 @@ import { ThemeName } from '@/themes';
 const ThemeSelector: React.FC = () => {
   const { activeTheme, setActiveTheme, themes, availableThemes } = useTheme();
   
+  // Wrap the theme change handler in useCallback to prevent recreating on each render
+  const handleThemeChange = useCallback((value: string) => {
+    if (value !== activeTheme) {
+      setActiveTheme(value as ThemeName);
+    }
+  }, [activeTheme, setActiveTheme]);
+  
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium">Theme</label>
       <Select 
         value={activeTheme} 
-        onValueChange={(value) => setActiveTheme(value as ThemeName)}
+        onValueChange={handleThemeChange}
       >
         <SelectTrigger>
           <SelectValue placeholder="Select a theme" />

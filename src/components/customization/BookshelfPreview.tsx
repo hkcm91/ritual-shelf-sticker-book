@@ -3,7 +3,7 @@ import React from 'react';
 
 const BookshelfPreview: React.FC = () => {
   return (
-    <div className="relative w-full rounded overflow-hidden border shadow-sm" style={{ height: '180px' }}>
+    <div className="relative w-full rounded overflow-hidden border shadow-sm" style={{ height: '240px' }}>
       {/* Container with customizable properties */}
       <div 
         className="preview-container h-full w-full relative"
@@ -20,6 +20,28 @@ const BookshelfPreview: React.FC = () => {
           padding: 'var(--container-padding, 16px)',
         }}
       >
+        {/* Side dividers if enabled */}
+        <div 
+          className="absolute left-0 top-0 bottom-0 pointer-events-none" 
+          style={{ 
+            display: 'var(--dividers-visible, none)',
+            width: 'var(--divider-thickness, 6px)',
+            backgroundColor: 'var(--divider-color, #714621)',
+            backgroundImage: 'var(--divider-bg-image, none)',
+            opacity: 'var(--divider-opacity, 0.8)',
+          }}
+        />
+        <div 
+          className="absolute right-0 top-0 bottom-0 pointer-events-none" 
+          style={{ 
+            display: 'var(--dividers-visible, none)',
+            width: 'var(--divider-thickness, 6px)',
+            backgroundColor: 'var(--divider-color, #714621)',
+            backgroundImage: 'var(--divider-bg-image, none)',
+            opacity: 'var(--divider-opacity, 0.8)',
+          }}
+        />
+        
         <div className="flex flex-col h-full justify-between">
           {/* Shelf rows */}
           {[1, 2].map((index) => (
@@ -43,6 +65,16 @@ const BookshelfPreview: React.FC = () => {
                 </div>
               )}
               
+              {/* Book slots representation (empty) */}
+              <div className="flex justify-around mb-2 h-[60px]">
+                {[1, 2, 3].map((slotIndex) => (
+                  <div 
+                    key={`preview-slot-${index}-${slotIndex}`}
+                    className="w-[18px] h-[40px] bg-gray-200/30 rounded-sm transform translate-y-4"
+                  />
+                ))}
+              </div>
+              
               {/* Shelf */}
               <div 
                 className="w-full"
@@ -53,7 +85,7 @@ const BookshelfPreview: React.FC = () => {
                   backgroundSize: 'cover',
                   opacity: 'var(--shelf-opacity, 1)',
                   boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
-                  marginTop: index === 1 ? '60px' : '0'
+                  marginTop: index === 1 ? '20px' : '0'
                 }}
               />
             </div>

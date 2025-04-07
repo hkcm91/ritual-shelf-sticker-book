@@ -10,8 +10,6 @@ type SlotControlsProps = {
   onResetTransform: () => void;
   onShowDeleteDialog: () => void;
   isLottie?: boolean;
-  zIndex?: number;
-  onZIndexChange?: (direction: 'up' | 'down') => void;
 };
 
 const SlotControls: React.FC<SlotControlsProps> = (props) => {

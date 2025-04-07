@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
-import { RotateCcw, RotateCw, Trash2, ZoomIn, ZoomOut, RefreshCw, Layers, ArrowUp, ArrowDown } from 'lucide-react';
+import { RotateCcw, RotateCw, Trash2, ZoomIn, ZoomOut, RefreshCw } from 'lucide-react';
 import { PopoverContent, PopoverArrow } from '@/components/ui/popover';
 
 type StickerControlsProps = {
@@ -13,8 +13,6 @@ type StickerControlsProps = {
   onShowDeleteDialog: () => void;
   opacity?: number;
   onOpacityChange?: (opacity: number) => void;
-  zIndex?: number;
-  onZIndexChange?: (change: 'up' | 'down') => void;
   isLottie?: boolean;
 };
 
@@ -26,8 +24,6 @@ const StickerControls: React.FC<StickerControlsProps> = ({
   onShowDeleteDialog,
   opacity = 1,
   onOpacityChange,
-  zIndex = 1,
-  onZIndexChange,
   isLottie = false
 }) => {
   return (
@@ -108,33 +104,6 @@ const StickerControls: React.FC<StickerControlsProps> = ({
             </Button>
           </div>
         </div>
-        
-        {/* Z-index layer controls */}
-        {onZIndexChange && (
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Layer</span>
-            <div className="flex space-x-1">
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="h-7 px-2 flex items-center gap-1" 
-                onClick={() => onZIndexChange('down')}
-              >
-                <ArrowDown className="h-3.5 w-3.5" />
-                <span className="text-xs">Back</span>
-              </Button>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="h-7 px-2 flex items-center gap-1" 
-                onClick={() => onZIndexChange('up')}
-              >
-                <ArrowUp className="h-3.5 w-3.5" />
-                <span className="text-xs">Front</span>
-              </Button>
-            </div>
-          </div>
-        )}
         
         <div className="grid grid-cols-2 gap-2 pt-2">
           <Button size="sm" variant="outline" onClick={onResetTransform}>

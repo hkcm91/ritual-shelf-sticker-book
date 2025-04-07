@@ -1,52 +1,72 @@
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useTheme } from '@/hooks/useTheme';
 import { Card } from "@/components/ui/card";
 import { ThemeName } from '@/themes';
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Info, Palette } from "lucide-react";
+import { Info, Palette, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 const ThemesTab: React.FC = () => {
   const { activeTheme, setActiveTheme, themes, availableThemes, loadSavedTheme } = useTheme();
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isSelecting, setIsSelecting] = useState<string | null>(null);
 
   // Function to handle theme refresh/reload with error handling
   const handleRefreshTheme = useCallback(() => {
+    setIsRefreshing(true);
     try {
       loadSavedTheme();
       toast.success("Theme refreshed");
     } catch (error) {
       console.error("Error refreshing theme:", error);
       toast.error("Failed to refresh theme");
+    } finally {
+      setTimeout(() => setIsRefreshing(false), 500); // Add small delay for UI feedback
     }
   }, [loadSavedTheme]);
 
   // Function to handle theme selection without causing navigation
   const handleThemeSelect = useCallback((value: ThemeName) => {
+    if (value === activeTheme) return; // Don't reapply the same theme
+    
+    setIsSelecting(value);
     try {
       if (setActiveTheme) {
         console.log("Selecting theme:", value);
         setActiveTheme(value);
+        // Prevent event propagation
+        setTimeout(() => setIsSelecting(null), 800); // Add delay for UI feedback
       }
     } catch (error) {
       console.error("Error selecting theme:", error);
       toast.error("Failed to select theme");
+      setIsSelecting(null);
     }
-  }, [setActiveTheme]);
+    
+    // Prevent default and stop propagation
+    return false;
+  }, [setActiveTheme, activeTheme]);
 
   // Check if theme is valid
   const isValidTheme = useCallback((themeName: string): boolean => {
-    return !!themes[themeName as keyof typeof themes];
+    return themeName === 'custom' || !!themes[themeName as keyof typeof themes];
   }, [themes]);
 
   // Safe theme selection with fallback
   const renderThemeCard = useCallback((themeName: string) => {
     const isValid = isValidTheme(themeName);
-    const theme = isValid ? themes[themeName as keyof typeof themes] : themes.default;
-    const displayName = isValid ? theme?.name || "Unknown Theme" : "Invalid Theme";
+    const theme = themeName === 'custom' 
+      ? themes.custom 
+      : (isValid ? themes[themeName as keyof typeof themes] : themes.default);
+    const displayName = themeName === 'custom' 
+      ? "Custom Theme" 
+      : (isValid ? theme?.name || "Unknown Theme" : "Invalid Theme");
+    
+    const isLoading = isSelecting === themeName;
     
     return (
       <Card 
@@ -61,8 +81,13 @@ const ThemesTab: React.FC = () => {
         }}
       >
         <div className="flex items-center gap-2">
-          <RadioGroupItem value={themeName} id={`theme-${themeName}`} />
-          <Label htmlFor={`theme-${themeName}`} className="text-base font-medium">
+          <RadioGroupItem 
+            value={themeName} 
+            id={`theme-${themeName}`}
+            disabled={isLoading}
+          />
+          <Label htmlFor={`theme-${themeName}`} className="text-base font-medium flex items-center">
+            {isLoading && <Loader2 className="h-3 w-3 mr-1 animate-spin" />}
             {displayName}
           </Label>
         </div>
@@ -70,8 +95,12 @@ const ThemesTab: React.FC = () => {
         <div 
           className="h-20 w-full rounded-md border overflow-hidden bg-cover bg-center"
           style={{ 
-            backgroundImage: `url(${theme?.textures?.background || ''})`,
-            backgroundColor: theme?.variables?.['--container-bg'] || '#a47148'
+            backgroundImage: themeName === 'custom' 
+              ? theme?.textures?.background ? `url(${theme.textures.background})` : undefined
+              : theme?.textures?.background ? `url(${theme.textures.background})` : undefined,
+            backgroundColor: themeName === 'custom'
+              ? theme?.variables?.['--container-bg'] || '#a47148'
+              : theme?.variables?.['--container-bg'] || '#a47148'
           }}
         >
           <div 
@@ -84,7 +113,7 @@ const ThemesTab: React.FC = () => {
         </div>
       </Card>
     );
-  }, [activeTheme, handleThemeSelect, isValidTheme, themes]);
+  }, [activeTheme, handleThemeSelect, isValidTheme, themes, isSelecting]);
 
   return (
     <div className="space-y-6">
@@ -94,11 +123,18 @@ const ThemesTab: React.FC = () => {
           <Button 
             variant="outline" 
             size="sm" 
-            onClick={handleRefreshTheme}
+            onClick={(e) => {
+              e.preventDefault();
+              handleRefreshTheme();
+            }}
+            disabled={isRefreshing}
             className="text-xs"
           >
-            <Palette className="h-3 w-3 mr-1" />
-            Refresh Theme
+            {isRefreshing 
+              ? <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+              : <Palette className="h-3 w-3 mr-1" />
+            }
+            {isRefreshing ? "Refreshing..." : "Refresh Theme"}
           </Button>
         </div>
         
@@ -117,19 +153,28 @@ const ThemesTab: React.FC = () => {
           {activeTheme && (
             <Card className="p-4 border-2 border-primary">
               <h4 className="font-medium mb-2">
-                Current Theme: {(activeTheme && themes[activeTheme as keyof typeof themes]?.name) || "Custom Theme"}
+                Current Theme: {activeTheme === 'custom' 
+                  ? "Custom Theme" 
+                  : (activeTheme && themes[activeTheme as keyof typeof themes]?.name) || "Unknown Theme"}
               </h4>
               <div 
                 className="h-24 w-full rounded-md border overflow-hidden bg-cover bg-center"
                 style={{ 
-                  backgroundImage: `url(${activeTheme && themes[activeTheme as keyof typeof themes]?.textures?.background})`,
-                  backgroundColor: activeTheme && themes[activeTheme as keyof typeof themes]?.variables?.['--container-bg'] || '#a47148'
+                  backgroundImage: activeTheme === 'custom'
+                    ? themes.custom?.textures?.background ? `url(${themes.custom.textures.background})` : undefined
+                    : activeTheme && themes[activeTheme as keyof typeof themes]?.textures?.background 
+                      ? `url(${themes[activeTheme as keyof typeof themes]?.textures?.background})` : undefined,
+                  backgroundColor: activeTheme === 'custom'
+                    ? themes.custom?.variables?.['--container-bg'] || '#a47148'
+                    : activeTheme && themes[activeTheme as keyof typeof themes]?.variables?.['--container-bg'] || '#a47148'
                 }}
               >
                 <div 
                   className="w-full h-6 mt-12"
                   style={{ 
-                    backgroundColor: activeTheme && themes[activeTheme as keyof typeof themes]?.variables?.['--shelf-color'] || '#8B5A2B',
+                    backgroundColor: activeTheme === 'custom'
+                      ? themes.custom?.variables?.['--shelf-color'] || '#8B5A2B'
+                      : activeTheme && themes[activeTheme as keyof typeof themes]?.variables?.['--shelf-color'] || '#8B5A2B',
                     opacity: 0.9
                   }}
                 />
@@ -146,27 +191,7 @@ const ThemesTab: React.FC = () => {
           {availableThemes.map((themeName) => renderThemeCard(themeName))}
           
           {/* Add Custom Theme option */}
-          <Card 
-            className={`relative p-4 flex flex-col gap-4 cursor-pointer hover:bg-accent/10 transition-colors ${
-              activeTheme === 'custom' ? 'border-2 border-primary' : ''
-            }`}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleThemeSelect('custom' as ThemeName);
-            }}
-          >
-            <div className="flex items-center gap-2">
-              <RadioGroupItem value="custom" id="theme-custom" />
-              <Label htmlFor="theme-custom" className="text-base font-medium">
-                Custom Theme
-              </Label>
-            </div>
-            
-            <div className="h-20 w-full rounded-md border overflow-hidden bg-gradient-to-r from-blue-200 via-pink-200 to-purple-200">
-              <div className="w-full h-4 mt-10 bg-gradient-to-r from-purple-500 to-indigo-500 opacity-0.9" />
-            </div>
-          </Card>
+          {renderThemeCard('custom')}
         </RadioGroup>
       </div>
     </div>

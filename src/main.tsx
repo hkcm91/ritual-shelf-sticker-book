@@ -27,8 +27,12 @@ const router = createBrowserRouter([
         element: <Auth />,
       }
     ],
-    errorElement: <NotFound />,
   },
+  // Add a catch-all route for 404 errors
+  {
+    path: "*",
+    element: <NotFound />,
+  }
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

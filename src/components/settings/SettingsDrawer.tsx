@@ -40,7 +40,8 @@ const SettingsDrawer: React.FC = () => {
     openCustomizationModal,
   } = useBookshelfStore();
   
-  const activeShelf = shelves[activeShelfId];
+  const shelvesData = shelves || {};
+  const activeShelf = activeShelfId ? shelvesData[activeShelfId] : null;
   
   const handleAddRow = () => {
     console.log("Add row clicked, activeShelfId:", activeShelfId);
@@ -81,7 +82,10 @@ const SettingsDrawer: React.FC = () => {
   console.log("Active shelf:", activeShelf);
   
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
+    <Sheet open={open} onOpenChange={(newOpen) => {
+      console.log("Settings drawer onOpenChange triggered, new state:", newOpen);
+      setOpen(newOpen);
+    }}>
       <SheetTrigger asChild>
         <TooltipProvider>
           <Tooltip>
@@ -91,9 +95,7 @@ const SettingsDrawer: React.FC = () => {
                 size="icon" 
                 className="text-[color:var(--header-text-color,white)] hover:text-[color:var(--header-text-color,white)] hover:bg-[color:var(--header-hover-bg,rgba(255,255,255,0.1))]"
                 onClick={() => {
-                  console.log("Settings button clicked");
-                  // This is essentially a no-op because Sheet's onOpenChange will handle this
-                  // But we add it to trace the click
+                  console.log("Settings button clicked directly");
                 }}
               >
                 <Settings className="h-4 w-4" />

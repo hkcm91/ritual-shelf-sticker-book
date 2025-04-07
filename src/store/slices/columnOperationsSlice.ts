@@ -27,9 +27,18 @@ export const createColumnOperationsSlice: StateCreator<
     addColumn: () => {
       const { activeShelfId, shelves, books } = get();
       console.log("addColumn called, activeShelfId:", activeShelfId);
-      if (!activeShelfId) return;
+      
+      if (!activeShelfId) {
+        console.error("Cannot add column: No active shelf");
+        return;
+      }
       
       const shelf = shelves[activeShelfId];
+      if (!shelf) {
+        console.error("Cannot add column: Active shelf not found", activeShelfId);
+        return;
+      }
+      
       const newColumns = shelf.columns + 1;
       console.log(`Increasing columns from ${shelf.columns} to ${newColumns}`);
       
@@ -61,16 +70,29 @@ export const createColumnOperationsSlice: StateCreator<
     removeColumn: () => {
       const { activeShelfId, shelves, books } = get();
       console.log("removeColumn called, activeShelfId:", activeShelfId);
-      if (!activeShelfId) return;
+      
+      if (!activeShelfId) {
+        console.error("Cannot remove column: No active shelf");
+        return;
+      }
       
       const shelf = shelves[activeShelfId];
-      if (shelf.columns <= 1) return;
+      if (!shelf) {
+        console.error("Cannot remove column: Active shelf not found", activeShelfId);
+        return;
+      }
+      
+      if (shelf.columns <= 1) {
+        console.error("Cannot remove column: Already at minimum columns");
+        return;
+      }
       
       const newColumns = shelf.columns - 1;
       console.log(`Decreasing columns from ${shelf.columns} to ${newColumns}`);
       
       // Find books in the last column - but we won't delete them
       const booksInLastColumn = getBooksInLastColumn(activeShelfId, shelf, books);
+      console.log("Books in last column:", booksInLastColumn);
       
       // Hide books in the last column but preserve them
       const updatedBooks = hideLastColumnBooks(activeShelfId, books, booksInLastColumn);

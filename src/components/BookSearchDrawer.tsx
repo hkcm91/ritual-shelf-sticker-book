@@ -62,7 +62,10 @@ const BookSearchDrawer = () => {
   console.log("BookSearchDrawer rendered, open state:", open);
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
+    <Sheet open={open} onOpenChange={(newOpen) => {
+      console.log("Sheet onOpenChange triggered, new state:", newOpen);
+      setOpen(newOpen);
+    }}>
       <SheetTrigger asChild>
         <TooltipProvider>
           <Tooltip>
@@ -72,9 +75,7 @@ const BookSearchDrawer = () => {
                 size="icon" 
                 className="text-[color:var(--header-text-color,white)] hover:text-[color:var(--header-text-color,white)] hover:bg-[color:var(--header-hover-bg,rgba(255,255,255,0.1))]"
                 onClick={() => {
-                  console.log("Book search button clicked");
-                  // This is essentially a no-op because Sheet's onOpenChange will handle this
-                  // But we add it to trace the click
+                  console.log("Book search button clicked directly");
                 }}
               >
                 <BookOpen className="h-5 w-5" />

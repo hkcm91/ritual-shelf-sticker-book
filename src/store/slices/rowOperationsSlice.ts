@@ -26,9 +26,20 @@ export const createRowOperationsSlice: StateCreator<
   return {
     addRow: () => {
       const { activeShelfId, shelves, books } = get();
-      if (!activeShelfId) return;
+      console.log("addRow called, activeShelfId:", activeShelfId);
+      
+      if (!activeShelfId) {
+        console.error("Cannot add row: No active shelf");
+        return;
+      }
       
       const shelf = shelves[activeShelfId];
+      if (!shelf) {
+        console.error("Cannot add row: Active shelf not found", activeShelfId);
+        return;
+      }
+      
+      console.log(`Increasing rows from ${shelf.rows} to ${shelf.rows + 1}`);
       
       // Restore hidden books from previous row removals that can now be visible
       let updatedBooks = restoreHiddenBooksForRows(activeShelfId, shelf, books);
@@ -57,13 +68,29 @@ export const createRowOperationsSlice: StateCreator<
     
     removeRow: () => {
       const { activeShelfId, shelves, books } = get();
-      if (!activeShelfId) return;
+      console.log("removeRow called, activeShelfId:", activeShelfId);
+      
+      if (!activeShelfId) {
+        console.error("Cannot remove row: No active shelf");
+        return;
+      }
       
       const shelf = shelves[activeShelfId];
-      if (shelf.rows <= 1) return;
+      if (!shelf) {
+        console.error("Cannot remove row: Active shelf not found", activeShelfId);
+        return;
+      }
+      
+      if (shelf.rows <= 1) {
+        console.error("Cannot remove row: Already at minimum rows");
+        return;
+      }
+      
+      console.log(`Decreasing rows from ${shelf.rows} to ${shelf.rows - 1}`);
       
       // Find books in the last row - but we won't delete them
       const booksInLastRow = getBooksInLastRow(activeShelfId, shelf, books);
+      console.log("Books in last row:", booksInLastRow);
       
       // Hide books in the last row but preserve them
       const updatedBooks = hideLastRowBooks(activeShelfId, shelf, books, booksInLastRow);

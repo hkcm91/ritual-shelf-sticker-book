@@ -52,8 +52,7 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
               width: `${dividers.thickness}px`,
               backgroundColor: dividers.color,
               backgroundImage: `url(${shelfTexture})`,
-              opacity: dividers.opacity,
-              zIndex: 50 // Set a z-index that's below stickers but above other elements
+              opacity: dividers.opacity
             }}
           />
         );
@@ -95,8 +94,7 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
           backgroundImage: `url(${shelfTexture})`,
           backgroundSize: '100% 100%',
           opacity: 0.8,
-          filter: 'brightness(0.6)',
-          zIndex: 10 // Lower z-index to ensure stickers appear on top
+          filter: 'brightness(0.6)'
         }}
       />
       
@@ -117,7 +115,7 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
             opacity: shelfStyling.dividers.opacity,
             width: '100%',
             position: 'relative',
-            zIndex: 50 // Set a z-index that's below stickers but above other elements
+            zIndex: 5
           }}
         />
       )}
@@ -130,8 +128,7 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
           backgroundImage: `url(${shelfTexture})`,
           backgroundColor: shelfStyling?.color || '#7c5738',
           opacity: shelfStyling?.opacity || 1,
-          boxShadow: useRealisticStyle ? '0 6px 10px rgba(0,0,0,0.4)' : '0px 4px 6px -2px rgba(0,0,0,0.3)',
-          zIndex: 50 // Lower z-index to ensure stickers appear on top
+          boxShadow: useRealisticStyle ? '0 6px 10px rgba(0,0,0,0.4)' : '0px 4px 6px -2px rgba(0,0,0,0.3)'
         }}
       />
     </div>

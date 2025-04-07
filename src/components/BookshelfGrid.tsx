@@ -28,13 +28,14 @@ const BookshelfGrid: React.FC = () => {
   
   return (
     <div 
-      className="w-full h-full overflow-auto"
+      className="w-full h-full overflow-auto rounded-md shadow-lg"
       style={containerStyles}
     >
       <div 
-        className="bookshelf-grid flex flex-col"
+        className="bookshelf-grid flex flex-col items-center"
         style={{ 
-          width: `calc(${columns} * 160px + 2rem)`
+          width: `calc(${columns} * 160px + 2rem)`,
+          margin: '0 auto'
         }}
       >
         {Array.from({ length: rows }).map((_, rowIndex) => (

@@ -14,6 +14,9 @@ const Book: React.FC<BookProps> = ({ data }) => {
   // Don't render hidden books or items that should be stickers
   if (data.hidden || data.isSticker) return null;
   
+  // Debug the cover URL rendering
+  console.log('Book rendering with coverURL:', data.coverURL ? 'Has cover' : 'No cover');
+  
   return (
     <div
       className="relative w-full h-full cursor-grab"

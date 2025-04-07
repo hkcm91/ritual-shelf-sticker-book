@@ -53,8 +53,8 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
 
   return (
     <div className="shelf-row flex flex-col w-full mb-10">
-      {/* Books row */}
-      <div className="flex justify-start items-stretch flex-nowrap gap-2 p-2 min-h-[220px]">
+      {/* Books row - Improved vertical alignment with better padding */}
+      <div className="flex justify-start items-center flex-nowrap gap-2 p-2 min-h-[220px] pb-4">
         {renderSlots()}
       </div>
       

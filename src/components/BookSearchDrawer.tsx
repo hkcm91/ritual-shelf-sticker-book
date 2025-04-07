@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, BookOpen, Plus, Library } from 'lucide-react';
+import { Search, BookOpen, Plus, Library, BookIcon } from 'lucide-react';
 import { searchBooks, getCoverImageUrl, OpenLibraryBook } from '@/services/openLibraryService';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 import { toast } from 'sonner';
@@ -145,7 +145,7 @@ const BookSearchDrawer = () => {
                   {book.first_publish_year && ` (${book.first_publish_year})`}
                 </p>
                 <div className="absolute top-1.5 left-1.5 bg-background/80 rounded-full p-1">
-                  <Book size={14} className="text-muted-foreground" />
+                  <BookIcon size={14} className="text-muted-foreground" />
                 </div>
               </div>
             ))}

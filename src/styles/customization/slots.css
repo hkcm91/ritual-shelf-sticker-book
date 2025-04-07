@@ -1,0 +1,38 @@
+
+.book-slot.empty:hover {
+  background-color: var(--slot-empty-hover-bg);
+}
+
+.add-book-button {
+  background-color: var(--slot-add-button-bg);
+  color: var(--slot-add-button-color);
+}
+
+.add-book-button:hover {
+  background-color: var(--slot-add-button-hover-bg);
+}
+
+.slot-toggle-dot.inactive {
+  background-color: var(--slot-toggle-inactive-color);
+  border-color: var(--slot-toggle-border-color);
+}
+
+.slot-toggle-dot.active {
+  background-color: var(--slot-toggle-active-color);
+}
+
+/* Ensure book slots maintain proper sizing */
+.book-slot {
+  min-width: 150px;
+  min-height: 220px;
+  max-width: 180px;
+  position: relative;
+  flex-shrink: 0; /* Prevent slots from shrinking */
+  transition: transform 0.2s ease, box-shadow 0.3s ease; /* Smooth transitions */
+}
+
+/* Add hover effect to book slots */
+.book-slot:hover {
+  z-index: 5;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+}

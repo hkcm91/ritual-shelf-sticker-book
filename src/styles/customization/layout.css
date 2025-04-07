@@ -1,0 +1,42 @@
+
+/* Apply variables to components */
+body {
+  background-color: var(--page-bg);
+  background-image: var(--page-bg-image);
+  background-size: var(--page-bg-size);
+  background-repeat: var(--page-bg-repeat);
+  background-position: var(--page-bg-position);
+  background-attachment: var(--page-bg-attachment);
+  min-height: 100vh;
+  transition: background 0.3s ease;
+}
+
+.bookshelf-container {
+  background-color: var(--container-bg);
+  background-image: var(--container-bg-image);
+  background-size: cover;
+  background-position: center;
+  opacity: var(--container-opacity);
+  border-width: var(--container-border-width);
+  border-style: var(--container-border-style);
+  border-color: var(--container-border-color);
+  border-radius: var(--container-border-radius);
+  padding: var(--container-padding);
+  transition: background-color 0.3s ease, border 0.3s ease, opacity 0.3s ease;
+}
+
+.bookshelf-wrapper {
+  height: calc(100vh - 64px); /* Adjust for header height */
+  width: 100%;
+  overflow: auto; /* Allow scrolling in all directions */
+  scroll-behavior: smooth; /* Smooth scrolling */
+  -webkit-overflow-scrolling: touch; /* Better touch scrolling */
+}
+
+/* Make sure the grid container adapts to available space */
+.grid-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 0; /* Remove gap as the shelf component has its own margin */
+}

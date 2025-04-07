@@ -1,0 +1,12 @@
+
+/* Improve responsive behavior */
+@media (max-width: 640px) {
+  .bookshelf-container {
+    padding: 8px;
+  }
+  
+  .book-slot {
+    min-width: 120px;
+    min-height: 180px;
+  }
+}

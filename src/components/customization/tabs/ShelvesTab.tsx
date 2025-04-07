@@ -16,8 +16,7 @@ const ShelvesTab: React.FC = () => {
     updateShelfColor,
     updateShelfOpacity,
     toggleDividers,
-    updateDividersSetting,
-    updateAllDividerSettings
+    updateDividersSetting
   } = useBookshelfStore();
 
   return (

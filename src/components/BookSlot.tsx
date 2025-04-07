@@ -44,7 +44,8 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
         id: book.id,
         title: book.title,
         isSticker: book.isSticker,
-        hasCoverURL: !!book.coverURL
+        hasCoverURL: !!book.coverURL,
+        coverURL: book.coverURL ? `${book.coverURL.substring(0, 30)}...` : 'undefined'
       });
     }
   }, [position, book]);
@@ -64,11 +65,6 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
       handleClick();
     }
   };
-  
-  // Log what we're rendering
-  useEffect(() => {
-    console.log(`Slot ${position} rendering content ${book ? 'BookContent' : 'EmptySlot'}`);
-  }, [position, book]);
   
   return (
     <>

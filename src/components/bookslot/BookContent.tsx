@@ -40,7 +40,7 @@ const BookContent: React.FC<BookContentProps> = ({
       hasTitle: !!book.title,
       hasAuthor: !!book.author,
       hasCoverURL: !!book.coverURL,
-      coverURLValue: book.coverURL,
+      coverURLValue: book.coverURL ? `${book.coverURL.substring(0, 30)}...` : "undefined",
       position: book.position,
       shelfId: book.shelfId
     });

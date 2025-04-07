@@ -19,7 +19,7 @@ const Book: React.FC<BookProps> = ({ data }) => {
       author: data.author,
       hasValidCoverURL: !!data.coverURL,
       coverURLLength: data.coverURL ? data.coverURL.length : 0,
-      coverURLValue: data.coverURL,
+      coverURLValue: data.coverURL ? `${data.coverURL.substring(0, 30)}...` : "undefined",
       position: data.position,
       hidden: data.hidden,
       isSticker: data.isSticker

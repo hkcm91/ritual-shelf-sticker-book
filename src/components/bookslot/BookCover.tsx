@@ -13,7 +13,7 @@ const BookCover: React.FC<BookCoverProps> = ({ coverURL, progress = 0 }) => {
   // Enhanced debugging
   useEffect(() => {
     console.log("BookCover mounted with URL:", hasCover ? "valid URL present" : "missing URL");
-    console.log("Actual coverURL value:", coverURL);
+    console.log("Actual coverURL value:", coverURL ? `${coverURL.substring(0, 100)}... (length: ${coverURL.length})` : "undefined");
     if (!hasCover) {
       console.warn("BookCover missing valid URL");
     }
@@ -42,9 +42,7 @@ const BookCover: React.FC<BookCoverProps> = ({ coverURL, progress = 0 }) => {
             display: 'block',
             zIndex: 10
           }}
-        >
-          {/* Empty div to receive click events */}
-        </div>
+        />
       ) : (
         <div className="w-full h-full flex items-center justify-center bg-amber-800 rounded" style={{zIndex: 5}}>
           <span className="text-amber-200 text-sm font-medium">No cover</span>

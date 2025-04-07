@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Edit2, Palette } from "lucide-react";
+import { Palette } from "lucide-react";
 import ShelfSelector from './ShelfSelector';
 import HeaderAuthButton from '../Header';
 import ShelfControls from '../ShelfControls';

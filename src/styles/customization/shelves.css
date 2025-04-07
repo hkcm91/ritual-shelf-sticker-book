@@ -52,13 +52,14 @@
   background-position: center;
   box-shadow: 0px 0px 4px rgba(0,0,0,0.1);
   margin: 0 8px;
-  transition: background-color 0.3s ease, width 0.3s ease;
+  transition: all 0.3s ease;
   min-height: 220px;
   align-self: stretch;
   display: inline-block;
   position: relative;
   z-index: 5;
   opacity: var(--divider-opacity, 1);
+  border-radius: 1px;
 }
 
 .horizontal-shelf-divider {
@@ -70,11 +71,12 @@
   box-shadow: 0px 0px 4px rgba(0,0,0,0.1);
   margin: 8px -16px 8px -16px;
   padding: 0;
-  transition: background-color 0.3s ease, height 0.3s ease;
+  transition: all 0.3s ease;
   width: calc(100% + 32px);
   display: block;
   position: relative;
   opacity: var(--divider-opacity, 1);
+  border-radius: 1px;
 }
 
 /* Remove animation for dividers */
@@ -149,4 +151,22 @@
 .realistic-book-slot {
   position: relative;
   z-index: 1;
+}
+
+/* New divider hover effects */
+.vertical-shelf-divider:hover,
+.horizontal-shelf-divider:hover {
+  filter: brightness(1.1);
+}
+
+/* Enhanced divider styles for different orientations */
+.vertical-divider-container {
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+}
+
+.horizontal-divider-container {
+  width: 100%;
+  position: relative;
 }

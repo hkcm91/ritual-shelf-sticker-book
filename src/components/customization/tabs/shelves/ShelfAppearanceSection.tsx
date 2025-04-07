@@ -5,6 +5,8 @@ import { Slider } from "@/components/ui/slider";
 import { useBookshelfStore } from "@/store/bookshelfStore";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ColorPicker from '../../ColorPicker';
+import { HelpCircle } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface ShelfAppearanceSectionProps {
   linkDividerStyling: boolean;
@@ -61,9 +63,21 @@ const ShelfAppearanceSection: React.FC<ShelfAppearanceSectionProps> = ({
 
   return (
     <div className="rounded-md border p-4 space-y-4">
-      <h3 className="font-medium text-lg">Shelf Appearance</h3>
+      <div className="flex items-center gap-2">
+        <h3 className="font-medium text-lg">Shelf Appearance</h3>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              <p>Customize the look of your bookshelves</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
       
-      <div className="space-y-2">
+      <div className="space-y-3">
         <Label>Wood Style</Label>
         <Select onValueChange={handleTextureSelection} defaultValue="dark-walnut">
           <SelectTrigger className="w-full">
@@ -86,13 +100,18 @@ const ShelfAppearanceSection: React.FC<ShelfAppearanceSectionProps> = ({
             color={shelfStyling?.color || '#8B5A2B'} 
             onChange={handleShelfColorChange} 
           />
+          <span className="text-sm text-muted-foreground">{shelfStyling?.color}</span>
         </div>
+        <p className="text-xs text-muted-foreground mt-1">
+          {linkDividerStyling && shelfStyling?.dividers?.enabled ? 
+            "This color will be applied to dividers as well" : ""}
+        </p>
       </div>
       
       <div className="space-y-2">
-        <div className="flex justify-between">
+        <div className="flex justify-between items-center">
           <Label>Shelf Thickness</Label>
-          <span className="text-sm">{shelfStyling?.thickness || 20}px</span>
+          <span className="text-sm font-medium">{shelfStyling?.thickness || 20}px</span>
         </div>
         <Slider
           value={[shelfStyling?.thickness || 20]}
@@ -104,9 +123,9 @@ const ShelfAppearanceSection: React.FC<ShelfAppearanceSectionProps> = ({
       </div>
       
       <div className="space-y-2">
-        <div className="flex justify-between">
+        <div className="flex justify-between items-center">
           <Label>Opacity</Label>
-          <span className="text-sm">{Math.round((shelfStyling?.opacity || 1) * 100)}%</span>
+          <span className="text-sm font-medium">{Math.round((shelfStyling?.opacity || 1) * 100)}%</span>
         </div>
         <Slider
           value={[(shelfStyling?.opacity || 1) * 100]}

@@ -37,7 +37,19 @@ const DividersSection: React.FC<DividersSectionProps> = ({
   return (
     <div className="rounded-md border p-4 space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="font-medium text-lg">Dividers</h3>
+        <div className="flex items-center gap-2">
+          <h3 className="font-medium text-lg">Dividers</h3>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent side="right" className="max-w-[300px]">
+                <p>Dividers help organize your bookshelf by separating sections both vertically and horizontally</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
         <Switch 
           id="enable-dividers" 
           checked={shelfStyling?.dividers?.enabled || false}
@@ -47,18 +59,18 @@ const DividersSection: React.FC<DividersSectionProps> = ({
       
       {shelfStyling?.dividers?.enabled && (
         <>
-          <Separator />
+          <Separator className="my-2" />
           
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Label>Link Divider Styling</Label>
+              <Label htmlFor="link-divider-styling" className="text-sm font-medium">Link Divider Styling</Label>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                    <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
                   </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="w-60 text-sm">When enabled, dividers will use the same color as shelves and update together</p>
+                  <TooltipContent side="right" className="max-w-[300px]">
+                    <p>When enabled, dividers will use the same color as shelves and update together</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -70,6 +82,7 @@ const DividersSection: React.FC<DividersSectionProps> = ({
                 <Link2Off className="h-4 w-4 text-muted-foreground" />
               )}
               <Switch 
+                id="link-divider-styling"
                 checked={linkDividerStyling}
                 onCheckedChange={setLinkDividerStyling}
               />
@@ -79,13 +92,14 @@ const DividersSection: React.FC<DividersSectionProps> = ({
           <DividerControls linkDividerStyling={linkDividerStyling} />
           
           {!linkDividerStyling && (
-            <div className="space-y-2">
-              <Label>Divider Color</Label>
+            <div className="space-y-2 pt-2 border-t border-dashed border-gray-200">
+              <Label className="font-medium">Divider Color</Label>
               <div className="flex items-center gap-2">
                 <ColorPicker 
                   color={shelfStyling?.dividers?.color || '#714621'} 
                   onChange={handleDividerColorChange} 
                 />
+                <span className="text-sm text-muted-foreground">{shelfStyling?.dividers?.color}</span>
               </div>
             </div>
           )}

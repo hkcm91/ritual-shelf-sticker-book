@@ -14,7 +14,7 @@ export interface ShelfDividers {
   booksPerRow: number;
   thickness: number;
   color: string;
-  opacity?: number;
+  opacity: number;
   orientation: 'vertical' | 'horizontal' | 'both';
 }
 

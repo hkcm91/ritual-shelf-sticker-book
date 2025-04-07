@@ -24,7 +24,8 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
       booksPerRow: 2,
       orientation: 'vertical',
       thickness: 2,
-      color: '#714621'
+      color: '#714621',
+      opacity: 1
     };
     
     // Add a horizontal divider for this row if needed
@@ -41,7 +42,8 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
           style={{
             height: `${dividers.thickness || 2}px`,
             backgroundColor: dividers.color || '#714621',
-            marginBottom: '12px'
+            marginBottom: '12px',
+            opacity: dividers.opacity
           }}
         />
       );
@@ -65,7 +67,8 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
               width: `${dividers.thickness || 2}px`,
               backgroundColor: dividers.color || '#714621',
               height: '100%',
-              minHeight: '220px'
+              minHeight: '220px',
+              opacity: dividers.opacity
             }}
           />
         );

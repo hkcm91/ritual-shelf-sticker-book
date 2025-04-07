@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { BooksSlice, createBooksSlice } from './booksSlice';
 import { CompleteShelvesSlice, createShelvesSlice } from './shelvesSlice';
 import { UISlice, createUISlice } from './uiSlice';
-import { CustomizationState, createCustomizationSlice } from './customizationSlice';
+import { CustomizationState, createCustomizationSlice } from './slices/customization';
 import { BookData, ShelfData } from './types';
 
 // Define the complete store type that includes all slices

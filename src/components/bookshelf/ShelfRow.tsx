@@ -73,7 +73,8 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
               backgroundColor: dividers.color,
               backgroundImage: `url(${shelfTexture})`,
               opacity: dividers.opacity,
-              height: `${dividers.height}px`
+              height: `${dividers.height}px`,
+              flexShrink: 0 // Prevent the divider from shrinking
             }} 
             className="vertical-shelf-divider" 
           />
@@ -101,7 +102,14 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
 
     // Add the row of slots
     slots.push(
-      <div key={`slot-row-${rowIndex}`} className="flex justify-start items-stretch flex-nowrap gap-2 p-2 min-h-[220px] relative z-2">
+      <div 
+        key={`slot-row-${rowIndex}`} 
+        className="flex justify-start items-stretch flex-nowrap gap-2 p-2 min-h-[220px] relative z-2"
+        style={{
+          // Add padding to accommodate the divider height
+          paddingBottom: dividers.enabled ? `${Math.max(0, dividers.height - 220)}px` : '0',
+        }}
+      >
         {slotRow}
       </div>
     );
@@ -115,7 +123,6 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
   // Get custom shelf texture or use default
   const shelfTexture = shelf?.textureImage || (useRealisticStyle ? '/lovable-uploads/7a437784-0910-4719-b52b-6564c3004ebe.png' : '/textures/default/wood.jpg');
   
-  // Updated to not adjust the row height based on divider height
   return (
     <div 
       className={`shelf-row flex flex-col w-full relative ${useRealisticStyle ? 'realistic-shelf' : ''}`}
@@ -124,6 +131,9 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
         "--divider-thickness": `${shelfStyling?.dividers?.thickness || 6}px`,
         "--divider-color": shelfStyling?.dividers?.color || '#714621',
         "--divider-opacity": shelfStyling?.dividers?.opacity || 1,
+        // Adjust the min-height to accommodate larger dividers
+        minHeight: shelfStyling?.dividers?.enabled ? 
+          `${Math.max(240, shelfStyling.dividers.height + 20)}px` : '240px',
       } as React.CSSProperties}
     >
       {/* Shelf back panel for realistic look */}

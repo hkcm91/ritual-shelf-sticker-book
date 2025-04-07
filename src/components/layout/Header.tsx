@@ -1,5 +1,5 @@
+
 import React, { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { BookOpen } from 'lucide-react';
 import ShelfSelector from './ShelfSelector';
 import { useBookshelfStore } from '@/store/bookshelfStore';
@@ -64,14 +64,14 @@ const Header: React.FC = () => {
       </div>
       
       <div className="flex items-center gap-3">
-        {/* Settings Drawer - keeping this as our single entry point to settings/customization */}
+        {/* Book icon moved from left to right */}
+        <BookSearchDrawer />
+        
+        {/* Settings Drawer */}
         <SettingsDrawer />
         
         <HeaderAuthButton />
       </div>
-      
-      {/* Render BookSearchDrawer component */}
-      <BookSearchDrawer />
     </header>
   );
 };

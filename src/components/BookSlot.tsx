@@ -75,8 +75,8 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
         handleMouseMove={handleStickerMouseMove}
         handleMouseUp={handleStickerMouseUp}
       >
-        {/* Log what we're about to render */}
-        {console.log(`Slot ${position} rendering ${book ? 'BookContent' : 'EmptySlot'}`)}
+        {/* Debugging log */}
+        {console.log(`Slot ${position} rendering content ${book ? 'BookContent' : 'EmptySlot'}`)}
         
         {/* Render book content or empty slot */}
         {book ? (
@@ -105,11 +105,13 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
         )}
         
         {/* Always show toggle group when slot is empty */}
-        <SlotTypeToggle 
-          slotType={slotType} 
-          handleTypeToggle={handleTypeToggle}
-          isVisible={!book} 
-        />
+        {!book && (
+          <SlotTypeToggle 
+            slotType={slotType} 
+            handleTypeToggle={handleTypeToggle}
+            isVisible={true} 
+          />
+        )}
       </SlotContainer>
       
       {/* Delete Confirmation Dialog */}

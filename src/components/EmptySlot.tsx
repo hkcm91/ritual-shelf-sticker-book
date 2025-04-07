@@ -68,7 +68,8 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
         setShowUrlDialog(true);
       } else {
         // Regular click opens file picker
-        fileInputRef.current?.click();
+        if (onClick) onClick();
+        else fileInputRef.current?.click();
       }
     }
   };

@@ -22,7 +22,9 @@ const BookModal: React.FC = () => {
     setRating,
     addEmptyQuiz,
     updateQuiz,
-    removeQuiz
+    removeQuiz,
+    isUploading,
+    uploadProgress
   } = useBookModal();
   
   const contextValue = {
@@ -35,7 +37,9 @@ const BookModal: React.FC = () => {
     handleCoverChange,
     handleSave,
     handleDelete,
-    closeModal
+    closeModal,
+    isUploading,
+    uploadProgress
   };
   
   return (

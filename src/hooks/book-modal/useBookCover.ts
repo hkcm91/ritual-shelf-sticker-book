@@ -9,9 +9,11 @@ export const useBookCover = (initialCoverURL: string = '') => {
   
   // Update cover URL when initialCoverURL changes
   useEffect(() => {
-    setCoverURL(initialCoverURL);
-    console.log('Cover URL updated from prop:', 
-      initialCoverURL ? `present (${initialCoverURL.length} chars)` : 'missing');
+    if (initialCoverURL !== coverURL) {
+      setCoverURL(initialCoverURL);
+      console.log('Cover URL updated from prop:', 
+        initialCoverURL ? `present (${initialCoverURL.length} chars)` : 'missing');
+    }
   }, [initialCoverURL]);
   
   const simulateProgress = () => {
@@ -22,20 +24,24 @@ export const useBookCover = (initialCoverURL: string = '') => {
     const interval = window.setInterval(() => {
       setUploadProgress(prev => {
         if (prev >= 90) {
-          clearInterval(interval);
+          window.clearInterval(interval);
           return 90; // Hold at 90% until complete
         }
         return prev + Math.floor(Math.random() * 15);
       });
     }, 100);
     
-    return () => window.clearInterval(interval);
+    return interval; // Return the interval ID for clearing later
   };
   
-  const completeProgress = () => {
+  const completeProgress = (intervalId?: number) => {
+    if (intervalId) {
+      window.clearInterval(intervalId);
+    }
+    
     setUploadProgress(100);
     // Add a small delay before removing the progress indicator
-    setTimeout(() => {
+    window.setTimeout(() => {
       setIsUploading(false);
       setUploadProgress(0);
     }, 500);
@@ -51,8 +57,8 @@ export const useBookCover = (initialCoverURL: string = '') => {
     console.log('Cover changed, new length:', imageUrl ? imageUrl.length : 0);
     console.log('Cover sample:', imageUrl ? imageUrl.substring(0, 50) + '...' : 'undefined');
     
-    // Clear previous timeouts if any exist
-    const clearProgress = simulateProgress();
+    // Start the progress simulation
+    const progressInterval = simulateProgress();
     
     try {
       // Validate image URL
@@ -61,7 +67,7 @@ export const useBookCover = (initialCoverURL: string = '') => {
         if (imageUrl.startsWith('data:image/')) {
           // We're good to update the state
           setCoverURL(imageUrl);
-          completeProgress();
+          completeProgress(progressInterval);
           return;
         }
         
@@ -69,20 +75,20 @@ export const useBookCover = (initialCoverURL: string = '') => {
         if (imageUrl.startsWith('http')) {
           // Just accept it for now (we could add validation)
           setCoverURL(imageUrl);
-          completeProgress();
+          completeProgress(progressInterval);
           return;
         }
       }
       
       // If we got here, there's a problem with the image URL
-      clearProgress();
+      window.clearInterval(progressInterval);
       setIsUploading(false);
       console.warn('Invalid image URL provided:', typeof imageUrl);
       toast.error('Invalid image format');
       
     } catch (error) {
       // Clear progress and show error
-      clearProgress();
+      window.clearInterval(progressInterval);
       setIsUploading(false);
       console.error('Error processing image:', error);
       toast.error('Failed to process image');

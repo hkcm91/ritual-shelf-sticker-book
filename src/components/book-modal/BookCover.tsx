@@ -28,20 +28,21 @@ const BookCover: React.FC<BookCoverProps> = ({
         return;
       }
       
-      const reader = new FileReader();
-      
-      reader.onload = async (event) => {
-        if (typeof event.target?.result === 'string') {
-          try {
-            setIsCompressing(true);
-            console.log("Book cover loaded, length:", event.target.result.length);
-            
-            // Always compress the image to ensure it can be stored
-            let imageData = event.target.result;
+      try {
+        setIsCompressing(true);
+        
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+          if (typeof event.target?.result === 'string') {
             try {
+              console.log("Book cover loaded, length:", event.target.result.length);
+              
+              // Always compress the image to ensure it can be stored
+              let imageData = event.target.result;
+              
               // First compression attempt - more aggressive
               imageData = await compressImage(imageData, {
-                quality: 0.5, // Lower quality for better compression
+                quality: 0.6, // Lower quality for better compression
                 maxWidth: 500,
                 maxHeight: 750
               });
@@ -50,51 +51,40 @@ const BookCover: React.FC<BookCoverProps> = ({
               // If still too large, compress again more aggressively
               if (imageData.length > 500000) { // If over 500KB
                 imageData = await compressImage(imageData, {
-                  quality: 0.3, // Very aggressive compression
+                  quality: 0.4, // Very aggressive compression
                   maxWidth: 400,
                   maxHeight: 600
                 });
                 console.log("Book cover compressed (second pass), new length:", imageData.length);
               }
-            } catch (err) {
-              console.warn('Failed to compress book cover:', err);
-              toast.warning('Image could not be compressed. Storage issues may occur.');
-              // Continue with original if compression fails
-            } finally {
-              setIsCompressing(false);
+              
+              // Apply the change - make sure we're calling the context function
+              handleCoverChange(imageData);
+              toast.success('Cover image updated');
+              
+              // Verify that the cover was applied
+              console.log("Cover URL after change:", imageData ? "Set (length: " + imageData.length + ")" : "Not set");
+              console.log("BookData cover URL: ", bookData.coverURL ? "Set" : "Not set");
+            } catch (error) {
+              console.error('Error processing image:', error);
+              toast.error('Failed to process image');
             }
-            
-            // Apply the change - make sure we're calling the context function
-            handleCoverChange(imageData);
-            toast.success('Cover image updated');
-            
-            // Verify that the cover was applied
-            console.log("Cover URL after change:", imageData ? "Set (length: " + imageData.length + ")" : "Not set");
-            console.log("BookData cover URL: ", bookData.coverURL ? "Set" : "Not set");
-            
-            // Force a state update after a short delay to make sure React re-renders
-            setTimeout(() => {
-              console.log("Delayed verification - Cover URL present:", !!bookData.coverURL);
-            }, 200);
-          } catch (error) {
-            console.error('Error processing image:', error);
-            toast.error('Failed to process image');
-            setIsCompressing(false);
           }
-        }
-      };
-      
-      reader.onerror = () => {
-        toast.error('Failed to read the image file');
+        };
+        
+        reader.onerror = () => {
+          toast.error('Failed to read the image file');
+        };
+        
+        reader.readAsDataURL(file);
+      } finally {
         setIsCompressing(false);
-      };
-      
-      reader.readAsDataURL(file);
-    }
-    
-    // Reset file input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+        
+        // Reset file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      }
     }
   };
   

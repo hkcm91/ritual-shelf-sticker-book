@@ -71,10 +71,34 @@ export const createBooksSlice: StateCreator<
     },
     
     updateBook: (id, data) => {
-      const updatedBook = updateBookAction(id, data, get().books);
+      console.log('Zustand updateBook action received:', {
+        id,
+        dataKeys: Object.keys(data),
+        hasCoverURL: !!data.coverURL,
+        coverURLLength: data.coverURL ? data.coverURL.length : 0
+      });
       
-      if (!updatedBook) return;
+      // Get the existing book
+      const existingBook = get().books[id];
+      if (!existingBook) {
+        console.error(`Book with ID ${id} not found`);
+        return;
+      }
       
+      // Create the updated book
+      const updatedBook = {
+        ...existingBook,
+        ...data
+      };
+      
+      // Log what's being updated
+      console.log('Book after update:', {
+        id,
+        hasCoverURL: !!updatedBook.coverURL,
+        coverURLLength: updatedBook.coverURL ? updatedBook.coverURL.length : 0
+      });
+      
+      // Update the state
       set((state) => {
         const updatedBooks = {
           ...state.books,
@@ -82,7 +106,12 @@ export const createBooksSlice: StateCreator<
         };
         
         // Save to storage
-        saveBooksToStorage(updatedBooks, id);
+        try {
+          storageService.setItem('books', updatedBooks);
+          console.log(`Book ${id} successfully saved to storage`);
+        } catch (error) {
+          console.error('Error saving books to storage:', error);
+        }
         
         return { books: updatedBooks };
       });

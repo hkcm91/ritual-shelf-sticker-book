@@ -13,8 +13,9 @@ const BookCover: React.FC<BookCoverProps> = ({ coverURL, progress = 0 }) => {
   // Enhanced debugging
   useEffect(() => {
     console.log("BookCover mounted with URL:", hasCover ? "valid URL present" : "missing URL");
-    console.log("Actual coverURL value:", coverURL ? `${coverURL.substring(0, 100)}... (length: ${coverURL.length})` : "undefined");
-    if (!hasCover) {
+    if (hasCover) {
+      console.log("Actual coverURL value:", `${coverURL!.substring(0, 100)}... (length: ${coverURL!.length})`);
+    } else {
       console.warn("BookCover missing valid URL");
     }
   }, [hasCover, coverURL]);

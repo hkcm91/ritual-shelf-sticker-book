@@ -38,13 +38,11 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
       slots.push(
         <div 
           key={`hdivider-${rowIndex}`}
-          className="horizontal-shelf-divider w-full" 
+          className="horizontal-shelf-divider" 
           style={{
             height: `${dividers.thickness || 2}px`,
             backgroundColor: dividers.color || '#714621',
             backgroundImage: `url(${shelf?.textureImage || '/lovable-uploads/7a437784-0910-4719-b52b-6564c3004ebe.png'})`,
-            backgroundSize: '100% 200%',
-            marginBottom: '12px',
             opacity: dividers.opacity
           }}
         />
@@ -69,9 +67,6 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
               width: `${dividers.thickness || 2}px`,
               backgroundColor: dividers.color || '#714621',
               backgroundImage: `url(${shelf?.textureImage || '/lovable-uploads/7a437784-0910-4719-b52b-6564c3004ebe.png'})`,
-              backgroundSize: '200% 100%',
-              height: '100%',
-              minHeight: '220px',
               opacity: dividers.opacity
             }}
           />
@@ -108,7 +103,7 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
     <div className={`shelf-row flex flex-col w-full relative ${useRealisticStyle ? 'realistic-shelf' : ''}`}>
       {/* Shelf back panel for realistic look */}
       <div 
-        className="bookshelf-back-panel absolute top-0 left-0 right-0 bottom-0 z-0"
+        className="bookshelf-back-panel"
         style={{
           backgroundColor: shelfStyling?.color || '#7c5738',
           backgroundImage: `url(${shelfTexture})`,
@@ -116,25 +111,22 @@ const ShelfRow: React.FC<ShelfRowProps> = ({ rowIndex, columns }) => {
           opacity: 0.8,
           filter: 'brightness(0.6)'
         }}
-      ></div>
+      />
       
       {/* Render books and dividers */}
       {renderSlots()}
       
       {/* Shelf */}
       <div 
-        className="wood-shelf w-full mb-6 relative z-10"
+        className="wood-shelf"
         style={{
           height: `${shelfStyling?.thickness || 20}px`,
           backgroundImage: `url(${shelfTexture})`,
-          backgroundSize: '100% 100%',
-          backgroundRepeat: 'repeat-x',
-          backgroundPosition: 'center',
           backgroundColor: shelfStyling?.color || '#7c5738',
           opacity: shelfStyling?.opacity || 1,
           boxShadow: useRealisticStyle ? '0 6px 10px rgba(0,0,0,0.4)' : '0px 4px 6px -2px rgba(0,0,0,0.3)'
         }}
-      ></div>
+      />
     </div>
   );
 };

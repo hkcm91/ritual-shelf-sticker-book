@@ -60,27 +60,21 @@ const BookshelfGrid: React.FC = () => {
         overflow: 'hidden'
       }}
     >
-      {/* Add a frame border that matches dividers */}
+      {/* Only show frame if dividers are enabled */}
       {shelfStyling?.dividers?.enabled && (
         <div 
-          className="bookshelf-frame"
+          className="bookshelf-frame absolute inset-0 pointer-events-none z-20"
           style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
             borderWidth: `${dividers.thickness || 8}px`,
+            borderStyle: 'solid',
             borderColor: dividers.color || '#714621',
             backgroundImage: `url(${shelfTexture})`,
             backgroundSize: '100% 100%',
             opacity: dividers.opacity || 1,
             borderRadius: `${container?.borderRadius ? container.borderRadius - 4 : 4}px`,
-            pointerEvents: 'none',
-            zIndex: 20,
             boxShadow: 'inset 0 0 15px rgba(0,0,0,0.3)'
           }}
-        ></div>
+        />
       )}
       
       <div className="bookshelf-rows relative z-10">

@@ -4,7 +4,7 @@ import { useBookshelfStore } from "@/store/bookshelfStore";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
-import { Link, Link2Off, HelpCircle } from 'lucide-react';
+import { HelpCircle } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import ColorPicker from '../../ColorPicker';
 import DividerControls from './DividerControls';
@@ -21,7 +21,8 @@ const DividersSection: React.FC<DividersSectionProps> = ({
   const { 
     shelfStyling, 
     toggleDividers,
-    updateDividersSetting
+    updateDividersSetting,
+    updateShelfColor
   } = useBookshelfStore();
   
   // Handle divider color change with linked styling
@@ -30,7 +31,7 @@ const DividersSection: React.FC<DividersSectionProps> = ({
     
     // If divider styling is linked, update shelf color as well
     if (linkDividerStyling) {
-      useBookshelfStore.getState().updateShelfColor(color);
+      updateShelfColor(color);
     }
   };
 
@@ -45,7 +46,7 @@ const DividersSection: React.FC<DividersSectionProps> = ({
                 <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
               </TooltipTrigger>
               <TooltipContent side="right" className="max-w-[300px]">
-                <p>Dividers help organize your bookshelf by separating sections both vertically and horizontally</p>
+                <p>Dividers help organize your bookshelf by separating sections</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -61,35 +62,10 @@ const DividersSection: React.FC<DividersSectionProps> = ({
         <>
           <Separator className="my-2" />
           
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Label htmlFor="link-divider-styling" className="text-sm font-medium">Link Divider Styling</Label>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
-                  </TooltipTrigger>
-                  <TooltipContent side="right" className="max-w-[300px]">
-                    <p>When enabled, dividers will use the same color as shelves and update together</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-            <div className="flex items-center gap-2">
-              {linkDividerStyling ? (
-                <Link className="h-4 w-4 text-primary" />
-              ) : (
-                <Link2Off className="h-4 w-4 text-muted-foreground" />
-              )}
-              <Switch 
-                id="link-divider-styling"
-                checked={linkDividerStyling}
-                onCheckedChange={setLinkDividerStyling}
-              />
-            </div>
-          </div>
-          
-          <DividerControls linkDividerStyling={linkDividerStyling} />
+          <DividerControls 
+            linkDividerStyling={linkDividerStyling} 
+            setLinkDividerStyling={setLinkDividerStyling}
+          />
           
           {!linkDividerStyling && (
             <div className="space-y-2 pt-2 border-t border-dashed border-gray-200">

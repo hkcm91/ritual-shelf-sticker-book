@@ -20,12 +20,12 @@ const defaultTheme: Theme = {
     
     // Shelves
     '--shelf-thickness': '20px',
-    '--shelf-color': '#8B5A2B',
+    '--shelf-color': '#714621',
     '--shelf-bg-image': 'none',
     '--shelf-opacity': '1',
     
-    // Dividers
-    '--divider-thickness': '10px',
+    // Dividers - match with shelf color for consistency
+    '--divider-thickness': '8px',
     '--divider-color': '#714621',
     '--divider-opacity': '1',
     

@@ -5,15 +5,18 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { useBookshelfStore } from "@/store/bookshelfStore";
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle, Link, Link2Off } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Switch } from '@/components/ui/switch';
 
 interface DividerControlsProps {
   linkDividerStyling: boolean;
+  setLinkDividerStyling: (value: boolean) => void;
 }
 
 const DividerControls: React.FC<DividerControlsProps> = ({ 
-  linkDividerStyling 
+  linkDividerStyling, 
+  setLinkDividerStyling 
 }) => {
   const { 
     shelfStyling, 
@@ -25,23 +28,46 @@ const DividerControls: React.FC<DividerControlsProps> = ({
     updateDividersSetting('orientation', value as 'vertical' | 'horizontal' | 'both');
   };
 
-  // Handle books per row change with the correct type
-  const handleBooksPerRowChange = (value: number) => {
-    updateDividersSetting('booksPerRow', value);
-  };
-  
   return (
     <>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Label htmlFor="link-divider-styling" className="text-sm font-medium">Link with Shelf Color</Label>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent side="right" className="max-w-[300px]">
+                <p>When enabled, dividers will use the same color as shelves</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        <div className="flex items-center gap-2">
+          {linkDividerStyling ? (
+            <Link className="h-4 w-4 text-primary" />
+          ) : (
+            <Link2Off className="h-4 w-4 text-muted-foreground" />
+          )}
+          <Switch 
+            id="link-divider-styling"
+            checked={linkDividerStyling}
+            onCheckedChange={setLinkDividerStyling}
+          />
+        </div>
+      </div>
+      
       <div className="space-y-3">
         <div className="flex items-center gap-2">
-          <Label className="font-medium">Divider Orientation</Label>
+          <Label className="font-medium">Orientation</Label>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
               </TooltipTrigger>
               <TooltipContent side="right">
-                <p>Choose how dividers should be displayed on your bookshelf</p>
+                <p>Choose how dividers are displayed</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -66,21 +92,9 @@ const DividerControls: React.FC<DividerControlsProps> = ({
         </RadioGroup>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+      <div className="grid grid-cols-2 gap-4 mt-4">
         <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <Label>Books Per Section</Label>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Number of books between vertical dividers</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
+          <Label>Books Per Section</Label>
           <Input
             type="number"
             min={2}
@@ -93,25 +107,13 @@ const DividerControls: React.FC<DividerControlsProps> = ({
         </div>
         
         <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <Label>Books Per Row</Label>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Number of books between horizontal dividers</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
+          <Label>Books Per Row</Label>
           <Input
             type="number"
             min={1}
             max={10}
             value={shelfStyling?.dividers?.booksPerRow || 2}
-            onChange={(e) => handleBooksPerRowChange(parseInt(e.target.value))}
+            onChange={(e) => updateDividersSetting('booksPerRow', parseInt(e.target.value))}
             className="w-full"
             disabled={!['horizontal', 'both'].includes(shelfStyling?.dividers?.orientation || 'vertical')}
           />
@@ -120,19 +122,7 @@ const DividerControls: React.FC<DividerControlsProps> = ({
       
       <div className="space-y-2 mt-4">
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <Label>Divider Thickness</Label>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Width of divider lines in pixels</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
+          <Label>Thickness</Label>
           <span className="text-sm font-medium">{shelfStyling?.dividers?.thickness || 2}px</span>
         </div>
         <Slider
@@ -146,19 +136,7 @@ const DividerControls: React.FC<DividerControlsProps> = ({
       
       <div className="space-y-2 mt-4">
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <Label>Divider Opacity</Label>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Transparency of dividers</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
+          <Label>Opacity</Label>
           <span className="text-sm font-medium">{Math.round((shelfStyling?.dividers?.opacity || 1) * 100)}%</span>
         </div>
         <Slider

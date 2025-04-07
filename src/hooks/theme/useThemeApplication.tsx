@@ -67,8 +67,13 @@ export function useThemeApplication() {
           }
         }
         
-        // IMPORTANT: Removed the automatic divider setting to prevent infinite loops
-        // We'll let the theme action handle this instead
+        // Apply page text color for contrast
+        document.documentElement.style.setProperty('--page-text-color', themeToApply.variables['--page-text-color'] || 
+          (themeToApply.variables['--page-bg'].includes('#f') ? '#333333' : '#f0f0f0'));
+        
+        // Set header hover background for better UX
+        document.documentElement.style.setProperty('--header-hover-bg', 
+          themeToApply.variables['--header-text-color'].includes('#f') ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)');
       } else if (activeTheme === 'custom') {
         // For custom theme, we apply the current state values directly
         try {
@@ -83,6 +88,16 @@ export function useThemeApplication() {
             document.documentElement.style.setProperty('--page-bg-repeat', page.backgroundRepeat || 'no-repeat');
             document.documentElement.style.setProperty('--page-bg-position', page.backgroundPosition || 'center');
             document.documentElement.style.setProperty('--page-bg-attachment', page.backgroundAttachment || 'fixed');
+            
+            // Auto-set text color based on background brightness for contrast
+            const bgColor = page.background || '#f5f5f5';
+            if (bgColor.match(/#[0-9a-f]{6}/i)) {
+              const r = parseInt(bgColor.slice(1, 3), 16);
+              const g = parseInt(bgColor.slice(3, 5), 16);
+              const b = parseInt(bgColor.slice(5, 7), 16);
+              const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+              document.documentElement.style.setProperty('--page-text-color', brightness > 125 ? '#333333' : '#f0f0f0');
+            }
           }
           
           if (container) {

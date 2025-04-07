@@ -20,9 +20,24 @@ header.scrolled {
 }
 
 .navigation-menu-item:hover {
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: var(--header-hover-bg, rgba(0, 0, 0, 0.03));
 }
 
 .dark .navigation-menu-item:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--header-hover-bg, rgba(255, 255, 255, 0.05));
+}
+
+header .button,
+header button {
+  color: var(--header-text-color);
+}
+
+/* Ensure NavigationMenu properly inherits theme colors */
+header .navigation-menu-trigger {
+  color: var(--header-text-color);
+}
+
+header .navigation-menu-content {
+  background-color: var(--header-bg);
+  color: var(--header-text-color);
 }

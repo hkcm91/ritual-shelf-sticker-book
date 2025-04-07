@@ -39,8 +39,6 @@ const Header: React.FC = () => {
   return (
     <header className={`px-4 sm:px-6 py-3 flex justify-between items-center backdrop-blur-sm bg-background/95 sticky top-0 z-50 transition-all duration-200 ${scrolled ? 'scrolled' : ''}`}>
       <div className="flex items-center gap-4">
-        <h1 className="text-xl font-semibold">Ritual Bookshelf</h1>
-        
         {!isMobile && (
           <NavigationMenu>
             <NavigationMenuList>
@@ -66,7 +64,7 @@ const Header: React.FC = () => {
               <Button 
                 variant="ghost" 
                 size="icon"
-                className="text-foreground/80 hover:text-foreground"
+                className="text-[color:var(--header-text-color)] hover:text-[color:var(--header-text-color)] hover:bg-[color:var(--header-hover-bg,rgba(255,255,255,0.1))]"
                 onClick={() => openCustomizationModal()}
               >
                 <Palette className="h-4 w-4" />

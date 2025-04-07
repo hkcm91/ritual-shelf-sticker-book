@@ -8,6 +8,7 @@
   --page-bg-repeat: no-repeat;
   --page-bg-position: center;
   --page-bg-attachment: fixed;
+  --page-text-color: #333333;
 
   /* Container */
   --container-bg: #5c3d26;
@@ -46,6 +47,7 @@
   --header-bg: #413125;
   --header-bg-image: none;
   --header-text-color: #ffffff;
+  --header-hover-bg: rgba(255, 255, 255, 0.1);
 
   /* Transitions for smoother theme changes */
   transition: background-color 0.3s ease, color 0.3s ease;
@@ -61,4 +63,11 @@
   --shelf-texture: url('/lovable-uploads/76a4e934-9979-4f17-9a6a-bbe647ea3836.png');
   --divider-bg-image: var(--shelf-texture);
   --page-bg: #f0e9e0;
+  --page-text-color: #333333;
+}
+
+/* Dark theme overrides */
+.dark {
+  --page-text-color: #f0f0f0;
+  --header-hover-bg: rgba(255, 255, 255, 0.15);
 }

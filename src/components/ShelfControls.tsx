@@ -15,7 +15,10 @@ const ShelfControls: React.FC = () => {
         variant="ghost" 
         size="icon" 
         className="bg-white/90 hover:bg-white text-gray-700"
-        onClick={openCustomizationModal}
+        onClick={() => {
+          console.log("Opening customization modal");
+          openCustomizationModal();
+        }}
       >
         <Palette className="h-4 w-4" />
       </Button>

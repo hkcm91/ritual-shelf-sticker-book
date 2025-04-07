@@ -42,6 +42,11 @@ const Index = () => {
   const shelvesData = shelves as Record<string, ShelfData>;
   const currentShelf = activeShelfId ? shelvesData[activeShelfId] : null;
   
+  // Add console logs for debugging
+  useEffect(() => {
+    console.log("Customization modal state:", ui?.isCustomizationModalOpen);
+  }, [ui?.isCustomizationModalOpen]);
+  
   return (
     <div 
       className="min-h-screen flex flex-col"
@@ -80,6 +85,7 @@ const Index = () => {
       <CustomizationModal 
         open={ui?.isCustomizationModalOpen || false} 
         onOpenChange={(open) => {
+          console.log("Customization modal onOpenChange:", open);
           if (open) {
             openCustomizationModal();
           } else {

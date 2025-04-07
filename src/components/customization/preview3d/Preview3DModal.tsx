@@ -28,6 +28,7 @@ const Preview3DModal: React.FC<Preview3DModalProps> = ({ open, onOpenChange }) =
           minWidth: isFullscreen ? '95vw' : 'auto',
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.45)'
         }}
+        hideCloseButton={true}
       >
         <motion.div
           initial={{ opacity: 0 }}

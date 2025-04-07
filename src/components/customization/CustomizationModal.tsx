@@ -3,12 +3,9 @@ import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
-  DialogClose,
 } from "@/components/ui/dialog";
 import { useBookshelfStore } from "@/store/bookshelfStore";
 import { toast } from 'sonner';
-import { AnimatePresence } from "framer-motion";
-import { AnimatedContainer } from './animations/ModalAnimations';
 import ModalHeader from './modal/ModalHeader';
 import PreviewSection from './modal/PreviewSection';
 import ContentSection from './modal/ContentSection';
@@ -74,11 +71,12 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
           minWidth: isFullscreen ? '95vw' : 'auto',
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.45)'
         }}
+        hideCloseButton={true}
       >
         {/* Background subtle animation */}
         <ModalBackground />
         
-        <AnimatedContainer className="relative z-10 flex flex-col h-full">
+        <div className="relative z-10 flex flex-col h-full">
           <ModalHeader 
             isFullscreen={isFullscreen} 
             toggleFullscreen={toggleFullscreen} 
@@ -95,7 +93,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
             handleSave={handleSave} 
             handleReset={handleReset} 
           />
-        </AnimatedContainer>
+        </div>
       </DialogContent>
     </Dialog>
   );

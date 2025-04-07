@@ -58,10 +58,12 @@ export const createUISlice: StateCreator<
   },
   
   openCustomizationModal: () => {
+    console.log("Opening customization modal in UI slice");
     set({ isCustomizationModalOpen: true });
   },
   
   closeCustomizationModal: () => {
+    console.log("Closing customization modal in UI slice");
     set({ isCustomizationModalOpen: false });
   }
 });

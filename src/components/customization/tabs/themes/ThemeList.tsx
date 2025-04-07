@@ -26,7 +26,7 @@ const ThemeList: React.FC<ThemeListProps> = ({
 }) => {
   // Helper function to get display name
   const getDisplayName = (themeName: string): string => {
-    if (themeName === 'custom') return "Custom Theme";
+    if (themeName === 'custom') return "Your Custom Theme";
     
     const isValid = isValidTheme(themeName);
     const theme = isValid ? themes[themeName as keyof typeof themes] : themes.default;
@@ -40,56 +40,78 @@ const ThemeList: React.FC<ThemeListProps> = ({
     return !nonDeletableThemes.includes(themeName);
   };
   
+  // Container and items animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.08,
+        delayChildren: 0.1
+      }
+    }
+  };
+  
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 260,
+        damping: 20
+      }
+    }
+  };
+  
   return (
     <RadioGroup 
       value={activeTheme || 'default'} 
       onValueChange={(value) => onThemeSelect(value as ThemeName)}
-      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+      className="theme-list-container"
     >
-      {/* Theme variants with staggered animation */}
-      {availableThemes.map((themeName, index) => (
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5"
+      >
+        {/* Theme variants with staggered animation */}
+        {availableThemes.map((themeName) => (
+          <motion.div
+            key={themeName}
+            variants={itemVariants}
+            className="card-3d-effect"
+          >
+            <ThemeCard
+              themeName={themeName}
+              displayName={getDisplayName(themeName)}
+              theme={isValidTheme(themeName) ? themes[themeName as keyof typeof themes] : themes.default}
+              isActive={activeTheme === themeName}
+              isLoading={isSelecting === themeName}
+              isDeletable={isDeletableTheme(themeName)}
+              onSelect={onThemeSelect}
+              onDelete={onThemeDelete}
+            />
+          </motion.div>
+        ))}
+        
+        {/* Add Custom Theme option */}
         <motion.div
-          key={themeName}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ 
-            duration: 0.3, 
-            delay: 0.05 * index,
-            ease: "easeOut"
-          }}
+          variants={itemVariants}
+          className="card-3d-effect"
         >
           <ThemeCard
-            themeName={themeName}
-            displayName={getDisplayName(themeName)}
-            theme={isValidTheme(themeName) ? themes[themeName as keyof typeof themes] : themes.default}
-            isActive={activeTheme === themeName}
-            isLoading={isSelecting === themeName}
-            isDeletable={isDeletableTheme(themeName)}
+            themeName="custom"
+            displayName="Your Custom Theme"
+            theme={themes.custom}
+            isActive={activeTheme === 'custom'}
+            isLoading={isSelecting === 'custom'}
+            isDeletable={false}
             onSelect={onThemeSelect}
-            onDelete={onThemeDelete}
           />
         </motion.div>
-      ))}
-      
-      {/* Add Custom Theme option */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ 
-          duration: 0.3, 
-          delay: 0.05 * availableThemes.length,
-          ease: "easeOut"
-        }}
-      >
-        <ThemeCard
-          themeName="custom"
-          displayName="Custom Theme"
-          theme={themes.custom}
-          isActive={activeTheme === 'custom'}
-          isLoading={isSelecting === 'custom'}
-          isDeletable={false}
-          onSelect={onThemeSelect}
-        />
       </motion.div>
     </RadioGroup>
   );

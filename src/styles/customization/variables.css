@@ -1,3 +1,4 @@
+
 /* Base customization variables */
 :root {
   /* Page */
@@ -49,8 +50,50 @@
   --header-text-color: #ffffff;
   --header-hover-bg: rgba(255, 255, 255, 0.1);
 
-  /* Transitions for smoother theme changes */
-  transition: background-color 0.3s ease, color 0.3s ease;
+  /* Enhanced transitions for smoother theme changes */
+  transition: background-color 0.5s cubic-bezier(0.19, 1, 0.22, 1), 
+              color 0.4s cubic-bezier(0.19, 1, 0.22, 1),
+              border-color 0.4s cubic-bezier(0.19, 1, 0.22, 1),
+              box-shadow 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+/* Magic sparkles animation */
+@keyframes magic-sparkles {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+.magic-sparkles {
+  position: relative;
+}
+
+.magic-sparkles::before,
+.magic-sparkles::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-image: 
+    radial-gradient(circle, #fff 10%, transparent 70%),
+    radial-gradient(circle, #fff 10%, transparent 70%);
+  background-position: 0 0, 5px 5px;
+  background-size: 10px 10px;
+  border-radius: 50%;
+  animation: magic-sparkles 1.5s infinite;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.magic-sparkles::before {
+  top: -5px;
+  left: -5px;
+}
+
+.magic-sparkles::after {
+  bottom: -5px;
+  right: -5px;
+  animation-delay: 0.5s;
 }
 
 /* Extra small text size */
@@ -104,6 +147,12 @@
   height: 1.25rem;
   border-radius: 50%;
   border: 1px solid var(--border);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.color-preview:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 8px rgba(0,0,0,0.2);
 }
 
 .customizer-card {
@@ -111,11 +160,13 @@
   border-radius: 0.5rem;
   border: 1px solid var(--border);
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+  transform-style: preserve-3d;
 }
 
 .customizer-card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
 }
 
 /* Dialog size adjustment for better usability */
@@ -128,4 +179,74 @@
 .customizer-dialog-content {
   max-height: calc(90vh - 6rem);
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,215,0,0.2) transparent;
+}
+
+/* Custom scrollbar styling */
+.customizer-dialog-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.customizer-dialog-content::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.1);
+  border-radius: 3px;
+}
+
+.customizer-dialog-content::-webkit-scrollbar-thumb {
+  background-color: rgba(255,215,0,0.2);
+  border-radius: 3px;
+  border: 1px solid rgba(255,215,0,0.1);
+}
+
+.customizer-dialog-content::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255,215,0,0.3);
+}
+
+/* Theme selection micro-animation */
+.theme-selection {
+  transform-origin: center;
+  transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.theme-selection:hover {
+  transform: scale(1.03);
+}
+
+.theme-selection:active {
+  transform: scale(0.97);
+  transition: all 0.1s ease;
+}
+
+/* Game-like glow effects */
+.magical-glow {
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+  animation: magical-pulse 2s infinite alternate;
+}
+
+@keyframes magical-pulse {
+  0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
+  100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); }
+}
+
+/* Button hover effect */
+.magical-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.magical-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transform: translateX(-100%);
+}
+
+.magical-btn:hover::after {
+  transition: transform 0.6s ease;
+  transform: translateX(50%);
 }

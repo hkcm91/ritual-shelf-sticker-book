@@ -1,8 +1,8 @@
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Info } from "lucide-react";
+import { Info, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { ThemeName } from '@/themes';
 import CurrentThemeDisplay from './themes/CurrentThemeDisplay';
@@ -18,27 +18,34 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 const ThemesTab: React.FC = () => {
   const { activeTheme, setActiveTheme, themes, availableThemes, loadSavedTheme } = useTheme();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isSelecting, setIsSelecting] = useState<string | null>(null);
   const [themeToDelete, setThemeToDelete] = useState<ThemeName | null>(null);
+  const [showThemeAppliedEffect, setShowThemeAppliedEffect] = useState(false);
 
   // Function to handle theme refresh/reload with error handling
   const handleRefreshTheme = useCallback(() => {
     setIsRefreshing(true);
     try {
       loadSavedTheme();
-      toast.success("Theme refreshed", {
+      toast.success("Magical themes refreshed", {
         icon: "🔄",
+        style: {
+          background: "linear-gradient(to right, #614385, #516395)",
+          color: "white",
+          border: "1px solid rgba(255,255,255,0.1)",
+        }
       });
     } catch (error) {
       console.error("Error refreshing theme:", error);
-      toast.error("Failed to refresh theme");
+      toast.error("Failed to refresh themes");
     } finally {
-      setTimeout(() => setIsRefreshing(false), 500); // Add small delay for UI feedback
+      // Add small delay for UI feedback
+      setTimeout(() => setIsRefreshing(false), 700);
     }
   }, [loadSavedTheme]);
 
@@ -52,12 +59,18 @@ const ThemesTab: React.FC = () => {
       if (setActiveTheme) {
         console.log("Selecting theme:", value);
         setActiveTheme(value);
+        setShowThemeAppliedEffect(true);
         
         // Add success toast with animation
         toast.success(`Theme changed to ${themes[value]?.name || "Custom"}`, {
           icon: "✨",
-          duration: 2000,
+          duration: 3000,
           position: "bottom-center",
+          style: {
+            background: "linear-gradient(to right, #614385, #516395)",
+            color: "white",
+            border: "1px solid rgba(255,255,255,0.1)",
+          }
         });
       }
     } catch (error) {
@@ -65,7 +78,11 @@ const ThemesTab: React.FC = () => {
       toast.error("Failed to select theme");
     } finally {
       // Add delay before allowing new selections
-      setTimeout(() => setIsSelecting(null), 800);
+      setTimeout(() => {
+        setIsSelecting(null);
+        // Hide theme applied effect after a delay
+        setTimeout(() => setShowThemeAppliedEffect(false), 1000);
+      }, 800);
     }
   }, [setActiveTheme, activeTheme, isSelecting, themes]);
 
@@ -97,6 +114,11 @@ const ThemesTab: React.FC = () => {
 
       toast.success(`Theme "${themeToDelete}" removed`, {
         icon: "🗑️",
+        style: {
+          background: "linear-gradient(to right, #614385, #516395)",
+          color: "white",
+          border: "1px solid rgba(255,255,255,0.1)",
+        }
       });
       
       // In a real application, we would delete the theme file from the server here
@@ -116,17 +138,47 @@ const ThemesTab: React.FC = () => {
   const isValidTheme = useCallback((themeName: string): boolean => {
     return themeName === 'custom' || !!themes[themeName as keyof typeof themes];
   }, [themes]);
+  
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        duration: 0.4,
+        ease: [0.165, 0.84, 0.44, 1],
+        when: "beforeChildren",
+        staggerChildren: 0.1
+      }
+    }
+  };
+  
+  const itemVariants = {
+    hidden: { opacity: 0, y: 15 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        duration: 0.3,
+        ease: [0.165, 0.84, 0.44, 1]
+      }
+    }
+  };
 
   return (
     <motion.div 
       className="space-y-6"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
     >
-      <div>
-        <div className="flex justify-between items-center mb-2">
-          <h3 className="text-lg font-medium">Theme Collection</h3>
+      <motion.div variants={itemVariants}>
+        <div className="flex justify-between items-center mb-3">
+          <h3 className="text-lg font-medium flex items-center gap-1.5">
+            <span>Theme Collection</span>
+            <Sparkles className="h-4 w-4 text-amber-400" />
+          </h3>
           <RefreshThemeButton 
             isRefreshing={isRefreshing} 
             onRefresh={handleRefreshTheme} 
@@ -137,19 +189,18 @@ const ThemesTab: React.FC = () => {
           Choose a magical theme for your bookshelf
         </p>
         
-        <Alert variant="default" className="mb-4 border-amber-200/30 bg-amber-50/10">
+        <Alert variant="default" className="mb-5 border-amber-200/30 bg-amber-50/10 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-amber-300/10 to-amber-500/5 opacity-30" />
           <Info className="h-4 w-4 text-amber-500" />
-          <AlertDescription className="text-muted-foreground">
+          <AlertDescription className="text-muted-foreground relative z-10">
             Changes made in other tabs are saved as your "Custom" theme.
             You can always return to a preset theme using the cards below.
           </AlertDescription>
         </Alert>
         
         <motion.div 
-          className="theme-preview-grid grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
+          className="theme-preview-grid grid grid-cols-1 md:grid-cols-2 gap-5 mb-6"
+          variants={itemVariants}
         >
           {activeTheme && (
             <CurrentThemeDisplay 
@@ -160,9 +211,8 @@ const ThemesTab: React.FC = () => {
         </motion.div>
         
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          variants={itemVariants}
+          className="relative"
         >
           <ThemeList
             activeTheme={activeTheme as ThemeName}
@@ -173,8 +223,21 @@ const ThemesTab: React.FC = () => {
             onThemeDelete={handleThemeDelete}
             isValidTheme={isValidTheme}
           />
+          
+          {/* Theme applied flash effect */}
+          <AnimatePresence>
+            {showThemeAppliedEffect && (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.7 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+                className="absolute inset-0 bg-gradient-to-r from-amber-500/10 via-amber-500/20 to-amber-500/10 pointer-events-none z-50 rounded-lg"
+              />
+            )}
+          </AnimatePresence>
         </motion.div>
-      </div>
+      </motion.div>
 
       {/* Confirmation Dialog for Theme Deletion */}
       <AlertDialog 
@@ -183,9 +246,9 @@ const ThemesTab: React.FC = () => {
       >
         <AlertDialogContent className="border-amber-200/50 bg-gradient-to-b from-slate-900/90 to-slate-800/90 text-slate-100">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-amber-100">Delete Theme</AlertDialogTitle>
+            <AlertDialogTitle className="text-amber-100">Delete Magical Theme</AlertDialogTitle>
             <AlertDialogDescription className="text-slate-300">
-              Are you sure you want to delete this theme? This action cannot be undone.
+              Are you sure you want to delete this enchanted theme? This spell cannot be undone.
               {themeToDelete === activeTheme && (
                 <p className="mt-2 font-semibold text-red-400">
                   This is your current active theme. Deleting it will switch you to the default theme.

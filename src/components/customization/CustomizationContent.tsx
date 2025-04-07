@@ -1,63 +1,19 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Tabs } from "@/components/ui/tabs";
 import TabsList from './tabs/navigation/TabsList';
 import TabsContent from './tabs/navigation/TabsContent';
 import ActionButtons from './ActionButtons';
 import ErrorBoundary from '@/components/ErrorBoundary';
-import { useBookshelfStore } from '@/store/bookshelfStore';
-import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import CustomizationLoader from './layout/CustomizationLoader';
+import useCustomizationLoader from './hooks/useCustomizationLoader';
 
 const CustomizationContent: React.FC = () => {
-  const { loadCustomization } = useBookshelfStore();
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
-  
-  useEffect(() => {
-    // Load customization when component mounts - only once
-    const loadSettings = async () => {
-      try {
-        setIsLoading(true);
-        await loadCustomization();
-        setHasError(false);
-      } catch (error) {
-        console.error('Failed to load customization:', error);
-        toast.error('Could not load customization settings');
-        setHasError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    loadSettings();
-    // Important: Add empty dependency array to prevent infinite calls
-  }, []);
-  
-  // Function to handle error boundary reset
-  const handleErrorReset = () => {
-    // Reload customization when recovering from error
-    setIsLoading(true);
-    try {
-      loadCustomization();
-      setHasError(false);
-      toast.success('Settings reloaded successfully');
-    } catch (error) {
-      console.error('Failed to reload customization:', error);
-      toast.error('Failed to reload customization settings');
-      setHasError(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // Use the custom hook for loading state management
+  const { isLoading, hasError, handleErrorReset } = useCustomizationLoader();
   
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-        <span className="ml-2 text-muted-foreground">Loading customization settings...</span>
-      </div>
-    );
+    return <CustomizationLoader />;
   }
   
   return (

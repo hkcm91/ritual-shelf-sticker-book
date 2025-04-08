@@ -34,23 +34,28 @@ export const LibraryDeleteDialog: React.FC<LibraryDeleteDialogProps> = ({
           <Button 
             variant="outline" 
             onClick={onClose}
-            className="border-amber-700/30 text-amber-200 hover:bg-amber-950/30"
+            className="border-amber-700/30 text-amber-200 hover:bg-amber-950/30 transition-all duration-300"
           >
             Cancel
           </Button>
           <Button 
             onClick={onDelete}
-            className="bg-gradient-to-b from-red-700 to-red-800 text-red-100 hover:from-red-600 hover:to-red-700"
+            className="bg-gradient-to-b from-red-600 to-red-800 text-white hover:from-red-500 hover:to-red-700 transition-all duration-300 hover:shadow-lg"
           >
             Delete Library
           </Button>
         </>
       }
     >
-      <div className="space-y-4 p-2">
-        <p className="text-amber-100">
-          Are you sure you want to delete "{currentLibrary?.name}"? This action cannot be undone and all items in this library will be permanently removed.
-        </p>
+      <div className="space-y-4 p-4">
+        <div className="p-4 bg-red-950/20 border border-red-800/30 rounded-lg">
+          <p className="text-amber-100">
+            Are you sure you want to delete <span className="font-bold">"{currentLibrary?.name}"</span>?
+          </p>
+          <p className="text-red-300 mt-2 text-sm">
+            This action cannot be undone and all items in this library will be permanently removed.
+          </p>
+        </div>
       </div>
     </PopupWindow>
   );

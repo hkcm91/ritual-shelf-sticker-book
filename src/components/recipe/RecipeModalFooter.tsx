@@ -20,7 +20,7 @@ const RecipeModalFooter: React.FC<RecipeModalFooterProps> = ({
         type="button" 
         variant="outline" 
         onClick={onClose}
-        className="border-amber-300/50 text-amber-700 hover:bg-amber-50/50"
+        className="border-amber-200 bg-white text-amber-800 hover:bg-amber-50"
       >
         Cancel
       </Button>
@@ -31,7 +31,7 @@ const RecipeModalFooter: React.FC<RecipeModalFooterProps> = ({
             type="button"
             variant="ghost"
             onClick={() => setActiveTab(activeTab === 'ingredients' ? 'details' : 'ingredients')}
-            className="text-amber-700"
+            className="text-amber-800"
           >
             <ChevronLeft className="h-4 w-4 mr-1" />
             Back
@@ -51,7 +51,7 @@ const RecipeModalFooter: React.FC<RecipeModalFooterProps> = ({
           <Button
             type="submit"
             form="recipe-form"
-            className="bg-green-600 hover:bg-green-700 text-white"
+            className="bg-amber-500 hover:bg-amber-600 text-white"
           >
             <Save className="h-4 w-4 mr-1" />
             Save Recipe

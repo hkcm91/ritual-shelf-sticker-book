@@ -13,11 +13,11 @@ const RowControls: React.FC = () => {
     shelves,
   } = useBookshelfStore();
   
-  const shelvesData = shelves || {};
-  const activeShelf = activeShelfId ? shelvesData[activeShelfId] : null;
+  const activeShelf = activeShelfId ? shelves[activeShelfId] : null;
   
   const handleAddRow = () => {
     if (activeShelfId) {
+      console.log("Adding row for shelf:", activeShelfId);
       addRow();
       toast.success("Row added successfully");
     } else {
@@ -27,6 +27,7 @@ const RowControls: React.FC = () => {
   
   const handleRemoveRow = () => {
     if (activeShelfId && activeShelf && activeShelf.rows > 1) {
+      console.log("Removing row for shelf:", activeShelfId);
       removeRow();
       toast.success("Row removed successfully");
     } else {

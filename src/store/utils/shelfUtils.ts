@@ -17,44 +17,40 @@ export const saveActiveShelfToStorage = (id: string): Promise<boolean> => {
 };
 
 /**
- * Gets books that would be affected by removing a row
+ * Finds books in the last row of a shelf
  */
 export const getBooksInLastRow = (
-  activeShelfId: string, 
-  shelf: ShelfData, 
-  books: BooksSlice['books']
+  shelfId: string,
+  shelf: import('../types').ShelfData,
+  books: Record<string, import('../types').BookData>
 ): string[] => {
-  // Calculate which positions will be removed
-  const lastRowPositions = [];
-  for (let i = 0; i < shelf.columns; i++) {
-    lastRowPositions.push((shelf.rows - 1) * shelf.columns + i);
-  }
+  const { rows, columns } = shelf;
+  const lastRowStart = (rows - 1) * columns;
   
-  // Find books in the last row
   return Object.keys(books).filter(bookId => {
     const book = books[bookId];
-    return book.shelfId === activeShelfId && lastRowPositions.includes(book.position);
+    return book.shelfId === shelfId && 
+           !book.hidden &&
+           book.position >= lastRowStart;
   });
 };
 
 /**
- * Gets books that would be affected by removing a column
+ * Finds books in the last column of a shelf
  */
 export const getBooksInLastColumn = (
-  activeShelfId: string, 
-  shelf: ShelfData, 
-  books: BooksSlice['books']
+  shelfId: string,
+  shelf: import('../types').ShelfData,
+  books: Record<string, import('../types').BookData>
 ): string[] => {
-  // Find books in the last column of each row
-  const lastColumnPositions = [];
-  for (let row = 0; row < shelf.rows; row++) {
-    lastColumnPositions.push(row * shelf.columns + (shelf.columns - 1));
-  }
+  const { columns } = shelf;
+  const lastColumnIndex = columns - 1;
   
-  // Find books in the last column
   return Object.keys(books).filter(bookId => {
     const book = books[bookId];
-    return book.shelfId === activeShelfId && lastColumnPositions.includes(book.position);
+    return book.shelfId === shelfId && 
+           !book.hidden &&
+           book.position % columns === lastColumnIndex;
   });
 };
 

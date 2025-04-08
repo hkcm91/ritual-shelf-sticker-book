@@ -16,6 +16,30 @@ const DisplayOptionsSection: React.FC<DisplayOptionsSectionProps> = ({
   onColumnsChange,
   getThemeColors
 }) => {
+  const handleRowsDecrease = () => {
+    if (currentLibrary && currentLibrary.rows > 1) {
+      onRowsChange(currentLibrary.rows - 1);
+    }
+  };
+
+  const handleRowsIncrease = () => {
+    if (currentLibrary && currentLibrary.rows < 5) {
+      onRowsChange(currentLibrary.rows + 1);
+    }
+  };
+
+  const handleColumnsDecrease = () => {
+    if (currentLibrary && currentLibrary.columns > 1) {
+      onColumnsChange(currentLibrary.columns - 1);
+    }
+  };
+
+  const handleColumnsIncrease = () => {
+    if (currentLibrary && currentLibrary.columns < 8) {
+      onColumnsChange(currentLibrary.columns + 1);
+    }
+  };
+
   return (
     <div className="popup-section bg-amber-950/20 p-5 rounded-lg border border-amber-800/30">
       <h3 className="popup-section-title text-lg font-semibold mb-3 flex items-center gap-2">
@@ -30,12 +54,8 @@ const DisplayOptionsSection: React.FC<DisplayOptionsSectionProps> = ({
           <div className="flex rounded-md overflow-hidden border border-amber-700/30">
             <button 
               className="px-3.5 py-2.5 bg-amber-900/40 text-amber-100 hover:bg-amber-800/40 transition-colors"
-              onClick={() => {
-                const currentRows = currentLibrary?.rows || 2;
-                if (currentRows > 1) {
-                  onRowsChange(currentRows - 1);
-                }
-              }}
+              onClick={handleRowsDecrease}
+              disabled={!currentLibrary || currentLibrary.rows <= 1}
             >
               −
             </button>
@@ -55,12 +75,8 @@ const DisplayOptionsSection: React.FC<DisplayOptionsSectionProps> = ({
             />
             <button 
               className="px-3.5 py-2.5 bg-amber-900/40 text-amber-100 hover:bg-amber-800/40 transition-colors"
-              onClick={() => {
-                const currentRows = currentLibrary?.rows || 2;
-                if (currentRows < 5) {
-                  onRowsChange(currentRows + 1);
-                }
-              }}
+              onClick={handleRowsIncrease}
+              disabled={!currentLibrary || currentLibrary.rows >= 5}
             >
               +
             </button>
@@ -74,12 +90,8 @@ const DisplayOptionsSection: React.FC<DisplayOptionsSectionProps> = ({
           <div className="flex rounded-md overflow-hidden border border-amber-700/30">
             <button 
               className="px-3.5 py-2.5 bg-amber-900/40 text-amber-100 hover:bg-amber-800/40 transition-colors"
-              onClick={() => {
-                const currentColumns = currentLibrary?.columns || 4;
-                if (currentColumns > 1) {
-                  onColumnsChange(currentColumns - 1);
-                }
-              }}
+              onClick={handleColumnsDecrease}
+              disabled={!currentLibrary || currentLibrary.columns <= 1}
             >
               −
             </button>
@@ -99,12 +111,8 @@ const DisplayOptionsSection: React.FC<DisplayOptionsSectionProps> = ({
             />
             <button 
               className="px-3.5 py-2.5 bg-amber-900/40 text-amber-100 hover:bg-amber-800/40 transition-colors"
-              onClick={() => {
-                const currentColumns = currentLibrary?.columns || 4;
-                if (currentColumns < 8) {
-                  onColumnsChange(currentColumns + 1);
-                }
-              }}
+              onClick={handleColumnsIncrease}
+              disabled={!currentLibrary || currentLibrary.columns >= 8}
             >
               +
             </button>

@@ -13,11 +13,11 @@ const ColumnControls: React.FC = () => {
     shelves,
   } = useBookshelfStore();
   
-  const shelvesData = shelves || {};
-  const activeShelf = activeShelfId ? shelvesData[activeShelfId] : null;
+  const activeShelf = activeShelfId ? shelves[activeShelfId] : null;
   
   const handleAddColumn = () => {
     if (activeShelfId) {
+      console.log("Adding column for shelf:", activeShelfId);
       addColumn();
       toast.success("Column added successfully");
     } else {
@@ -27,6 +27,7 @@ const ColumnControls: React.FC = () => {
   
   const handleRemoveColumn = () => {
     if (activeShelfId && activeShelf && activeShelf.columns > 1) {
+      console.log("Removing column for shelf:", activeShelfId);
       removeColumn();
       toast.success("Column removed successfully");
     } else {

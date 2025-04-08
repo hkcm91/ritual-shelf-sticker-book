@@ -49,7 +49,7 @@ export const useBookSlot = ({
     onFileSelect
   });
   
-  // Use drag and drop hook
+  // Use drag and drop hook - now correctly passing setPosition2D
   const {
     handleStickerMouseDown,
     handleStickerMouseMove,
@@ -62,7 +62,7 @@ export const useBookSlot = ({
     setDragStart
   } = useDragAndDrop({
     position,
-    setPosition2D,
+    setPosition2D,  // Make sure this is passed
     book,
     slotType
   });

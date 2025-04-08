@@ -12,6 +12,7 @@ import './styles/customization/index.css'
 import Index from './pages/Index.tsx';
 import Auth from './pages/Auth.tsx';
 import NotFound from './pages/NotFound.tsx';
+import WidgetLauncher from './pages/WidgetLauncher.tsx';
 
 const router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
       {
         path: "auth",
         element: <Auth />,
+      },
+      {
+        path: "widgets",
+        element: <WidgetLauncher />,
       }
     ],
   },

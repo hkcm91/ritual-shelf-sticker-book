@@ -1,9 +1,16 @@
 
 # Virtual Bookshelf App
 
-A fully interactive virtual bookshelf application that lets you organize your books, add notes, track reading progress, and customize your shelves.
+A fully interactive virtual bookshelf application that lets you organize your books, add notes, track reading progress, and customize your shelves. Now featuring a Widget Launcher for different types of collections.
 
 ## Features
+
+### Library Types
+- **Book Library**: Track and organize your book collection
+- **Widget Launcher**: Access specialized sticker books for different content types
+- **Notebook Library** (Coming Soon): Store and organize your notes and journals
+- **Recipe Library** (Coming Soon): Collect recipes from online and family traditions
+- **Music Library** (Coming Soon): Track your favorite songs and playlists
 
 ### Book Management
 - Upload book covers using drag and drop or file selection
@@ -52,6 +59,11 @@ A fully interactive virtual bookshelf application that lets you organize your bo
 3. Fill in book details in the modal that appears
 4. Track your reading progress using the progress slider
 
+### Using the Widget Launcher
+1. Click on the "Widget Launcher" button in the header
+2. Select the type of library you want to work with
+3. Each library type has specialized features for its content
+
 ### Adding Stickers/Decorations
 1. Click on any empty slot with the "Sticker" tab selected
 2. Upload an image or Lottie JSON file, or add from URL
@@ -76,6 +88,12 @@ A fully interactive virtual bookshelf application that lets you organize your bo
 
 ### Common Issues and Solutions
 
+#### Empty Slots Not Displaying Controls
+- Check console logs for errors related to empty slots
+- Verify CSS classes for slot controls (`SlotControls.tsx`)
+- Ensure z-index values are correct in the CSS
+- Look for errors in the EmptySlot component 
+
 #### Zoom Controls Not Working
 - Check if `zoomSlice.ts` is properly integrated in the bookshelf store
 - Verify that the ZoomControls component is rendering properly
@@ -86,15 +104,15 @@ A fully interactive virtual bookshelf application that lets you organize your bo
 - Verify row and column configuration in the active shelf settings
 - Check console logs for any errors in rendering grid components
 
-#### Empty Slots Not Displaying Controls
-- Review the EmptySlot component implementation
-- Verify CSS classes and styling for slot controls
-- Check z-index values for overlapping elements that might hide controls
-
 #### Drag and Drop Issues
 - Inspect the useDragAndDrop hook implementation
 - Check event handlers in BookSlot and related components
 - Verify proper event propagation and default prevention
+
+#### Widget Launcher Navigation Issues
+- Check the router configuration in main.tsx
+- Verify that the Link components have correct paths
+- Inspect NavigationMenu styling in the header component
 
 ### Using Browser DevTools
 1. Open browser developer tools (F12 or Ctrl+Shift+I)
@@ -115,6 +133,13 @@ console.log("[FunctionName] Called with args:", args);
 // State change logs
 console.log("[StateName] Changed from", prevState, "to", newState);
 ```
+
+### Protected Core Functionality
+The codebase contains protected core functionality that should not be modified:
+- **DO NOT MODIFY** `zoomSlice.ts` as it contains essential zoom functionality
+- **DO NOT MODIFY** drag and drop hooks as they are critical for shelf interaction
+- **DO NOT MODIFY** the bookshelf grid layout rendering
+- **DO NOT MODIFY** core theme application logic
 
 ## Development Notes
 

@@ -1,9 +1,18 @@
 
 import React, { useEffect, useState } from 'react';
+import { Book, NotebookPen, Recipe, Music } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import BookSearchDrawer from '../BookSearchDrawer';
 import { useIsMobile } from '@/hooks/use-mobile';
 import HeaderAuthButton from '../Header';
 import SettingsDrawer from '../settings/SettingsDrawer';
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
 
 const Header: React.FC = () => {
   const isMobile = useIsMobile();
@@ -32,13 +41,64 @@ const Header: React.FC = () => {
       }}
     >
       <div className="flex items-center gap-4">
-        {/* Book search drawer moved to the left side */}
+        {/* Book search drawer */}
         <BookSearchDrawer />
         
-        {/* Collections button temporarily removed */}
+        {!isMobile && (
+          <NavigationMenu>
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger 
+                  className="navigation-menu-item flex items-center gap-1.5 h-9 px-4 text-[color:var(--header-text-color,white)] hover:text-amber-200"
+                >
+                  <Book className="h-4 w-4" />
+                  <span>Libraries</span>
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <div className="p-4 w-[300px] rounded-md collections-dropdown">
+                    <h3 className="text-amber-300/90 font-semibold mb-3 collections-title">Library Types</h3>
+                    
+                    <div className="space-y-2">
+                      <Link to="/" className="flex items-center gap-2 hover:bg-amber-800/30 px-3 py-2 rounded-md cursor-pointer text-amber-100">
+                        <Book className="h-4 w-4" />
+                        <span>Book Library</span>
+                      </Link>
+                      
+                      <Link to="/widgets" className="flex items-center gap-2 hover:bg-amber-800/30 px-3 py-2 rounded-md cursor-pointer text-amber-100">
+                        <NotebookPen className="h-4 w-4" />
+                        <span>Widget Launcher</span>
+                      </Link>
+                      
+                      {/* Placeholder for future library types */}
+                      <div className="flex items-center gap-2 text-amber-100/50 px-3 py-2 rounded-md">
+                        <Recipe className="h-4 w-4" />
+                        <span>Recipe Library (Coming Soon)</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 text-amber-100/50 px-3 py-2 rounded-md">
+                        <Music className="h-4 w-4" />
+                        <span>Music Library (Coming Soon)</span>
+                      </div>
+                    </div>
+                  </div>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
+        )}
       </div>
       
       <div className="flex items-center gap-3">
+        {/* Widget Launcher Button */}
+        <Link to="/widgets">
+          <button 
+            className="game-btn text-sm flex items-center gap-1.5 h-9 px-4 from-amber-900/40 to-amber-950/40 text-amber-100 border-amber-600/20"
+          >
+            <NotebookPen className="h-4 w-4" />
+            <span>Widget Launcher</span>
+          </button>
+        </Link>
+        
         {/* Settings Drawer */}
         <SettingsDrawer />
         

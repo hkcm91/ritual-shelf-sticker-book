@@ -41,7 +41,7 @@ const BookshelfGrid: React.FC = () => {
     
     // Mark as initialized to prevent future runs
     initializedRef.current = true;
-  }, []);
+  }, [shelves, initializeDefaultShelf]);
   
   // Get the current shelf data to access rows and columns
   const currentShelf = activeShelfId ? shelves[activeShelfId] : null;

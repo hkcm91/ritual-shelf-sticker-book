@@ -1,33 +1,32 @@
 
-import { useState } from 'react';
+import { useState, useCallback, MutableRefObject } from 'react';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 
 /**
  * Custom hook to handle touch gestures
+ * - Single touch for panning
  * - Pinch to zoom
- * - Touch drag to pan
  */
 export function useTouchGestures(
   scrollAreaRef: React.RefObject<HTMLElement>,
   updateDraggingState: (isDragging: boolean) => void,
   getScrollViewport: () => HTMLElement | undefined,
-  inertiaRef: React.MutableRefObject<{ x: number; y: number }>,
+  inertiaRef: MutableRefObject<{ x: number; y: number }>,
   applyInertia: () => void,
-  setStartPoint: (point: { x: number; y: number }) => void,
-  setLastPoint: (point: { x: number; y: number }) => void,
-  scrollPositionRef: React.MutableRefObject<{ x: number; y: number }>
+  setStartPoint: (point: { x: number, y: number }) => void,
+  setLastPoint: (point: { x: number, y: number }) => void,
+  scrollPositionRef: MutableRefObject<{ x: number; y: number }>
 ) {
-  const { zoomLevel, setZoomLevel } = useBookshelfStore();
-  
-  // For pinch-to-zoom on mobile
   const [touchState, setTouchState] = useState({
     initialDistance: 0,
     initialZoom: 1,
     isZooming: false,
   });
+  
+  const { zoomLevel, setZoomLevel } = useBookshelfStore();
 
   // Handle pinch to zoom on mobile
-  const handleTouchStart = (e: TouchEvent) => {
+  const handleTouchStart = useCallback((e: TouchEvent) => {
     if (e.touches.length === 2) {
       e.preventDefault();
       const distance = Math.hypot(
@@ -58,9 +57,9 @@ export function useTouchGestures(
         };
       }
     }
-  };
+  }, [getScrollViewport, scrollPositionRef, setLastPoint, setStartPoint, updateDraggingState, zoomLevel]);
 
-  const handleTouchMove = (e: TouchEvent) => {
+  const handleTouchMove = useCallback((e: TouchEvent) => {
     if (touchState.isZooming && e.touches.length === 2) {
       e.preventDefault();
       
@@ -80,29 +79,19 @@ export function useTouchGestures(
       const y = e.touches[0].clientY;
       
       // Calculate delta from start position
-      const currentStartPoint = { x: parseInt(x.toString()), y: parseInt(y.toString()) };
-      const deltaX = currentStartPoint.x - x;
-      const deltaY = currentStartPoint.y - y;
-      
-      // Calculate velocity for inertia
-      inertiaRef.current = {
-        x: inertiaRef.current.x - x,
-        y: inertiaRef.current.y - y
-      };
-      
-      // Update last position for next move
-      setLastPoint({ x, y });
-      
-      // Get scroll container and apply scroll
       const scrollViewport = getScrollViewport();
       if (scrollViewport) {
-        scrollViewport.scrollLeft = scrollPositionRef.current.x + deltaX;
-        scrollViewport.scrollTop = scrollPositionRef.current.y + deltaY;
+        // Update last position for next move
+        setLastPoint({ x, y });
+        
+        // Get scroll container and apply scroll
+        scrollViewport.scrollLeft = scrollPositionRef.current.x + (x - e.touches[0].clientX);
+        scrollViewport.scrollTop = scrollPositionRef.current.y + (y - e.touches[0].clientY);
       }
     }
-  };
+  }, [getScrollViewport, scrollPositionRef, setLastPoint, setZoomLevel, touchState]);
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = useCallback(() => {
     setTouchState({
       initialDistance: 0,
       initialZoom: 1,
@@ -115,12 +104,11 @@ export function useTouchGestures(
     if (Math.abs(inertiaRef.current.x) > 1 || Math.abs(inertiaRef.current.y) > 1) {
       applyInertia();
     }
-  };
+  }, [applyInertia, inertiaRef, updateDraggingState]);
 
   return {
     handleTouchStart,
     handleTouchMove,
-    handleTouchEnd,
-    touchState
+    handleTouchEnd
   };
 }

@@ -10,5 +10,6 @@ export function useDragGestures(options: DragGesturesOptions): DragHandlers {
   return useCoreDragGestures(options);
 }
 
-export { DragGesturesOptions, DragHandlers };
+// Use 'export type' for re-exporting types when 'isolatedModules' is enabled
+export type { DragGesturesOptions, DragHandlers };
 export * from './types';

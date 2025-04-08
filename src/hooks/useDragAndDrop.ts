@@ -31,10 +31,11 @@ export const useDragAndDrop = ({
   const [dragStart, setDragStart] = useState<Point | null>(null);
   const [isAltDrag, setIsAltDrag] = useState(false);
   
-  // We need to implement our own moveBook function since it doesn't exist in the store
+  // Implement moveBook locally since it doesn't exist in the store
   const moveBook = useCallback((bookId: string, position: number) => {
     if (!activeShelfId) return;
     
+    // We'll use updateBook from the store to achieve the same functionality
     updateBook(bookId, { position });
   }, [activeShelfId, updateBook]);
   

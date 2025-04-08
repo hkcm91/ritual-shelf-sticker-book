@@ -121,7 +121,7 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
     
     return slots;
   }, [rowIndex, columns, shelfStyling, shelfTexture]);
-  
+
   return (
     <div 
       className={`shelf-row flex flex-col w-full relative ${useRealisticStyle ? 'realistic-shelf' : ''}`}

@@ -1,31 +1,32 @@
 
 .book-slot.empty:hover {
-  background-color: var(--slot-empty-hover-bg);
+  background-color: var(--slot-empty-hover-bg, rgba(255, 255, 255, 0.1));
   box-shadow: 0 0 15px rgba(255, 180, 100, 0.15);
 }
 
 .add-book-button {
-  background-color: var(--slot-add-button-bg);
-  color: var(--slot-add-button-color);
+  background-color: var(--slot-add-button-bg, rgba(255, 255, 255, 0.1));
+  color: var(--slot-add-button-color, rgba(255, 255, 255, 0.8));
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   transition: all 0.25s ease;
 }
 
 .add-book-button:hover {
-  background-color: var(--slot-add-button-hover-bg);
+  background-color: var(--slot-add-button-hover-bg, rgba(255, 255, 255, 0.2));
   transform: translateY(-2px) scale(1.05);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 8px rgba(255, 180, 100, 0.2);
 }
 
 .slot-toggle-dot.inactive {
-  background-color: var(--slot-toggle-inactive-color);
-  border-color: var(--slot-toggle-border-color);
-  opacity: 0.4;
+  background-color: var(--slot-toggle-inactive-color, rgba(150, 150, 150, 0.5));
+  border-color: var(--slot-toggle-border-color, rgba(255, 255, 255, 0.3));
+  opacity: 0.5;
 }
 
 .slot-toggle-dot.active {
-  background-color: var(--slot-toggle-active-color);
-  box-shadow: 0 0 6px var(--slot-toggle-active-color);
+  background-color: var(--slot-toggle-active-color, rgba(100, 200, 255, 0.8));
+  box-shadow: 0 0 6px var(--slot-toggle-active-color, rgba(100, 200, 255, 0.8));
+  opacity: 1;
 }
 
 /* Ensure book slots maintain proper sizing */
@@ -46,14 +47,19 @@
   transform: translateY(-3px) scale(1.02);
 }
 
-/* Book slot toggle buttons - make them subtle */
+/* Book slot toggle buttons - make them visible */
 .book-slot .slot-type-toggle {
-  opacity: 0.2;
+  opacity: 0.7;
   transition: opacity 0.3s ease;
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
 }
 
 .book-slot:hover .slot-type-toggle {
-  opacity: 0.7;
+  opacity: 1;
 }
 
 /* Realistic book slot styling */
@@ -64,12 +70,12 @@
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.realistic-book-slot:empty {
+.realistic-book-slot.empty {
   background: linear-gradient(to right, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.02) 50%, rgba(0,0,0,0.05) 100%);
 }
 
 /* Add depth to the slot when empty */
-.realistic-book-slot:empty::before {
+.realistic-book-slot.empty::before {
   content: "";
   position: absolute;
   top: 0;

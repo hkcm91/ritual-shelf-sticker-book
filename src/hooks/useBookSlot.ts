@@ -1,5 +1,5 @@
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import { useDragAndDrop } from './useDragAndDrop';
 import { useFileHandler } from './useFileHandler';
@@ -7,14 +7,14 @@ import { useStickerPositioning } from './stickers/useStickerPositioning';
 
 export interface UseBookSlotProps {
   position: number;
-  slotType: "book" | "sticker";
+  slotType?: "book" | "sticker";
   onFileSelect?: (file: File) => void;
   onBookDelete?: (bookId: string) => void;
 }
 
 export const useBookSlot = ({ 
   position, 
-  slotType,
+  slotType = "book",
   onFileSelect,
   onBookDelete
 }: UseBookSlotProps) => {
@@ -44,7 +44,7 @@ export const useBookSlot = ({
   // Use the file handler hook
   const { fileInputRef, handleFileChange, handleClick } = useFileHandler({
     position,
-    slotType,
+    slotType: slotType || "book",
     onFileSelect
   });
   
@@ -62,9 +62,9 @@ export const useBookSlot = ({
     isAltDrag
   } = useDragAndDrop({
     position,
-    setPosition2D, // This was missing before
+    setPosition2D,
     book,
-    slotType
+    slotType: slotType || "book"
   });
   
   // Handle delete sticker

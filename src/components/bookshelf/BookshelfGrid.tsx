@@ -6,6 +6,7 @@ import { useThemeApplication } from '@/hooks/theme/useThemeApplication';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useIsMobile } from '@/hooks/use-mobile';
 import ZoomPanContainer from '@/components/ZoomPanContainer';
+import StickerCanvas from '../stickers/StickerCanvas';
 
 const BookshelfGrid: React.FC = () => {
   const activeShelfId = useBookshelfStore(state => state.activeShelfId);
@@ -76,6 +77,9 @@ const BookshelfGrid: React.FC = () => {
             <div className="bookshelf-rows relative z-10">
               {renderShelfRows}
             </div>
+            
+            {/* Sticker canvas for free-floating stickers */}
+            {activeShelfId && <StickerCanvas shelfId={activeShelfId} />}
           </div>
         </ZoomPanContainer>
         

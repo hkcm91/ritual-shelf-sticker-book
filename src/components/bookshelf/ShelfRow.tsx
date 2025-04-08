@@ -18,21 +18,18 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
   rowIndex,
   columns
 }) => {
-  // Use a properly typed selector function with shallow comparison
+  // Get state from bookshelf store with proper typing
   const {
     activeShelfId,
     activeShelf,
     shelfStyling,
     activeTheme
-  } = useBookshelfStore(
-    (state) => ({
-      activeShelfId: state.activeShelfId,
-      activeShelf: state.shelves[state.activeShelfId] as ShelfData,
-      shelfStyling: state.shelfStyling,
-      activeTheme: state.activeTheme
-    }),
-    shallow
-  );
+  } = useBookshelfStore((state: any) => ({
+    activeShelfId: state.activeShelfId,
+    activeShelf: state.shelves[state.activeShelfId] as ShelfData,
+    shelfStyling: state.shelfStyling,
+    activeTheme: state.activeTheme
+  }), shallow);
   
   // Determine if we should use realistic shelf styling
   const useRealisticStyle = activeTheme === 'default' || activeTheme === 'custom';

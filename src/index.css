@@ -1,97 +1,135 @@
 
-@import './styles/customization/index.css';
-@import './styles/customization/base-variables.css';
-@import './styles/customization/header.css';
-@import './styles/customization/shelves.css';
-@import './styles/customization/slots.css';
-@import './styles/customization/layout.css';
-@import './styles/customization/recipes.css';
-@import './styles/customization/controls.css';
-@import './styles/customization/dialogs.css';
-@import './styles/customization/animations.css';
-@import './styles/customization/typography.css';
-@import './styles/customization/ui-components.css';
-@import './styles/customization/responsive.css';
-@import './styles/customization/themes.css';
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 35 30% 95%;
+    --foreground: 20 14.3% 4.1%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
- 
+    --card-foreground: 20 14.3% 4.1%;
+
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
- 
-    --primary: 222.2 47.4% 11.2%;
+    --popover-foreground: 20 14.3% 4.1%;
+
+    --primary: 30 60% 50%;
     --primary-foreground: 210 40% 98%;
- 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
- 
+
+    --secondary: 12 40% 50%;
+    --secondary-foreground: 210 40% 98%;
+
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
- 
-    --accent: 210 40% 96.1%;
+
+    --accent: 24 67% 50%;
     --accent-foreground: 222.2 47.4% 11.2%;
- 
+
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
- 
+    --border: 20 5.9% 90%;
+    --input: 20 5.9% 90%;
+    --ring: 24 67% 50%;
+
     --radius: 0.5rem;
   }
- 
+
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 20 14.3% 10.2%;
     --foreground: 210 40% 98%;
- 
-    --card: 222.2 84% 4.9%;
+
+    --card: 20 14.3% 4.1%;
     --card-foreground: 210 40% 98%;
- 
-    --popover: 222.2 84% 4.9%;
+
+    --popover: 20 14.3% 4.1%;
     --popover-foreground: 210 40% 98%;
- 
-    --primary: 210 40% 98%;
+
+    --primary: 30 60% 50%;
     --primary-foreground: 222.2 47.4% 11.2%;
- 
-    --secondary: 217.2 32.6% 17.5%;
+
+    --secondary: 12 40% 50%;
     --secondary-foreground: 210 40% 98%;
- 
+
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
- 
-    --accent: 217.2 32.6% 17.5%;
+
+    --accent: 24 67% 50%;
     --accent-foreground: 210 40% 98%;
- 
+
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
- 
+
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --ring: 24 67% 50%;
   }
 }
- 
+
 @layer base {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
 }
 
-/* Global styling */
-.bookshelf-container {
-  margin-top: 2rem;
+@layer components {
+  .book-slot {
+    @apply relative w-20 h-32 sm:w-24 sm:h-36 md:w-28 md:h-40 xl:w-32 xl:h-48 
+           bg-transparent rounded-md 
+           flex items-center justify-center cursor-pointer transition-all;
+  }
+  
+  .book-slot.empty {
+    @apply hover:bg-gray-50/30;
+  }
+  
+  .book {
+    @apply w-[90%] h-[90%] rounded-sm animate-book-added;
+  }
+  
+  .progress-bar {
+    @apply absolute bottom-0 left-0 h-1 bg-green-500;
+  }
+  
+  .wood-shelf {
+    @apply relative w-full shadow-md;
+  }
+  
+  .bookshelf-wrapper {
+    @apply max-w-full overflow-x-auto;
+  }
+  
+  .bookshelf-container {
+    @apply w-max mx-auto transition-transform duration-200;
+  }
+  
+  /* New toggle container and dot styles */
+  .slot-toggle-container {
+    @apply absolute bottom-1 left-1/2 -translate-x-1/2;
+    @apply flex items-center gap-1;
+    @apply z-10;
+  }
+  
+  .book-toggle-dot,
+  .sticker-toggle-dot {
+    @apply w-2 h-2 rounded-full;
+    @apply bg-gray-200/50 border border-gray-300/50;
+    @apply cursor-pointer transition-colors duration-150;
+    @apply hover:bg-gray-300/60 hover:border-gray-400/60;
+  }
+  
+  .book-toggle-dot.active,
+  .sticker-toggle-dot.active {
+    @apply bg-gray-500/70 border-gray-600/70;
+  }
+  
+  @keyframes book-added {
+    0% { transform: translateY(20px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
 }

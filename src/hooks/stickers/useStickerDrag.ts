@@ -1,13 +1,23 @@
 
-import { useState, useCallback, useEffect } from 'react';
-import { useBookshelfStore } from '../../store/bookshelfStore';
+import { useState, useEffect, useCallback, RefObject } from 'react';
 
-interface UseStickerDragProps {
+export interface UseStickerDragProps {
   position: number;
-  bookId?: string; 
+  bookId?: string;
   initialPosition: { x: number, y: number };
-  setPosition2D: (position: { x: number, y: number }) => void;
-  defaultContainerSize: { width: number, height: number };
+  setPosition2D: (value: { x: number, y: number }) => void;
+  containerRef?: RefObject<HTMLDivElement>;
+  defaultContainerSize?: { width: number, height: number };
+  onDragStart?: () => void;
+  onDragEnd?: (position: { x: number, y: number }) => void;
+  clampPosition?: (x: number, y: number, isAlt: boolean) => { x: number, y: number };
+}
+
+export interface StickerDragState {
+  isDragging: boolean;
+  dragStart: { x: number, y: number };
+  isAltDrag: boolean;
+  containerSize: { width: number, height: number };
 }
 
 export const useStickerDrag = ({
@@ -15,121 +25,168 @@ export const useStickerDrag = ({
   bookId,
   initialPosition,
   setPosition2D,
-  defaultContainerSize
+  containerRef,
+  defaultContainerSize = { width: 150, height: 220 },
+  onDragStart,
+  onDragEnd,
+  clampPosition: customClampPosition
 }: UseStickerDragProps) => {
-  const { updateBook } = useBookshelfStore();
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [isAltDrag, setIsAltDrag] = useState(false);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [dragStart, setDragStart] = useState<{ x: number, y: number }>({ x: 0, y: 0 });
+  const [isAltDrag, setIsAltDrag] = useState<boolean>(false);
   const [containerSize, setContainerSize] = useState(defaultContainerSize);
-  
-  // Handle mouse down to start dragging
-  const handleStickerMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.button !== 0) return; // Only left mouse button
+
+  // Update container size when ref changes or on window resize
+  useEffect(() => {
+    if (!containerRef?.current) return;
     
-    // Stop propagation to prevent parent handlers from triggering
-    e.stopPropagation();
+    const updateContainerSize = () => {
+      const { width, height } = containerRef.current?.getBoundingClientRect() || defaultContainerSize;
+      setContainerSize({ width, height });
+    };
     
-    // Check if Alt key is pressed for "extended" dragging beyond container
-    setIsAltDrag(e.altKey);
+    updateContainerSize();
     
-    // Set initial mouse position
-    setIsDragging(true);
-    setDragStart({ x: e.clientX, y: e.clientY });
-  }, []);
-  
-  // Handle mouse move (only when dragging)
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isDragging) return;
+    window.addEventListener('resize', updateContainerSize);
+    return () => window.removeEventListener('resize', updateContainerSize);
+  }, [containerRef, defaultContainerSize]);
+
+  // Default clamp position function
+  const defaultClampPosition = useCallback((newX: number, newY: number, isAlt: boolean) => {
+    // Calculate standard boundaries
+    const stickerScale = 1; // You can make this dynamic if needed
+    const stickerWidth = containerSize.width * 0.8 * stickerScale;
+    const stickerHeight = containerSize.height * 0.8 * stickerScale;
     
-    // Calculate distance moved
-    const dx = e.clientX - dragStart.x;
-    const dy = e.clientY - dragStart.y;
+    let maxX = containerSize.width/2 - stickerWidth/4;
+    let maxY = containerSize.height/2 - stickerHeight/4;
+    let minX = -maxX;
+    let minY = -maxY;
     
-    // Calculate new position (with boundaries if not Alt dragging)
-    const newPos = calculateNewPosition(initialPosition, dx, dy, isAltDrag, containerSize);
-    
-    // Update position
-    setPosition2D(newPos);
-  }, [isDragging, dragStart, initialPosition, isAltDrag, containerSize, setPosition2D]);
-  
-  // Handle mouse up to end dragging
-  const handleMouseUp = useCallback(() => {
-    if (isDragging && bookId) {
-      // Save the new position to the store
-      updateBook(bookId, { position2D: initialPosition });
+    // If Alt key is pressed, extend boundaries
+    if (isAlt) {
+      const extensionFactor = 0.2;
+      maxX += containerSize.width * extensionFactor;
+      maxY += containerSize.height * extensionFactor;
+      minX -= containerSize.width * extensionFactor;
+      minY -= containerSize.height * extensionFactor;
     }
     
-    setIsDragging(false);
-  }, [isDragging, bookId, initialPosition, updateBook]);
+    // Clamp position within boundaries
+    return {
+      x: Math.max(minX, Math.min(maxX, newX)),
+      y: Math.max(minY, Math.min(maxY, newY))
+    };
+  }, [containerSize]);
   
-  // Cleanup: Add global event listeners to handle edge cases
+  // Use custom clamp function if provided, otherwise use default
+  const clampPosition = customClampPosition || defaultClampPosition;
+
+  // Handle mouse down to start dragging
+  const handleStickerMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!bookId) return;
+    
+    e.stopPropagation();
+    e.preventDefault();
+    
+    // Check if Alt key is pressed for extended boundaries
+    setIsAltDrag(e.altKey);
+    
+    setIsDragging(true);
+    setDragStart({
+      x: e.clientX,
+      y: e.clientY
+    });
+    
+    if (onDragStart) {
+      onDragStart();
+    }
+  }, [bookId, onDragStart]);
+
+  // Effect for mouse move and up events
   useEffect(() => {
-    const handleGlobalMouseUp = () => {
-      if (isDragging) {
-        setIsDragging(false);
+    if (!isDragging) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      // Calculate movement deltas
+      const deltaX = e.clientX - dragStart.x;
+      const deltaY = e.clientY - dragStart.y;
+      
+      // Calculate new position
+      const newX = initialPosition.x + deltaX;
+      const newY = initialPosition.y + deltaY;
+      
+      // Check if Alt key state has changed during drag
+      const currentAltState = e.altKey;
+      setIsAltDrag(currentAltState);
+      
+      // Get clamped position
+      const clampedPos = clampPosition(newX, newY, currentAltState);
+      
+      setPosition2D(clampedPos);
+    };
+    
+    const handleMouseUp = (e: MouseEvent) => {
+      setIsDragging(false);
+      
+      if (onDragEnd) {
+        // Calculate final position
+        const deltaX = e.clientX - dragStart.x;
+        const deltaY = e.clientY - dragStart.y;
+        const finalX = initialPosition.x + deltaX;
+        const finalY = initialPosition.y + deltaY;
+        const clampedPos = clampPosition(finalX, finalY, e.altKey);
+        
+        onDragEnd(clampedPos);
       }
     };
     
-    const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Alt' && isDragging) {
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, dragStart, initialPosition, clampPosition, setPosition2D, onDragEnd]);
+
+  // Listen for Alt key press/release
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Alt') {
         setIsAltDrag(true);
       }
     };
     
-    const handleGlobalKeyUp = (e: KeyboardEvent) => {
+    const handleKeyUp = (e: KeyboardEvent) => {
       if (e.key === 'Alt') {
         setIsAltDrag(false);
       }
     };
     
-    window.addEventListener('mouseup', handleGlobalMouseUp);
-    window.addEventListener('keydown', handleGlobalKeyDown);
-    window.addEventListener('keyup', handleGlobalKeyUp);
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
     
     return () => {
-      window.removeEventListener('mouseup', handleGlobalMouseUp);
-      window.removeEventListener('keydown', handleGlobalKeyDown);
-      window.removeEventListener('keyup', handleGlobalKeyUp);
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [isDragging]);
-  
-  // Helper function to calculate new position with boundaries
-  const calculateNewPosition = (
-    currentPos: { x: number, y: number },
-    deltaX: number,
-    deltaY: number,
-    allowOutOfBounds: boolean,
-    containerDimensions: { width: number, height: number }
-  ) => {
-    const newX = currentPos.x + deltaX;
-    const newY = currentPos.y + deltaY;
-    
-    if (allowOutOfBounds) {
-      return { x: newX, y: newY };
-    }
-    
-    // Constrain to container boundaries with some margin
-    const maxX = containerDimensions.width / 2;
-    const maxY = containerDimensions.height / 2;
-    
-    return {
-      x: Math.max(-maxX, Math.min(maxX, newX)),
-      y: Math.max(-maxY, Math.min(maxY, newY))
-    };
-  };
-  
+  }, []);
+
   return {
+    // State
     isDragging,
     dragStart,
     isAltDrag,
     containerSize,
+    
+    // Setters
     setIsDragging,
     setDragStart,
     setIsAltDrag,
-    handleStickerMouseDown,
-    handleMouseMove,
-    handleMouseUp
+    
+    // Handlers
+    handleStickerMouseDown
   };
 };
 

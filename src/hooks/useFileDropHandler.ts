@@ -2,12 +2,11 @@
 import { useCallback } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import { toast } from 'sonner';
-import { useFileValidation } from './useFileValidation';
 
 export interface UseFileDropHandlerProps {
   position: number;
   onDrop?: (file: File) => void;
-  slotType?: "book" | "sticker" | "recipe";
+  slotType?: "book" | "sticker";
   acceptedFileTypes?: string[];
 }
 
@@ -18,31 +17,48 @@ export const useFileDropHandler = ({
   acceptedFileTypes = []
 }: UseFileDropHandlerProps) => {
   const { activeShelfId, addBook, openModal } = useBookshelfStore();
-  const { validateFileType } = useFileValidation({ slotType, acceptedFileTypes });
+  
+  const validateFileType = useCallback((file: File): boolean => {
+    if (acceptedFileTypes.length === 0) {
+      // Default validations based on slot type
+      if (slotType === "book") {
+        return file.type.startsWith('image/');
+      } else if (slotType === "sticker") {
+        return file.type.startsWith('image/') || 
+               file.type === 'application/json' || 
+               file.name.endsWith('.json');
+      }
+      return true;
+    }
+    
+    // Custom validation based on provided acceptedFileTypes
+    return acceptedFileTypes.some(type => {
+      if (type.includes('*')) {
+        // Handle wildcards like 'image/*'
+        const prefix = type.split('/')[0];
+        return file.type.startsWith(`${prefix}/`);
+      }
+      return file.type === type || (type === '.json' && file.name.endsWith('.json'));
+    });
+  }, [acceptedFileTypes, slotType]);
   
   const handleImageFileDrop = useCallback((file: File) => {
     const reader = new FileReader();
     reader.onload = (event) => {
       if (typeof event.target?.result === 'string') {
-        const isSticker = slotType === "sticker";
-        const isRecipe = slotType === "recipe";
-        
         const newBookId = addBook({
-          title: isSticker || isRecipe ? file.name.replace(/\.[^/.]+$/, "") : '',
-          author: isSticker ? 'Sticker' : isRecipe ? 'Recipe' : '',
+          title: '',
+          author: '',
           coverURL: event.target.result,
           progress: 0,
           rating: 0,
           position,
           shelfId: activeShelfId,
-          isSticker,
-          isRecipe
+          isSticker: slotType === "sticker"
         });
         
         if (slotType === "book") {
           openModal(newBookId);
-        } else if (slotType === "recipe") {
-          toast.success('Recipe added successfully');
         } else {
           toast.success('Sticker added successfully');
         }
@@ -67,8 +83,7 @@ export const useFileDropHandler = ({
               rating: 0,
               position,
               shelfId: activeShelfId,
-              isSticker: true,
-              isRecipe: false
+              isSticker: true
             });
             
             if (newBookId) {
@@ -90,7 +105,7 @@ export const useFileDropHandler = ({
     if (!validateFileType(file)) {
       let supportedTypes = acceptedFileTypes.length > 0 
         ? acceptedFileTypes.join(', ') 
-        : (slotType === "book" || slotType === "recipe" ? 'image files' : 'image or JSON files');
+        : (slotType === "book" ? 'image files' : 'image or JSON files');
       
       toast.error(`Only ${supportedTypes} are supported for ${slotType}s`);
       return;

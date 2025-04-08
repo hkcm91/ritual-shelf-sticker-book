@@ -8,7 +8,7 @@ export interface UseDragAndDropProps {
   position: number;
   setPosition2D: (value: { x: number, y: number }) => void;
   book: any;
-  slotType?: "book" | "sticker" | "recipe";
+  slotType?: "book" | "sticker";
   onDrop?: (file: File) => void;
   onBookDrop?: (bookId: string, position: number) => void;
   acceptedFileTypes?: string[];
@@ -39,6 +39,7 @@ export const useDragAndDrop = ({
   const [slotDimensions, setSlotDimensions] = useState({ width: 150, height: 220 });
   const [initialPosition, setInitialPosition] = useState({ x: 0, y: 0 });
   
+  // Use specialized hooks
   const { handleFileDrop } = useFileDropHandler({
     position,
     onDrop,
@@ -52,7 +53,15 @@ export const useDragAndDrop = ({
     onBookDrop
   });
   
-  const stickerDragResult = useStickerDrag({
+  // Use the sticker drag hook
+  const { 
+    isDragging, 
+    setIsDragging,
+    dragStart, 
+    setDragStart,
+    handleStickerMouseDown,
+    isAltDrag 
+  } = useStickerDrag({
     position,
     bookId: book?.id,
     initialPosition,
@@ -60,8 +69,10 @@ export const useDragAndDrop = ({
     defaultContainerSize: slotDimensions
   });
   
+  // Update slot dimensions when window resizes
   useEffect(() => {
     const updateDimensions = () => {
+      // Use standard slot dimensions as a fallback
       const slot = document.querySelector(`.book-slot[data-position="${position}"]`);
       if (slot) {
         const { width, height } = slot.getBoundingClientRect();
@@ -76,54 +87,57 @@ export const useDragAndDrop = ({
     return () => window.removeEventListener('resize', updateDimensions);
   }, [position]);
   
+  // Update initial position when position2D changes
   useEffect(() => {
-    if (!stickerDragResult.isDragging) {
+    if (!isDragging) {
       setInitialPosition(currentPosition => ({
         x: currentPosition.x,
         y: currentPosition.y
       }));
     }
-  }, [stickerDragResult.isDragging]);
+  }, [isDragging]);
   
+  // Handle drag over to allow drop
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
   }, []);
   
+  // Handle drop to place a book into this slot
   const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     
+    // First check if there are files being dropped
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
       handleFileDrop(file);
       return;
     }
     
+    // If no files, try handling book drop
     handleBookDrop();
   }, [handleFileDrop, handleBookDrop]);
   
-  // Create wrapper functions for the mouse handlers
+  // Helper functions for sticker mouse movement (placeholder functions since actual logic is in useStickerDrag)
   const handleStickerMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    // Just forward the event to the sticker drag handler
-    // No need for additional logic here
+    // This is now handled in the useStickerDrag hook
   }, []);
   
   const handleStickerMouseUp = useCallback(() => {
-    // Just a wrapper function
-    // The actual handler is in useStickerDrag's useEffect
+    // This is now handled in the useStickerDrag hook
   }, []);
 
   return {
-    handleStickerMouseDown: stickerDragResult.handleStickerMouseDown,
+    handleStickerMouseDown,
     handleStickerMouseMove,
     handleStickerMouseUp,
     handleDragOver,
     handleDrop,
-    isDragging: stickerDragResult.isDragging,
-    setIsDragging: stickerDragResult.setIsDragging,
-    dragStart: stickerDragResult.dragStart,
-    setDragStart: stickerDragResult.setDragStart,
-    isAltDrag: stickerDragResult.isAltDrag
+    isDragging,
+    setIsDragging,
+    dragStart,
+    setDragStart,
+    isAltDrag
   };
 };
 

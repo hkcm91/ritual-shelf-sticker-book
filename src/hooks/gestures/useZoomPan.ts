@@ -10,7 +10,7 @@ interface ZoomPanOptions {
   disableTouch?: boolean;
   disableDrag?: boolean;
   throttleDelay?: number;
-  altZoomMultiplier?: number; // New option for Alt key enhancement
+  altZoomMultiplier?: number;
 }
 
 interface ZoomPanState {
@@ -26,14 +26,14 @@ export function useZoomPan(
   containerRef: React.RefObject<HTMLElement>,
   {
     minScale = 0.25,
-    maxScale = 2,
+    maxScale = 3,
     scaleStep = 0.1,
-    transformOrigin = 'top center',
+    transformOrigin = 'top left',
     disableWheel = false,
     disableTouch = false,
     disableDrag = false,
     throttleDelay = 0,
-    altZoomMultiplier = 2.5, // Higher value = faster zoom with Alt
+    altZoomMultiplier = 2.5,
   }: ZoomPanOptions = {}
 ) {
   // State for transform values
@@ -46,14 +46,13 @@ export function useZoomPan(
   // Refs for internal tracking
   const isDraggingRef = useRef(false);
   const lastPointRef = useRef({ x: 0, y: 0 });
+  const startPointRef = useRef({ x: 0, y: 0 });
   const inertiaRef = useRef({ x: 0, y: 0 });
   const initialTouchDistanceRef = useRef(0);
   const initialScaleRef = useRef(1);
   const isPinchingRef = useRef(false);
   const rafIdRef = useRef<number | null>(null);
   const throttleTimerRef = useRef<number | null>(null);
-  
-  // Ref to store pinch center
   const pinchCenterRef = useRef({ x: 0, y: 0 });
 
   // Helper to throttle function calls
@@ -166,17 +165,6 @@ export function useZoomPan(
           delta * scaleStep * 10
         );
       } 
-      // Use shift+wheel for horizontal scrolling
-      else if (e.shiftKey) {
-        e.preventDefault();
-        
-        // Apply horizontal scrolling
-        setState(prev => ({
-          ...prev,
-          translateX: prev.translateX - e.deltaY
-        }));
-      }
-      // Normal vertical scrolling handled by the browser
     },
     [disableWheel, scaleStep, zoomTowardsPoint, altZoomMultiplier]
   );
@@ -195,6 +183,7 @@ export function useZoomPan(
       e.preventDefault();
       isDraggingRef.current = true;
       lastPointRef.current = { x: e.clientX, y: e.clientY };
+      startPointRef.current = { x: e.clientX, y: e.clientY };
       
       // Cancel any ongoing inertia
       if (rafIdRef.current) {
@@ -283,15 +272,22 @@ export function useZoomPan(
           x: e.touches[0].clientX, 
           y: e.touches[0].clientY 
         };
+        startPointRef.current = {
+          x: e.touches[0].clientX,
+          y: e.touches[0].clientY
+        };
         
         // Cancel any ongoing inertia
         if (rafIdRef.current) {
           cancelAnimationFrame(rafIdRef.current);
           rafIdRef.current = null;
         }
+        
+        // Add dragging class
+        containerRef.current?.classList.add('is-dragging');
       }
     },
-    [disableTouch, state.scale]
+    [disableTouch, state.scale, containerRef]
   );
 
   const handleTouchMove = useCallback(
@@ -365,13 +361,14 @@ export function useZoomPan(
     
     if (isDraggingRef.current) {
       isDraggingRef.current = false;
+      containerRef.current?.classList.remove('is-dragging');
       
       // Apply inertia effect if movement was significant
       if (Math.abs(inertiaRef.current.x) > 1 || Math.abs(inertiaRef.current.y) > 1) {
         rafIdRef.current = requestAnimationFrame(applyInertia);
       }
     }
-  }, [applyInertia, disableTouch]);
+  }, [applyInertia, disableTouch, containerRef]);
 
   // Set up keyboard controls
   const handleKeyDown = useCallback(
@@ -428,11 +425,13 @@ export function useZoomPan(
   // Set transform directly (useful for programmatic control)
   const setTransform = useCallback((transform: Partial<ZoomPanState>) => {
     setState(prev => ({
-      scale: transform.scale !== undefined ? transform.scale : prev.scale,
+      scale: transform.scale !== undefined ? 
+        Math.min(maxScale, Math.max(minScale, transform.scale)) : 
+        prev.scale,
       translateX: transform.translateX !== undefined ? transform.translateX : prev.translateX,
       translateY: transform.translateY !== undefined ? transform.translateY : prev.translateY
     }));
-  }, []);
+  }, [maxScale, minScale]);
 
   // Apply transforms whenever state changes
   useEffect(() => {
@@ -446,7 +445,7 @@ export function useZoomPan(
     
     // Apply initial styles
     container.style.transformOrigin = transformOrigin;
-    container.style.transition = 'none'; // Disable transitions for direct manipulation
+    container.style.touchAction = 'none';
     container.tabIndex = 0; // Make container focusable for keyboard events
     
     // Set up initial CSS custom properties
@@ -458,46 +457,41 @@ export function useZoomPan(
     container.classList.add('zoom-pan-container');
     
     // Add event listeners
-    if (!disableWheel) {
-      container.addEventListener('wheel', handleWheel, { passive: false });
-    }
-    
-    if (!disableDrag) {
-      container.addEventListener('mousedown', handleMouseDown);
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
-      window.addEventListener('mouseleave', handleMouseUp);
-    }
-    
-    if (!disableTouch) {
-      container.addEventListener('touchstart', handleTouchStart, { passive: false });
-      container.addEventListener('touchmove', handleTouchMove, { passive: false });
-      container.addEventListener('touchend', handleTouchEnd);
-    }
-    
-    // Keyboard navigation
+    container.addEventListener('wheel', handleWheel, { passive: false });
+    container.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('mouseleave', handleMouseUp);
+    container.addEventListener('touchstart', handleTouchStart, { passive: false });
+    container.addEventListener('touchmove', handleTouchMove, { passive: false });
+    container.addEventListener('touchend', handleTouchEnd);
     container.addEventListener('keydown', handleKeyDown);
+    
+    // Alt key detection for cursor hint
+    const handleAltKeyDown = (e: KeyboardEvent) => {
+      if (e.altKey) document.body.classList.add('alt-zoom-active');
+    };
+    
+    const handleAltKeyUp = (e: KeyboardEvent) => {
+      if (!e.altKey) document.body.classList.remove('alt-zoom-active');
+    };
+    
+    window.addEventListener('keydown', handleAltKeyDown);
+    window.addEventListener('keyup', handleAltKeyUp);
     
     return () => {
       // Clean up all event listeners
-      if (!disableWheel) {
-        container.removeEventListener('wheel', handleWheel);
-      }
-      
-      if (!disableDrag) {
-        container.removeEventListener('mousedown', handleMouseDown);
-        window.removeEventListener('mousemove', handleMouseMove);
-        window.removeEventListener('mouseup', handleMouseUp);
-        window.removeEventListener('mouseleave', handleMouseUp);
-      }
-      
-      if (!disableTouch) {
-        container.removeEventListener('touchstart', handleTouchStart);
-        container.removeEventListener('touchmove', handleTouchMove);
-        container.removeEventListener('touchend', handleTouchEnd);
-      }
-      
+      container.removeEventListener('wheel', handleWheel);
+      container.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('mouseleave', handleMouseUp);
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
+      container.removeEventListener('touchend', handleTouchEnd);
       container.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keydown', handleAltKeyDown);
+      window.removeEventListener('keyup', handleAltKeyUp);
       
       // Clean up animation frames
       if (rafIdRef.current) {
@@ -509,23 +503,21 @@ export function useZoomPan(
         clearTimeout(throttleTimerRef.current);
       }
       
-      // Remove added styles
-      container.classList.remove('zoom-pan-container');
+      // Remove added styles and classes
+      container.classList.remove('zoom-pan-container', 'is-dragging');
+      document.body.classList.remove('alt-zoom-active');
     };
   }, [
     containerRef,
-    disableDrag,
-    disableTouch,
-    disableWheel,
-    handleKeyDown,
+    transformOrigin,
+    handleWheel,
     handleMouseDown,
     handleMouseMove,
     handleMouseUp,
-    handleTouchEnd,
-    handleTouchMove,
     handleTouchStart,
-    handleWheel,
-    transformOrigin,
+    handleTouchMove,
+    handleTouchEnd,
+    handleKeyDown,
   ]);
 
   return {

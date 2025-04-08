@@ -4,8 +4,9 @@
   cursor: grab;
   will-change: transform;
   transform: translate(var(--translateX, 0px), var(--translateY, 0px)) scale(var(--scale, 1));
-  transition: transform 0.1s ease;
+  transition: none;
   touch-action: none;
+  user-select: none;
 }
 
 .zoom-pan-container.is-dragging {
@@ -50,6 +51,29 @@
 .zoom-controls {
   display: flex;
   align-items: center;
+  gap: 4px;
+}
+
+.zoom-controls button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: white;
+  color: #333;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.zoom-controls button:hover:not(:disabled) {
+  background: #f0f0f0;
+}
+
+.zoom-controls button:active:not(:disabled) {
+  background: #e0e0e0;
 }
 
 .zoom-controls button:disabled {
@@ -73,11 +97,12 @@
   transition: opacity 0.3s;
 }
 
-body:has(button:focus-visible) .alt-key-hint,
+body:has(.zoom-pan-container:hover) .alt-key-hint,
 body:has(.zoom-controls:hover) .alt-key-hint {
   opacity: 1;
 }
 
+/* Fade animations */
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -86,4 +111,22 @@ body:has(.zoom-controls:hover) .alt-key-hint {
 @keyframes fade-out {
   from { opacity: 1; }
   to { opacity: 0; }
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 640px) {
+  .zoom-controls {
+    bottom: 16px;
+    right: 16px;
+    padding: 4px;
+  }
+  
+  .zoom-controls button {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .alt-key-hint {
+    display: none;
+  }
 }

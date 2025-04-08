@@ -13,7 +13,7 @@ interface NavigationOptions {
 }
 
 export function useDirectionalNavigation(options: NavigationOptions = {}) {
-  const { maxHistoryLength = 20 } = options;
+  const { maxHistoryLength = 50 } = options;
   
   const [navigationState, setNavigationState] = useState<NavigationState>({
     canGoBack: false,
@@ -28,8 +28,8 @@ export function useDirectionalNavigation(options: NavigationOptions = {}) {
       // Don't add if position is the same as current
       const currentPos = prev.history[prev.currentIndex];
       if (
-        Math.abs(currentPos.x - position.x) < 0.5 && 
-        Math.abs(currentPos.y - position.y) < 0.5 && 
+        Math.abs(currentPos.x - position.x) < 1 && 
+        Math.abs(currentPos.y - position.y) < 1 && 
         Math.abs(currentPos.scale - position.scale) < 0.01
       ) {
         return prev;
@@ -63,6 +63,8 @@ export function useDirectionalNavigation(options: NavigationOptions = {}) {
         canGoForward: true
       };
     });
+    
+    return true;
   }, []);
   
   // Go forward in history
@@ -78,6 +80,8 @@ export function useDirectionalNavigation(options: NavigationOptions = {}) {
         canGoForward: newIndex < prev.history.length - 1
       };
     });
+    
+    return true;
   }, []);
   
   // Get current position

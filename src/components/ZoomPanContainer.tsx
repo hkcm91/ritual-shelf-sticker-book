@@ -19,17 +19,19 @@ const ZoomPanContainer: React.FC<ZoomPanContainerProps> = ({
   children,
   className = '',
   minScale = 0.25,
-  maxScale = 2,
+  maxScale = 3,
   showControls = true,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   
+  // Initialize zoom and pan functionality
   const { scale, translateX, translateY, resetTransform, setTransform } = useZoomPan(containerRef, {
     minScale,
     maxScale,
-    transformOrigin: 'top center',
+    transformOrigin: 'top left',
   });
   
+  // Initialize navigation history
   const { 
     addToHistory, 
     goBack, 
@@ -41,7 +43,11 @@ const ZoomPanContainer: React.FC<ZoomPanContainerProps> = ({
   
   // Record position changes to history
   useEffect(() => {
-    addToHistory({ x: translateX, y: translateY, scale });
+    const timer = setTimeout(() => {
+      addToHistory({ x: translateX, y: translateY, scale });
+    }, 500); // Debounce to avoid too many history entries
+    
+    return () => clearTimeout(timer);
   }, [addToHistory, scale, translateX, translateY]);
   
   const handleZoomIn = () => {
@@ -54,17 +60,17 @@ const ZoomPanContainer: React.FC<ZoomPanContainerProps> = ({
   
   const handleGoBack = () => {
     if (canGoBack) {
+      goBack();
       const position = getCurrentPosition();
       setTransform(position);
-      goBack();
     }
   };
   
   const handleGoForward = () => {
     if (canGoForward) {
+      goForward();
       const position = getCurrentPosition();
       setTransform(position);
-      goForward();
     }
   };
   
@@ -74,6 +80,7 @@ const ZoomPanContainer: React.FC<ZoomPanContainerProps> = ({
         ref={containerRef}
         className={`zoom-pan-container ${className}`}
         aria-label="Zoomable content area"
+        tabIndex={0}
       >
         {children}
       </div>
@@ -168,6 +175,11 @@ const ZoomPanContainer: React.FC<ZoomPanContainerProps> = ({
           </TooltipProvider>
         </div>
       )}
+      
+      {/* Alt key hint for zoom feature */}
+      <div className="alt-key-hint">
+        Hold Alt + Scroll to Zoom
+      </div>
     </div>
   );
 };

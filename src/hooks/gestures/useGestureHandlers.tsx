@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useRef } from 'react';
 import { useDragGestures } from './useDragGestures';
 import { useScrollGestures } from './useScrollGestures';

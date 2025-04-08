@@ -1,4 +1,5 @@
-import { useEffect, useState, useRef } from 'react';
+
+import { useEffect } from 'react';
 import { useDragGestures } from './useDragGestures';
 import { useScrollGestures } from './useScrollGestures';
 import { useTouchGestures } from './useTouchGestures';
@@ -15,11 +16,6 @@ export function useGestureHandlers(
   scrollAreaRef: React.RefObject<HTMLElement>,
   setIsDragging?: (isDragging: boolean) => void
 ) {
-  // Set up state for touch gestures
-  const [startPoint, setStartPoint] = useState({ x: 0, y: 0 });
-  const [lastPoint, setLastPoint] = useState({ x: 0, y: 0 });
-  const scrollPositionRef = useRef({ x: 0, y: 0 });
-  
   // Set up drag gestures using our reusable hook
   const {
     handleMouseDown,
@@ -50,7 +46,7 @@ export function useGestureHandlers(
     }
   };
 
-  // Set up touch gestures
+  // Set up touch gestures using our touch handler hook
   const {
     handleTouchStart,
     handleTouchMove,
@@ -60,10 +56,7 @@ export function useGestureHandlers(
     updateDraggingState,
     getScrollViewport || getScrollElement,
     inertiaRef,
-    applyInertia,
-    setStartPoint,
-    setLastPoint,
-    scrollPositionRef
+    applyInertia
   );
 
   // Set up event listeners

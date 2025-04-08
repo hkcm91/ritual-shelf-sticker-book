@@ -1,5 +1,6 @@
 
 import { StateCreator } from 'zustand';
+import { useRef } from 'react';
 
 export interface UISlice {
   isModalOpen: boolean;
@@ -8,6 +9,7 @@ export interface UISlice {
   zoomLevel: number;
   isBookSearchOpen: boolean;
   isCustomizationModalOpen: boolean;
+  scrollPositionRef: React.MutableRefObject<{ x: number; y: number }>;
   openModal: (bookId: string) => void;
   closeModal: () => void;
   setDraggedBook: (bookId: string | null) => void;
@@ -30,6 +32,7 @@ export const createUISlice: StateCreator<
   zoomLevel: 1,
   isBookSearchOpen: false,
   isCustomizationModalOpen: false,
+  scrollPositionRef: { current: { x: 0, y: 0 } },
   
   openModal: (bookId) => {
     console.log("[UISlice] Opening book modal with ID:", bookId);

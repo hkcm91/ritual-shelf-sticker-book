@@ -12,16 +12,18 @@ export function useTouchGestures(
   updateDraggingState: (isDragging: boolean) => void,
   getScrollViewport: () => HTMLElement | undefined,
   inertiaRef: MutableRefObject<{ x: number; y: number }>,
-  applyInertia: () => void,
-  setStartPoint: (point: { x: number, y: number }) => void,
-  setLastPoint: (point: { x: number, y: number }) => void,
-  scrollPositionRef: MutableRefObject<{ x: number; y: number }>
+  applyInertia: () => void
 ) {
   const [touchState, setTouchState] = useState({
     initialDistance: 0,
     initialZoom: 1,
     isZooming: false,
   });
+  
+  // For touch panning
+  const [startPoint, setStartPoint] = useState({ x: 0, y: 0 });
+  const [lastPoint, setLastPoint] = useState({ x: 0, y: 0 });
+  const scrollPositionRef = useBookshelfStore.getState().scrollPositionRef || { current: { x: 0, y: 0 } };
   
   // Directly destructure from the hook
   const adjustZoomLevel = useBookshelfStore(state => state.adjustZoomLevel);
@@ -82,25 +84,26 @@ export function useTouchGestures(
       const y = e.touches[0].clientY;
       
       // Calculate delta from start position
+      const deltaX = startPoint.x - x;
+      const deltaY = startPoint.y - y;
+      
+      // Calculate velocity for inertia
+      inertiaRef.current = {
+        x: lastPoint.x - x,
+        y: lastPoint.y - y
+      };
+      
+      // Update last position for next move
+      setLastPoint({ x, y });
+      
+      // Get scroll container and apply scroll
       const scrollViewport = getScrollViewport();
       if (scrollViewport) {
-        // Update inertia reference for smooth scrolling
-        const lastX = e.touches[0].clientX;
-        const lastY = e.touches[0].clientY;
-        inertiaRef.current = {
-          x: e.touches[0].clientX - lastX,
-          y: e.touches[0].clientY - lastY
-        };
-        
-        // Update last position for next move
-        setLastPoint({ x, y });
-        
-        // Get scroll container and apply scroll
-        scrollViewport.scrollLeft = scrollPositionRef.current.x - (x - e.touches[0].clientX);
-        scrollViewport.scrollTop = scrollPositionRef.current.y - (y - e.touches[0].clientY);
+        scrollViewport.scrollLeft = scrollPositionRef.current.x + deltaX;
+        scrollViewport.scrollTop = scrollPositionRef.current.y + deltaY;
       }
     }
-  }, [getScrollViewport, inertiaRef, scrollPositionRef, setLastPoint, setZoomLevel, touchState]);
+  }, [getScrollViewport, inertiaRef, scrollPositionRef, setLastPoint, setZoomLevel, startPoint, touchState, lastPoint]);
 
   const handleTouchEnd = useCallback(() => {
     setTouchState({

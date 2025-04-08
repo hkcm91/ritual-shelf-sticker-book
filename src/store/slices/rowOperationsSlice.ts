@@ -4,13 +4,16 @@ import { ShelfData } from '../types';
 import { BooksSlice } from '../booksSlice';
 import { 
   saveShelvesToStorage, 
-  getBooksInLastRow
+  getBooksInLastRow,
+  validateShelfSize,
+  checkForOrphanedBooks
 } from '../utils/shelfUtils';
 import { 
   restoreHiddenBooksForRows, 
   hideLastRowBooks,
   maintainBookPositionsOnRowChange
 } from '../utils/rowOperations';
+import { toast } from 'sonner';
 
 export interface RowOperationsSlice {
   addRow: () => void;
@@ -30,11 +33,22 @@ export const createRowOperationsSlice: StateCreator<
       
       if (!activeShelfId || !shelves[activeShelfId]) {
         console.error("Cannot add row: No active shelf found");
+        toast.error("Cannot add row: No active shelf found");
         return;
       }
       
       const shelf = shelves[activeShelfId];
-      console.log(`Increasing rows from ${shelf.rows} to ${shelf.rows + 1}`);
+      const newRows = shelf.rows + 1;
+      
+      // Validate the new shelf size
+      const validation = validateShelfSize(newRows, shelf.columns);
+      if (!validation.valid) {
+        console.error(validation.message);
+        toast.error(validation.message || "Invalid shelf size");
+        return;
+      }
+      
+      console.log(`Increasing rows from ${shelf.rows} to ${newRows}`);
       
       // Restore hidden books from previous row removals that can now be visible
       let updatedBooks = restoreHiddenBooksForRows(activeShelfId, shelf, books);
@@ -47,7 +61,7 @@ export const createRowOperationsSlice: StateCreator<
           ...state.shelves,
           [activeShelfId]: {
             ...shelf,
-            rows: shelf.rows + 1
+            rows: newRows
           }
         };
         
@@ -60,6 +74,8 @@ export const createRowOperationsSlice: StateCreator<
           books: updatedBooks
         };
       });
+      
+      toast.success(`Row added successfully! Now ${newRows} rows`);
     },
     
     removeRow: () => {
@@ -68,16 +84,33 @@ export const createRowOperationsSlice: StateCreator<
       
       if (!activeShelfId || !shelves[activeShelfId]) {
         console.error("Cannot remove row: No active shelf found");
+        toast.error("Cannot remove row: No active shelf found");
         return;
       }
       
       const shelf = shelves[activeShelfId];
       if (shelf.rows <= 1) {
         console.error("Cannot remove row: Already at minimum rows");
+        toast.error("Cannot remove row: Already at minimum rows");
         return;
       }
       
-      console.log(`Decreasing rows from ${shelf.rows} to ${shelf.rows - 1}`);
+      const newRows = shelf.rows - 1;
+      console.log(`Decreasing rows from ${shelf.rows} to ${newRows}`);
+      
+      // Check if there will be orphaned books in the last row
+      const { orphanedBooks } = checkForOrphanedBooks(
+        activeShelfId, 
+        shelf.rows, 
+        shelf.columns,
+        newRows,
+        shelf.columns,
+        books
+      );
+      
+      if (orphanedBooks > 0) {
+        console.log(`There are ${orphanedBooks} books in the last row that will be hidden`);
+      }
       
       // Find books in the last row - but we won't delete them
       const booksInLastRow = getBooksInLastRow(activeShelfId, shelf, books);
@@ -91,7 +124,7 @@ export const createRowOperationsSlice: StateCreator<
           ...state.shelves,
           [activeShelfId]: {
             ...shelf,
-            rows: shelf.rows - 1
+            rows: newRows
           }
         };
         
@@ -103,6 +136,13 @@ export const createRowOperationsSlice: StateCreator<
           books: updatedBooks
         };
       });
+      
+      // Show different toast messages based on whether books were hidden
+      if (booksInLastRow.length > 0) {
+        toast.success(`Row removed. ${booksInLastRow.length} books have been hidden and saved.`);
+      } else {
+        toast.success(`Row removed successfully! Now ${newRows} rows`);
+      }
     }
   };
 };

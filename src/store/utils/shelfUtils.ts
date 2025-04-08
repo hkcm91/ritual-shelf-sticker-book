@@ -1,3 +1,4 @@
+
 import { ShelfData } from '../types';
 import { BooksSlice } from '../booksSlice';
 import { storageService } from '../../services/storage/storageService';
@@ -67,14 +68,91 @@ export const recalculateBookPositions = (
   
   Object.keys(books).forEach(bookId => {
     const book = books[bookId];
-    if (book.shelfId === activeShelfId) {
+    if (book.shelfId === activeShelfId && !book.hidden) {
       const currentRow = Math.floor(book.position / oldColumns);
       const currentCol = book.position % oldColumns;
-      updatedPositions[bookId] = currentRow * newColumns + currentCol;
+      
+      // Make sure the book isn't in a column that would be out of bounds
+      const newCol = Math.min(currentCol, newColumns - 1);
+      updatedPositions[bookId] = currentRow * newColumns + newCol;
     }
   });
   
   return updatedPositions;
+};
+
+/**
+ * Validate if the shelf size is within allowed limits
+ */
+export const validateShelfSize = (
+  rows: number, 
+  columns: number
+): { valid: boolean; message?: string } => {
+  const MIN_ROWS = 1;
+  const MAX_ROWS = 10;
+  const MIN_COLUMNS = 1;
+  const MAX_COLUMNS = 12;
+  
+  if (rows < MIN_ROWS) {
+    return { 
+      valid: false, 
+      message: `Shelf must have at least ${MIN_ROWS} row` 
+    };
+  }
+  
+  if (rows > MAX_ROWS) {
+    return { 
+      valid: false, 
+      message: `Shelf cannot have more than ${MAX_ROWS} rows` 
+    };
+  }
+  
+  if (columns < MIN_COLUMNS) {
+    return { 
+      valid: false, 
+      message: `Shelf must have at least ${MIN_COLUMNS} column` 
+    };
+  }
+  
+  if (columns > MAX_COLUMNS) {
+    return { 
+      valid: false, 
+      message: `Shelf cannot have more than ${MAX_COLUMNS} columns` 
+    };
+  }
+  
+  return { valid: true };
+};
+
+/**
+ * Check if there are any books that would be orphaned by a size change
+ */
+export const checkForOrphanedBooks = (
+  shelfId: string,
+  currentRows: number,
+  currentColumns: number,
+  newRows: number,
+  newColumns: number,
+  books: BooksSlice['books']
+): { orphanedBooks: number; maxPosition: number } => {
+  let orphanedBooks = 0;
+  let maxPosition = -1;
+  
+  const currentCapacity = currentRows * currentColumns;
+  const newCapacity = newRows * newColumns;
+  
+  Object.values(books).forEach(book => {
+    if (book.shelfId === shelfId && !book.hidden) {
+      if (book.position >= newCapacity) {
+        orphanedBooks++;
+      }
+      if (book.position > maxPosition) {
+        maxPosition = book.position;
+      }
+    }
+  });
+  
+  return { orphanedBooks, maxPosition };
 };
 
 /**

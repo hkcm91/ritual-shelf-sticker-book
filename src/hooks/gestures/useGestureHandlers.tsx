@@ -16,45 +16,28 @@ export function useGestureHandlers(
   scrollAreaRef: React.RefObject<HTMLElement>,
   setIsDragging?: (isDragging: boolean) => void
 ) {
-  // Set up drag gestures
-  const {
-    handleMouseDown,
-    handleMouseMove,
-    handleMouseUp,
-    getScrollViewport,
-    cleanupAnimations,
-    inertiaRef,
-    isDraggingRef
-  } = useDragGestures(scrollAreaRef, setIsDragging);
-  
-  // Set up scroll gestures
-  const { handleWheel } = useScrollGestures(scrollAreaRef);
-  
   // Set up state for touch gestures
   const [startPoint, setStartPoint] = useState({ x: 0, y: 0 });
   const [lastPoint, setLastPoint] = useState({ x: 0, y: 0 });
   const scrollPositionRef = useRef({ x: 0, y: 0 });
   
-  // Smoothly apply inertia after dragging
-  const applyInertia = () => {
-    if (!scrollAreaRef.current || Math.abs(inertiaRef.current.x) < 0.5 && Math.abs(inertiaRef.current.y) < 0.5) {
-      return;
-    }
-    
-    // Apply inertia with decay
-    inertiaRef.current = {
-      x: inertiaRef.current.x * 0.95,
-      y: inertiaRef.current.y * 0.95
-    };
-    
-    const scrollElement = getScrollViewport();
-    if (scrollElement) {
-      scrollElement.scrollBy(inertiaRef.current.x, inertiaRef.current.y);
-    }
-    
-    // Continue animation
-    requestAnimationFrame(applyInertia);
-  };
+  // Set up drag gestures using our reusable hook
+  const {
+    handleMouseDown,
+    handleMouseMove,
+    handleMouseUp,
+    isDraggingRef,
+    inertiaRef,
+    applyInertia,
+    cleanupAnimations,
+    getScrollElement: getScrollViewport
+  } = useDragGestures({
+    scrollElementRef: scrollAreaRef,
+    onDragStateChange: setIsDragging
+  });
+  
+  // Set up scroll gestures
+  const { handleWheel } = useScrollGestures(scrollAreaRef);
   
   // Set isDragging state for UI feedback
   const updateDraggingState = (dragging: boolean) => {
@@ -111,7 +94,17 @@ export function useGestureHandlers(
       // Cancel any animations on cleanup
       cleanupAnimations();
     };
-  }, [containerRef]);
+  }, [
+    containerRef, 
+    handleTouchStart, 
+    handleTouchMove, 
+    handleTouchEnd, 
+    handleWheel, 
+    handleMouseDown, 
+    handleMouseMove, 
+    handleMouseUp, 
+    cleanupAnimations
+  ]);
 
   return {
     handleTouchStart,

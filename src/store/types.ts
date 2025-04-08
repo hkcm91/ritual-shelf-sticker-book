@@ -8,6 +8,7 @@ export interface BookData {
   position: number;
   shelfId: string;
   isSticker?: boolean;
+  isRecipe?: boolean;
   position2D?: { x: number; y: number };
   scale?: number;
   rotation?: number;

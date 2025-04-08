@@ -12,6 +12,16 @@
   border-radius: 8px;
   padding: 4px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  transition: opacity 0.3s ease;
+}
+
+/* Fade zoom controls when inactive */
+.zoom-controls:not(:hover) {
+  opacity: 0.8;
+}
+
+.zoom-controls:hover {
+  opacity: 1;
 }
 
 /* Mobile-specific controls */
@@ -51,17 +61,17 @@
 /* Improve cursor and dragging experience */
 .bookshelf-container {
   cursor: grab; /* Show grab cursor by default */
+  transition: transform 0.2s cubic-bezier(0.25, 0.1, 0.25, 1.0); /* Smoother zoom transition */
 }
 
-.bookshelf-container:active {
-  cursor: grabbing; /* Change to grabbing cursor when active */
+.bookshelf-container.is-dragging {
+  cursor: grabbing !important; /* Change to grabbing cursor when active */
 }
 
-/* Add scrolling help indicators */
-.bookshelf-wrapper:hover::before {
-  content: 'Shift+Scroll for Horizontal Panning';
+/* Add keyboard shortcut helpers */
+.scroll-hint {
   position: fixed;
-  bottom: 85px;
+  bottom: 60px;
   right: 16px;
   background: rgba(0, 0, 0, 0.7);
   color: white;
@@ -72,8 +82,19 @@
   opacity: 0;
   transform: translateY(10px);
   transition: opacity 0.3s, transform 0.3s;
-  animation: fade-in-tip 1s forwards;
-  animation-delay: 0.5s;
+}
+
+.bookshelf-wrapper:hover .scroll-hint {
+  animation: fade-in-tip 3s forwards;
+  animation-delay: 1s;
+}
+
+.bookshelf-wrapper:hover .alt-hint {
+  animation-delay: 1.5s;
+}
+
+.bookshelf-wrapper:hover .shift-hint {
+  animation-delay: 2s;
 }
 
 /* Add touch indicator for mobile users */
@@ -102,28 +123,9 @@
   100% { opacity: 0.2; transform: translateX(-50%) scale(0.8); }
 }
 
-/* Add Alt+Scroll indicator when hovering */
-.bookshelf-wrapper:hover::after {
-  content: 'Alt+Scroll to Zoom';
-  position: fixed;
-  bottom: 60px;
-  right: 16px;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 12px;
-  pointer-events: none;
-  opacity: 0;
-  transform: translateY(10px);
-  transition: opacity 0.3s, transform 0.3s;
-  animation: fade-in-tip 1s forwards;
-  animation-delay: 1s;
-}
-
 @keyframes fade-in-tip {
   0% { opacity: 0; transform: translateY(10px); }
-  100% { opacity: 1; transform: translateY(0); }
-  80% { opacity: 1; }
-  100% { opacity: 0; }
+  20% { opacity: 1; transform: translateY(0); }
+  80% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-5px); }
 }

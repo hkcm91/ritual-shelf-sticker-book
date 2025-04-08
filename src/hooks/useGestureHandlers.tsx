@@ -1,18 +1,21 @@
 import { useEffect, useState, useRef } from 'react';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 
-interface GestureHandlers {
-  handleTouchStart: (e: TouchEvent) => void;
-  handleTouchMove: (e: TouchEvent) => void;
-  handleTouchEnd: () => void;
-  handleWheel: (e: WheelEvent) => void;
-  handleMouseDown: (e: MouseEvent) => void;
-  handleMouseMove: (e: MouseEvent) => void;
-  handleMouseUp: () => void;
-}
-
-export function useGestureHandlers(containerRef: React.RefObject<HTMLElement>): GestureHandlers {
+/**
+ * Custom hook to handle various gestures for the bookshelf
+ * - Mouse wheel scrolling (with Shift for horizontal)
+ * - Alt+wheel for zooming
+ * - Mouse drag to pan
+ * - Touch gestures (pinch to zoom, drag to pan)
+ */
+export function useGestureHandlers(
+  containerRef: React.RefObject<HTMLElement>,
+  scrollAreaRef: React.RefObject<HTMLElement>,
+  setIsDragging?: (isDragging: boolean) => void
+) {
   const { zoomLevel, setZoomLevel, adjustZoomLevel } = useBookshelfStore();
+  
+  // For pinch-to-zoom on mobile
   const [touchState, setTouchState] = useState({
     initialDistance: 0,
     initialZoom: 1,
@@ -20,9 +23,47 @@ export function useGestureHandlers(containerRef: React.RefObject<HTMLElement>): 
   });
   
   // For drag-to-pan functionality
-  const [isDragging, setIsDragging] = useState(false);
+  const isDraggingRef = useRef(false);
   const [startPoint, setStartPoint] = useState({ x: 0, y: 0 });
+  const [lastPoint, setLastPoint] = useState({ x: 0, y: 0 });
   const scrollPositionRef = useRef({ x: 0, y: 0 });
+  const inertiaRef = useRef({ x: 0, y: 0 });
+  const rafRef = useRef<number | null>(null);
+  
+  // Smoothly apply inertia after dragging
+  const applyInertia = () => {
+    if (!scrollAreaRef.current || Math.abs(inertiaRef.current.x) < 0.5 && Math.abs(inertiaRef.current.y) < 0.5) {
+      rafRef.current = null;
+      return;
+    }
+    
+    // Apply inertia with decay
+    inertiaRef.current = {
+      x: inertiaRef.current.x * 0.95,
+      y: inertiaRef.current.y * 0.95
+    };
+    
+    const scrollElement = scrollAreaRef.current.querySelector('.scroll-area-viewport') as HTMLElement;
+    if (scrollElement) {
+      scrollElement.scrollBy(inertiaRef.current.x, inertiaRef.current.y);
+    }
+    
+    // Continue animation
+    rafRef.current = requestAnimationFrame(applyInertia);
+  };
+  
+  // Set isDragging state for UI feedback
+  const updateDraggingState = (dragging: boolean) => {
+    isDraggingRef.current = dragging;
+    if (setIsDragging) {
+      setIsDragging(dragging);
+    }
+  };
+
+  // Find the scrollable viewport element
+  const getScrollViewport = () => {
+    return scrollAreaRef.current?.querySelector('.scroll-area-viewport') as HTMLElement;
+  };
 
   // Handle pinch to zoom on mobile
   const handleTouchStart = (e: TouchEvent) => {
@@ -40,19 +81,26 @@ export function useGestureHandlers(containerRef: React.RefObject<HTMLElement>): 
       });
     } else if (e.touches.length === 1) {
       // Single touch for panning
-      setIsDragging(true);
-      setStartPoint({ 
-        x: e.touches[0].clientX, 
-        y: e.touches[0].clientY 
-      });
+      updateDraggingState(true);
+      
+      const x = e.touches[0].clientX;
+      const y = e.touches[0].clientY;
+      setStartPoint({ x, y });
+      setLastPoint({ x, y });
       
       // Store current scroll position
-      const scrollContainer = containerRef.current?.closest('.scrollbar-thumb') as HTMLElement;
-      if (scrollContainer) {
+      const scrollViewport = getScrollViewport();
+      if (scrollViewport) {
         scrollPositionRef.current = {
-          x: scrollContainer.scrollLeft,
-          y: scrollContainer.scrollTop
+          x: scrollViewport.scrollLeft,
+          y: scrollViewport.scrollTop
         };
+      }
+      
+      // Cancel any ongoing inertia
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
       }
     }
   };
@@ -70,18 +118,30 @@ export function useGestureHandlers(containerRef: React.RefObject<HTMLElement>): 
       const newZoom = Math.max(0.25, Math.min(2, touchState.initialZoom * scaleFactor));
       
       setZoomLevel(newZoom);
-    } else if (isDragging && e.touches.length === 1) {
+    } else if (isDraggingRef.current && e.touches.length === 1) {
       e.preventDefault();
       
-      // Calculate movement
-      const deltaX = startPoint.x - e.touches[0].clientX;
-      const deltaY = startPoint.y - e.touches[0].clientY;
+      const x = e.touches[0].clientX;
+      const y = e.touches[0].clientY;
       
-      // Get scroll container
-      const scrollAreaViewport = containerRef.current?.closest('.scroll-area-viewport') as HTMLElement;
-      if (scrollAreaViewport) {
-        scrollAreaViewport.scrollLeft = scrollPositionRef.current.x + deltaX;
-        scrollAreaViewport.scrollTop = scrollPositionRef.current.y + deltaY;
+      // Calculate delta from start position
+      const deltaX = startPoint.x - x;
+      const deltaY = startPoint.y - y;
+      
+      // Calculate velocity for inertia
+      inertiaRef.current = {
+        x: lastPoint.x - x,
+        y: lastPoint.y - y
+      };
+      
+      // Update last position for next move
+      setLastPoint({ x, y });
+      
+      // Get scroll container and apply scroll
+      const scrollViewport = getScrollViewport();
+      if (scrollViewport) {
+        scrollViewport.scrollLeft = scrollPositionRef.current.x + deltaX;
+        scrollViewport.scrollTop = scrollPositionRef.current.y + deltaY;
       }
     }
   };
@@ -92,7 +152,15 @@ export function useGestureHandlers(containerRef: React.RefObject<HTMLElement>): 
       initialZoom: 1,
       isZooming: false,
     });
-    setIsDragging(false);
+    
+    if (isDraggingRef.current) {
+      updateDraggingState(false);
+      
+      // Start inertia effect if the velocity is significant
+      if (Math.abs(inertiaRef.current.x) > 1 || Math.abs(inertiaRef.current.y) > 1) {
+        rafRef.current = requestAnimationFrame(applyInertia);
+      }
+    }
   };
 
   // Handle mouse wheel zoom on desktop
@@ -100,15 +168,15 @@ export function useGestureHandlers(containerRef: React.RefObject<HTMLElement>): 
     // If Alt key is pressed, use wheel for zooming
     if (e.altKey) {
       e.preventDefault();
-      const delta = e.deltaY * -0.01;
+      const delta = e.deltaY * -0.001; // Smoother zoom
       adjustZoomLevel(delta);
     } 
     // Use shift+wheel for horizontal scrolling
     else if (e.shiftKey) {
       e.preventDefault();
-      const scrollAreaViewport = containerRef.current?.closest('.scroll-area-viewport') as HTMLElement;
-      if (scrollAreaViewport) {
-        scrollAreaViewport.scrollLeft += e.deltaY;
+      const scrollViewport = getScrollViewport();
+      if (scrollViewport) {
+        scrollViewport.scrollLeft += e.deltaY;
       }
     }
     // Otherwise, allow normal vertical scrolling (no need to prevent default)
@@ -121,16 +189,26 @@ export function useGestureHandlers(containerRef: React.RefObject<HTMLElement>): 
       return;
     }
     
-    setIsDragging(true);
-    setStartPoint({ x: e.clientX, y: e.clientY });
+    updateDraggingState(true);
+    
+    const x = e.clientX;
+    const y = e.clientY;
+    setStartPoint({ x, y });
+    setLastPoint({ x, y });
     
     // Store current scroll position
-    const scrollAreaViewport = containerRef.current?.closest('.scroll-area-viewport') as HTMLElement;
-    if (scrollAreaViewport) {
+    const scrollViewport = getScrollViewport();
+    if (scrollViewport) {
       scrollPositionRef.current = {
-        x: scrollAreaViewport.scrollLeft,
-        y: scrollAreaViewport.scrollTop
+        x: scrollViewport.scrollLeft,
+        y: scrollViewport.scrollTop
       };
+    }
+    
+    // Cancel any ongoing inertia
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
     }
     
     // Prevent browser's default drag behavior
@@ -139,17 +217,29 @@ export function useGestureHandlers(containerRef: React.RefObject<HTMLElement>): 
 
   // Handle mouse move for dragging
   const handleMouseMove = (e: MouseEvent) => {
-    if (!isDragging) return;
+    if (!isDraggingRef.current) return;
     
-    // Calculate movement
-    const deltaX = startPoint.x - e.clientX;
-    const deltaY = startPoint.y - e.clientY;
+    const x = e.clientX;
+    const y = e.clientY;
+    
+    // Calculate delta from start position
+    const deltaX = startPoint.x - x;
+    const deltaY = startPoint.y - y;
+    
+    // Calculate velocity for inertia
+    inertiaRef.current = {
+      x: lastPoint.x - x,
+      y: lastPoint.y - y
+    };
+    
+    // Update last position for next move
+    setLastPoint({ x, y });
     
     // Apply scrolling
-    const scrollAreaViewport = containerRef.current?.closest('.scroll-area-viewport') as HTMLElement;
-    if (scrollAreaViewport) {
-      scrollAreaViewport.scrollLeft = scrollPositionRef.current.x + deltaX;
-      scrollAreaViewport.scrollTop = scrollPositionRef.current.y + deltaY;
+    const scrollViewport = getScrollViewport();
+    if (scrollViewport) {
+      scrollViewport.scrollLeft = scrollPositionRef.current.x + deltaX;
+      scrollViewport.scrollTop = scrollPositionRef.current.y + deltaY;
     }
     
     // Prevent text selection during drag
@@ -158,7 +248,14 @@ export function useGestureHandlers(containerRef: React.RefObject<HTMLElement>): 
 
   // Handle mouse up to end dragging
   const handleMouseUp = () => {
-    setIsDragging(false);
+    if (!isDraggingRef.current) return;
+    
+    updateDraggingState(false);
+    
+    // Start inertia effect if the velocity is significant
+    if (Math.abs(inertiaRef.current.x) > 1 || Math.abs(inertiaRef.current.y) > 1) {
+      rafRef.current = requestAnimationFrame(applyInertia);
+    }
   };
 
   // Set up event listeners
@@ -175,6 +272,7 @@ export function useGestureHandlers(containerRef: React.RefObject<HTMLElement>): 
     // Add mouse move and up to window to capture events outside the element
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('mouseleave', handleMouseUp); // Handle when mouse leaves window
 
     return () => {
       element.removeEventListener('touchstart', handleTouchStart);
@@ -184,8 +282,14 @@ export function useGestureHandlers(containerRef: React.RefObject<HTMLElement>): 
       element.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('mouseleave', handleMouseUp);
+      
+      // Cancel any animations on cleanup
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
     };
-  }, [containerRef, touchState, zoomLevel, isDragging, startPoint]);
+  }, [containerRef, touchState, zoomLevel]);
 
   return {
     handleTouchStart,

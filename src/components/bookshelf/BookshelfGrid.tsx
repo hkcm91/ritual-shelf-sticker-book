@@ -19,27 +19,14 @@ const BookshelfGrid: React.FC = () => {
   // Reference to track if initialization has occurred
   const initializedRef = useRef(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   
   // Apply theme styles
   useThemeApplication();
   
   // Set up gesture handlers
-  const gestureHandlers = useGestureHandlers(containerRef);
-  
-  // Track dragging state for cursor style
-  useEffect(() => {
-    const handleMouseDown = () => setIsDragging(true);
-    const handleMouseUp = () => setIsDragging(false);
-    
-    document.addEventListener('mousedown', handleMouseDown);
-    document.addEventListener('mouseup', handleMouseUp);
-    
-    return () => {
-      document.removeEventListener('mousedown', handleMouseDown);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, []);
+  const gestureHandlers = useGestureHandlers(containerRef, scrollAreaRef, setIsDragging);
   
   // Ensure we have a default shelf - only run once on mount
   useEffect(() => {
@@ -78,24 +65,28 @@ const BookshelfGrid: React.FC = () => {
   }, [rowsPerShelf, columnsPerRow]);
   
   return (
-    <ScrollArea className="w-full h-full bookshelf-wrapper">
-      <div 
-        ref={containerRef}
-        className="bookshelf-container relative mt-0"
-        style={{
-          transform: `scale(${zoomLevel})`,
-          transformOrigin: 'top center',
-          transition: 'transform 0.2s ease-out',
-          width: `${isMobile ? 100 : 95}%`,
-          margin: '0 auto',
-          cursor: isDragging ? 'grabbing' : 'grab'
-        }}
-      >
-        <div className="bookshelf-rows relative z-10">
-          {renderShelfRows}
+    <div className="relative w-full h-full bookshelf-wrapper" ref={scrollAreaRef}>
+      <ScrollArea className="w-full h-full scroll-area-container">
+        <div 
+          ref={containerRef}
+          className={`bookshelf-container relative mt-0 ${isDragging ? 'is-dragging' : ''}`}
+          style={{
+            transform: `scale(${zoomLevel})`,
+            transformOrigin: 'top center',
+            width: `${isMobile ? 100 : 95}%`,
+            margin: '0 auto'
+          }}
+        >
+          <div className="bookshelf-rows relative z-10">
+            {renderShelfRows}
+          </div>
         </div>
-      </div>
-    </ScrollArea>
+        
+        {/* Keyboard shortcut hints */}
+        <div className="scroll-hint alt-hint">Alt+Scroll to Zoom</div>
+        <div className="scroll-hint shift-hint">Shift+Scroll for Horizontal Panning</div>
+      </ScrollArea>
+    </div>
   );
 };
 

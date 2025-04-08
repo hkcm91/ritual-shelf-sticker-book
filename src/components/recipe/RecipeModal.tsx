@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { X, Link, Upload, Plus, Save, Loader2, ChevronRight, ChevronDown, Clock, ChevronLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PopupWindow } from '@/components/ui/popup-window';
@@ -210,6 +211,9 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ isOpen, onClose, position, sh
       </div>
     </div>
   );
+  
+  // Don't render anything if not open, to prevent React hooks errors
+  if (!isOpen) return null;
   
   return (
     <PopupWindow

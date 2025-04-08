@@ -11,6 +11,7 @@ interface RecipeImageUploadProps {
 const RecipeImageUpload: React.FC<RecipeImageUploadProps> = ({ value, onChange }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isHovering, setIsHovering] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
   
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -31,6 +32,33 @@ const RecipeImageUpload: React.FC<RecipeImageUploadProps> = ({ value, onChange }
     }
   };
   
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+  
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    
+    const file = e.dataTransfer.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const result = event.target?.result as string;
+        onChange(result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  
   return (
     <div className="space-y-2">
       <label className="text-amber-700 text-sm font-medium block">Recipe Photo</label>
@@ -39,11 +67,16 @@ const RecipeImageUpload: React.FC<RecipeImageUploadProps> = ({ value, onChange }
         className={`
           relative aspect-video border-2 rounded-md overflow-hidden
           ${value ? 'border-amber-200' : 'border-dashed border-amber-300 bg-amber-50/50 hover:bg-amber-50'}
+          ${dragActive ? 'border-amber-400 bg-amber-100/70' : ''}
           transition-colors cursor-pointer
         `}
         onClick={() => !value && fileInputRef.current?.click()}
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
+        onDragEnter={handleDrag}
+        onDragLeave={handleDrag}
+        onDragOver={handleDrag}
+        onDrop={handleDrop}
       >
         {value ? (
           <>

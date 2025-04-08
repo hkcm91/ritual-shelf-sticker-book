@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { PlusCircle, Book, Music, Utensils, BookMarked } from 'lucide-react';
 import { SlotType } from '@/store/types';
 import RecipeModal from './recipe/RecipeModal';
+import { useBookshelfStore } from '@/store/bookshelfStore';
 
 interface EmptySlotProps {
   fileInputRef: React.RefObject<HTMLInputElement>;
@@ -91,6 +92,3 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
 };
 
 export default EmptySlot;
-
-// Import at the top - I'm adding it here to avoid modifying imports in multiple places
-import { useBookshelfStore } from '@/store/bookshelfStore';

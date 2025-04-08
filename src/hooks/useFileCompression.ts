@@ -1,6 +1,6 @@
 
 import { useCallback } from 'react';
-import { compressImage } from '../utils/imageUtils';
+import { useImageProcessing } from './useImageProcessing';
 
 export interface CompressionSettings {
   quality: number;
@@ -22,27 +22,9 @@ export const useFileCompression = ({
   }
 }: UseFileCompressionProps) => {
   
-  const compressImageFile = useCallback(async (file: File, imageData: string): Promise<string> => {
-    // Only compress if over threshold size
-    if (file.size > compressionSettings.sizeThreshold * 1024) {
-      try {
-        const compressedData = await compressImage(imageData, {
-          quality: compressionSettings.quality,
-          maxWidth: compressionSettings.maxWidth,
-          maxHeight: compressionSettings.maxHeight
-        });
-        console.log(`Image compressed successfully`);
-        return compressedData;
-      } catch (err) {
-        console.warn(`Failed to compress image:`, err);
-        // Continue with original image if compression fails
-        return imageData;
-      }
-    }
-    
-    // Return original if below threshold
-    return imageData;
-  }, [compressionSettings]);
+  const { compressImageFile } = useImageProcessing({
+    compressionOptions: compressionSettings
+  });
   
   return {
     compressImageFile

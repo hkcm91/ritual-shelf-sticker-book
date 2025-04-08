@@ -3,11 +3,11 @@ import { useCallback } from 'react';
 import { toast } from 'sonner';
 import { useFileInput } from './useFileInput';
 import { useFileValidation } from './useFileValidation';
-import { useFileCompression } from './useFileCompression';
 import { useLottieFileHandler } from './useLottieFileHandler';
 import { useBookCreation } from './useBookCreation';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import { storageService } from '../services/storage/storageService';
+import { useImageProcessing } from './useImageProcessing';
 
 export interface UseFileHandlerProps {
   position: number;
@@ -38,32 +38,12 @@ export const useFileHandler = ({
 }: UseFileHandlerProps) => {
   const { fileInputRef, handleClick, clearFileInput } = useFileInput({ onFileSelect });
   const { validateFile } = useFileValidation({ slotType, acceptedFileTypes, maxFileSize });
-  const { compressImageFile } = useFileCompression({ compressionSettings });
+  const { processImageFile } = useImageProcessing({ compressionOptions: compressionSettings });
   const { processLottieFile } = useLottieFileHandler({
     onError: (error) => toast.error(error.message)
   });
   const { createBookOrSticker } = useBookCreation({ position });
   
-  const handleImageFile = useCallback(async (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = async (event) => {
-        try {
-          if (typeof event.target?.result === 'string') {
-            const imageData = await compressImageFile(file, event.target.result);
-            resolve(imageData);
-          } else {
-            reject(new Error('Failed to read file'));
-          }
-        } catch (err) {
-          reject(err);
-        }
-      };
-      reader.onerror = () => reject(new Error('Error reading file'));
-      reader.readAsDataURL(file);
-    });
-  }, [compressImageFile]);
-
   const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -95,7 +75,7 @@ export const useFileHandler = ({
       
       // Process file based on type
       if (file.type.startsWith('image/')) {
-        fileContent = await handleImageFile(file);
+        fileContent = await processImageFile(file);
       } else if (file.type === 'application/json' || file.name.endsWith('.json')) {
         if (slotType !== "sticker") {
           toast.error('JSON files are only supported for stickers');
@@ -122,7 +102,7 @@ export const useFileHandler = ({
     onFileSelect, 
     validateFile, 
     clearFileInput, 
-    handleImageFile, 
+    processImageFile, 
     processLottieFile, 
     createBookOrSticker,
     slotType

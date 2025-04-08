@@ -65,3 +65,125 @@ export const compressImage = async (
     img.src = dataUrl;
   });
 };
+
+/**
+ * Converts an image from one format to another
+ */
+export const convertImageFormat = async (
+  dataUrl: string,
+  targetFormat: 'jpeg' | 'png' | 'webp',
+  quality = 0.9
+): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        reject(new Error('Could not get canvas context'));
+        return;
+      }
+      
+      // Draw the image to canvas
+      ctx.drawImage(img, 0, 0);
+      
+      // Convert to the target format
+      const convertedDataUrl = canvas.toDataURL(
+        `image/${targetFormat}`,
+        quality
+      );
+      
+      resolve(convertedDataUrl);
+    };
+    
+    img.onerror = () => {
+      reject(new Error('Error loading image for format conversion'));
+    };
+    
+    img.src = dataUrl;
+  });
+};
+
+/**
+ * Calculates the file size of a data URL in kilobytes
+ */
+export const calculateDataUrlSize = (dataUrl: string): number => {
+  // Remove the data URL prefix to get the base64 string
+  const base64 = dataUrl.split(',')[1];
+  // Calculate size in bytes: (base64 length * 3/4) to account for base64 overhead
+  const sizeInBytes = (base64.length * 3) / 4;
+  // Convert to kilobytes
+  return sizeInBytes / 1024;
+};
+
+/**
+ * Crops an image to a specified aspect ratio
+ */
+export const cropImageToAspectRatio = async (
+  dataUrl: string,
+  aspectRatio: number, // width/height
+  options: {
+    quality?: number;
+  } = {}
+): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const quality = options.quality || 0.9;
+      
+      // Calculate dimensions to crop to the desired aspect ratio
+      let cropWidth = img.width;
+      let cropHeight = img.height;
+      
+      if (cropWidth / cropHeight > aspectRatio) {
+        // Image is wider than target aspect ratio
+        cropWidth = cropHeight * aspectRatio;
+      } else {
+        // Image is taller than target aspect ratio
+        cropHeight = cropWidth / aspectRatio;
+      }
+      
+      // Calculate center positioning
+      const offsetX = (img.width - cropWidth) / 2;
+      const offsetY = (img.height - cropHeight) / 2;
+      
+      // Create canvas for cropping
+      const canvas = document.createElement('canvas');
+      canvas.width = cropWidth;
+      canvas.height = cropHeight;
+      
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        reject(new Error('Could not get canvas context'));
+        return;
+      }
+      
+      // Draw the cropped region
+      ctx.drawImage(
+        img,
+        offsetX, offsetY, cropWidth, cropHeight, // Source rectangle
+        0, 0, cropWidth, cropHeight // Destination rectangle
+      );
+      
+      // Get the original format
+      const format = dataUrl.split(';')[0].split('/')[1];
+      
+      // Convert to data URL
+      const croppedDataUrl = canvas.toDataURL(
+        `image/${format}`,
+        quality
+      );
+      
+      resolve(croppedDataUrl);
+    };
+    
+    img.onerror = () => {
+      reject(new Error('Error loading image for cropping'));
+    };
+    
+    img.src = dataUrl;
+  });
+};

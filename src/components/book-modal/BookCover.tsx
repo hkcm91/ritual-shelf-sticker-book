@@ -2,6 +2,7 @@
 import React, { useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Upload } from 'lucide-react';
+import { useImageProcessing } from '@/hooks/useImageProcessing';
 
 type BookCoverProps = {
   coverURL?: string;
@@ -15,20 +16,19 @@ const BookCover: React.FC<BookCoverProps> = ({
   onCoverChange
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { processImageFile } = useImageProcessing();
   
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0] && onCoverChange) {
       const file = e.target.files[0];
-      const reader = new FileReader();
-      
-      reader.onload = (event) => {
-        if (typeof event.target?.result === 'string') {
-          console.log("Book cover loaded, length:", event.target.result.length);
-          onCoverChange(event.target.result);
-        }
-      };
-      
-      reader.readAsDataURL(file);
+      try {
+        // Process the image with resizing and compression if needed
+        const processedImageUrl = await processImageFile(file, { forceResize: true });
+        console.log("Book cover processed, length:", processedImageUrl.length);
+        onCoverChange(processedImageUrl);
+      } catch (error) {
+        console.error("Error processing book cover:", error);
+      }
     }
   };
   

@@ -1,3 +1,4 @@
+
 import { useCallback, useRef } from 'react';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 
@@ -22,9 +23,11 @@ export function useTouchGestures(
   const startPointRef = useRef({ x: 0, y: 0 });
   const lastPointRef = useRef({ x: 0, y: 0 });
   const isTouchingRef = useRef(false);
+  const lastTouchTimeRef = useRef(0);
+  const touchThrottleMs = 16; // ~60fps
   
-  // Access store only once per render
-  const { zoomLevel, adjustZoomLevel, scrollPositionRef } = useBookshelfStore(state => ({
+  // Access store only once per render and extract what we need
+  const { zoomLevel, adjustZoomLevel, scrollPositionRef } = useBookshelfStore((state) => ({
     zoomLevel: state.zoomLevel,
     adjustZoomLevel: state.adjustZoomLevel,
     scrollPositionRef: state.scrollPositionRef
@@ -69,8 +72,13 @@ export function useTouchGestures(
     }
   }, [getScrollViewport, scrollPositionRef, updateDraggingState, zoomLevel]);
 
-  // Handle touch move event with requestAnimationFrame for better performance
+  // Handle touch move event with throttling for better performance
   const handleTouchMove = useCallback((e: TouchEvent) => {
+    // Throttle touch events for better performance
+    const now = Date.now();
+    if (now - lastTouchTimeRef.current < touchThrottleMs) return;
+    lastTouchTimeRef.current = now;
+    
     // Handle pinch-to-zoom with two fingers
     if (isZoomingRef.current && e.touches.length === 2) {
       e.preventDefault();
@@ -83,21 +91,16 @@ export function useTouchGestures(
       // Calculate zoom factor based on pinch gesture
       const scaleFactor = distance / initialDistanceRef.current;
       
-      // Calculate midpoint of pinch for zoom-to-point
-      const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-      const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-      
       // Calculate target zoom level (with limits)
       const newZoom = Math.max(0.25, Math.min(2, initialZoomRef.current * scaleFactor));
       
-      // Use requestAnimationFrame to avoid state update loops
-      requestAnimationFrame(() => {
-        // Apply zoom centered on pinch midpoint
-        adjustZoomLevel(newZoom - zoomLevel);
-        
-        // Advanced: Adjust scroll position to keep pinch center fixed
-        // Note: This would require additional calculations based on the viewport
-      });
+      // Apply zoom change using a delta to avoid state loop
+      const delta = newZoom - zoomLevel;
+      
+      // Only adjust if the change is significant enough
+      if (Math.abs(delta) > 0.005) {
+        adjustZoomLevel(delta);
+      }
     } 
     // Handle panning with single finger
     else if (e.touches.length === 1 && isTouchingRef.current) {
@@ -119,15 +122,13 @@ export function useTouchGestures(
       // Update last position for next move calculation
       lastPointRef.current = { x, y };
       
-      // Use requestAnimationFrame for smooth scrolling
-      requestAnimationFrame(() => {
-        // Apply scroll to the viewport element
-        const scrollViewport = getScrollViewport();
-        if (scrollViewport) {
-          scrollViewport.scrollLeft = scrollPositionRef.current.x + deltaX;
-          scrollViewport.scrollTop = scrollPositionRef.current.y + deltaY;
-        }
-      });
+      // Apply scroll to the viewport element directly
+      // This avoids React state updates and prevents loops
+      const scrollViewport = getScrollViewport();
+      if (scrollViewport) {
+        scrollViewport.scrollLeft = scrollPositionRef.current.x + deltaX;
+        scrollViewport.scrollTop = scrollPositionRef.current.y + deltaY;
+      }
     }
   }, [getScrollViewport, inertiaRef, scrollPositionRef, zoomLevel, adjustZoomLevel]);
 

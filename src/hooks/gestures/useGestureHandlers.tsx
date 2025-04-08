@@ -1,5 +1,4 @@
-
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useDragGestures } from './useDragGestures';
 import { useScrollGestures } from './useScrollGestures';
 import { useTouchGestures } from './useTouchGestures';
@@ -16,6 +15,9 @@ export function useGestureHandlers(
   scrollAreaRef: React.RefObject<HTMLElement>,
   setIsDragging?: (isDragging: boolean) => void
 ) {
+  // Keep track of whether event listeners are attached
+  const listenersAttachedRef = useRef(false);
+  
   // Set up drag gestures using our reusable hook
   const {
     handleMouseDown,
@@ -62,7 +64,9 @@ export function useGestureHandlers(
   // Set up event listeners with { passive: false } for preventDefault()
   useEffect(() => {
     const element = containerRef.current;
-    if (!element) return;
+    if (!element || listenersAttachedRef.current) return;
+    
+    listenersAttachedRef.current = true;
 
     // Add touch event listeners with passive: false to allow preventDefault
     element.addEventListener('touchstart', handleTouchStart, { passive: false });
@@ -93,6 +97,9 @@ export function useGestureHandlers(
       
       // Cancel any animations on cleanup
       cleanupAnimations();
+      
+      // Reset the listeners attached flag
+      listenersAttachedRef.current = false;
     };
   }, [
     containerRef, 

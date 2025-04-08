@@ -1,3 +1,4 @@
+
 import { useCallback, useRef } from 'react';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 
@@ -10,7 +11,7 @@ import { useBookshelfStore } from '@/store/bookshelfStore';
 export function useScrollGestures(
   scrollAreaRef: React.RefObject<HTMLElement>
 ) {
-  // Get store values and functions
+  // Get store values and functions - extract only what we need
   const { zoomLevel, adjustZoomLevel } = useBookshelfStore(state => ({
     zoomLevel: state.zoomLevel,
     adjustZoomLevel: state.adjustZoomLevel
@@ -19,6 +20,7 @@ export function useScrollGestures(
   // Use a ref to track last wheel event timestamp for throttling
   const lastWheelTime = useRef(0);
   const wheelThrottleMs = 16; // ~60fps
+  const zoomDeltaRef = useRef(0); // Track accumulated small changes
 
   // Find the scrollable viewport element
   const getScrollViewport = useCallback(() => {
@@ -48,9 +50,15 @@ export function useScrollGestures(
       // Calculate zoom delta (smoother zoom)
       const delta = e.deltaY * -0.001;
       
+      // Accumulate small changes to avoid triggering too many state updates
+      zoomDeltaRef.current += delta;
+      
+      // Only update if the accumulated delta is significant
+      if (Math.abs(zoomDeltaRef.current) < 0.01) return;
+      
       // Calculate old and new scale
       const oldScale = zoomLevel;
-      const newScale = Math.max(0.25, Math.min(2, oldScale + delta));
+      const newScale = Math.max(0.25, Math.min(2, oldScale + zoomDeltaRef.current));
       
       // Only proceed if scale actually changed
       if (newScale !== oldScale) {
@@ -64,12 +72,16 @@ export function useScrollGestures(
         // Apply new zoom level
         requestAnimationFrame(() => {
           // Update the zoom level in the store
-          adjustZoomLevel(delta);
+          adjustZoomLevel(zoomDeltaRef.current);
+          zoomDeltaRef.current = 0; // Reset accumulated delta
           
           // Adjust scroll position to keep cursor point fixed
           scrollViewport.scrollLeft = newScrollX;
           scrollViewport.scrollTop = newScrollY;
         });
+      } else {
+        // Reset accumulated delta if no change was made
+        zoomDeltaRef.current = 0;
       }
     } 
     // Use shift+wheel for horizontal scrolling

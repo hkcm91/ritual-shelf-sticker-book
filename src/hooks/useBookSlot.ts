@@ -1,8 +1,10 @@
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import { SlotType } from '../store/types';
 import { toast } from 'sonner';
+import useFileInput from './useFileInput';
+import useTransformControls from './useTransformControls';
 
 export interface UseBookSlotProps {
   position: number;
@@ -33,6 +35,11 @@ export const useBookSlot = ({
   const book = Object.values(books).find(
     book => book.position === position && book.shelfId === activeShelfId && !book.isSticker
   );
+  
+  // Set up file input handling
+  const { fileInputRef, handleClick: triggerFileInput } = useFileInput({
+    onFileSelect
+  });
   
   // Handle dragging events
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -103,10 +110,21 @@ export const useBookSlot = ({
     } else if (slotType === 'recipe') {
       // Recipe slots are handled directly in EmptySlot component
       console.log("[useBookSlot] Recipe slots are handled in EmptySlot");
+    } else if (slotType === 'sticker') {
+      // For sticker slots, trigger the file input
+      triggerFileInput();
     }
-  }, [slotType, openModal]);
+  }, [slotType, openModal, triggerFileInput]);
+
+  // Optional file change handler
+  const handleFileChange = useCallback((file: File) => {
+    if (onFileSelect) {
+      onFileSelect(file);
+    }
+  }, [onFileSelect]);
 
   return {
+    // Core slot properties
     book,
     showDeleteDialog,
     setShowDeleteDialog,
@@ -115,7 +133,11 @@ export const useBookSlot = ({
     handleDragLeave,
     handleDrop,
     handleDeleteSticker,
-    isDragOver
+    isDragOver,
+    
+    // File handling
+    fileInputRef,
+    handleFileChange,
   };
 };
 

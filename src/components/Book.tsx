@@ -49,7 +49,7 @@ const Book: React.FC<BookProps> = ({ data }) => {
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'
       }}
-      draggable="true"
+      draggable={true}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onClick={handleClick}

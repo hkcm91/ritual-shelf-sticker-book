@@ -11,6 +11,8 @@ import ContextMenuWrapper from './ContextMenuWrapper';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 import { SlotType } from '@/store/types';
 import { getDefaultSlotType, isSlotCompatibleWithLibrary } from '@/utils/slotCompatibility';
+import useTransformControls from '@/hooks/useTransformControls';
+import useStickerDrag from '@/hooks/useStickerDrag';
 
 type BookSlotProps = {
   position: number;
@@ -19,7 +21,6 @@ type BookSlotProps = {
 const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   const { activeShelfId, shelves, activeTheme } = useBookshelfStore();
   const [slotType, setSlotType] = useState<SlotType>("book");
-  const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Get current library type
   const libraryType = activeShelfId && shelves[activeShelfId] ? 
@@ -34,31 +35,19 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     }
   }, [libraryType, slotType]);
   
+  // Use the book slot hook for basic slot functionality
   const {
     book,
-    fileInputRef: hookFileInputRef,
-    scale,
-    position2D,
-    rotation,
     showDeleteDialog,
     setShowDeleteDialog,
-    handleFileChange,
     handleClick,
     handleDragOver,
     handleDragLeave,
     handleDrop,
-    handleStickerMouseDown,
-    handleStickerMouseMove,
-    handleStickerMouseUp,
-    handleRotate,
-    handleScaleChange,
-    handleResetTransform,
     handleDeleteSticker,
-    isDragging,
-    setIsDragging,
-    dragStart,
-    setDragStart,
-    isAltDrag
+    isDragOver,
+    fileInputRef,
+    handleFileChange
   } = useBookSlot({ 
     position, 
     slotType,
@@ -67,6 +56,49 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
       // File handler logic here if needed
     }
   });
+
+  // Use transform controls hook for sticker manipulation (only if needed)
+  const {
+    scale, 
+    position2D, 
+    rotation,
+    handleRotate,
+    handleScaleChange,
+    handleResetTransform,
+    setPosition2D
+  } = useTransformControls({
+    activeShelfId,
+    position,
+    initialScale: 1,
+    initialPosition: { x: 0, y: 0 },
+    initialRotation: 0
+  });
+
+  // Use sticker drag hook for sticker manipulation (only if needed)
+  const {
+    isDragging,
+    setIsDragging,
+    dragStart,
+    setDragStart,
+    isAltDrag,
+    handleStickerMouseDown
+  } = useStickerDrag({
+    position,
+    bookId: book?.id,
+    initialPosition: position2D,
+    setPosition2D
+  });
+
+  // Handler for sticker mouse events that we need to pass to the component
+  const handleStickerMouseMove = (e: React.MouseEvent) => {
+    // This is intentionally left empty - the actual implementation is in the useStickerDrag hook
+    // We're providing this as a pass-through for the component API
+  };
+
+  const handleStickerMouseUp = (e: React.MouseEvent) => {
+    // This is intentionally left empty - the actual implementation is in the useStickerDrag hook
+    // We're providing this as a pass-through for the component API
+  };
 
   // Handle type toggle without triggering file input
   const handleTypeToggle = (value: string) => {
@@ -93,6 +125,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
       <div 
         className={`book-slot relative h-[220px] w-[150px] mx-1 rounded-sm
           ${!book ? 'empty hover:bg-gray-50/10' : 'hover:border hover:border-primary/30'}
+          ${isDragOver ? 'drag-over' : ''}
           ${useRealisticStyle ? 'realistic-book-slot' : ''}
           transition-colors duration-200 cursor-pointer`}
         data-position={position}
@@ -100,8 +133,6 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        onMouseMove={handleStickerMouseMove}
-        onMouseUp={handleStickerMouseUp}
         style={{
           boxShadow: useRealisticStyle && !book ? 'inset 0 0 20px rgba(0,0,0,0.1)' : 'none'
         }}
@@ -141,7 +172,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
           )
         ) : (
           <EmptySlot 
-            fileInputRef={hookFileInputRef} 
+            fileInputRef={fileInputRef} 
             onFileSelect={handleFileChange} 
             slotType={slotType}
             onClick={handleEmptySlotClick}

@@ -5,6 +5,7 @@ import { useDragAndDrop } from './useDragAndDrop';
 import { useFileHandler } from './useFileHandler';
 import { useStickerPositioning } from './stickers/useStickerPositioning';
 import { SlotType } from '../store/types';
+import { toast } from 'sonner';
 
 export interface UseBookSlotProps {
   position: number;
@@ -25,8 +26,6 @@ export const useBookSlot = ({
   // Get the book at this position and shelf
   const book = Object.values(books).find(
     book => book.position === position && book.shelfId === activeShelfId && !book.isSticker
-  ) || Object.values(books).find(
-    book => book.position === position && book.shelfId === activeShelfId
   );
   
   // Use the sticker positioning hook
@@ -78,6 +77,7 @@ export const useBookSlot = ({
         onBookDelete(book.id);
       } else {
         deleteBook(book.id);
+        toast.success('Item deleted successfully');
       }
       setShowDeleteDialog(false);
     }

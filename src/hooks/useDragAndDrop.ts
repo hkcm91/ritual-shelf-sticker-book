@@ -2,6 +2,7 @@
 import { useState, useCallback } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import { BookData, SlotType } from '../store/types';
+import { toast } from 'sonner';
 
 export interface Point {
   x: number;
@@ -41,6 +42,8 @@ export const useDragAndDrop = ({
       position,
       shelfId: activeShelfId
     });
+    
+    toast.success("Book moved successfully");
   }, [activeShelfId, updateBook]);
   
   // Handle mouse down for sticker dragging
@@ -57,6 +60,7 @@ export const useDragAndDrop = ({
     });
     
     e.stopPropagation();
+    e.preventDefault();
   }, [book]);
   
   // Handle mouse move for sticker dragging
@@ -68,13 +72,23 @@ export const useDragAndDrop = ({
     
     setPosition2D({ x: newX, y: newY });
     e.stopPropagation();
+    e.preventDefault();
   }, [isDragging, dragStart, book, setPosition2D]);
   
   // Handle mouse up to end sticker dragging
-  const handleStickerMouseUp = useCallback(() => {
+  const handleStickerMouseUp = useCallback((e: React.MouseEvent) => {
+    if (isDragging && book?.isSticker) {
+      // Save the new position to the book
+      if (book.position2D && setPosition2D) {
+        updateBook(book.id, { position2D: book.position2D });
+      }
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    
     setIsDragging(false);
     setDragStart(null);
-  }, []);
+  }, [isDragging, book, updateBook, setPosition2D]);
   
   // Handle drag over events for drop targets
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -91,7 +105,8 @@ export const useDragAndDrop = ({
   // Handle drop events for books
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
-    e.currentTarget.classList.remove('drag-over');
+    const target = e.currentTarget;
+    target.classList.remove('drag-over');
     
     const droppedBookId = e.dataTransfer.getData('text/plain');
     console.log("[useDragAndDrop] Dropping book:", droppedBookId, "at position:", position);
@@ -110,6 +125,7 @@ export const useDragAndDrop = ({
           console.log("[useDragAndDrop] Swapping positions");
           updateBook(existingBook.id, { position: draggedBook.position });
           moveBook(droppedBookId, position);
+          toast.success("Books swapped positions");
         }
       } else {
         // If empty, just move the book

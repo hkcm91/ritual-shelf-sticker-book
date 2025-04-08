@@ -1,7 +1,7 @@
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
-import { SlotType } from '../store/types';
+import { SlotType } from '@/store/types';
 import { toast } from 'sonner';
 import useFileInput from './useFileInput';
 import useTransformControls from './useTransformControls';
@@ -14,47 +14,12 @@ export interface UseBookSlotProps {
   onBookDelete?: (bookId: string) => void;
 }
 
-export interface BookSlotReturnType {
-  // Core slot properties
-  book: any;
-  showDeleteDialog: boolean;
-  setShowDeleteDialog: (show: boolean) => void;
-  handleClick: () => void;
-  handleDragOver: (e: React.DragEvent) => void;
-  handleDragLeave: () => void;
-  handleDrop: (e: React.DragEvent) => void;
-  handleDeleteSticker: () => void;
-  isDragOver: boolean;
-  
-  // File handling
-  fileInputRef: React.RefObject<HTMLInputElement>;
-  handleFileChange: (file: File) => void;
-  
-  // Transform controls
-  scale: number;
-  position2D: { x: number, y: number };
-  rotation: number;
-  handleRotate: (direction: 'cw' | 'ccw') => void;
-  handleScaleChange: (scale: number) => void;
-  handleResetTransform: () => void;
-  
-  // Sticker drag
-  isDragging: boolean;
-  setIsDragging: (isDragging: boolean) => void;
-  dragStart: { x: number, y: number };
-  setDragStart: (dragStart: { x: number, y: number }) => void;
-  isAltDrag: boolean;
-  handleStickerMouseDown: (e: React.MouseEvent) => void;
-  handleStickerMouseMove: (e: React.MouseEvent) => void;
-  handleStickerMouseUp: (e: React.MouseEvent) => void;
-}
-
 export const useBookSlot = ({ 
   position, 
   slotType,
   onFileSelect,
   onBookDelete
-}: UseBookSlotProps): BookSlotReturnType => {
+}: UseBookSlotProps) => {
   const { 
     activeShelfId, 
     books, 

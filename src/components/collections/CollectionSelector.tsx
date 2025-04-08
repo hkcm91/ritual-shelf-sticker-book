@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Sparkles } from "lucide-react";
 import { 
   Select, 
@@ -20,11 +20,15 @@ const CollectionSelector: React.FC<CollectionSelectorProps> = ({
   onCollectionChange,
   className = ''
 }) => {
-  const { shelves, activeShelfId, switchShelf } = useBookshelfStore();
+  // Use more focused selectors to prevent unnecessary re-renders
+  const activeShelfId = useBookshelfStore(state => state.activeShelfId);
+  const shelves = useBookshelfStore(state => state.shelves);
+  const switchShelf = useBookshelfStore(state => state.switchShelf);
   
   const shelvesData = shelves as Record<string, ShelfData>;
   
-  const handleShelfChange = (value: string) => {
+  // Memoize the handler to prevent recreating it on each render
+  const handleShelfChange = useCallback((value: string) => {
     if (value !== activeShelfId) {
       switchShelf(value);
       
@@ -32,7 +36,7 @@ const CollectionSelector: React.FC<CollectionSelectorProps> = ({
         onCollectionChange(value);
       }
     }
-  };
+  }, [activeShelfId, switchShelf, onCollectionChange]);
   
   return (
     <div className={`w-full ${className}`}>
@@ -54,7 +58,7 @@ const CollectionSelector: React.FC<CollectionSelectorProps> = ({
           <SelectValue placeholder="Select a collection..." />
         </SelectTrigger>
         <SelectContent 
-          className="z-50 collections-dropdown min-w-[280px] p-1.5"
+          className="z-50 collections-dropdown min-w-[280px] p-1.5 bg-amber-950/95 backdrop-blur-md border border-amber-600/30"
           position="popper"
           sideOffset={5}
           align="center"
@@ -79,4 +83,5 @@ const CollectionSelector: React.FC<CollectionSelectorProps> = ({
   );
 };
 
-export default CollectionSelector;
+// Use memo to prevent unnecessary re-renders
+export default React.memo(CollectionSelector);

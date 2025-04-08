@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 
@@ -60,11 +59,13 @@ export function useGestureHandlers(containerRef: React.RefObject<HTMLElement>): 
 
   // Handle mouse wheel zoom on desktop
   const handleWheel = (e: WheelEvent) => {
-    if (e.ctrlKey || e.metaKey) {
+    // If Alt key is pressed, use wheel for zooming
+    if (e.altKey) {
       e.preventDefault();
       const delta = e.deltaY * -0.01;
       adjustZoomLevel(delta);
     }
+    // Otherwise, allow normal scrolling (no need to prevent default)
   };
 
   // Set up event listeners

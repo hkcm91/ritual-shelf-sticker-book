@@ -5,6 +5,7 @@ import { useBookshelfStore } from '../../store/bookshelfStore';
 import { useThemeApplication } from '@/hooks/theme/useThemeApplication';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useIsMobile } from '@/hooks/use-mobile';
+import useGestureHandlers from '@/hooks/useGestureHandlers';
 
 const BookshelfGrid: React.FC = () => {
   const activeShelfId = useBookshelfStore(state => state.activeShelfId);
@@ -14,10 +15,14 @@ const BookshelfGrid: React.FC = () => {
   
   // Reference to track if initialization has occurred
   const initializedRef = useRef(false);
+  const containerRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   
   // Apply theme styles
   useThemeApplication();
+  
+  // Set up gesture handlers
+  useGestureHandlers(containerRef);
   
   // Ensure we have a default shelf - only run once on mount
   useEffect(() => {
@@ -56,8 +61,9 @@ const BookshelfGrid: React.FC = () => {
   }, [rowsPerShelf, columnsPerRow]);
   
   return (
-    <ScrollArea className="w-full h-full">
+    <ScrollArea className="w-full h-full bookshelf-wrapper">
       <div 
+        ref={containerRef}
         className="bookshelf-container relative mt-0"
         style={{
           transform: `scale(${zoomLevel})`,

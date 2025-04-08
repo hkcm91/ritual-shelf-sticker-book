@@ -29,7 +29,7 @@ const ZoomControls: React.FC = () => {
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Zoom Out</p>
+            <p>Zoom Out (Alt+Scroll Down)</p>
           </TooltipContent>
         </Tooltip>
         
@@ -64,7 +64,7 @@ const ZoomControls: React.FC = () => {
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Zoom In</p>
+            <p>Zoom In (Alt+Scroll Up)</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>

@@ -7,7 +7,6 @@ import { toast } from 'sonner';
 import Header from '../components/layout/Header';
 import ShelfDialogs from '../components/shelf/ShelfDialogs';
 import { ShelfData } from '../store/types';
-import ZoomControls from '@/components/ZoomControls';
 
 const Index = () => {
   const { shelves, activeShelfId, loadCustomization } = useBookshelfStore();
@@ -60,9 +59,6 @@ const Index = () => {
       <div className="flex-grow w-full overflow-hidden">
         <BookshelfGrid />
       </div>
-      
-      {/* Zoom Controls */}
-      <ZoomControls />
       
       <BookModal />
       

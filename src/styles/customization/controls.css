@@ -60,12 +60,7 @@
 
 /* Improve cursor and dragging experience */
 .bookshelf-container {
-  cursor: grab; /* Show grab cursor by default */
   transition: transform 0.2s cubic-bezier(0.25, 0.1, 0.25, 1.0); /* Smoother zoom transition */
-}
-
-.bookshelf-container.is-dragging {
-  cursor: grabbing !important; /* Change to grabbing cursor when active */
 }
 
 /* Add keyboard shortcut helpers */

@@ -1,9 +1,13 @@
 
-import { useRef, useCallback } from 'react';
-import { useBookshelfStore } from '../store/bookshelfStore';
+import { useCallback } from 'react';
 import { toast } from 'sonner';
+import { useFileInput } from './useFileInput';
+import { useFileValidation } from './useFileValidation';
 import { useFileCompression } from './useFileCompression';
 import { useLottieFileHandler } from './useLottieFileHandler';
+import { useBookCreation } from './useBookCreation';
+import { useBookshelfStore } from '../store/bookshelfStore';
+import { storageService } from '../services/storage/storageService';
 
 export interface UseFileHandlerProps {
   position: number;
@@ -19,13 +23,6 @@ export interface UseFileHandlerProps {
   };
 }
 
-export interface FileHandlerResult {
-  fileInputRef: React.RefObject<HTMLInputElement>;
-  handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
-  handleClick: () => void;
-  clearFileInput: () => void;
-}
-
 export const useFileHandler = ({
   position,
   slotType = "book",
@@ -38,49 +35,14 @@ export const useFileHandler = ({
     maxHeight: 900,
     sizeThreshold: 200  // 200KB
   }
-}: UseFileHandlerProps): FileHandlerResult => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const { activeShelfId, addBook, openModal } = useBookshelfStore();
-  
-  // Use specialized hooks
+}: UseFileHandlerProps) => {
+  const { fileInputRef, handleClick, clearFileInput } = useFileInput({ onFileSelect });
+  const { validateFile } = useFileValidation({ slotType, acceptedFileTypes, maxFileSize });
   const { compressImageFile } = useFileCompression({ compressionSettings });
   const { processLottieFile } = useLottieFileHandler({
     onError: (error) => toast.error(error.message)
   });
-  
-  const clearFileInput = useCallback(() => {
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  }, []);
-  
-  const validateFileType = useCallback((file: File): boolean => {
-    if (acceptedFileTypes.length === 0) {
-      // Default validations based on slot type
-      if (slotType === "book") {
-        return file.type.startsWith('image/');
-      } else if (slotType === "sticker") {
-        return file.type.startsWith('image/') || 
-               file.type === 'application/json' || 
-               file.name.endsWith('.json');
-      }
-      return true;
-    }
-    
-    // Custom validation based on provided acceptedFileTypes
-    return acceptedFileTypes.some(type => {
-      if (type.includes('*')) {
-        // Handle wildcards like 'image/*'
-        const prefix = type.split('/')[0];
-        return file.type.startsWith(`${prefix}/`);
-      }
-      return file.type === type || (type === '.json' && file.name.endsWith('.json'));
-    });
-  }, [acceptedFileTypes, slotType]);
-  
-  const validateFileSize = useCallback((file: File): boolean => {
-    return file.size <= maxFileSize;
-  }, [maxFileSize]);
+  const { createBookOrSticker } = useBookCreation({ position });
   
   const handleImageFile = useCallback(async (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -113,26 +75,16 @@ export const useFileHandler = ({
       onFileSelect(file);
     }
     
-    // Validate file type
-    if (!validateFileType(file)) {
-      let supportedTypes = '';
-      if (slotType === "book") {
-        supportedTypes = 'image files';
-      } else if (slotType === "sticker") {
-        supportedTypes = 'image files or Lottie JSON files';
-      } else {
-        supportedTypes = acceptedFileTypes.join(', ');
-      }
-      
-      toast.error(`Unsupported file type. Please use ${supportedTypes}`);
-      clearFileInput();
-      return;
+    // Check storage usage
+    const stats = storageService.getUsageStats();
+    if (stats.percent > 80) {
+      toast.warning(`Storage is ${stats.percent}% full. Consider removing unused items.`);
     }
     
-    // Validate file size
-    if (!validateFileSize(file)) {
-      const maxSizeMB = maxFileSize / (1024 * 1024);
-      toast.error(`File is too large. Maximum size is ${maxSizeMB}MB`);
+    // Validate file
+    const validation = validateFile(file);
+    if (!validation.valid) {
+      toast.error(validation.error);
       clearFileInput();
       return;
     }
@@ -159,27 +111,7 @@ export const useFileHandler = ({
       }
       
       // Add book or sticker to the store
-      const newBookId = addBook({
-        title: isSticker ? file.name.replace(/\.[^/.]+$/, "") : '',
-        author: isSticker ? 'Sticker' : '',
-        coverURL: fileContent,
-        progress: 0,
-        rating: 0,
-        position,
-        shelfId: activeShelfId,
-        isSticker
-      });
-      
-      if (newBookId) {
-        if (isSticker) {
-          toast.success('Sticker added successfully');
-        } else {
-          // Open modal for book editing
-          openModal(newBookId);
-        }
-      } else {
-        toast.error(`Failed to add ${isSticker ? 'sticker' : 'book'}`);
-      }
+      createBookOrSticker(fileContent, file.name, isSticker);
     } catch (error) {
       console.error(`Error adding ${slotType}:`, error);
       toast.error('Failed to save file. Please try again with a different file.');
@@ -187,23 +119,14 @@ export const useFileHandler = ({
       clearFileInput();
     }
   }, [
-    slotType, 
     onFileSelect, 
-    validateFileType, 
-    validateFileSize, 
+    validateFile, 
+    clearFileInput, 
     handleImageFile, 
     processLottieFile, 
-    clearFileInput, 
-    addBook, 
-    activeShelfId, 
-    openModal, 
-    acceptedFileTypes, 
-    position
+    createBookOrSticker,
+    slotType
   ]);
-
-  const handleClick = useCallback(() => {
-    fileInputRef.current?.click();
-  }, []);
 
   return {
     fileInputRef,

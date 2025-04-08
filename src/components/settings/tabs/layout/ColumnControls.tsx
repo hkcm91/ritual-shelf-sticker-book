@@ -17,7 +17,6 @@ const ColumnControls: React.FC = () => {
   const activeShelf = activeShelfId ? shelvesData[activeShelfId] : null;
   
   const handleAddColumn = () => {
-    console.log("Add column clicked, activeShelfId:", activeShelfId);
     if (activeShelfId) {
       addColumn();
       toast.success("Column added successfully");
@@ -27,7 +26,6 @@ const ColumnControls: React.FC = () => {
   };
   
   const handleRemoveColumn = () => {
-    console.log("Remove column clicked, activeShelfId:", activeShelfId);
     if (activeShelfId && activeShelf && activeShelf.columns > 1) {
       removeColumn();
       toast.success("Column removed successfully");
@@ -38,8 +36,11 @@ const ColumnControls: React.FC = () => {
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-medium text-primary">Shelf Columns</h3>
-      <p className="text-xs text-muted-foreground mb-2">
+      <h3 className="text-sm font-medium text-amber-200 flex items-center gap-2">
+        <Columns className="h-4 w-4 text-amber-300" />
+        Shelf Columns
+      </h3>
+      <p className="text-xs text-amber-200/70 mb-2">
         Add or remove vertical columns of book slots on your bookshelf
       </p>
       <div className="flex items-center space-x-2">
@@ -48,20 +49,19 @@ const ColumnControls: React.FC = () => {
           size="sm" 
           onClick={handleRemoveColumn}
           disabled={!activeShelf || activeShelf.columns <= 1}
-          className="px-2"
+          className="px-2 bg-amber-900/30 border-amber-700/30 text-amber-100 hover:bg-amber-800/40 hover:text-amber-50"
           aria-label="Remove column"
         >
           -
         </Button>
-        <div className="flex items-center space-x-1">
-          <Columns className="h-4 w-4 text-primary" />
-          <span className="font-medium">{activeShelf ? activeShelf.columns : 0} Columns</span>
+        <div className="flex items-center gap-2 px-4 py-2 rounded-md bg-amber-950/30 border border-amber-700/20">
+          <span className="font-medium text-amber-100">{activeShelf ? activeShelf.columns : 0} Columns</span>
         </div>
         <Button 
           variant="outline" 
           size="sm" 
           onClick={handleAddColumn}
-          className="px-2"
+          className="px-2 bg-amber-900/30 border-amber-700/30 text-amber-100 hover:bg-amber-800/40 hover:text-amber-50"
           aria-label="Add column"
         >
           +

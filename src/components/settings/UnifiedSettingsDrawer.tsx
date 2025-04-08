@@ -18,10 +18,6 @@ import {
 } from 'lucide-react';
 import { useLocation, useParams } from 'react-router-dom';
 import { useBookshelfStore } from '@/store/bookshelfStore';
-import LayoutTab from './tabs/LayoutTab';
-import AppearanceTab from './tabs/AppearanceTab';
-import StorageSettings from '@/components/StorageSettings';
-import LibrarySettingsTab from './tabs/LibrarySettingsTab';
 import { Button } from '../ui/button';
 import {
   Tooltip,
@@ -29,6 +25,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import SettingsDrawerContent from './SettingsDrawerContent';
+import LibrarySettingsTab from './tabs/LibrarySettingsTab';
 
 interface UnifiedSettingsDrawerProps {
   onLibrarySettingsOpen?: () => void;
@@ -48,9 +46,7 @@ const UnifiedSettingsDrawer: React.FC<UnifiedSettingsDrawerProps> = ({
   // Default to most appropriate tab based on current page
   const defaultTab = isLibraryPage ? 'library' : 'layout';
   
-  // Improved handling with event logging
   const handleOpenChange = (newOpen: boolean) => {
-    console.log("Settings drawer onOpenChange triggered, new state:", newOpen);
     setOpen(newOpen);
     
     // If we're opening the drawer and we're on a library page, inform parent
@@ -59,13 +55,9 @@ const UnifiedSettingsDrawer: React.FC<UnifiedSettingsDrawerProps> = ({
     }
   };
 
-  // Separate handler for the trigger button click
   const handleTriggerClick = () => {
-    console.log("Settings drawer trigger clicked, setting state to:", !open);
     setOpen(true);
   };
-
-  console.log("UnifiedSettingsDrawer rendered, open state:", open);
   
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
@@ -89,37 +81,47 @@ const UnifiedSettingsDrawer: React.FC<UnifiedSettingsDrawerProps> = ({
         </TooltipProvider>
       </SheetTrigger>
       
-      <SheetContent className="overflow-y-auto">
+      <SheetContent className="overflow-y-auto bg-[#1A1F2C] border-l border-amber-700/30 text-amber-100">
         <SheetHeader>
-          <SheetTitle>Settings</SheetTitle>
-          <SheetDescription>
+          <SheetTitle className="text-amber-200">Settings</SheetTitle>
+          <SheetDescription className="text-amber-100/70">
             Customize your bookshelf experience
           </SheetDescription>
         </SheetHeader>
         
-        <Tabs defaultValue={defaultTab} className="mt-6">
-          <TabsList className="grid w-full grid-cols-4">
-            {isLibraryPage && (
-              <TabsTrigger value="library" className="flex items-center gap-1">
+        {isLibraryPage ? (
+          <Tabs defaultValue={defaultTab} className="mt-6">
+            <TabsList className="grid w-full grid-cols-4 bg-amber-950/50 border border-amber-700/30">
+              <TabsTrigger 
+                value="library" 
+                className="flex items-center gap-1 data-[state=active]:bg-amber-900/50 data-[state=active]:text-amber-100"
+              >
                 <BookMarked className="h-3.5 w-3.5" />
                 <span>Library</span>
               </TabsTrigger>
-            )}
-            <TabsTrigger value="layout" className="flex items-center gap-1">
-              <Layout className="h-3.5 w-3.5" />
-              <span>Layout</span>
-            </TabsTrigger>
-            <TabsTrigger value="appearance" className="flex items-center gap-1">
-              <Palette className="h-3.5 w-3.5" />
-              <span>Theme</span>
-            </TabsTrigger>
-            <TabsTrigger value="storage" className="flex items-center gap-1">
-              <Save className="h-3.5 w-3.5" />
-              <span>Storage</span>
-            </TabsTrigger>
-          </TabsList>
-          
-          {isLibraryPage && (
+              <TabsTrigger 
+                value="layout" 
+                className="flex items-center gap-1 data-[state=active]:bg-amber-900/50 data-[state=active]:text-amber-100"
+              >
+                <Layout className="h-3.5 w-3.5" />
+                <span>Layout</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="appearance" 
+                className="flex items-center gap-1 data-[state=active]:bg-amber-900/50 data-[state=active]:text-amber-100"
+              >
+                <Palette className="h-3.5 w-3.5" />
+                <span>Theme</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="storage" 
+                className="flex items-center gap-1 data-[state=active]:bg-amber-900/50 data-[state=active]:text-amber-100"
+              >
+                <Save className="h-3.5 w-3.5" />
+                <span>Storage</span>
+              </TabsTrigger>
+            </TabsList>
+            
             <TabsContent value="library" className="mt-4 space-y-6">
               <LibrarySettingsTab 
                 currentLibrary={currentLibrary} 
@@ -127,20 +129,12 @@ const UnifiedSettingsDrawer: React.FC<UnifiedSettingsDrawerProps> = ({
                 onCloseDrawer={() => setOpen(false)}
               />
             </TabsContent>
-          )}
-          
-          <TabsContent value="layout" className="mt-4 space-y-6">
-            <LayoutTab />
-          </TabsContent>
-          
-          <TabsContent value="appearance" className="mt-4 space-y-6">
-            <AppearanceTab onCloseDrawer={() => setOpen(false)} />
-          </TabsContent>
-          
-          <TabsContent value="storage" className="mt-4">
-            <StorageSettings />
-          </TabsContent>
-        </Tabs>
+            
+            <SettingsDrawerContent onCloseDrawer={() => setOpen(false)} />
+          </Tabs>
+        ) : (
+          <SettingsDrawerContent onCloseDrawer={() => setOpen(false)} />
+        )}
       </SheetContent>
     </Sheet>
   );

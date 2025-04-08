@@ -4,3 +4,4 @@ export * from './useScrollGestures';
 export * from './useTouchGestures';
 export * from './useGestureHandlers';
 export * from './useZoomPan';
+export * from './useDirectionalNavigation';

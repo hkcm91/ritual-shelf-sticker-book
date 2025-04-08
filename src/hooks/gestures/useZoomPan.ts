@@ -10,6 +10,7 @@ interface ZoomPanOptions {
   disableTouch?: boolean;
   disableDrag?: boolean;
   throttleDelay?: number;
+  altZoomMultiplier?: number; // New option for Alt key enhancement
 }
 
 interface ZoomPanState {
@@ -32,6 +33,7 @@ export function useZoomPan(
     disableTouch = false,
     disableDrag = false,
     throttleDelay = 0,
+    altZoomMultiplier = 2.5, // Higher value = faster zoom with Alt
   }: ZoomPanOptions = {}
 ) {
   // State for transform values
@@ -155,7 +157,8 @@ export function useZoomPan(
       // Use Alt+wheel for zooming, normal wheel for scrolling
       if (e.altKey) {
         e.preventDefault();
-        const delta = e.deltaY * -0.001; // Smoother zoom
+        // Enhanced zoom speed when Alt is pressed
+        const delta = e.deltaY * -0.001 * altZoomMultiplier;
         
         // Zoom towards cursor position
         zoomTowardsPoint(
@@ -175,7 +178,7 @@ export function useZoomPan(
       }
       // Normal vertical scrolling handled by the browser
     },
-    [disableWheel, scaleStep, zoomTowardsPoint]
+    [disableWheel, scaleStep, zoomTowardsPoint, altZoomMultiplier]
   );
 
   // Mouse handlers for dragging/panning
@@ -374,6 +377,7 @@ export function useZoomPan(
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       const panStep = 20; // pixels to move per key press
+      const zoomStepMultiplier = e.altKey ? altZoomMultiplier : 1; // Enhance zoom with Alt key
       
       switch (e.key) {
         case 'ArrowUp':
@@ -394,12 +398,16 @@ export function useZoomPan(
           break;
         case '+':
         case '=':
-          updateTransform({ scale: state.scale + scaleStep });
+          updateTransform({ 
+            scale: state.scale + (scaleStep * zoomStepMultiplier) 
+          });
           e.preventDefault();
           break;
         case '-':
         case '_':
-          updateTransform({ scale: state.scale - scaleStep });
+          updateTransform({ 
+            scale: state.scale - (scaleStep * zoomStepMultiplier) 
+          });
           e.preventDefault();
           break;
         case '0':
@@ -409,7 +417,7 @@ export function useZoomPan(
           break;
       }
     },
-    [scaleStep, state, updateTransform]
+    [scaleStep, state, updateTransform, altZoomMultiplier]
   );
 
   // Reset zoom and position

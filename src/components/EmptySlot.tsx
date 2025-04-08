@@ -1,7 +1,8 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { PlusCircle, Book, Music, Utensils, BookMarked } from 'lucide-react';
 import { SlotType } from '@/store/types';
+import RecipeModal from './recipe/RecipeModal';
 
 interface EmptySlotProps {
   fileInputRef: React.RefObject<HTMLInputElement>;
@@ -18,6 +19,9 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
   onClick,
   position
 }) => {
+  const [isRecipeModalOpen, setIsRecipeModalOpen] = useState(false);
+  const { activeShelfId } = useBookshelfStore();
+  
   const getSlotIcon = () => {
     switch (slotType) {
       case 'book':
@@ -35,34 +39,58 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
     }
   };
 
+  const handleClick = () => {
+    // For recipe slots, open the recipe modal instead of the file input
+    if (slotType === 'recipe' && activeShelfId) {
+      setIsRecipeModalOpen(true);
+    } else {
+      onClick();
+    }
+  };
+
   return (
-    <div 
-      className="empty flex items-center justify-center h-full w-full cursor-pointer rounded-sm"
-      onClick={onClick}
-      data-position={position}
-      data-slot-type={slotType}
-    >
-      <input
-        type="file"
-        ref={fileInputRef}
-        className="hidden"
-        accept={slotType === 'sticker' ? "image/*, .json" : "image/*"}
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) {
-            onFileSelect(file);
-          }
-        }}
-      />
-      <button 
-        className="add-book-button flex items-center justify-center p-2.5 rounded-full"
-        type="button"
-        aria-label={`Add ${slotType}`}
+    <>
+      <div 
+        className="empty flex items-center justify-center h-full w-full cursor-pointer rounded-sm"
+        onClick={handleClick}
+        data-position={position}
+        data-slot-type={slotType}
       >
-        {getSlotIcon()}
-      </button>
-    </div>
+        <input
+          type="file"
+          ref={fileInputRef}
+          className="hidden"
+          accept={slotType === 'sticker' ? "image/*, .json" : "image/*"}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) {
+              onFileSelect(file);
+            }
+          }}
+        />
+        <button 
+          className="add-book-button flex items-center justify-center p-2.5 rounded-full"
+          type="button"
+          aria-label={`Add ${slotType}`}
+        >
+          {getSlotIcon()}
+        </button>
+      </div>
+      
+      {/* Recipe Modal */}
+      {activeShelfId && (
+        <RecipeModal
+          isOpen={isRecipeModalOpen}
+          onClose={() => setIsRecipeModalOpen(false)}
+          position={position}
+          shelfId={activeShelfId}
+        />
+      )}
+    </>
   );
 };
 
 export default EmptySlot;
+
+// Import at the top - I'm adding it here to avoid modifying imports in multiple places
+import { useBookshelfStore } from '@/store/bookshelfStore';

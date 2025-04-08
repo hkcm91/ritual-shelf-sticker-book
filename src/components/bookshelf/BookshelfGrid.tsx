@@ -5,7 +5,7 @@ import { useBookshelfStore } from '../../store/bookshelfStore';
 import { useThemeApplication } from '@/hooks/theme/useThemeApplication';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useIsMobile } from '@/hooks/use-mobile';
-import useGestureHandlers from '@/hooks/useGestureHandlers';
+import { useGestureHandlers } from '@/hooks/gestures';
 
 const BookshelfGrid: React.FC = () => {
   const activeShelfId = useBookshelfStore(state => state.activeShelfId);

@@ -1,23 +1,16 @@
 
 import React, { useState } from 'react';
-import { X, Link, Upload, Plus, Save, Loader2, ChevronRight, ChevronDown, Clock, ChevronLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PopupWindow } from '@/components/ui/popup-window';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
+import { Form } from '@/components/ui/form';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 import { toast } from 'sonner';
 import { v4 as uuidv4 } from 'uuid';
-import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import RecipeUrlImport from './RecipeUrlImport';
-import IngredientsList from './IngredientsList';
-import PreparationSteps from './PreparationSteps';
-import RecipeImageUpload from './RecipeImageUpload';
-import RecipeMetadata from './RecipeMetadata';
+import RecipeModalFooter from './RecipeModalFooter';
+import { RecipeDetailsTab, RecipeIngredientsTab, RecipePreparationTab, RecipeTabNavigation } from './tabs';
 
 interface RecipeModalProps {
   isOpen: boolean;
@@ -148,70 +141,6 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ isOpen, onClose, position, sh
     toast.success("Recipe imported successfully!");
   };
   
-  const TabButton = ({ name, label, icon }: { name: 'details' | 'ingredients' | 'steps'; label: string; icon: React.ReactNode }) => (
-    <button
-      type="button"
-      onClick={() => setActiveTab(name)}
-      className={`
-        flex items-center gap-2 px-4 py-2 rounded-md transition-colors
-        ${activeTab === name 
-          ? 'bg-amber-100 text-amber-900 font-medium' 
-          : 'text-amber-700 hover:bg-amber-50'
-        }
-      `}
-    >
-      {icon}
-      <span>{label}</span>
-    </button>
-  );
-  
-  const footerContent = (
-    <div className="flex justify-between w-full">
-      <Button 
-        type="button" 
-        variant="outline" 
-        onClick={onClose}
-        className="border-amber-300/50 text-amber-700 hover:bg-amber-50/50"
-      >
-        Cancel
-      </Button>
-      
-      <div className="flex gap-2">
-        {activeTab !== 'details' && (
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => setActiveTab(activeTab === 'ingredients' ? 'details' : 'ingredients')}
-            className="text-amber-700"
-          >
-            <ChevronLeft className="h-4 w-4 mr-1" />
-            Back
-          </Button>
-        )}
-        
-        {activeTab !== 'steps' ? (
-          <Button
-            type="button"
-            onClick={() => setActiveTab(activeTab === 'details' ? 'ingredients' : 'steps')}
-            className="bg-amber-500 hover:bg-amber-600 text-white"
-          >
-            Next
-            <ChevronRight className="h-4 w-4 ml-1" />
-          </Button>
-        ) : (
-          <Button
-            type="submit"
-            form="recipe-form"
-            className="bg-green-600 hover:bg-green-700 text-white"
-          >
-            <Save className="h-4 w-4 mr-1" />
-            Save Recipe
-          </Button>
-        )}
-      </div>
-    </div>
-  );
-  
   // Don't render anything if not open, to prevent React hooks errors
   if (!isOpen) return null;
   
@@ -232,7 +161,13 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ isOpen, onClose, position, sh
           <span>{form.watch('title') || 'New Recipe'}</span>
         </div>
       }
-      footer={footerContent}
+      footer={
+        <RecipeModalFooter 
+          activeTab={activeTab} 
+          setActiveTab={setActiveTab} 
+          onClose={onClose} 
+        />
+      }
       size="xl"
       className="recipe-modal"
       contentClassName="recipe-content"
@@ -249,79 +184,27 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ isOpen, onClose, position, sh
               className="min-h-[300px]"
             >
               {activeTab === 'details' && (
-                <div className="space-y-6">
-                  <div className="flex gap-4 flex-col md:flex-row">
-                    <div className="w-full md:w-2/3 space-y-4">
-                      <FormField
-                        control={form.control}
-                        name="title"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-amber-700">Recipe Name</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Grandma's Apple Pie" className="text-lg" {...field} />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="description"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-amber-700">Description</FormLabel>
-                            <FormControl>
-                              <Textarea 
-                                placeholder="A brief description of this delicious recipe..." 
-                                className="min-h-[100px]" 
-                                {...field} 
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <RecipeUrlImport 
-                        onStartImport={() => setIsImporting(true)}
-                        onImportSuccess={handleImportSuccess}
-                        onImportError={() => {
-                          setIsImporting(false);
-                          toast.error("Failed to import recipe");
-                        }}
-                        isImporting={isImporting}
-                      />
-                    </div>
-                    
-                    <div className="w-full md:w-1/3">
-                      <RecipeImageUpload
-                        value={coverImage}
-                        onChange={setCoverImage}
-                      />
-                      
-                      <RecipeMetadata form={form} />
-                    </div>
-                  </div>
-                </div>
+                <RecipeDetailsTab 
+                  form={form} 
+                  coverImage={coverImage} 
+                  setCoverImage={setCoverImage}
+                  isImporting={isImporting}
+                  setIsImporting={setIsImporting}
+                  onImportSuccess={handleImportSuccess}
+                />
               )}
               
               {activeTab === 'ingredients' && (
-                <IngredientsList form={form} />
+                <RecipeIngredientsTab form={form} />
               )}
               
               {activeTab === 'steps' && (
-                <PreparationSteps form={form} />
+                <RecipePreparationTab form={form} />
               )}
             </motion.div>
           </AnimatePresence>
           
-          <div className="flex justify-center pt-4 border-t border-amber-100">
-            <div className="flex rounded-lg bg-amber-50/80 p-1">
-              <TabButton name="details" label="Details" icon={<span className="w-5 h-5 flex items-center justify-center rounded-full bg-amber-200 text-amber-800 text-xs">1</span>} />
-              <TabButton name="ingredients" label="Ingredients" icon={<span className="w-5 h-5 flex items-center justify-center rounded-full bg-amber-200 text-amber-800 text-xs">2</span>} />
-              <TabButton name="steps" label="Preparation" icon={<span className="w-5 h-5 flex items-center justify-center rounded-full bg-amber-200 text-amber-800 text-xs">3</span>} />
-            </div>
-          </div>
+          <RecipeTabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
         </form>
       </Form>
     </PopupWindow>

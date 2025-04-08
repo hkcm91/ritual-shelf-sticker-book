@@ -2,7 +2,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShelfData } from '@/store/types';
-import { ArrowLeft, Settings, Trash2, Book, NotebookPen, Utensils, Music } from 'lucide-react';
+import { ArrowLeft, Settings, Trash2, Book, NotebookPen, Utensils, Music, BookMarked } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
@@ -32,19 +32,19 @@ export const LibraryHeader: React.FC<LibraryHeaderProps> = ({
   };
 
   const getHeaderGradient = () => {
-    if (!currentLibrary) return 'from-amber-700/30 to-amber-900/30';
+    if (!currentLibrary) return 'from-purple-700/40 to-indigo-900/40';
     
     switch(currentLibrary.type) {
-      case 'book': return 'from-amber-700/40 to-amber-900/40';
-      case 'notebook': return 'from-emerald-700/40 to-emerald-900/40';
-      case 'recipe': return 'from-rose-700/40 to-rose-900/40';
-      case 'music': return 'from-purple-700/40 to-purple-900/40';
-      default: return 'from-amber-700/40 to-amber-900/40';
+      case 'book': return 'from-amber-600/50 to-amber-900/50';
+      case 'notebook': return 'from-emerald-600/50 to-emerald-900/50';
+      case 'recipe': return 'from-rose-600/50 to-rose-900/50';
+      case 'music': return 'from-purple-600/50 to-indigo-900/50';
+      default: return 'from-amber-600/50 to-amber-900/50';
     }
   };
   
   const getTextColor = () => {
-    if (!currentLibrary) return 'text-amber-100';
+    if (!currentLibrary) return 'text-purple-100';
     
     switch(currentLibrary.type) {
       case 'book': return 'text-amber-100';
@@ -56,26 +56,26 @@ export const LibraryHeader: React.FC<LibraryHeaderProps> = ({
   };
 
   return (
-    <div className={`bg-gradient-to-r ${getHeaderGradient()} border-b border-amber-800/30 py-4 px-4 sm:px-6 backdrop-blur-sm`}>
+    <div className={`bg-gradient-to-r ${getHeaderGradient()} border-b border-white/10 py-5 px-4 sm:px-6 backdrop-blur-md shadow-lg`}>
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"
               size="sm"
-              className={`hover:bg-white/10 ${getTextColor()} rounded-full transition-all duration-300 hover:scale-105`}
+              className={`hover:bg-white/20 ${getTextColor()} rounded-full transition-all duration-300 hover:scale-105 backdrop-blur-sm shadow-sm`}
               onClick={() => navigate('/widgets')}
             >
               <ArrowLeft className="h-4 w-4 mr-1" />
               <span>Back</span>
             </Button>
             
-            <Card className={`flex items-center gap-2 px-4 py-2 ${getTextColor()} border-none bg-white/10 backdrop-blur-md shadow-xl`}>
-              <div className="p-2 rounded-full bg-white/20">
+            <Card className={`flex items-center gap-3 px-5 py-2.5 ${getTextColor()} border-none bg-white/20 backdrop-blur-md shadow-xl rounded-full`}>
+              <div className="p-2 rounded-full bg-white/30 shadow-inner">
                 {libraryTypeIcon()}
               </div>
               <h1 className="text-xl font-semibold">
-                {currentLibrary?.name || 'Library'}
+                {currentLibrary?.name || 'Library Collection'}
               </h1>
             </Card>
           </div>
@@ -83,7 +83,7 @@ export const LibraryHeader: React.FC<LibraryHeaderProps> = ({
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"
-              className={`${getTextColor()} hover:bg-white/10 rounded-full transition-all duration-300 hover:scale-105 px-4 py-2`}
+              className={`${getTextColor()} hover:bg-white/20 rounded-full transition-all duration-300 hover:scale-105 backdrop-blur-sm shadow-sm px-4 py-2`}
               onClick={onSettingsOpen}
             >
               <Settings className="h-4 w-4 mr-2" />
@@ -92,7 +92,7 @@ export const LibraryHeader: React.FC<LibraryHeaderProps> = ({
             
             <Button
               variant="ghost"
-              className="text-red-300 hover:bg-red-950/20 hover:text-red-200 rounded-full transition-all duration-300 hover:scale-105 px-4 py-2"
+              className="text-red-300 hover:bg-red-950/30 hover:text-red-200 rounded-full transition-all duration-300 hover:scale-105 backdrop-blur-sm shadow-sm px-4 py-2"
               onClick={onDeleteOpen}
             >
               <Trash2 className="h-4 w-4 mr-2" />

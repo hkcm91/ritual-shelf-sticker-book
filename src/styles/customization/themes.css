@@ -11,3 +11,18 @@
   --page-bg: #f0e9e0;
   --page-text-color: #333333;
 }
+
+/* Purple libraries theme */
+.theme-libraries {
+  --container-bg: #432874;
+  --container-border-color: #331d63;
+  --container-border-width: 3px;
+  --shelf-color: #6b46c1;
+  --divider-color: #6b46c1;
+  --shelf-texture: url('/lovable-uploads/76a4e934-9979-4f17-9a6a-bbe647ea3836.png');
+  --divider-bg-image: var(--shelf-texture);
+  --page-bg: linear-gradient(135deg, #432874 0%, #230f51 100%);
+  --page-text-color: #e9d8fd;
+  --header-bg: rgba(75, 40, 125, 0.8);
+  --header-text-color: #e9d8fd;
+}

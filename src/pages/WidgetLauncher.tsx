@@ -1,7 +1,6 @@
-
 import React, { useEffect, useState } from 'react';
 import Header from '../components/layout/Header';
-import { Book, NotebookPen, Utensils, Music, Plus, Library, Settings, Edit3, ArrowRight, Trash2 } from 'lucide-react';
+import { Book, NotebookPen, Utensils, Music, Plus, Library, Settings, Edit3, ArrowRight, Trash2, BookMarked } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useBookshelfStore } from '@/store/bookshelfStore';
@@ -136,10 +135,14 @@ const WidgetLauncher: React.FC = () => {
       <div className="flex-grow w-full overflow-auto p-8">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h1 className="text-3xl font-bold mb-4">Widget Library Sticker Book</h1>
-            <p className="text-lg mb-4 max-w-2xl mx-auto">
+            <h1 className="text-3xl font-bold mb-4 flex items-center justify-center gap-3">
+              <BookMarked className="h-8 w-8 text-purple-500" />
+              <span>Library Collection</span>
+            </h1>
+            <p className="text-lg mb-6 max-w-2xl mx-auto">
               Choose a library type to organize your collections. Each library type offers specialized features for its content.
             </p>
+            <div className="w-24 h-1 bg-gradient-to-r from-purple-400 to-indigo-600 mx-auto rounded-full"></div>
           </div>
           
           {/* Library Types Section */}

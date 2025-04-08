@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Settings } from 'lucide-react';
+import { Settings, Lightbulb, Rows3, Columns3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PopupWindow } from '@/components/ui/popup-window';
 import { ShelfData } from '@/store/types';
@@ -27,7 +27,7 @@ export const LibrarySettingsDialog: React.FC<LibrarySettingsDialogProps> = ({
   onColumnsChange
 }) => {
   const getThemeColors = () => {
-    if (!currentLibrary) return 'text-amber-300';
+    if (!currentLibrary) return 'text-purple-300';
     
     switch(currentLibrary.type) {
       case 'book': return 'text-amber-300';
@@ -35,6 +35,18 @@ export const LibrarySettingsDialog: React.FC<LibrarySettingsDialogProps> = ({
       case 'recipe': return 'text-rose-300';
       case 'music': return 'text-purple-300';
       default: return 'text-amber-300';
+    }
+  };
+
+  const getButtonGradient = () => {
+    if (!currentLibrary) return 'from-purple-600 to-indigo-800';
+    
+    switch(currentLibrary.type) {
+      case 'book': return 'from-amber-600 to-amber-800';
+      case 'notebook': return 'from-emerald-600 to-emerald-800';
+      case 'recipe': return 'from-rose-600 to-rose-800';
+      case 'music': return 'from-purple-600 to-indigo-800';
+      default: return 'from-amber-600 to-amber-800';
     }
   };
 
@@ -60,15 +72,15 @@ export const LibrarySettingsDialog: React.FC<LibrarySettingsDialogProps> = ({
           </Button>
           <Button 
             onClick={onSave}
-            className="bg-gradient-to-b from-amber-600 to-amber-800 text-white hover:from-amber-500 hover:to-amber-700 transition-all duration-300 hover:shadow-lg"
+            className={`bg-gradient-to-b ${getButtonGradient()} text-white hover:brightness-110 transition-all duration-300 hover:shadow-lg`}
           >
             Save Changes
           </Button>
         </>
       }
     >
-      <div className="space-y-6 p-2">
-        <div className="popup-section bg-amber-950/20 p-4 rounded-lg border border-amber-800/30">
+      <div className="space-y-6 p-4">
+        <div className="popup-section bg-amber-950/20 p-5 rounded-lg border border-amber-800/30">
           <h3 className="popup-section-title text-lg font-semibold mb-3 flex items-center gap-2">
             <span className={`h-2 w-2 rounded-full ${getThemeColors()} inline-block`}></span>
             Basic Details
@@ -83,25 +95,26 @@ export const LibrarySettingsDialog: React.FC<LibrarySettingsDialogProps> = ({
                 id="library-name"
                 value={libraryName}
                 onChange={(e) => setLibraryName(e.target.value)}
-                className="w-full px-4 py-2 bg-amber-950/30 border border-amber-700/30 rounded-md text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-600/50 transition-all duration-300"
+                className="w-full px-4 py-2.5 bg-amber-950/30 border border-amber-700/30 rounded-md text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-600/50 transition-all duration-300"
+                placeholder="Enter a name for your library"
               />
             </div>
           </div>
         </div>
         
-        <div className="popup-section bg-amber-950/20 p-4 rounded-lg border border-amber-800/30">
+        <div className="popup-section bg-amber-950/20 p-5 rounded-lg border border-amber-800/30">
           <h3 className="popup-section-title text-lg font-semibold mb-3 flex items-center gap-2">
             <span className={`h-2 w-2 rounded-full ${getThemeColors()} inline-block`}></span>
             Display Options
           </h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="rows" className="block text-sm font-medium text-amber-200 mb-1">
-                Rows
+          <div className="grid grid-cols-2 gap-6">
+            <div className="flex flex-col">
+              <label htmlFor="rows" className="flex items-center gap-2 text-sm font-medium text-amber-200 mb-2">
+                <Rows3 className="h-4 w-4" /> Rows
               </label>
               <div className="flex rounded-md overflow-hidden border border-amber-700/30">
                 <button 
-                  className="px-3 py-2 bg-amber-900/40 text-amber-100 hover:bg-amber-800/40 transition-colors"
+                  className="px-3.5 py-2.5 bg-amber-900/40 text-amber-100 hover:bg-amber-800/40 transition-colors"
                   onClick={() => {
                     const currentRows = currentLibrary?.rows || 2;
                     if (currentRows > 1) {
@@ -109,7 +122,7 @@ export const LibrarySettingsDialog: React.FC<LibrarySettingsDialogProps> = ({
                     }
                   }}
                 >
-                  -
+                  −
                 </button>
                 <input
                   type="number"
@@ -123,10 +136,10 @@ export const LibrarySettingsDialog: React.FC<LibrarySettingsDialogProps> = ({
                       onRowsChange(value);
                     }
                   }}
-                  className="w-full px-3 py-2 bg-amber-950/30 text-center text-amber-100 focus:outline-none focus:ring-1 focus:ring-amber-600/50"
+                  className="w-full px-3 py-2.5 bg-amber-950/30 text-center text-amber-100 focus:outline-none focus:ring-1 focus:ring-amber-600/50"
                 />
                 <button 
-                  className="px-3 py-2 bg-amber-900/40 text-amber-100 hover:bg-amber-800/40 transition-colors"
+                  className="px-3.5 py-2.5 bg-amber-900/40 text-amber-100 hover:bg-amber-800/40 transition-colors"
                   onClick={() => {
                     const currentRows = currentLibrary?.rows || 2;
                     if (currentRows < 5) {
@@ -139,13 +152,13 @@ export const LibrarySettingsDialog: React.FC<LibrarySettingsDialogProps> = ({
               </div>
             </div>
             
-            <div>
-              <label htmlFor="columns" className="block text-sm font-medium text-amber-200 mb-1">
-                Columns
+            <div className="flex flex-col">
+              <label htmlFor="columns" className="flex items-center gap-2 text-sm font-medium text-amber-200 mb-2">
+                <Columns3 className="h-4 w-4" /> Columns
               </label>
               <div className="flex rounded-md overflow-hidden border border-amber-700/30">
                 <button 
-                  className="px-3 py-2 bg-amber-900/40 text-amber-100 hover:bg-amber-800/40 transition-colors"
+                  className="px-3.5 py-2.5 bg-amber-900/40 text-amber-100 hover:bg-amber-800/40 transition-colors"
                   onClick={() => {
                     const currentColumns = currentLibrary?.columns || 4;
                     if (currentColumns > 1) {
@@ -153,7 +166,7 @@ export const LibrarySettingsDialog: React.FC<LibrarySettingsDialogProps> = ({
                     }
                   }}
                 >
-                  -
+                  −
                 </button>
                 <input
                   type="number"
@@ -167,10 +180,10 @@ export const LibrarySettingsDialog: React.FC<LibrarySettingsDialogProps> = ({
                       onColumnsChange(value);
                     }
                   }}
-                  className="w-full px-3 py-2 bg-amber-950/30 text-center text-amber-100 focus:outline-none focus:ring-1 focus:ring-amber-600/50"
+                  className="w-full px-3 py-2.5 bg-amber-950/30 text-center text-amber-100 focus:outline-none focus:ring-1 focus:ring-amber-600/50"
                 />
                 <button 
-                  className="px-3 py-2 bg-amber-900/40 text-amber-100 hover:bg-amber-800/40 transition-colors"
+                  className="px-3.5 py-2.5 bg-amber-900/40 text-amber-100 hover:bg-amber-800/40 transition-colors"
                   onClick={() => {
                     const currentColumns = currentLibrary?.columns || 4;
                     if (currentColumns < 8) {
@@ -183,9 +196,14 @@ export const LibrarySettingsDialog: React.FC<LibrarySettingsDialogProps> = ({
               </div>
             </div>
           </div>
-          <p className="text-xs text-amber-300/70 mt-3">
-            ✨ Tip: Adjust rows and columns to customize the size of your bookshelf. More slots means more space for your collection!
-          </p>
+          
+          <div className="mt-5 p-3 bg-amber-900/20 rounded-lg border border-amber-800/20 flex items-start gap-3">
+            <Lightbulb className="h-5 w-5 text-amber-300 flex-shrink-0 mt-0.5" />
+            <p className="text-xs text-amber-200/80">
+              Adjust rows and columns to customize the size of your bookshelf. More rows give you vertical space,
+              while more columns expand horizontally. Find the perfect balance for your collection!
+            </p>
+          </div>
         </div>
       </div>
     </PopupWindow>

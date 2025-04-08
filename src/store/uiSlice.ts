@@ -1,5 +1,5 @@
+
 import { StateCreator } from 'zustand';
-import { useRef } from 'react';
 
 export interface UISlice {
   isModalOpen: boolean;
@@ -8,7 +8,6 @@ export interface UISlice {
   zoomLevel: number;
   isBookSearchOpen: boolean;
   isCustomizationModalOpen: boolean;
-  scrollPositionRef: { current: { x: number; y: number } };
   openModal: (bookId: string) => void;
   closeModal: () => void;
   setDraggedBook: (bookId: string | null) => void;
@@ -18,10 +17,6 @@ export interface UISlice {
   openCustomizationModal: () => void;
   closeCustomizationModal: () => void;
 }
-
-// Create a stable reference object outside of the store
-// This prevents recreating the ref on each render
-const stableScrollPositionRef = { current: { x: 0, y: 0 } };
 
 export const createUISlice: StateCreator<
   UISlice & { books: Record<string, any> },
@@ -35,7 +30,6 @@ export const createUISlice: StateCreator<
   zoomLevel: 1,
   isBookSearchOpen: false,
   isCustomizationModalOpen: false,
-  scrollPositionRef: stableScrollPositionRef,
   
   openModal: (bookId) => {
     console.log("[UISlice] Opening book modal with ID:", bookId);

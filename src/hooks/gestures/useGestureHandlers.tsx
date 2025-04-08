@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react';
+
+import { useEffect, useState, useRef } from 'react';
 import { useDragGestures } from './useDragGestures';
 import { useScrollGestures } from './useScrollGestures';
 import { useTouchGestures } from './useTouchGestures';
@@ -6,7 +7,7 @@ import { useTouchGestures } from './useTouchGestures';
 /**
  * Custom hook to handle various gestures for the bookshelf
  * - Mouse wheel scrolling (with Shift for horizontal)
- * - Alt+wheel for zooming toward cursor
+ * - Alt+wheel for zooming
  * - Mouse drag to pan
  * - Touch gestures (pinch to zoom, drag to pan)
  */
@@ -15,8 +16,10 @@ export function useGestureHandlers(
   scrollAreaRef: React.RefObject<HTMLElement>,
   setIsDragging?: (isDragging: boolean) => void
 ) {
-  // Keep track of whether event listeners are attached
-  const listenersAttachedRef = useRef(false);
+  // Set up state for touch gestures
+  const [startPoint, setStartPoint] = useState({ x: 0, y: 0 });
+  const [lastPoint, setLastPoint] = useState({ x: 0, y: 0 });
+  const scrollPositionRef = useRef({ x: 0, y: 0 });
   
   // Set up drag gestures using our reusable hook
   const {
@@ -35,7 +38,7 @@ export function useGestureHandlers(
     excludeSelector: 'button, a, input, [role="button"], .book-cover, .book'
   });
   
-  // Set up scroll gestures with zoom-to-cursor
+  // Set up scroll gestures
   const { handleWheel, getScrollViewport } = useScrollGestures(scrollAreaRef);
   
   // Set isDragging state for UI feedback
@@ -48,7 +51,7 @@ export function useGestureHandlers(
     }
   };
 
-  // Set up touch gestures with pinch-to-zoom
+  // Set up touch gestures
   const {
     handleTouchStart,
     handleTouchMove,
@@ -58,25 +61,21 @@ export function useGestureHandlers(
     updateDraggingState,
     getScrollViewport || getScrollElement,
     inertiaRef,
-    applyInertia
+    applyInertia,
+    setStartPoint,
+    setLastPoint,
+    scrollPositionRef
   );
 
-  // Set up event listeners with { passive: false } for preventDefault()
+  // Set up event listeners
   useEffect(() => {
     const element = containerRef.current;
-    if (!element || listenersAttachedRef.current) return;
-    
-    listenersAttachedRef.current = true;
+    if (!element) return;
 
-    // Add touch event listeners with passive: false to allow preventDefault
     element.addEventListener('touchstart', handleTouchStart, { passive: false });
     element.addEventListener('touchmove', handleTouchMove, { passive: false });
     element.addEventListener('touchend', handleTouchEnd);
-    
-    // Add wheel event with passive: false to allow preventDefault for alt+wheel
     element.addEventListener('wheel', handleWheel, { passive: false });
-    
-    // Add mouse events for dragging
     element.addEventListener('mousedown', handleMouseDown);
     
     // Add mouse move and up to window to capture events outside the element
@@ -85,7 +84,6 @@ export function useGestureHandlers(
     window.addEventListener('mouseleave', handleMouseUp); // Handle when mouse leaves window
 
     return () => {
-      // Clean up all event listeners
       element.removeEventListener('touchstart', handleTouchStart);
       element.removeEventListener('touchmove', handleTouchMove);
       element.removeEventListener('touchend', handleTouchEnd);
@@ -97,9 +95,6 @@ export function useGestureHandlers(
       
       // Cancel any animations on cleanup
       cleanupAnimations();
-      
-      // Reset the listeners attached flag
-      listenersAttachedRef.current = false;
     };
   }, [
     containerRef, 
@@ -123,3 +118,5 @@ export function useGestureHandlers(
     handleMouseUp
   };
 }
+
+export default useGestureHandlers;

@@ -1,26 +1,18 @@
 
-import { useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 
 /**
- * Custom hook to handle mouse wheel scrolling with improved zoom-to-cursor
+ * Custom hook to handle mouse wheel scrolling
  * - Normal scroll for vertical
  * - Shift+scroll for horizontal
- * - Alt+scroll for zooming toward cursor position
+ * - Alt+scroll for zooming
  */
 export function useScrollGestures(
   scrollAreaRef: React.RefObject<HTMLElement>
 ) {
-  // Get store values and functions - extract only what we need
-  const { zoomLevel, adjustZoomLevel } = useBookshelfStore(state => ({
-    zoomLevel: state.zoomLevel,
-    adjustZoomLevel: state.adjustZoomLevel
-  }));
-  
-  // Use a ref to track last wheel event timestamp for throttling
-  const lastWheelTime = useRef(0);
-  const wheelThrottleMs = 16; // ~60fps
-  const zoomDeltaRef = useRef(0); // Track accumulated small changes
+  // Directly get the adjust function from the store
+  const adjustZoomLevel = useBookshelfStore(state => state.adjustZoomLevel);
 
   // Find the scrollable viewport element
   const getScrollViewport = useCallback(() => {
@@ -28,61 +20,13 @@ export function useScrollGestures(
     return scrollAreaRef.current.querySelector('.scroll-area-viewport') as HTMLElement;
   }, [scrollAreaRef]);
   
-  // Handle mouse wheel zoom on desktop with zoom-to-cursor
+  // Handle mouse wheel zoom on desktop
   const handleWheel = useCallback((e: WheelEvent) => {
-    // Throttle wheel events for better performance
-    const now = Date.now();
-    if (now - lastWheelTime.current < wheelThrottleMs) return;
-    lastWheelTime.current = now;
-    
     // If Alt key is pressed, use wheel for zooming
     if (e.altKey) {
       e.preventDefault();
-      
-      const scrollViewport = getScrollViewport();
-      if (!scrollViewport) return;
-      
-      // Get cursor position relative to the viewport
-      const rect = scrollViewport.getBoundingClientRect();
-      const cursorX = e.clientX - rect.left + scrollViewport.scrollLeft;
-      const cursorY = e.clientY - rect.top + scrollViewport.scrollTop;
-      
-      // Calculate zoom delta (smoother zoom)
-      const delta = e.deltaY * -0.001;
-      
-      // Accumulate small changes to avoid triggering too many state updates
-      zoomDeltaRef.current += delta;
-      
-      // Only update if the accumulated delta is significant
-      if (Math.abs(zoomDeltaRef.current) < 0.01) return;
-      
-      // Calculate old and new scale
-      const oldScale = zoomLevel;
-      const newScale = Math.max(0.25, Math.min(2, oldScale + zoomDeltaRef.current));
-      
-      // Only proceed if scale actually changed
-      if (newScale !== oldScale) {
-        // Ratio of new scale to old scale
-        const scaleFactor = newScale / oldScale;
-        
-        // Calculate new scroll position to zoom toward cursor
-        const newScrollX = cursorX * scaleFactor - (e.clientX - rect.left) + scrollViewport.scrollLeft;
-        const newScrollY = cursorY * scaleFactor - (e.clientY - rect.top) + scrollViewport.scrollTop;
-        
-        // Apply new zoom level
-        requestAnimationFrame(() => {
-          // Update the zoom level in the store
-          adjustZoomLevel(zoomDeltaRef.current);
-          zoomDeltaRef.current = 0; // Reset accumulated delta
-          
-          // Adjust scroll position to keep cursor point fixed
-          scrollViewport.scrollLeft = newScrollX;
-          scrollViewport.scrollTop = newScrollY;
-        });
-      } else {
-        // Reset accumulated delta if no change was made
-        zoomDeltaRef.current = 0;
-      }
+      const delta = e.deltaY * -0.001; // Smoother zoom
+      adjustZoomLevel(delta);
     } 
     // Use shift+wheel for horizontal scrolling
     else if (e.shiftKey) {
@@ -93,7 +37,7 @@ export function useScrollGestures(
       }
     }
     // Otherwise, allow normal vertical scrolling (no need to prevent default)
-  }, [adjustZoomLevel, getScrollViewport, zoomLevel]);
+  }, [adjustZoomLevel, getScrollViewport]);
 
   return { handleWheel, getScrollViewport };
 }

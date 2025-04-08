@@ -1,3 +1,4 @@
+
 export interface BookData {
   id: string;
   title: string;
@@ -21,6 +22,15 @@ export interface BookData {
   characters?: string[];
   plot?: string;
   quizzes?: any[]; // Consider using a more specific type if available
+  // Recipe specific fields
+  ingredients?: string[];
+  cookingTime?: string;
+  servings?: number;
+  difficulty?: 'easy' | 'medium' | 'hard';
+  cuisine?: string;
+  prepTime?: string;
+  instructions?: string[];
+  recipeSource?: string;
 }
 
 export interface ShelfData {

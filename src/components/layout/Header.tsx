@@ -21,6 +21,7 @@ const Header: React.FC = () => {
   const isMobile = useIsMobile();
   const [scrolled, setScrolled] = useState(false);
   const [isCreateLibraryOpen, setIsCreateLibraryOpen] = useState(false);
+  const { shelves } = useBookshelfStore();
   
   // Add scroll detection for shadow effect
   useEffect(() => {
@@ -31,6 +32,11 @@ const Header: React.FC = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+  
+  // Find all shelves by type
+  const bookLibraries = Object.values(shelves).filter(shelf => shelf.type === 'book');
+  const notebookLibraries = Object.values(shelves).filter(shelf => shelf.type === 'notebook');
+  const recipeLibraries = Object.values(shelves).filter(shelf => shelf.type === 'recipe');
   
   return (
     <header 
@@ -74,7 +80,11 @@ const Header: React.FC = () => {
                         icon={<Book className="h-4 w-4" />}
                         title="Book Library"
                         submenuItems={[
-                          { title: "Main Library", path: "/" }
+                          { title: "Main Library", path: "/" },
+                          ...bookLibraries.map(shelf => ({ 
+                            title: shelf.name, 
+                            path: `/?shelf=${shelf.id}` 
+                          }))
                         ]}
                       />
                       
@@ -82,15 +92,25 @@ const Header: React.FC = () => {
                         icon={<NotebookPen className="h-4 w-4" />}
                         title="Notebook Library"
                         submenuItems={[
-                          { title: "Sticker Book", path: "/widgets" }
+                          { title: "Sticker Book", path: "/widgets" },
+                          ...notebookLibraries.map(shelf => ({ 
+                            title: shelf.name, 
+                            path: `/?shelf=${shelf.id}` 
+                          }))
                         ]}
                       />
                       
-                      {/* Placeholder for future library types */}
-                      <div className="flex items-center gap-2 text-amber-100/50 px-3 py-2 rounded-md">
-                        <Utensils className="h-4 w-4" />
-                        <span>Recipe Library (Coming Soon)</span>
-                      </div>
+                      <LibraryMenuItem 
+                        icon={<Utensils className="h-4 w-4" />}
+                        title="Recipe Library"
+                        submenuItems={[
+                          { title: "Recipe Collection", path: "/recipes" },
+                          ...recipeLibraries.map(shelf => ({ 
+                            title: shelf.name, 
+                            path: `/?shelf=${shelf.id}` 
+                          }))
+                        ]}
+                      />
                       
                       <div className="flex items-center gap-2 text-amber-100/50 px-3 py-2 rounded-md">
                         <Music className="h-4 w-4" />
@@ -113,6 +133,16 @@ const Header: React.FC = () => {
           >
             <NotebookPen className="h-4 w-4" />
             <span>Sticker Book</span>
+          </button>
+        </Link>
+        
+        {/* Recipe Book Button */}
+        <Link to="/recipes">
+          <button 
+            className="game-btn text-sm flex items-center gap-1.5 h-9 px-4 from-amber-900/40 to-amber-950/40 text-amber-100 border-amber-600/20"
+          >
+            <Utensils className="h-4 w-4" />
+            <span>Recipe Book</span>
           </button>
         </Link>
         

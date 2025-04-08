@@ -54,7 +54,7 @@ export const CreateLibraryDialog: React.FC<CreateLibraryDialogProps> = ({
       id: 'recipe',
       name: 'Recipe Library',
       icon: <Utensils className="h-5 w-5" />,
-      available: false
+      available: true
     },
     {
       id: 'music',

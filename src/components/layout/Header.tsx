@@ -56,7 +56,7 @@ const Header: React.FC = () => {
                   <Book className="h-4 w-4 group-hover:text-amber-300 transition-colors" />
                   <span>Widget Libraries</span>
                 </NavigationMenuTrigger>
-                <NavigationMenuContent>
+                <NavigationMenuContent className="z-[1000]">
                   <div className="popover-dropdown w-[320px]">
                     <div className="dropdown-content">
                       <div className="flex justify-between items-center mb-3">
@@ -156,7 +156,7 @@ const LibraryMenuItem: React.FC<LibraryMenuItemProps> = ({ icon, title, submenuI
             {icon}
             <span>{title}</span>
           </NavigationMenuTrigger>
-          <NavigationMenuContent>
+          <NavigationMenuContent className="z-[1000]">
             <div className="popover-dropdown w-[280px]">
               <div className="dropdown-content">
                 <h3 className="dropdown-header">{title}s</h3>

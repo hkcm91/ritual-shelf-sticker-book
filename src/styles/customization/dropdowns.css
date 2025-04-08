@@ -11,6 +11,7 @@
   animation: popover-appear 0.25s cubic-bezier(0.25, 0.1, 0.25, 1.4) forwards;
   transform-origin: top center;
   backdrop-filter: blur(8px);
+  z-index: 100; /* Ensure the dropdown appears above other elements */
 }
 
 .dropdown-item {
@@ -98,4 +99,25 @@
 
 .dropdown-content {
   @apply p-2;
+}
+
+/* Add these styles to make dropdown menus more visible */
+.NavigationMenuContent,
+.SelectContent,
+.DropdownMenuContent,
+.PopoverContent {
+  @apply popover-dropdown z-50;
+}
+
+/* Special styling for SelectItem */
+.SelectItem {
+  @apply dropdown-item my-0.5;
+}
+
+/* Force z-index to be extra high to ensure visibility */
+.DropdownMenuContent,
+.SelectContent,
+.NavigationMenuContent,
+.PopoverContent {
+  z-index: 1000 !important;
 }

@@ -52,7 +52,7 @@ const HeaderAuthButton: React.FC = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent 
         align="end" 
-        className="popover-dropdown mt-1 min-w-[220px]"
+        className="popover-dropdown mt-1 min-w-[220px] z-[1000]"
       >
         <div className="dropdown-content">
           <DropdownMenuLabel className="dropdown-header">My Account</DropdownMenuLabel>

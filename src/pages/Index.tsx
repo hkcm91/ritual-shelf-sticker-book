@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useBookshelfStore, initializeDefaultShelf } from '../store/bookshelfStore';
 import BookshelfGrid from '../components/BookshelfGrid';
-import BookModal from '../components/BookModal';
+import BookModal from '../components/book-modal';
 import { toast } from 'sonner';
 import Header from '../components/layout/Header';
 import ShelfDialogs from '../components/shelf/ShelfDialogs';

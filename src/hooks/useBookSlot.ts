@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import { useDragAndDrop } from './useDragAndDrop';
@@ -19,7 +18,7 @@ export const useBookSlot = ({
   onFileSelect,
   onBookDelete
 }: UseBookSlotProps) => {
-  const { activeShelfId, books, deleteBook } = useBookshelfStore();
+  const { activeShelfId, books, deleteBook, openModal } = useBookshelfStore();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   
   // Get the book at this position and shelf
@@ -43,7 +42,7 @@ export const useBookSlot = ({
   });
   
   // Use the file handler hook
-  const { fileInputRef, handleFileChange, handleClick } = useFileHandler({
+  const { fileInputRef, handleFileChange } = useFileHandler({
     position,
     slotType,
     onFileSelect
@@ -79,6 +78,21 @@ export const useBookSlot = ({
       setShowDeleteDialog(false);
     }
   }, [book, deleteBook, onBookDelete]);
+
+  // Handle clicking on empty slot to trigger file input or open modal
+  const handleClick = useCallback(() => {
+    console.log("[useBookSlot] handleClick called for slotType:", slotType);
+    
+    if (slotType === 'book') {
+      // For book slots, open the book modal with null ID to create a new book
+      console.log("[useBookSlot] Opening book modal");
+      openModal(null);
+    } else {
+      // For other slot types, trigger file input
+      console.log("[useBookSlot] Triggering file input click");
+      fileInputRef.current?.click();
+    }
+  }, [fileInputRef, slotType, openModal]);
 
   return {
     book,

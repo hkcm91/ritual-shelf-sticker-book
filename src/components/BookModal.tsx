@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -8,6 +7,8 @@ import BookModalFooter from './book-modal/BookModalFooter';
 
 const BookModal: React.FC = () => {
   const { isModalOpen, activeBookId, books, closeModal, updateBook, deleteBook, addBook } = useBookshelfStore();
+  
+  console.log("[BookModal] Rendering with isModalOpen:", isModalOpen, "activeBookId:", activeBookId);
   
   const [bookData, setBookData] = useState({
     title: '',
@@ -23,7 +24,11 @@ const BookModal: React.FC = () => {
   });
   
   useEffect(() => {
+    console.log("[BookModal] Effect triggered with activeBookId:", activeBookId);
+    
     if (activeBookId && books[activeBookId]) {
+      console.log("[BookModal] Loading existing book data");
+      
       const { 
         title, 
         author, 
@@ -51,6 +56,8 @@ const BookModal: React.FC = () => {
       });
     } else {
       // Reset form for new books
+      console.log("[BookModal] Setting up new book form");
+      
       setBookData({
         title: '',
         author: '',
@@ -64,7 +71,7 @@ const BookModal: React.FC = () => {
         quizzes: []
       });
     }
-  }, [activeBookId, books]);
+  }, [activeBookId, books, isModalOpen]);
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -89,13 +96,20 @@ const BookModal: React.FC = () => {
   };
   
   const handleSave = () => {
+    console.log("[BookModal] handleSave called, activeBookId:", activeBookId);
+    
     if (activeBookId) {
+      console.log("[BookModal] Updating existing book");
       updateBook(activeBookId, bookData);
     } else {
       // For new books, add them to the store
+      console.log("[BookModal] Creating new book");
       const { activeShelfId, findEmptyPosition } = useBookshelfStore.getState();
+      
       if (activeShelfId) {
         const position = findEmptyPosition(activeShelfId);
+        console.log("[BookModal] Found empty position:", position);
+        
         if (position >= 0) {
           addBook({
             ...bookData,
@@ -103,7 +117,12 @@ const BookModal: React.FC = () => {
             shelfId: activeShelfId,
             isSticker: false
           });
+          console.log("[BookModal] New book added at position:", position);
+        } else {
+          console.error("[BookModal] No empty positions available!");
         }
+      } else {
+        console.error("[BookModal] No active shelf!");
       }
     }
     closeModal();

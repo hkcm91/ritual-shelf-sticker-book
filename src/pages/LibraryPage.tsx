@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import BookshelfGrid from '@/components/bookshelf/BookshelfGrid';
 import ZoomControls from '@/components/ZoomControls';
 import { LibraryHeader } from '@/components/library';
+import BookModal from '@/components/BookModal';
 
 const LibraryPage: React.FC = () => {
   const { libraryId } = useParams<{ libraryId: string }>();
@@ -52,6 +53,9 @@ const LibraryPage: React.FC = () => {
       </div>
       
       <ZoomControls />
+      
+      {/* Add BookModal component */}
+      <BookModal />
     </div>
   );
 };

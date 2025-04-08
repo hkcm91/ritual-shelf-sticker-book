@@ -17,18 +17,14 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
   rowIndex,
   columns
 }) => {
-  // Get state from bookshelf store with proper typing
-  const {
-    activeShelfId,
-    activeShelf,
-    shelfStyling,
-    activeTheme
-  } = useBookshelfStore((state) => ({
-    activeShelfId: state.activeShelfId,
-    activeShelf: state.shelves[state.activeShelfId] as ShelfData,
-    shelfStyling: state.shelfStyling,
-    activeTheme: state.activeTheme
-  }));
+  // Get state from bookshelf store with stable object reference
+  const activeShelfId = useBookshelfStore(state => state.activeShelfId);
+  const shelves = useBookshelfStore(state => state.shelves);
+  const shelfStyling = useBookshelfStore(state => state.shelfStyling);
+  const activeTheme = useBookshelfStore(state => state.activeTheme);
+  
+  // Derive activeShelf from state
+  const activeShelf = activeShelfId ? shelves[activeShelfId] as ShelfData : null;
   
   // Determine if we should use realistic shelf styling
   const useRealisticStyle = activeTheme === 'default' || activeTheme === 'custom';
@@ -150,7 +146,7 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
       {/* Add horizontal divider if needed and it's not the last row */}
       {shelfStyling?.dividers?.enabled && 
        (shelfStyling.dividers.orientation === 'horizontal' || shelfStyling.dividers.orientation === 'both') && 
-       rowIndex < activeShelf?.rows - 1 && 
+       rowIndex < (activeShelf?.rows || 1) - 1 && 
        (rowIndex + 1) % (shelfStyling.dividers.booksPerRow || 1) === 0 && (
         <HorizontalDivider 
           thickness={shelfStyling.dividers.thickness}

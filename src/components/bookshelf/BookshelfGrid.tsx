@@ -5,25 +5,21 @@ import { useBookshelfStore } from '../../store/bookshelfStore';
 import { useThemeApplication } from '@/hooks/theme/useThemeApplication';
 
 const BookshelfGrid: React.FC = () => {
-  const { 
-    activeShelfId, 
-    shelfStyling,
-    activeTheme,
-    shelves,
-    initializeDefaultShelf
-  } = useBookshelfStore();
+  const activeShelfId = useBookshelfStore(state => state.activeShelfId);
+  const shelves = useBookshelfStore(state => state.shelves);
+  const initializeDefaultShelf = useBookshelfStore(state => state.initializeDefaultShelf);
   
-  // Apply theme styles
+  // Apply theme styles - this should be a stable reference
   useThemeApplication();
   
-  // Ensure we have a default shelf
+  // Ensure we have a default shelf - only run once on mount
   useEffect(() => {
     // If there are no shelves, initialize a default shelf
     if (!shelves || Object.keys(shelves).length === 0) {
       console.log("BookshelfGrid: Initializing default shelf");
       initializeDefaultShelf();
     }
-  }, [shelves, initializeDefaultShelf]);
+  }, []);
   
   // Get the current shelf data to access rows and columns
   const currentShelf = activeShelfId ? shelves[activeShelfId] : null;
@@ -33,7 +29,7 @@ const BookshelfGrid: React.FC = () => {
   const rowsPerShelf = currentShelf?.rows || 2;
   
   // Generate rows for the grid
-  const renderShelfRows = () => {
+  const renderShelfRows = React.useMemo(() => {
     const rows = [];
     for (let i = 0; i < rowsPerShelf; i++) {
       rows.push(
@@ -45,18 +41,12 @@ const BookshelfGrid: React.FC = () => {
       );
     }
     return rows;
-  };
+  }, [rowsPerShelf, columnsPerRow]);
   
-  // Determine if we should use realistic shelf styling
-  const useRealisticStyle = activeTheme === 'default' || activeTheme === 'custom';
-
   return (
-    <div 
-      className="bookshelf-container relative"
-      /* All styles now controlled by CSS variables in layout.css */
-    >
+    <div className="bookshelf-container relative">
       <div className="bookshelf-rows relative z-10">
-        {renderShelfRows()}
+        {renderShelfRows}
       </div>
     </div>
   );

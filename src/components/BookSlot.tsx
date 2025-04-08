@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Book from './Book';
 import { Popover, PopoverTrigger } from '@/components/ui/popover';
 import SlotControls from './SlotControls';
@@ -11,8 +11,6 @@ import ContextMenuWrapper from './ContextMenuWrapper';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 import { SlotType } from '@/store/types';
 import { getDefaultSlotType, isSlotCompatibleWithLibrary } from '@/utils/slotCompatibility';
-import useTransformControls from '@/hooks/useTransformControls';
-import useStickerDrag from '@/hooks/useStickerDrag';
 
 type BookSlotProps = {
   position: number;
@@ -35,8 +33,9 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     }
   }, [libraryType, slotType]);
   
-  // Use the book slot hook for basic slot functionality
+  // Use the book slot hook with all its properties
   const {
+    // Core slot properties
     book,
     showDeleteDialog,
     setShowDeleteDialog,
@@ -46,8 +45,28 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     handleDrop,
     handleDeleteSticker,
     isDragOver,
+    
+    // File handling
     fileInputRef,
-    handleFileChange
+    handleFileChange,
+    
+    // Transform controls
+    scale,
+    position2D,
+    rotation,
+    handleRotate,
+    handleScaleChange,
+    handleResetTransform,
+    
+    // Sticker drag
+    isDragging,
+    setIsDragging,
+    dragStart,
+    setDragStart,
+    isAltDrag,
+    handleStickerMouseDown,
+    handleStickerMouseMove,
+    handleStickerMouseUp
   } = useBookSlot({ 
     position, 
     slotType,
@@ -56,49 +75,6 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
       // File handler logic here if needed
     }
   });
-
-  // Use transform controls hook for sticker manipulation (only if needed)
-  const {
-    scale, 
-    position2D, 
-    rotation,
-    handleRotate,
-    handleScaleChange,
-    handleResetTransform,
-    setPosition2D
-  } = useTransformControls({
-    activeShelfId,
-    position,
-    initialScale: 1,
-    initialPosition: { x: 0, y: 0 },
-    initialRotation: 0
-  });
-
-  // Use sticker drag hook for sticker manipulation (only if needed)
-  const {
-    isDragging,
-    setIsDragging,
-    dragStart,
-    setDragStart,
-    isAltDrag,
-    handleStickerMouseDown
-  } = useStickerDrag({
-    position,
-    bookId: book?.id,
-    initialPosition: position2D,
-    setPosition2D
-  });
-
-  // Handler for sticker mouse events that we need to pass to the component
-  const handleStickerMouseMove = (e: React.MouseEvent) => {
-    // This is intentionally left empty - the actual implementation is in the useStickerDrag hook
-    // We're providing this as a pass-through for the component API
-  };
-
-  const handleStickerMouseUp = (e: React.MouseEvent) => {
-    // This is intentionally left empty - the actual implementation is in the useStickerDrag hook
-    // We're providing this as a pass-through for the component API
-  };
 
   // Handle type toggle without triggering file input
   const handleTypeToggle = (value: string) => {

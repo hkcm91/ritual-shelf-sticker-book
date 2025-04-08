@@ -7,12 +7,14 @@ export interface UISlice {
   activeBookId: string | null;
   isSettingsOpen: boolean;
   draggedBookId: string | null;
+  isBookSearchOpen: boolean; // Added for BookSearchDrawer
   openModal: (bookId: string | null) => void;
   closeModal: () => void;
   toggleSettings: () => void;
   closeSettings: () => void;
   setDraggedBook: (bookId: string | null) => void;
   getDraggedBook: () => any | null;
+  setBookSearchOpen: (isOpen: boolean) => void; // Added for BookSearchDrawer
 }
 
 export const createUISlice: StateCreator<
@@ -25,6 +27,7 @@ export const createUISlice: StateCreator<
   activeBookId: null,
   isSettingsOpen: false,
   draggedBookId: null,
+  isBookSearchOpen: false, // Added for BookSearchDrawer
   
   openModal: (bookId) => {
     console.log("[UISlice] Opening book modal with ID:", bookId);
@@ -53,5 +56,10 @@ export const createUISlice: StateCreator<
     const { draggedBookId, books } = get();
     if (!draggedBookId) return null;
     return books[draggedBookId] || null;
+  },
+  
+  // Added for BookSearchDrawer
+  setBookSearchOpen: (isOpen) => {
+    set({ isBookSearchOpen: isOpen });
   }
 });

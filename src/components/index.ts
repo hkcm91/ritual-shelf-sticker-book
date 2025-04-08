@@ -1,2 +1,2 @@
 
-export { default as BookModal } from './BookModal';
+export { default as BookModal } from './book-modal';

@@ -6,10 +6,16 @@ import { Separator } from '@/components/ui/separator';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 
 const VerticalDividersControl: React.FC = () => {
-  const { ui, setShowVerticalDividers } = useBookshelfStore();
+  const { shelfStyling, toggleDividers, updateDividersSetting } = useBookshelfStore();
   
   const handleToggleVerticalDividers = (checked: boolean) => {
-    setShowVerticalDividers(checked);
+    // If we're enabling dividers, make sure they're set to vertical
+    if (checked) {
+      toggleDividers(true);
+      updateDividersSetting('orientation', 'vertical');
+    } else {
+      toggleDividers(false);
+    }
   };
   
   return (
@@ -22,7 +28,9 @@ const VerticalDividersControl: React.FC = () => {
       <div className="flex items-center space-x-2">
         <Switch 
           id="vertical-dividers" 
-          checked={ui.showVerticalDividers}
+          checked={shelfStyling?.dividers?.enabled && 
+                 (shelfStyling?.dividers?.orientation === 'vertical' || 
+                  shelfStyling?.dividers?.orientation === 'both')}
           onCheckedChange={handleToggleVerticalDividers}
           className="data-[state=checked]:bg-amber-600"
         />
@@ -30,7 +38,9 @@ const VerticalDividersControl: React.FC = () => {
           htmlFor="vertical-dividers"
           className="text-amber-100"
         >
-          {ui.showVerticalDividers ? 'Visible' : 'Hidden'}
+          {shelfStyling?.dividers?.enabled && 
+           (shelfStyling?.dividers?.orientation === 'vertical' || 
+            shelfStyling?.dividers?.orientation === 'both') ? 'Visible' : 'Hidden'}
         </Label>
       </div>
       

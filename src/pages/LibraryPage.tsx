@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../components/layout/Header';
@@ -17,22 +16,18 @@ const LibraryPage: React.FC = () => {
   const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false);
   const [libraryName, setLibraryName] = useState('');
   
-  // Get the current library
   const shelvesData = shelves as Record<string, ShelfData>;
   const currentLibrary = libraryId ? shelvesData[libraryId] : null;
   
-  // Set the active shelf to the current library
   useEffect(() => {
     if (libraryId && shelvesData[libraryId] && activeShelfId !== libraryId) {
       switchShelf(libraryId);
     } else if (!libraryId || !shelvesData[libraryId]) {
-      // If library doesn't exist, redirect to widget launcher
       navigate('/widgets');
       toast.error('Library not found');
     }
   }, [libraryId, shelvesData, activeShelfId, switchShelf, navigate]);
   
-  // Initialize library name state
   useEffect(() => {
     if (currentLibrary) {
       setLibraryName(currentLibrary.name);
@@ -97,10 +92,8 @@ const LibraryPage: React.FC = () => {
         <BookshelfGrid />
       </div>
       
-      {/* Zoom Controls */}
       <ZoomControls />
       
-      {/* Delete Confirmation Dialog */}
       <LibraryDeleteDialog
         isOpen={isDeleteDialogOpen}
         onClose={() => setIsDeleteDialogOpen(false)}
@@ -108,7 +101,6 @@ const LibraryPage: React.FC = () => {
         onDelete={handleDeleteLibrary}
       />
       
-      {/* Settings Dialog */}
       <LibrarySettingsDialog
         isOpen={isSettingsDialogOpen}
         onClose={() => setIsSettingsDialogOpen(false)}

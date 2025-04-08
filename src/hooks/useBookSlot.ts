@@ -27,18 +27,12 @@ export const useBookSlot = ({
     book => book.position === position && book.shelfId === activeShelfId
   );
   
-  // Use the file handler hook
-  const { fileInputRef, handleFileChange, handleClick } = useFileHandler({
-    position,
-    slotType,
-    onFileSelect
-  });
-  
   // Use the sticker positioning hook
   const {
     scale,
     position2D,
     rotation,
+    setPosition2D,
     handleRotate,
     handleScaleChange,
     handleResetTransform,
@@ -46,6 +40,13 @@ export const useBookSlot = ({
   } = useStickerPositioning({
     position,
     bookId: book?.id
+  });
+  
+  // Use the file handler hook
+  const { fileInputRef, handleFileChange, handleClick } = useFileHandler({
+    position,
+    slotType,
+    onFileSelect
   });
   
   // Use drag and drop hook

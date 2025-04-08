@@ -24,15 +24,12 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
     activeShelf,
     shelfStyling,
     activeTheme
-  } = useBookshelfStore(
-    state => ({
-      activeShelfId: state.activeShelfId,
-      activeShelf: state.shelves[state.activeShelfId] as ShelfData,
-      shelfStyling: state.shelfStyling,
-      activeTheme: state.activeTheme
-    }),
-    shallow
-  );
+  } = useBookshelfStore(state => ({
+    activeShelfId: state.activeShelfId,
+    activeShelf: state.shelves[state.activeShelfId] as ShelfData,
+    shelfStyling: state.shelfStyling,
+    activeTheme: state.activeTheme
+  }), shallow);
   
   // Determine if we should use realistic shelf styling
   const useRealisticStyle = activeTheme === 'default' || activeTheme === 'custom';

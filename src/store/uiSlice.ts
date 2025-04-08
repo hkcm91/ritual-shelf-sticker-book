@@ -36,7 +36,7 @@ export const createUISlice: StateCreator<
   
   closeModal: () => {
     console.log("[UISlice] Closing book modal");
-    set({ isModalOpen: false });
+    set({ isModalOpen: false, activeBookId: null });
   },
   
   toggleSettings: () => {

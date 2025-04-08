@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Book from './Book';
 import { Popover, PopoverTrigger } from '@/components/ui/popover';
 import SlotControls from './SlotControls';
@@ -19,6 +19,7 @@ type BookSlotProps = {
 const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   const { activeShelfId, shelves, activeTheme } = useBookshelfStore();
   const [slotType, setSlotType] = useState<SlotType>("book");
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Get current library type
   const libraryType = activeShelfId && shelves[activeShelfId] ? 
@@ -35,7 +36,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   
   const {
     book,
-    fileInputRef,
+    fileInputRef: hookFileInputRef,
     scale,
     position2D,
     rotation,
@@ -53,8 +54,19 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     handleScaleChange,
     handleResetTransform,
     handleDeleteSticker,
+    isDragging,
+    setIsDragging,
+    dragStart,
+    setDragStart,
     isAltDrag
-  } = useBookSlot({ position, slotType });
+  } = useBookSlot({ 
+    position, 
+    slotType,
+    onFileSelect: (file) => {
+      console.log("[BookSlot] File selected:", file.name);
+      // File handler logic here if needed
+    }
+  });
 
   // Handle type toggle without triggering file input
   const handleTypeToggle = (value: string) => {
@@ -73,46 +85,6 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   
   // Check if we should use realistic styling
   const useRealisticStyle = activeTheme === 'default' || activeTheme === 'custom';
-  
-  // Render book content based on type
-  const renderBookContent = () => {
-    if (!book) return null;
-    
-    if (book.isSticker) {
-      return (
-        <ContextMenuWrapper
-          book={book}
-          handleRotate={handleRotate}
-          handleResetTransform={handleResetTransform}
-          setShowDeleteDialog={setShowDeleteDialog}
-        >
-          <Popover>
-            <PopoverTrigger asChild>
-              <StickerContent 
-                book={book}
-                scale={scale}
-                position2D={position2D}
-                rotation={rotation}
-                zIndex={10} // Always set stickers to appear above books
-                handleStickerMouseDown={handleStickerMouseDown}
-                isAltDrag={isAltDrag}
-              />
-            </PopoverTrigger>
-            <SlotControls 
-              scale={scale}
-              onScaleChange={handleScaleChange}
-              onRotate={handleRotate}
-              onResetTransform={handleResetTransform}
-              onShowDeleteDialog={() => setShowDeleteDialog(true)}
-              isLottie={typeof book.coverURL === 'string' && book.coverURL.startsWith('{')}
-            />
-          </Popover>
-        </ContextMenuWrapper>
-      );
-    } else {
-      return <Book data={book} />;
-    }
-  };
   
   console.log("[BookSlot] Rendering slot at position:", position, "with book:", book?.id || "none");
   
@@ -135,10 +107,41 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
         }}
       >
         {book ? (
-          renderBookContent()
+          book.isSticker ? (
+            <ContextMenuWrapper
+              book={book}
+              handleRotate={handleRotate}
+              handleResetTransform={handleResetTransform}
+              setShowDeleteDialog={setShowDeleteDialog}
+            >
+              <Popover>
+                <PopoverTrigger asChild>
+                  <StickerContent 
+                    book={book}
+                    scale={scale}
+                    position2D={position2D}
+                    rotation={rotation}
+                    zIndex={10}
+                    handleStickerMouseDown={handleStickerMouseDown}
+                    isAltDrag={isAltDrag}
+                  />
+                </PopoverTrigger>
+                <SlotControls 
+                  scale={scale}
+                  onScaleChange={handleScaleChange}
+                  onRotate={handleRotate}
+                  onResetTransform={handleResetTransform}
+                  onShowDeleteDialog={() => setShowDeleteDialog(true)}
+                  isLottie={typeof book.coverURL === 'string' && book.coverURL.startsWith('{')}
+                />
+              </Popover>
+            </ContextMenuWrapper>
+          ) : (
+            <Book data={book} />
+          )
         ) : (
           <EmptySlot 
-            fileInputRef={fileInputRef} 
+            fileInputRef={hookFileInputRef} 
             onFileSelect={handleFileChange} 
             slotType={slotType}
             onClick={handleEmptySlotClick}

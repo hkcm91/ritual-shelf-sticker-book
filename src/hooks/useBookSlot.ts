@@ -1,9 +1,6 @@
 
 import { useState, useCallback } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
-import { useDragAndDrop } from './useDragAndDrop';
-import { useFileHandler } from './useFileHandler';
-import { useStickerPositioning } from './stickers/useStickerPositioning';
 import { SlotType } from '../store/types';
 import { toast } from 'sonner';
 
@@ -20,57 +17,69 @@ export const useBookSlot = ({
   onFileSelect,
   onBookDelete
 }: UseBookSlotProps) => {
-  const { activeShelfId, books, deleteBook, openModal } = useBookshelfStore();
+  const { 
+    activeShelfId, 
+    books, 
+    deleteBook, 
+    openModal, 
+    updateBook, 
+    setDraggedBook 
+  } = useBookshelfStore();
+  
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
   
   // Get the book at this position and shelf
   const book = Object.values(books).find(
     book => book.position === position && book.shelfId === activeShelfId && !book.isSticker
   );
   
-  // Use the sticker positioning hook
-  const {
-    scale,
-    position2D,
-    rotation,
-    setPosition2D,
-    handleRotate,
-    handleScaleChange,
-    handleResetTransform,
-    clampPosition
-  } = useStickerPositioning({
-    position,
-    bookId: book?.id
-  });
+  // Handle dragging events
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setIsDragOver(true);
+  }, []);
   
-  // Use the file handler hook
-  const { fileInputRef, handleFileChange } = useFileHandler({
-    position,
-    slotType,
-    onFileSelect
-  });
+  const handleDragLeave = useCallback(() => {
+    setIsDragOver(false);
+  }, []);
   
-  // Use drag and drop hook
-  const {
-    handleStickerMouseDown,
-    handleStickerMouseMove,
-    handleStickerMouseUp,
-    handleDragOver,
-    handleDragLeave,
-    handleDrop,
-    isDragging,
-    setIsDragging,
-    dragStart,
-    setDragStart,
-    isAltDrag
-  } = useDragAndDrop({
-    position,
-    setPosition2D,
-    book,
-    slotType
-  });
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    
+    const droppedBookId = e.dataTransfer.getData('text/plain');
+    console.log("[useBookSlot] Dropping book:", droppedBookId, "at position:", position);
+    
+    if (droppedBookId && position !== undefined) {
+      // Check if there's already a book at this position
+      const existingBook = Object.values(books).find(
+        b => b.position === position && b.shelfId === activeShelfId && !b.isSticker
+      );
+      
+      if (existingBook && existingBook.id !== droppedBookId) {
+        console.log("[useBookSlot] Position already occupied by:", existingBook.id);
+        // If occupied, swap positions
+        const draggedBook = books[droppedBookId];
+        if (draggedBook) {
+          console.log("[useBookSlot] Swapping positions");
+          updateBook(existingBook.id, { position: draggedBook.position });
+          updateBook(droppedBookId, { position, shelfId: activeShelfId });
+          toast.success("Books swapped positions");
+        }
+      } else {
+        // If empty, just move the book
+        updateBook(droppedBookId, { position, shelfId: activeShelfId });
+        toast.success("Book moved successfully");
+      }
+      
+      // Clear dragged book
+      setDraggedBook(null);
+    }
+  }, [position, books, activeShelfId, updateBook, setDraggedBook]);
   
-  // Handle delete sticker
+  // Handle sticker operations
   const handleDeleteSticker = useCallback(() => {
     if (book) {
       if (onBookDelete) {
@@ -83,7 +92,7 @@ export const useBookSlot = ({
     }
   }, [book, deleteBook, onBookDelete]);
 
-  // Handle clicking on empty slot to trigger file input or open modal
+  // Handle clicking on empty slot
   const handleClick = useCallback(() => {
     console.log("[useBookSlot] handleClick called for slotType:", slotType);
     
@@ -94,38 +103,19 @@ export const useBookSlot = ({
     } else if (slotType === 'recipe') {
       // Recipe slots are handled directly in EmptySlot component
       console.log("[useBookSlot] Recipe slots are handled in EmptySlot");
-    } else {
-      // For other slot types, trigger file input
-      console.log("[useBookSlot] Triggering file input click");
-      fileInputRef.current?.click();
     }
-  }, [fileInputRef, slotType, openModal]);
+  }, [slotType, openModal]);
 
   return {
     book,
-    fileInputRef,
-    scale,
-    position2D,
-    rotation,
     showDeleteDialog,
     setShowDeleteDialog,
-    handleFileChange,
     handleClick,
     handleDragOver,
     handleDragLeave,
     handleDrop,
-    handleStickerMouseDown,
-    handleStickerMouseMove,
-    handleStickerMouseUp,
-    handleRotate,
-    handleScaleChange,
-    handleResetTransform,
     handleDeleteSticker,
-    isDragging,
-    setIsDragging,
-    dragStart,
-    setDragStart,
-    isAltDrag
+    isDragOver
   };
 };
 

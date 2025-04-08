@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import { useDragAndDrop } from './useDragAndDrop';
@@ -21,12 +20,10 @@ export const useBookSlot = ({
   const { activeShelfId, books, deleteBook } = useBookshelfStore();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   
-  // Get the book at this position and shelf
   const book = Object.values(books).find(
     book => book.position === position && book.shelfId === activeShelfId
   );
   
-  // Use the sticker positioning hook
   const {
     scale,
     position2D,
@@ -41,14 +38,12 @@ export const useBookSlot = ({
     bookId: book?.id
   });
   
-  // Use the file handler hook
   const { fileInputRef, handleFileChange, handleClick } = useFileHandler({
     position,
     slotType,
     onFileSelect
   });
   
-  // Use drag and drop hook - now correctly passing setPosition2D
   const {
     handleStickerMouseDown,
     handleStickerMouseMove,
@@ -62,12 +57,11 @@ export const useBookSlot = ({
     isAltDrag
   } = useDragAndDrop({
     position,
-    setPosition2D, // This was missing before
+    setPosition2D,
     book,
     slotType
   });
   
-  // Handle delete sticker
   const handleDeleteSticker = useCallback(() => {
     if (book) {
       if (onBookDelete) {

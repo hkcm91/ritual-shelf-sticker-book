@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 export interface UseFileDropHandlerProps {
   position: number;
   onDrop?: (file: File) => void;
-  slotType?: "book" | "sticker";
+  slotType?: "book" | "sticker" | "recipe";
   acceptedFileTypes?: string[];
 }
 
@@ -21,7 +21,7 @@ export const useFileDropHandler = ({
   const validateFileType = useCallback((file: File): boolean => {
     if (acceptedFileTypes.length === 0) {
       // Default validations based on slot type
-      if (slotType === "book") {
+      if (slotType === "book" || slotType === "recipe") {
         return file.type.startsWith('image/');
       } else if (slotType === "sticker") {
         return file.type.startsWith('image/') || 
@@ -105,7 +105,7 @@ export const useFileDropHandler = ({
     if (!validateFileType(file)) {
       let supportedTypes = acceptedFileTypes.length > 0 
         ? acceptedFileTypes.join(', ') 
-        : (slotType === "book" ? 'image files' : 'image or JSON files');
+        : (slotType === "book" || slotType === "recipe" ? 'image files' : 'image or JSON files');
       
       toast.error(`Only ${supportedTypes} are supported for ${slotType}s`);
       return;

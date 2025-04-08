@@ -38,7 +38,6 @@ export const useDragAndDrop = ({
   const [slotDimensions, setSlotDimensions] = useState({ width: 150, height: 220 });
   const [initialPosition, setInitialPosition] = useState({ x: 0, y: 0 });
   
-  // Use specialized hooks
   const { handleFileDrop } = useFileDropHandler({
     position,
     onDrop,
@@ -52,7 +51,6 @@ export const useDragAndDrop = ({
     onBookDrop
   });
   
-  // Use the sticker drag hook
   const { 
     isDragging, 
     setIsDragging,
@@ -68,10 +66,8 @@ export const useDragAndDrop = ({
     defaultContainerSize: slotDimensions
   });
   
-  // Update slot dimensions when window resizes
   useEffect(() => {
     const updateDimensions = () => {
-      // Use standard slot dimensions as a fallback
       const slot = document.querySelector(`.book-slot[data-position="${position}"]`);
       if (slot) {
         const { width, height } = slot.getBoundingClientRect();
@@ -86,7 +82,6 @@ export const useDragAndDrop = ({
     return () => window.removeEventListener('resize', updateDimensions);
   }, [position]);
   
-  // Update initial position when position2D changes
   useEffect(() => {
     if (!isDragging) {
       setInitialPosition(currentPosition => ({
@@ -96,34 +91,27 @@ export const useDragAndDrop = ({
     }
   }, [isDragging]);
   
-  // Handle drag over to allow drop
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
   }, []);
   
-  // Handle drop to place a book into this slot
   const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     
-    // First check if there are files being dropped
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
       handleFileDrop(file);
       return;
     }
     
-    // If no files, try handling book drop
     handleBookDrop();
   }, [handleFileDrop, handleBookDrop]);
   
-  // Helper functions for sticker mouse movement (placeholder functions since actual logic is in useStickerDrag)
   const handleStickerMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    // This is now handled in the useStickerDrag hook
   }, []);
   
   const handleStickerMouseUp = useCallback(() => {
-    // This is now handled in the useStickerDrag hook
   }, []);
 
   return {

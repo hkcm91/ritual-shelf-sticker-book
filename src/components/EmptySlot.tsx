@@ -30,10 +30,17 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
     }
   };
   
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onClick) {
+      onClick();
+    }
+  };
+  
   return (
     <div 
       className="empty-slot flex flex-col items-center justify-center w-full h-full text-center cursor-pointer opacity-60 hover:opacity-100 transition-opacity duration-300"
-      onClick={onClick}
+      onClick={handleClick}
       data-position={position}
     >
       <div className="bg-amber-500/10 hover:bg-amber-500/20 rounded-full p-3 transition-colors duration-300">

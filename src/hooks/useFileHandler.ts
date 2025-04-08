@@ -1,8 +1,8 @@
 
 import { useRef, useCallback } from 'react';
-import { useBookshelfStore } from '../store/bookshelfStore';
 import { useBookCreation } from './useBookCreation';
 import { toast } from 'sonner';
+import { useFileValidation } from './useFileValidation';
 
 export interface UseFileHandlerProps {
   position: number;
@@ -17,6 +17,7 @@ export const useFileHandler = ({
 }: UseFileHandlerProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { createBookOrSticker } = useBookCreation({ position });
+  const { validateFile } = useFileValidation({ slotType });
   
   // Handle file input change
   const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,6 +26,13 @@ export const useFileHandler = ({
     if (file) {
       if (onFileSelect) {
         onFileSelect(file);
+        return;
+      }
+      
+      // Validate the file
+      const validation = validateFile(file);
+      if (!validation.valid) {
+        toast.error(validation.error || 'Invalid file');
         return;
       }
       
@@ -50,7 +58,7 @@ export const useFileHandler = ({
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
-  }, [onFileSelect, createBookOrSticker, slotType, position]);
+  }, [onFileSelect, createBookOrSticker, slotType, validateFile]);
   
   // Trigger file input click
   const handleClick = useCallback(() => {

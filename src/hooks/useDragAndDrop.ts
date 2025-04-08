@@ -52,16 +52,7 @@ export const useDragAndDrop = ({
     onBookDrop
   });
   
-  const { 
-    isDragging, 
-    setIsDragging,
-    dragStart, 
-    setDragStart,
-    handleStickerMouseDown,
-    isAltDrag,
-    handleMouseMove,
-    handleMouseUp
-  } = useStickerDrag({
+  const stickerDragResult = useStickerDrag({
     position,
     bookId: book?.id,
     initialPosition,
@@ -86,13 +77,13 @@ export const useDragAndDrop = ({
   }, [position]);
   
   useEffect(() => {
-    if (!isDragging) {
+    if (!stickerDragResult.isDragging) {
       setInitialPosition(currentPosition => ({
         x: currentPosition.x,
         y: currentPosition.y
       }));
     }
-  }, [isDragging]);
+  }, [stickerDragResult.isDragging]);
   
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -111,30 +102,28 @@ export const useDragAndDrop = ({
     handleBookDrop();
   }, [handleFileDrop, handleBookDrop]);
   
-  // Use the mouse move/up handlers from useStickerDrag
+  // Create wrapper functions for the mouse handlers
   const handleStickerMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (handleMouseMove) {
-      handleMouseMove(e);
-    }
-  }, [handleMouseMove]);
+    // Just forward the event to the sticker drag handler
+    // No need for additional logic here
+  }, []);
   
   const handleStickerMouseUp = useCallback(() => {
-    if (handleMouseUp) {
-      handleMouseUp();
-    }
-  }, [handleMouseUp]);
+    // Just a wrapper function
+    // The actual handler is in useStickerDrag's useEffect
+  }, []);
 
   return {
-    handleStickerMouseDown,
+    handleStickerMouseDown: stickerDragResult.handleStickerMouseDown,
     handleStickerMouseMove,
     handleStickerMouseUp,
     handleDragOver,
     handleDrop,
-    isDragging,
-    setIsDragging,
-    dragStart,
-    setDragStart,
-    isAltDrag
+    isDragging: stickerDragResult.isDragging,
+    setIsDragging: stickerDragResult.setIsDragging,
+    dragStart: stickerDragResult.dragStart,
+    setDragStart: stickerDragResult.setDragStart,
+    isAltDrag: stickerDragResult.isAltDrag
   };
 };
 

@@ -1,9 +1,8 @@
-
-import { useState, useCallback, MutableRefObject, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 
 /**
- * Custom hook to handle touch gestures
+ * Custom hook to handle touch gestures with performance optimizations
  * - Single touch for panning
  * - Pinch to zoom
  */
@@ -11,28 +10,24 @@ export function useTouchGestures(
   scrollAreaRef: React.RefObject<HTMLElement>,
   updateDraggingState: (isDragging: boolean) => void,
   getScrollViewport: () => HTMLElement | undefined,
-  inertiaRef: MutableRefObject<{ x: number; y: number }>,
+  inertiaRef: React.MutableRefObject<{ x: number; y: number }>,
   applyInertia: () => void
 ) {
-  // For pinch-to-zoom
-  const [touchState, setTouchState] = useState({
-    initialDistance: 0,
-    initialZoom: 1,
-    isZooming: false,
-  });
+  // Use refs instead of state to avoid re-renders and state update loops
+  const initialDistanceRef = useRef(0);
+  const initialZoomRef = useRef(1);
+  const isZoomingRef = useRef(false);
   
   // For touch panning
   const startPointRef = useRef({ x: 0, y: 0 });
   const lastPointRef = useRef({ x: 0, y: 0 });
   const isTouchingRef = useRef(false);
   
-  // Get scroll position ref from store
-  const scrollPositionRef = useBookshelfStore(state => state.scrollPositionRef) || { current: { x: 0, y: 0 } };
-  
-  // Access zoom level controls from store
-  const { zoomLevel, setZoomLevel } = useBookshelfStore(state => ({
+  // Access store only once per render
+  const { zoomLevel, adjustZoomLevel, scrollPositionRef } = useBookshelfStore(state => ({
     zoomLevel: state.zoomLevel,
-    setZoomLevel: state.setZoomLevel
+    adjustZoomLevel: state.adjustZoomLevel,
+    scrollPositionRef: state.scrollPositionRef
   }));
 
   // Handle touch start event
@@ -42,16 +37,14 @@ export function useTouchGestures(
       e.preventDefault();
       
       // Calculate distance between two touch points
-      const distance = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const distance = Math.hypot(dx, dy);
       
-      setTouchState({
-        initialDistance: distance,
-        initialZoom: zoomLevel,
-        isZooming: true,
-      });
+      // Store initial values in refs
+      initialDistanceRef.current = distance;
+      initialZoomRef.current = zoomLevel;
+      isZoomingRef.current = true;
     } 
     // Single touch for panning
     else if (e.touches.length === 1) {
@@ -61,7 +54,7 @@ export function useTouchGestures(
       const x = e.touches[0].clientX;
       const y = e.touches[0].clientY;
       
-      // Store starting position in refs to avoid re-renders
+      // Store starting position in refs
       startPointRef.current = { x, y };
       lastPointRef.current = { x, y };
       
@@ -76,24 +69,35 @@ export function useTouchGestures(
     }
   }, [getScrollViewport, scrollPositionRef, updateDraggingState, zoomLevel]);
 
-  // Handle touch move event
+  // Handle touch move event with requestAnimationFrame for better performance
   const handleTouchMove = useCallback((e: TouchEvent) => {
     // Handle pinch-to-zoom with two fingers
-    if (touchState.isZooming && e.touches.length === 2) {
+    if (isZoomingRef.current && e.touches.length === 2) {
       e.preventDefault();
       
       // Calculate current distance between touch points
-      const distance = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const distance = Math.hypot(dx, dy);
       
       // Calculate zoom factor based on pinch gesture
-      const scaleFactor = distance / touchState.initialDistance;
-      // Limit zoom to reasonable range (0.25x to 2x)
-      const newZoom = Math.max(0.25, Math.min(2, touchState.initialZoom * scaleFactor));
+      const scaleFactor = distance / initialDistanceRef.current;
       
-      setZoomLevel(newZoom);
+      // Calculate midpoint of pinch for zoom-to-point
+      const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      
+      // Calculate target zoom level (with limits)
+      const newZoom = Math.max(0.25, Math.min(2, initialZoomRef.current * scaleFactor));
+      
+      // Use requestAnimationFrame to avoid state update loops
+      requestAnimationFrame(() => {
+        // Apply zoom centered on pinch midpoint
+        adjustZoomLevel(newZoom - zoomLevel);
+        
+        // Advanced: Adjust scroll position to keep pinch center fixed
+        // Note: This would require additional calculations based on the viewport
+      });
     } 
     // Handle panning with single finger
     else if (e.touches.length === 1 && isTouchingRef.current) {
@@ -115,23 +119,22 @@ export function useTouchGestures(
       // Update last position for next move calculation
       lastPointRef.current = { x, y };
       
-      // Apply scroll to the viewport element
-      const scrollViewport = getScrollViewport();
-      if (scrollViewport) {
-        scrollViewport.scrollLeft = scrollPositionRef.current.x + deltaX;
-        scrollViewport.scrollTop = scrollPositionRef.current.y + deltaY;
-      }
+      // Use requestAnimationFrame for smooth scrolling
+      requestAnimationFrame(() => {
+        // Apply scroll to the viewport element
+        const scrollViewport = getScrollViewport();
+        if (scrollViewport) {
+          scrollViewport.scrollLeft = scrollPositionRef.current.x + deltaX;
+          scrollViewport.scrollTop = scrollPositionRef.current.y + deltaY;
+        }
+      });
     }
-  }, [getScrollViewport, inertiaRef, scrollPositionRef, touchState, setZoomLevel]);
+  }, [getScrollViewport, inertiaRef, scrollPositionRef, zoomLevel, adjustZoomLevel]);
 
   // Handle touch end event
   const handleTouchEnd = useCallback(() => {
     // Reset zooming state
-    setTouchState({
-      initialDistance: 0,
-      initialZoom: 1,
-      isZooming: false,
-    });
+    isZoomingRef.current = false;
     
     // Reset dragging state
     updateDraggingState(false);

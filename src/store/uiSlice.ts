@@ -9,7 +9,7 @@ export interface UISlice {
   zoomLevel: number;
   isBookSearchOpen: boolean;
   isCustomizationModalOpen: boolean;
-  scrollPositionRef: React.MutableRefObject<{ x: number; y: number }>;
+  scrollPositionRef: { current: { x: number; y: number } };
   openModal: (bookId: string) => void;
   closeModal: () => void;
   setDraggedBook: (bookId: string | null) => void;

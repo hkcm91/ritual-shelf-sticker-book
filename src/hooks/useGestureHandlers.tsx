@@ -10,6 +10,7 @@ export function useGestureHandlers(
   scrollAreaRef: React.RefObject<HTMLElement>,
   setIsDragging?: (isDragging: boolean) => void
 ) {
+  // Simply pass through to the refactored implementation
   return useRefactoredGestureHandlers(containerRef, scrollAreaRef, setIsDragging);
 }
 

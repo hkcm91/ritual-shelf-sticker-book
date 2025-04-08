@@ -1,17 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
-import { BookOpen } from 'lucide-react';
-import ShelfSelector from './ShelfSelector';
-import { useBookshelfStore } from '@/store/bookshelfStore';
 import BookSearchDrawer from '../BookSearchDrawer';
 import { useIsMobile } from '@/hooks/use-mobile';
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
 import HeaderAuthButton from '../Header';
 import SettingsDrawer from '../settings/SettingsDrawer';
 
@@ -45,25 +35,7 @@ const Header: React.FC = () => {
         {/* Book search drawer moved to the left side */}
         <BookSearchDrawer />
         
-        {!isMobile && (
-          <NavigationMenu>
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger 
-                  className="navigation-menu-item flex items-center gap-1.5 h-9 px-4 text-[color:var(--header-text-color,white)] hover:text-amber-200"
-                >
-                  <BookOpen className="h-4 w-4" />
-                  <span>Collections</span>
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <div className="p-4 w-[320px] rounded-md collections-dropdown">
-                    <ShelfSelector />
-                  </div>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
-        )}
+        {/* Collections button temporarily removed */}
       </div>
       
       <div className="flex items-center gap-3">

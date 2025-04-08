@@ -52,7 +52,7 @@ const BookshelfGrid: React.FC = () => {
 
   return (
     <div 
-      className="bookshelf-container relative"
+      className="bookshelf-container relative mt-0"
       /* All styles now controlled by CSS variables in layout.css */
     >
       <div className="bookshelf-rows relative z-10">

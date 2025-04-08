@@ -57,7 +57,7 @@ const Index = () => {
     >
       <Header />
       
-      <div className="flex-grow w-full overflow-auto">
+      <div className="flex-grow w-full overflow-auto p-0">
         <BookshelfGrid />
       </div>
       

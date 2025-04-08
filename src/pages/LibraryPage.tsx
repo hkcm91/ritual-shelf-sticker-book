@@ -83,14 +83,15 @@ const LibraryPage: React.FC = () => {
         color: 'var(--page-text-color, #333333)'
       }}
     >
-      <Header />
-      
-      {/* Library Header */}
-      <LibraryHeader 
-        currentLibrary={currentLibrary}
-        onSettingsOpen={() => setIsSettingsDialogOpen(true)}
-        onDeleteOpen={() => setIsDeleteDialogOpen(true)}
-      />
+      <Header>
+        {currentLibrary && (
+          <LibraryHeader 
+            currentLibrary={currentLibrary}
+            onSettingsOpen={() => setIsSettingsDialogOpen(true)}
+            onDeleteOpen={() => setIsDeleteDialogOpen(true)}
+          />
+        )}
+      </Header>
       
       <div className="flex-grow w-full overflow-auto p-0">
         <BookshelfGrid />

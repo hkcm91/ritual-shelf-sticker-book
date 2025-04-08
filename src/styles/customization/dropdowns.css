@@ -1,0 +1,101 @@
+
+/* Dropdown styling */
+.popover-dropdown {
+  @apply rounded-lg shadow-xl overflow-hidden;
+  background: linear-gradient(135deg, rgba(35, 25, 15, 0.95), rgba(55, 35, 25, 0.95));
+  border: 1px solid rgba(255, 215, 165, 0.15);
+  box-shadow: 
+    0 10px 25px rgba(0, 0, 0, 0.4), 
+    0 2px 10px rgba(0, 0, 0, 0.2),
+    0 0 15px rgba(255, 180, 120, 0.1);
+  animation: popover-appear 0.25s cubic-bezier(0.25, 0.1, 0.25, 1.4) forwards;
+  transform-origin: top center;
+  backdrop-filter: blur(8px);
+}
+
+.dropdown-item {
+  @apply flex items-center gap-2 px-3 py-2.5 rounded-md transition-all duration-200 text-amber-100;
+  border-left: 2px solid transparent;
+}
+
+.dropdown-item:hover, 
+.dropdown-item:focus {
+  @apply bg-amber-800/30;
+  border-left: 2px solid rgba(255, 180, 120, 0.5);
+  transform: translateX(2px);
+}
+
+.dropdown-item.danger {
+  @apply text-red-300;
+}
+
+.dropdown-item.danger:hover,
+.dropdown-item.danger:focus {
+  @apply bg-red-900/20;
+  border-left: 2px solid rgba(255, 120, 120, 0.5);
+}
+
+.dropdown-header {
+  @apply px-3 py-2 text-amber-300/90 font-semibold;
+  position: relative;
+  letter-spacing: 0.5px;
+}
+
+.dropdown-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40%;
+  height: 2px;
+  background: linear-gradient(to right, rgba(255, 180, 120, 0.5), transparent);
+  border-radius: 1px;
+}
+
+.dropdown-separator {
+  @apply my-1.5 bg-amber-500/10;
+}
+
+@keyframes popover-appear {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dropdown-icon {
+  @apply opacity-70 group-hover:opacity-100 transition-opacity;
+}
+
+.dropdown-trigger {
+  position: relative;
+}
+
+.dropdown-trigger::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 80%;
+  height: 2px;
+  background: linear-gradient(to right, transparent, rgba(255, 180, 120, 0.7), transparent);
+  transition: transform 0.2s ease;
+}
+
+.dropdown-trigger[data-state="open"]::after {
+  transform: translateX(-50%) scaleX(1);
+}
+
+/* Apply the styles to all dropdowns in the app */
+.collections-dropdown {
+  @apply popover-dropdown;
+}
+
+.dropdown-content {
+  @apply p-2;
+}

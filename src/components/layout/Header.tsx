@@ -51,50 +51,52 @@ const Header: React.FC = () => {
             <NavigationMenuList>
               <NavigationMenuItem>
                 <NavigationMenuTrigger 
-                  className="navigation-menu-item flex items-center gap-1.5 h-9 px-4 text-[color:var(--header-text-color,white)] hover:text-amber-200"
+                  className="dropdown-trigger navigation-menu-item flex items-center gap-1.5 h-9 px-4 text-[color:var(--header-text-color,white)] hover:text-amber-200 group"
                 >
-                  <Book className="h-4 w-4" />
+                  <Book className="h-4 w-4 group-hover:text-amber-300 transition-colors" />
                   <span>Widget Libraries</span>
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <div className="p-4 w-[320px] rounded-md collections-dropdown">
-                    <div className="flex justify-between items-center mb-3">
-                      <h3 className="text-amber-300/90 font-semibold collections-title">Library Types</h3>
-                      <button 
-                        onClick={() => setIsCreateLibraryOpen(true)}
-                        className="flex items-center gap-1.5 text-amber-300 hover:text-amber-200 text-sm transition-colors"
-                      >
-                        <FolderPlus className="h-3.5 w-3.5" />
-                        <span>New Library</span>
-                      </button>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <LibraryMenuItem 
-                        icon={<Book className="h-4 w-4" />}
-                        title="Book Library"
-                        submenuItems={[
-                          { title: "Main Library", path: "/" }
-                        ]}
-                      />
-                      
-                      <LibraryMenuItem 
-                        icon={<NotebookPen className="h-4 w-4" />}
-                        title="Notebook Library"
-                        submenuItems={[
-                          { title: "Sticker Book", path: "/widgets" }
-                        ]}
-                      />
-                      
-                      {/* Placeholder for future library types */}
-                      <div className="flex items-center gap-2 text-amber-100/50 px-3 py-2 rounded-md">
-                        <Utensils className="h-4 w-4" />
-                        <span>Recipe Library (Coming Soon)</span>
+                  <div className="popover-dropdown w-[320px]">
+                    <div className="dropdown-content">
+                      <div className="flex justify-between items-center mb-3">
+                        <h3 className="dropdown-header">Library Types</h3>
+                        <button 
+                          onClick={() => setIsCreateLibraryOpen(true)}
+                          className="flex items-center gap-1.5 text-amber-300 hover:text-amber-200 text-sm transition-colors group"
+                        >
+                          <FolderPlus className="h-3.5 w-3.5 group-hover:animate-pulse" />
+                          <span>New Library</span>
+                        </button>
                       </div>
                       
-                      <div className="flex items-center gap-2 text-amber-100/50 px-3 py-2 rounded-md">
-                        <Music className="h-4 w-4" />
-                        <span>Music Library (Coming Soon)</span>
+                      <div className="space-y-1">
+                        <LibraryMenuItem 
+                          icon={<Book className="h-4 w-4" />}
+                          title="Book Library"
+                          submenuItems={[
+                            { title: "Main Library", path: "/" }
+                          ]}
+                        />
+                        
+                        <LibraryMenuItem 
+                          icon={<NotebookPen className="h-4 w-4" />}
+                          title="Notebook Library"
+                          submenuItems={[
+                            { title: "Sticker Book", path: "/widgets" }
+                          ]}
+                        />
+                        
+                        {/* Placeholder for future library types */}
+                        <div className="dropdown-item opacity-50 cursor-not-allowed">
+                          <Utensils className="h-4 w-4" />
+                          <span>Recipe Library (Coming Soon)</span>
+                        </div>
+                        
+                        <div className="dropdown-item opacity-50 cursor-not-allowed">
+                          <Music className="h-4 w-4" />
+                          <span>Music Library (Coming Soon)</span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -109,9 +111,9 @@ const Header: React.FC = () => {
         {/* Widget Launcher Button */}
         <Link to="/widgets">
           <button 
-            className="game-btn text-sm flex items-center gap-1.5 h-9 px-4 from-amber-900/40 to-amber-950/40 text-amber-100 border-amber-600/20"
+            className="game-btn text-sm flex items-center gap-1.5 h-9 px-4 from-amber-900/40 to-amber-950/40 text-amber-100 border-amber-600/20 group"
           >
-            <NotebookPen className="h-4 w-4" />
+            <NotebookPen className="h-4 w-4 group-hover:text-amber-300 transition-colors" />
             <span>Sticker Book</span>
           </button>
         </Link>
@@ -149,24 +151,26 @@ const LibraryMenuItem: React.FC<LibraryMenuItemProps> = ({ icon, title, submenuI
       <NavigationMenuList>
         <NavigationMenuItem>
           <NavigationMenuTrigger 
-            className="w-full flex items-center gap-2 hover:bg-amber-800/30 px-3 py-2 rounded-md cursor-pointer text-amber-100"
+            className="dropdown-trigger w-full dropdown-item group"
           >
             {icon}
             <span>{title}</span>
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <div className="p-4 w-[280px] rounded-md collections-dropdown">
-              <h3 className="text-amber-300/90 font-semibold mb-3 collections-title">{title}s</h3>
-              <div className="space-y-2">
-                {submenuItems.map((item, index) => (
-                  <Link 
-                    key={index}
-                    to={item.path} 
-                    className="flex items-center gap-2 hover:bg-amber-800/30 px-3 py-2 rounded-md cursor-pointer text-amber-100"
-                  >
-                    <span>{item.title}</span>
-                  </Link>
-                ))}
+            <div className="popover-dropdown w-[280px]">
+              <div className="dropdown-content">
+                <h3 className="dropdown-header">{title}s</h3>
+                <div className="space-y-1 mt-2">
+                  {submenuItems.map((item, index) => (
+                    <Link 
+                      key={index}
+                      to={item.path} 
+                      className="dropdown-item block"
+                    >
+                      <span>{item.title}</span>
+                    </Link>
+                  ))}
+                </div>
               </div>
             </div>
           </NavigationMenuContent>

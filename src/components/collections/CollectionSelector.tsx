@@ -48,13 +48,13 @@ const CollectionSelector: React.FC<CollectionSelectorProps> = ({
         onValueChange={handleShelfChange}
       >
         <SelectTrigger 
-          className="w-full game-btn bg-gradient-to-b from-amber-900/40 to-amber-950/40 border border-amber-600/20 text-amber-100 
-            shadow-lg shadow-black/30 hover:from-amber-900/50 hover:to-amber-950/50 transition-all"
+          className="dropdown-trigger w-full game-btn bg-gradient-to-b from-amber-900/40 to-amber-950/40 border border-amber-600/20 text-amber-100 
+            shadow-lg shadow-black/30 hover:from-amber-900/50 hover:to-amber-950/50 transition-all group"
         >
           <SelectValue placeholder="Select a collection..." />
         </SelectTrigger>
         <SelectContent 
-          className="z-50 collections-dropdown min-w-[280px] p-1.5"
+          className="popover-dropdown z-50 min-w-[280px]"
           position="popper"
           sideOffset={5}
           align="center"
@@ -63,16 +63,17 @@ const CollectionSelector: React.FC<CollectionSelectorProps> = ({
             e.preventDefault();
           }}
         >
-          {Object.values(shelvesData).map((shelf) => (
-            <SelectItem 
-              key={shelf.id} 
-              value={shelf.id}
-              className="hover:bg-amber-800/30 px-3 py-2 rounded-md focus:bg-amber-800/30 cursor-pointer 
-                border-l-2 border-transparent hover:border-amber-500/50 transition-all my-0.5 text-amber-100"
-            >
-              {shelf.name}
-            </SelectItem>
-          ))}
+          <div className="dropdown-content">
+            {Object.values(shelvesData).map((shelf) => (
+              <SelectItem 
+                key={shelf.id} 
+                value={shelf.id}
+                className="dropdown-item cursor-pointer my-0.5"
+              >
+                {shelf.name}
+              </SelectItem>
+            ))}
+          </div>
         </SelectContent>
       </Select>
     </div>

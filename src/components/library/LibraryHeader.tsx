@@ -40,7 +40,7 @@ export const LibraryHeader: React.FC<LibraryHeaderProps> = ({
   };
 
   return (
-    <div className="flex items-center gap-4 ml-4">
+    <div className="flex items-center gap-4">
       <div className="flex items-center gap-2">
         <div className="p-1.5 rounded-full bg-white/20 shadow-inner">
           {libraryTypeIcon()}

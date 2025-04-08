@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { Book, NotebookPen, Recipe, Music } from 'lucide-react';
+import { Book, NotebookPen, Utensils, Music } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import BookSearchDrawer from '../BookSearchDrawer';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -71,7 +71,7 @@ const Header: React.FC = () => {
                       
                       {/* Placeholder for future library types */}
                       <div className="flex items-center gap-2 text-amber-100/50 px-3 py-2 rounded-md">
-                        <Recipe className="h-4 w-4" />
+                        <Utensils className="h-4 w-4" />
                         <span>Recipe Library (Coming Soon)</span>
                       </div>
                       

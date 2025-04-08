@@ -18,8 +18,7 @@ const AppearanceTab: React.FC<AppearanceTabProps> = ({ onCloseDrawer }) => {
       </Card>
       
       <div className="text-sm text-amber-200/70 p-3 bg-amber-900/20 rounded-lg border border-amber-800/20">
-        Select from our curated collection of themes to instantly transform your bookshelf's appearance.
-        Each theme includes matching dividers and shelf styling.
+        Select from our curated collection of themes to transform your bookshelf's appearance.
       </div>
     </div>
   );

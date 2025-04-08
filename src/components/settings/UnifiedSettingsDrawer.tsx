@@ -44,7 +44,7 @@ const UnifiedSettingsDrawer: React.FC<UnifiedSettingsDrawerProps> = ({
   const currentLibrary = libraryId && shelves ? shelves[libraryId] : null;
   
   // Default to most appropriate tab based on current page
-  const defaultTab = isLibraryPage ? 'library' : 'layout';
+  const defaultTab = isLibraryPage ? 'library' : 'appearance';
   
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
@@ -68,10 +68,10 @@ const UnifiedSettingsDrawer: React.FC<UnifiedSettingsDrawerProps> = ({
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="game-btn from-amber-900/40 to-amber-950/40 hover:from-amber-900/50 hover:to-amber-950/50 text-amber-100"
+                className="bg-amber-800/70 hover:bg-amber-700/80 text-amber-100"
                 onClick={handleTriggerClick}
               >
-                <Settings2 className="h-4 w-4 animate-[spin_10s_linear_infinite]" />
+                <Settings2 className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
             <TooltipContent className="bg-[#1A1F2C] border border-amber-600/20 text-amber-100">
@@ -81,7 +81,7 @@ const UnifiedSettingsDrawer: React.FC<UnifiedSettingsDrawerProps> = ({
         </TooltipProvider>
       </SheetTrigger>
       
-      <SheetContent className="overflow-y-auto bg-[#1A1F2C] border-l border-amber-700/30 text-amber-100">
+      <SheetContent className="overflow-y-auto bg-[#1A1F2C] border-l border-amber-700/30 text-amber-100 w-full sm:max-w-md">
         <SheetHeader>
           <SheetTitle className="text-amber-200">Settings</SheetTitle>
           <SheetDescription className="text-amber-100/70">
@@ -91,20 +91,13 @@ const UnifiedSettingsDrawer: React.FC<UnifiedSettingsDrawerProps> = ({
         
         {isLibraryPage ? (
           <Tabs defaultValue={defaultTab} className="mt-6">
-            <TabsList className="grid w-full grid-cols-4 bg-amber-950/50 border border-amber-700/30">
+            <TabsList className="grid w-full grid-cols-2 bg-amber-950/50 border border-amber-700/30">
               <TabsTrigger 
                 value="library" 
                 className="flex items-center gap-1 data-[state=active]:bg-amber-900/50 data-[state=active]:text-amber-100"
               >
                 <BookMarked className="h-3.5 w-3.5" />
-                <span>Library</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="layout" 
-                className="flex items-center gap-1 data-[state=active]:bg-amber-900/50 data-[state=active]:text-amber-100"
-              >
-                <Layout className="h-3.5 w-3.5" />
-                <span>Layout</span>
+                <span>Library Settings</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="appearance" 
@@ -112,13 +105,6 @@ const UnifiedSettingsDrawer: React.FC<UnifiedSettingsDrawerProps> = ({
               >
                 <Palette className="h-3.5 w-3.5" />
                 <span>Theme</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="storage" 
-                className="flex items-center gap-1 data-[state=active]:bg-amber-900/50 data-[state=active]:text-amber-100"
-              >
-                <Save className="h-3.5 w-3.5" />
-                <span>Storage</span>
               </TabsTrigger>
             </TabsList>
             
@@ -130,7 +116,9 @@ const UnifiedSettingsDrawer: React.FC<UnifiedSettingsDrawerProps> = ({
               />
             </TabsContent>
             
-            <SettingsDrawerContent onCloseDrawer={() => setOpen(false)} />
+            <TabsContent value="appearance" className="mt-4 space-y-6">
+              <AppearanceTab onCloseDrawer={() => setOpen(false)} />
+            </TabsContent>
           </Tabs>
         ) : (
           <SettingsDrawerContent onCloseDrawer={() => setOpen(false)} />

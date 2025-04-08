@@ -1,9 +1,11 @@
-
 import React from 'react';
 import { Circle } from 'lucide-react';
+import { SlotType } from '@/store/types';
+import { useBookshelfStore } from '@/store/bookshelfStore';
+import { getAllowedSlotTypes } from '@/utils/slotCompatibility';
 
 type SlotTypeToggleProps = {
-  slotType: "book" | "sticker";
+  slotType: SlotType;
   handleTypeToggle: (value: string) => void;
   isVisible?: boolean;
 };
@@ -13,12 +15,24 @@ const SlotTypeToggle: React.FC<SlotTypeToggleProps> = ({
   handleTypeToggle,
   isVisible = true
 }) => {
+  const { activeShelfId, shelves } = useBookshelfStore();
+  
+  // Get current library type or default to 'book'
+  const libraryType = activeShelfId && shelves[activeShelfId] ? 
+    shelves[activeShelfId].type || 'book' : 
+    'book';
+  
+  // Get allowed slot types for this library
+  const allowedSlotTypes = getAllowedSlotTypes(libraryType);
+  
   // If not visible, don't render anything
   if (!isVisible) return null;
   
   return (
     <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-background/30 backdrop-blur-sm rounded-full p-0.5 z-10 opacity-40 hover:opacity-90 transition-opacity">
       <div className="flex items-center space-x-1">
+        {/* We'll only show toggles for compatible slot types */}
+        {/* For now, we'll keep showing just book and sticker for all libraries to maintain current UI */}
         <button
           type="button"
           onClick={() => handleTypeToggle('book')}

@@ -1,150 +1,67 @@
 
-import React, { useState } from 'react';
-import { storageService } from '../services/storage/storageService';
-import { toast } from 'sonner';
-import UrlDialog from './UrlDialog';
-import { useBookshelfStore } from '../store/bookshelfStore';
-import { Plus } from 'lucide-react';
+import React from 'react';
+import { PlusCircle, Book, Music, Utensils, BookMarked } from 'lucide-react';
+import { SlotType } from '@/store/types';
 
-type EmptySlotProps = {
+interface EmptySlotProps {
   fileInputRef: React.RefObject<HTMLInputElement>;
-  onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  slotType?: "book" | "sticker";
-  onClick?: () => void; 
+  onFileSelect: (file: File) => void;
+  slotType: SlotType;
+  onClick: () => void;
   position: number;
-};
+}
 
 const EmptySlot: React.FC<EmptySlotProps> = ({ 
   fileInputRef, 
-  onFileSelect, 
-  slotType = "book",
+  onFileSelect,
+  slotType,
   onClick,
   position
 }) => {
-  const [showUrlDialog, setShowUrlDialog] = useState(false);
-  const [imageUrl, setImageUrl] = useState('');
-  const { addBook, openModal, activeShelfId } = useBookshelfStore();
-  
-  // Set accept attribute based on slot type
-  const acceptAttr = slotType === "book" 
-    ? "image/*" 
-    : "image/*,application/json";
-  
-  // Handle click on empty slot
-  const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent event bubbling
-    
-    if (slotType === "book") {
-      // For book slots, open the modal directly
-      const newBookId = addBook({
-        title: '',
-        author: '',
-        coverURL: '', // Empty cover to be updated later
-        progress: 0,
-        rating: 0,
-        position,
-        shelfId: activeShelfId,
-        isSticker: false
-      });
-      
-      if (newBookId) {
-        openModal(newBookId);
-      } else {
-        toast.error('Failed to create new book');
-      }
-    } else {
-      // For stickers, show the URL dialog or file picker
-      if (e.altKey || e.ctrlKey) {
-        // Alt or Ctrl click shows the URL dialog
-        setShowUrlDialog(true);
-      } else {
-        // Regular click opens file picker
-        fileInputRef.current?.click();
-      }
+  const getSlotIcon = () => {
+    switch (slotType) {
+      case 'book':
+        return <Book className="h-5 w-5" />;
+      case 'music':
+        return <Music className="h-5 w-5" />;
+      case 'recipe':
+        return <Utensils className="h-5 w-5" />;
+      case 'notebook':
+        return <BookMarked className="h-5 w-5" />;
+      case 'sticker':
+        return <PlusCircle className="h-5 w-5" />;
+      default:
+        return <PlusCircle className="h-5 w-5" />;
     }
   };
-  
-  // Handle the file input change
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const stats = storageService.getUsageStats();
-    
-    // If storage is getting full (over 80%), warn the user
-    if (stats.percent > 80) {
-      toast.warning(`Storage is ${stats.percent}% full. Consider removing unused items.`);
-    }
-    
-    onFileSelect(e);
-  };
-  
-  // Handle URL submission for stickers
-  const handleUrlSubmit = () => {
-    if (!imageUrl) {
-      toast.error("Please enter a valid URL");
-      return;
-    }
-    
-    try {
-      // For image URLs, add as sticker
-      const newBookId = addBook({
-        title: 'URL Sticker',
-        author: 'Sticker',
-        coverURL: imageUrl,
-        progress: 0,
-        rating: 0,
-        position,
-        shelfId: activeShelfId,
-        isSticker: true
-      });
-      
-      if (newBookId) {
-        toast.success("Sticker added successfully");
-      } else {
-        toast.error("Failed to add sticker");
-      }
-    } catch (error) {
-      console.error('Error adding sticker from URL:', error);
-      toast.error('Failed to add sticker from URL');
-    }
-    
-    // Reset and close dialog
-    setImageUrl('');
-    setShowUrlDialog(false);
-  };
-  
+
   return (
-    <>
-      <div 
-        className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer"
-        onClick={handleClick}
-      >
-        <Plus className="w-6 h-6 text-gray-300/50" />
-        <span className="text-xs text-gray-300/50 mt-1">
-          {slotType === "book" ? "Add Book" : "Add Sticker"}
-        </span>
-        
-        {slotType === "sticker" && (
-          <span className="text-xs text-gray-300/30 mt-1">
-            (Alt+Click for URL)
-          </span>
-        )}
-      </div>
+    <div 
+      className="empty flex items-center justify-center h-full w-full cursor-pointer rounded-sm"
+      onClick={onClick}
+      data-position={position}
+      data-slot-type={slotType}
+    >
       <input
-        ref={fileInputRef}
         type="file"
-        accept={acceptAttr}
+        ref={fileInputRef}
         className="hidden"
-        onChange={handleFileInput}
+        accept={slotType === 'sticker' ? "image/*, .json" : "image/*"}
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) {
+            onFileSelect(file);
+          }
+        }}
       />
-      
-      {/* URL Dialog for Stickers */}
-      <UrlDialog 
-        open={showUrlDialog}
-        onOpenChange={setShowUrlDialog}
-        imageUrl={imageUrl}
-        onImageUrlChange={setImageUrl}
-        onSubmit={handleUrlSubmit}
-      />
-    </>
+      <button 
+        className="add-book-button flex items-center justify-center p-2.5 rounded-full"
+        type="button"
+        aria-label={`Add ${slotType}`}
+      >
+        {getSlotIcon()}
+      </button>
+    </div>
   );
 };
 

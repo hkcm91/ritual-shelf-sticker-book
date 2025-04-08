@@ -1,118 +1,111 @@
 
-import { useCallback } from 'react';
-import { toast } from 'sonner';
-import { useFileInput } from './useFileInput';
-import { useFileValidation } from './useFileValidation';
-import { useLottieFileHandler } from './useLottieFileHandler';
-import { useBookCreation } from './useBookCreation';
+import { useRef, useCallback } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
-import { storageService } from '../services/storage/storageService';
-import { useImageProcessing } from './useImageProcessing';
+import { toast } from 'sonner';
+import { v4 as uuidv4 } from 'uuid';
+import { SlotType } from '../store/types';
 
-export interface UseFileHandlerProps {
+interface UseFileHandlerProps {
   position: number;
-  slotType?: "book" | "sticker";
+  slotType: SlotType;
   onFileSelect?: (file: File) => void;
-  acceptedFileTypes?: string[];
-  maxFileSize?: number;
-  compressionSettings?: {
-    quality: number;
-    maxWidth: number;
-    maxHeight: number;
-    sizeThreshold: number;  // Size in KB to trigger compression
-  };
 }
 
 export const useFileHandler = ({
   position,
-  slotType = "book",
-  onFileSelect,
-  acceptedFileTypes = [],
-  maxFileSize = 5 * 1024 * 1024,  // 5MB default
-  compressionSettings = {
-    quality: 0.7,
-    maxWidth: 600,
-    maxHeight: 900,
-    sizeThreshold: 200  // 200KB
-  }
+  slotType,
+  onFileSelect
 }: UseFileHandlerProps) => {
-  const { fileInputRef, handleClick, clearFileInput } = useFileInput({ onFileSelect });
-  const { validateFile } = useFileValidation({ slotType, acceptedFileTypes, maxFileSize });
-  const { processImageFile } = useImageProcessing({ compressionOptions: compressionSettings });
-  const { processLottieFile } = useLottieFileHandler({
-    onError: (error) => toast.error(error.message)
-  });
-  const { createBookOrSticker } = useBookCreation({ position });
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { addBook, activeShelfId } = useBookshelfStore();
   
-  const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    
-    console.log(`Handling file: ${file.name}, type: ${file.type}, size: ${file.size}`);
-    
-    // Call external onFileSelect handler if provided
-    if (onFileSelect) {
-      onFileSelect(file);
-    }
-    
-    // Check storage usage
-    const stats = storageService.getUsageStats();
-    if (stats.percent > 80) {
-      toast.warning(`Storage is ${stats.percent}% full. Consider removing unused items.`);
-    }
-    
-    // Validate file
-    const validation = validateFile(file);
-    if (!validation.valid) {
-      toast.error(validation.error);
-      clearFileInput();
-      return;
-    }
-    
-    try {
-      let fileContent: string;
-      let isSticker = slotType === "sticker";
-      
-      // Process file based on type
-      if (file.type.startsWith('image/')) {
-        fileContent = await processImageFile(file);
-      } else if (file.type === 'application/json' || file.name.endsWith('.json')) {
-        if (slotType !== "sticker") {
-          toast.error('JSON files are only supported for stickers');
-          clearFileInput();
+  // Handle clicking on empty slot to trigger file input
+  const handleClick = useCallback(() => {
+    fileInputRef.current?.click();
+  }, [fileInputRef]);
+
+  // Handle file change to add book/sticker
+  const handleFileChange = useCallback(
+    async (file: File) => {
+      try {
+        if (!activeShelfId) {
+          toast.error("No active shelf selected");
           return;
         }
-        fileContent = await processLottieFile(file);
-        isSticker = true;
-      } else {
-        toast.error('Unsupported file type');
-        clearFileInput();
-        return;
-      }
-      
-      // Add book or sticker to the store
-      createBookOrSticker(fileContent, file.name, isSticker);
-    } catch (error) {
-      console.error(`Error adding ${slotType}:`, error);
-      toast.error('Failed to save file. Please try again with a different file.');
-    } finally {
-      clearFileInput();
-    }
-  }, [
-    onFileSelect, 
-    validateFile, 
-    clearFileInput, 
-    processImageFile, 
-    processLottieFile, 
-    createBookOrSticker,
-    slotType
-  ]);
+        
+        // If external handler provided, use it
+        if (onFileSelect) {
+          onFileSelect(file);
+          return;
+        }
 
+        // Process the file (could be image or JSON for Lottie)
+        let isLottie = false;
+        let fileContent = '';
+        
+        // For stickers, check if it's a JSON file (Lottie animation)
+        if (slotType === 'sticker' && file.name.endsWith('.json')) {
+          const text = await file.text();
+          try {
+            // Validate it's proper JSON
+            JSON.parse(text);
+            fileContent = text;
+            isLottie = true;
+          } catch (err) {
+            toast.error("Invalid JSON file");
+            return;
+          }
+        } else {
+          // For images, convert to data URL
+          fileContent = await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.readAsDataURL(file);
+          });
+        }
+
+        // Generate a book ID
+        const bookId = uuidv4();
+        
+        // Create book title from filename
+        const fileName = file.name.split('.')[0];
+        const title = fileName.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+
+        // Add the book to the store
+        const bookData = {
+          id: bookId,
+          title,
+          author: slotType === 'sticker' ? 'Sticker' : 'Unknown Author',
+          position,
+          coverURL: fileContent,
+          shelfId: activeShelfId,
+          isSticker: slotType === 'sticker',
+        };
+        
+        if (slotType === 'sticker') {
+          // Initialize sticker properties
+          Object.assign(bookData, {
+            position2D: { x: 0, y: 0 },
+            scale: 1,
+            rotation: 0,
+            zIndex: 10
+          });
+        }
+        
+        addBook(bookData);
+        toast.success(`${slotType === 'sticker' ? 'Sticker' : 'Book'} added successfully!`);
+      } catch (error) {
+        console.error("Error adding book:", error);
+        toast.error(`Failed to add ${slotType}. Please try again.`);
+      }
+    },
+    [addBook, activeShelfId, position, slotType, onFileSelect]
+  );
+  
   return {
     fileInputRef,
     handleFileChange,
-    handleClick,
-    clearFileInput
+    handleClick
   };
 };
 

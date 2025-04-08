@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Book from './Book';
 import { Popover, PopoverTrigger } from '@/components/ui/popover';
 import SlotControls from './SlotControls';
@@ -10,14 +9,29 @@ import { useBookSlot } from '../hooks/useBookSlot';
 import SlotTypeToggle from './SlotTypeToggle';
 import ContextMenuWrapper from './ContextMenuWrapper';
 import { useBookshelfStore } from '@/store/bookshelfStore';
+import { SlotType } from '@/store/types';
+import { getDefaultSlotType, isSlotCompatibleWithLibrary } from '@/utils/slotCompatibility';
 
 type BookSlotProps = {
   position: number;
 };
 
 const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
-  const [slotType, setSlotType] = useState<"book" | "sticker">("book");
-  const { activeTheme } = useBookshelfStore();
+  const { activeShelfId, shelves, activeTheme } = useBookshelfStore();
+  const [slotType, setSlotType] = useState<SlotType>("book");
+  
+  // Get current library type
+  const libraryType = activeShelfId && shelves[activeShelfId] ? 
+    shelves[activeShelfId].type || 'book' : 
+    'book';
+    
+  // Update slot type when library type changes
+  useEffect(() => {
+    // If current slot type is not compatible with library, reset to default
+    if (!isSlotCompatibleWithLibrary(slotType, libraryType)) {
+      setSlotType(getDefaultSlotType(libraryType));
+    }
+  }, [libraryType, slotType]);
   
   const {
     book,
@@ -43,8 +57,9 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
 
   // Handle type toggle without triggering file input
   const handleTypeToggle = (value: string) => {
+    // For now, only allow book and sticker to keep current UI
     if (value === 'book' || value === 'sticker') {
-      setSlotType(value as "book" | "sticker");
+      setSlotType(value as SlotType);
     }
   };
 

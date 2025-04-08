@@ -92,3 +92,24 @@
   transform: translateY(-5px) scale(1.03);
   box-shadow: 0 8px 20px rgba(0,0,0,0.6), 0 0 15px rgba(255, 180, 100, 0.2);
 }
+
+/* Styling for the different slot types */
+.book-slot[data-slot-type="book"] .add-book-button {
+  color: var(--slot-book-color, var(--slot-add-button-color));
+}
+
+.book-slot[data-slot-type="notebook"] .add-book-button {
+  color: var(--slot-notebook-color, var(--slot-add-button-color));
+}
+
+.book-slot[data-slot-type="recipe"] .add-book-button {
+  color: var(--slot-recipe-color, var(--slot-add-button-color));
+}
+
+.book-slot[data-slot-type="music"] .add-book-button {
+  color: var(--slot-music-color, var(--slot-add-button-color));
+}
+
+.book-slot[data-slot-type="sticker"] .add-book-button {
+  color: var(--slot-sticker-color, var(--slot-add-button-color));
+}

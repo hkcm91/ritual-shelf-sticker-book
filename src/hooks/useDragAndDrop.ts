@@ -1,132 +1,149 @@
+import { useState, useCallback, useEffect } from 'react';
+import { useBookshelfStore } from '../store/bookshelfStore';
+import { BookData, SlotType } from '../store/types';
+import { toast } from 'sonner';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useStickerDrag } from './stickers/useStickerDrag';
-import { useFileDropHandler } from './useFileDropHandler';
-import { useBookDragHandler } from './useBookDragHandler';
-
-export interface UseDragAndDropProps {
+interface UseDragAndDropProps {
   position: number;
-  setPosition2D: (value: { x: number, y: number }) => void;
-  book: any;
-  slotType?: "book" | "sticker";
-  onDrop?: (file: File) => void;
-  onBookDrop?: (bookId: string, position: number) => void;
-  acceptedFileTypes?: string[];
+  setPosition2D: (newPosition: { x: number; y: number }) => void;
+  book?: BookData;
+  slotType: SlotType;
 }
 
-export interface DragAndDropResult {
-  handleStickerMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
-  handleStickerMouseMove: (e: React.MouseEvent<HTMLDivElement>) => void;
-  handleStickerMouseUp: () => void;
-  handleDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
-  handleDrop: (e: React.DragEvent<HTMLDivElement>) => void;
-  isDragging: boolean;
-  setIsDragging: (value: boolean) => void;
-  dragStart: { x: number, y: number };
-  setDragStart: (value: { x: number, y: number }) => void;
-  isAltDrag?: boolean;
-}
-
-export const useDragAndDrop = ({
-  position,
+export const useDragAndDrop = ({ 
+  position, 
   setPosition2D,
   book,
-  slotType = "book",
-  onDrop,
-  onBookDrop,
-  acceptedFileTypes = []
-}: UseDragAndDropProps): DragAndDropResult => {
-  const [slotDimensions, setSlotDimensions] = useState({ width: 150, height: 220 });
-  const [initialPosition, setInitialPosition] = useState({ x: 0, y: 0 });
+  slotType
+}: UseDragAndDropProps) => {
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [isAltDrag, setIsAltDrag] = useState(false);
   
-  // Use specialized hooks
-  const { handleFileDrop } = useFileDropHandler({
-    position,
-    onDrop,
-    slotType,
-    acceptedFileTypes
-  });
+  const { moveBook, activeShelfId, books, addBook } = useBookshelfStore();
   
-  const { handleBookDrop } = useBookDragHandler({
-    position,
-    book,
-    onBookDrop
-  });
-  
-  // Use the sticker drag hook
-  const { 
-    isDragging, 
-    setIsDragging,
-    dragStart, 
-    setDragStart,
-    handleStickerMouseDown,
-    isAltDrag 
-  } = useStickerDrag({
-    position,
-    bookId: book?.id,
-    initialPosition,
-    setPosition2D,
-    defaultContainerSize: slotDimensions
-  });
-  
-  // Update slot dimensions when window resizes
+  // Handle key press to toggle alt drag mode
   useEffect(() => {
-    const updateDimensions = () => {
-      // Use standard slot dimensions as a fallback
-      const slot = document.querySelector(`.book-slot[data-position="${position}"]`);
-      if (slot) {
-        const { width, height } = slot.getBoundingClientRect();
-        setSlotDimensions({ width, height });
-      } else {
-        setSlotDimensions({ width: 150, height: 220 });
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Alt') {
+        setIsAltDrag(true);
       }
     };
     
-    updateDimensions();
-    window.addEventListener('resize', updateDimensions);
-    return () => window.removeEventListener('resize', updateDimensions);
-  }, [position]);
-  
-  // Update initial position when position2D changes
-  useEffect(() => {
-    if (!isDragging) {
-      setInitialPosition(currentPosition => ({
-        x: currentPosition.x,
-        y: currentPosition.y
-      }));
-    }
-  }, [isDragging]);
-  
-  // Handle drag over to allow drop
-  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-  }, []);
-  
-  // Handle drop to place a book into this slot
-  const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === 'Alt') {
+        setIsAltDrag(false);
+      }
+    };
     
-    // First check if there are files being dropped
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const file = e.dataTransfer.files[0];
-      handleFileDrop(file);
-      return;
-    }
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
     
-    // If no files, try handling book drop
-    handleBookDrop();
-  }, [handleFileDrop, handleBookDrop]);
-  
-  // Helper functions for sticker mouse movement (placeholder functions since actual logic is in useStickerDrag)
-  const handleStickerMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    // This is now handled in the useStickerDrag hook
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
   }, []);
   
-  const handleStickerMouseUp = useCallback(() => {
-    // This is now handled in the useStickerDrag hook
-  }, []);
-
+  // Handle mouse down for sticker dragging
+  const handleStickerMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if (book?.isSticker) {
+        e.stopPropagation();
+        setIsDragging(true);
+        setDragStart({ x: e.clientX, y: e.clientY });
+      }
+    },
+    [book]
+  );
+  
+  // Handle mouse move for dragging stickers
+  const handleStickerMouseMove = useCallback(
+    (e: React.MouseEvent) => {
+      if (isDragging && book?.isSticker && book.position2D) {
+        e.preventDefault();
+        
+        // Calculate the distance moved
+        const dx = e.clientX - dragStart.x;
+        const dy = e.clientY - dragStart.y;
+        
+        // Update the position
+        const newX = book.position2D.x + dx;
+        const newY = book.position2D.y + dy;
+        
+        // Update the state
+        setPosition2D({ x: newX, y: newY });
+        
+        // Update the drag start position
+        setDragStart({ x: e.clientX, y: e.clientY });
+      }
+    },
+    [isDragging, book, dragStart, setPosition2D]
+  );
+  
+  // Handle mouse up for dragging stickers
+  const handleStickerMouseUp = useCallback(
+    () => {
+      if (isDragging) {
+        setIsDragging(false);
+      }
+    },
+    [isDragging]
+  );
+  
+  // Handle drag over for dropping books
+  const handleDragOver = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+    },
+    []
+  );
+  
+  // Handle drop for books
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      
+      // Get the dragged book's ID
+      const bookId = e.dataTransfer.getData("book/id");
+      
+      if (!bookId) {
+        console.error("No book ID found in drag data");
+        return;
+      }
+      
+      // Get the source and target positions
+      const sourceBook = books[bookId];
+      
+      if (!sourceBook) {
+        console.error("Source book not found:", bookId);
+        return;
+      }
+      
+      // If dropping to the same position, do nothing
+      if (sourceBook.position === position && sourceBook.shelfId === activeShelfId) {
+        return;
+      }
+      
+      // Check if there's already a book at this position
+      const targetBookExists = Object.values(books).some(
+        b => b.position === position && b.shelfId === activeShelfId && b.id !== bookId
+      );
+      
+      // If there's a book at the target position, swap them
+      if (targetBookExists) {
+        moveBook(bookId, position);
+        toast.success("Books swapped successfully");
+      } else {
+        // Otherwise, simply move the book to this position
+        moveBook(bookId, position);
+        toast.success("Book moved successfully");
+      }
+    },
+    [books, position, activeShelfId, moveBook]
+  );
+  
   return {
     handleStickerMouseDown,
     handleStickerMouseMove,

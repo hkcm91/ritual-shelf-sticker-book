@@ -4,10 +4,11 @@ import { useBookshelfStore } from '../store/bookshelfStore';
 import { useDragAndDrop } from './useDragAndDrop';
 import { useFileHandler } from './useFileHandler';
 import { useStickerPositioning } from './stickers/useStickerPositioning';
+import { SlotType } from '../store/types';
 
 export interface UseBookSlotProps {
   position: number;
-  slotType: "book" | "sticker";
+  slotType: SlotType;
   onFileSelect?: (file: File) => void;
   onBookDelete?: (bookId: string) => void;
 }
@@ -48,7 +49,7 @@ export const useBookSlot = ({
     onFileSelect
   });
   
-  // Use drag and drop hook - now correctly passing setPosition2D
+  // Use drag and drop hook
   const {
     handleStickerMouseDown,
     handleStickerMouseMove,
@@ -62,7 +63,7 @@ export const useBookSlot = ({
     isAltDrag
   } = useDragAndDrop({
     position,
-    setPosition2D, // This was missing before
+    setPosition2D,
     book,
     slotType
   });

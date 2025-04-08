@@ -1,3 +1,4 @@
+
 export interface BookData {
   id: string;
   title: string;
@@ -35,4 +36,13 @@ export interface ShelfData {
   backgroundOpacity?: number;
   shelfColor?: string;
   shelfOpacity?: number;
+}
+
+export type SlotType = 'book' | 'sticker' | 'recipe' | 'music' | 'notebook';
+
+export interface SlotCompatibility {
+  book: SlotType[];
+  notebook: SlotType[];
+  recipe: SlotType[];
+  music: SlotType[];
 }

@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Header from '../components/layout/Header';
-import { Book, NotebookPen, Utensils, Music, Plus, Library, Settings, Edit3, ArrowRight } from 'lucide-react';
+import { Book, NotebookPen, Utensils, Music, Plus, Library, Settings, Edit3, ArrowRight, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useBookshelfStore } from '@/store/bookshelfStore';

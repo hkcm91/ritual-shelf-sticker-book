@@ -13,6 +13,7 @@ import Index from './pages/Index.tsx';
 import Auth from './pages/Auth.tsx';
 import NotFound from './pages/NotFound.tsx';
 import WidgetLauncher from './pages/WidgetLauncher.tsx';
+import LibraryPage from './pages/LibraryPage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -30,13 +31,20 @@ const router = createBrowserRouter([
       {
         path: "widgets",
         element: <WidgetLauncher />,
+      },
+      {
+        path: "library/:libraryId",
+        element: <LibraryPage />,
+      },
+      {
+        path: "404",
+        element: <NotFound />,
+      },
+      {
+        path: "*",
+        element: <NotFound />,
       }
     ],
-  },
-  // Add a catch-all route for 404 errors
-  {
-    path: "*",
-    element: <NotFound />,
   }
 ]);
 

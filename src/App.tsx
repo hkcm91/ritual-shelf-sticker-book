@@ -1,11 +1,6 @@
 
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Index from './pages/Index';
-import LibraryPage from './pages/LibraryPage';
-import WidgetLauncher from './pages/WidgetLauncher';
-import Auth from './pages/Auth';
-import NotFound from './pages/NotFound';
+import { Outlet } from 'react-router-dom';
 import { Toaster } from './components/ui/toaster';
 import { Toaster as SonnerToaster } from 'sonner';
 import { ErrorBoundary } from "react-error-boundary";
@@ -27,18 +22,9 @@ function App() {
         </div>
       }
     >
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/widgets" element={<WidgetLauncher />} />
-          <Route path="/library/:libraryId" element={<LibraryPage />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/404" element={<NotFound />} />
-          <Route path="*" element={<Navigate to="/404" replace />} />
-        </Routes>
-        <Toaster />
-        <SonnerToaster position="top-center" expand={true} richColors />
-      </BrowserRouter>
+      <Outlet />
+      <Toaster />
+      <SonnerToaster position="top-center" expand={true} richColors />
     </ErrorBoundary>
   );
 }

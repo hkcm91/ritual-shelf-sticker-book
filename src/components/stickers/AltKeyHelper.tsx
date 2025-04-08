@@ -9,8 +9,8 @@ const AltKeyHelper: React.FC<AltKeyHelperProps> = ({ isVisible }) => {
   if (!isVisible) return null;
   
   return (
-    <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white text-xs px-2 py-0.5 rounded whitespace-nowrap opacity-80">
-      Extended boundaries
+    <div className="absolute bottom-0 right-0 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded-tl-md">
+      Alt + Drag
     </div>
   );
 };

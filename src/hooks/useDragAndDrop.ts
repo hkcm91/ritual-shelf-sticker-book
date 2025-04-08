@@ -1,5 +1,6 @@
+
 import { useState, useEffect, useCallback } from 'react';
-import { useStickerDrag } from './useStickerDrag';
+import { useStickerDrag } from './stickers/useStickerDrag';
 import { useFileDropHandler } from './useFileDropHandler';
 import { useBookDragHandler } from './useBookDragHandler';
 
@@ -117,7 +118,7 @@ export const useDragAndDrop = ({
     handleBookDrop();
   }, [handleFileDrop, handleBookDrop]);
   
-  // Helper functions for sticker mouse movement (these are now mostly handled by useStickerDrag)
+  // Helper functions for sticker mouse movement (placeholder functions since actual logic is in useStickerDrag)
   const handleStickerMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     // This is now handled in the useStickerDrag hook
   }, []);

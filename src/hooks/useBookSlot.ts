@@ -20,7 +20,6 @@ export const useBookSlot = ({
 }: UseBookSlotProps) => {
   const { activeShelfId, books, deleteBook } = useBookshelfStore();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [isAltDrag, setIsAltDrag] = useState(false);
   
   // Get the book at this position and shelf
   const book = Object.values(books).find(
@@ -59,10 +58,11 @@ export const useBookSlot = ({
     isDragging,
     setIsDragging,
     dragStart,
-    setDragStart
+    setDragStart,
+    isAltDrag
   } = useDragAndDrop({
     position,
-    setPosition2D,  // Make sure this is passed
+    setPosition2D, // This was missing before
     book,
     slotType
   });
@@ -102,8 +102,7 @@ export const useBookSlot = ({
     setIsDragging,
     dragStart,
     setDragStart,
-    isAltDrag,
-    setIsAltDrag
+    isAltDrag
   };
 };
 

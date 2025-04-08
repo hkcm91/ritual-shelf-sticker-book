@@ -9,60 +9,41 @@ export const useAnimationDetection = (coverURL: string | undefined) => {
   useEffect(() => {
     if (!coverURL) {
       setIsLottie(false);
+      setAnimationData(null);
       return;
     }
     
-    let isLottieAnimation = false;
-    let lottieParsed = null;
+    // Check if it looks like a JSON string (for Lottie)
+    const isJsonString = typeof coverURL === 'string' && 
+      (coverURL.startsWith('{') || coverURL.startsWith('['));
     
-    // Try to determine if this is a Lottie animation
-    try {
-      // If it's a URL that ends with .json
-      if (typeof coverURL === 'string') {
-        if (coverURL.startsWith('http') && coverURL.endsWith('.json')) {
-          // Fetch the JSON from URL
-          fetch(coverURL)
-            .then(response => response.json())
-            .then(data => {
-              if (data && (data.v !== undefined || data.animations)) {
-                setIsLottie(true);
-                setAnimationData(data);
-              } else {
-                setIsLottie(false);
-                setLottieError(true);
-              }
-            })
-            .catch(err => {
-              console.error("Failed to fetch Lottie JSON:", err);
-              setLottieError(true);
-            });
-          return;
-        }
+    if (isJsonString) {
+      try {
+        const parsedData = JSON.parse(coverURL);
         
-        // If it's an inline JSON string
-        if (coverURL.startsWith('{') || coverURL.trim().startsWith('{')) {
-          try {
-            lottieParsed = JSON.parse(coverURL);
-            isLottieAnimation = Boolean(lottieParsed && (lottieParsed.v !== undefined || lottieParsed.animations));
-            if (isLottieAnimation) {
-              setIsLottie(true);
-              setAnimationData(lottieParsed);
-              return;
-            }
-          } catch (e) {
-            console.log("Not a valid JSON:", e);
-          }
+        // Check for common Lottie properties
+        if (parsedData && (parsedData.v !== undefined || 
+                          parsedData.animations || 
+                          parsedData.layers)) {
+          setIsLottie(true);
+          setAnimationData(parsedData);
+          setLottieError(false);
+        } else {
+          setIsLottie(true);
+          setLottieError(true);
         }
+      } catch (e) {
+        console.error("Error parsing Lottie JSON:", e);
+        setIsLottie(true);
+        setLottieError(true);
       }
-      
-      // Not a Lottie animation
+    } else {
       setIsLottie(false);
-    } catch (e) {
-      console.error("Error checking for Lottie:", e);
-      setIsLottie(false);
-      setLottieError(true);
+      setAnimationData(null);
     }
   }, [coverURL]);
-
+  
   return { isLottie, lottieError, animationData };
 };
+
+export default useAnimationDetection;

@@ -18,13 +18,13 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
   rowIndex,
   columns
 }) => {
-  // Use more focused selectors with shallow comparison to prevent unnecessary re-renders
+  // Properly type the selector function to return a well-defined object type
   const {
     activeShelfId,
     activeShelf,
     shelfStyling,
     activeTheme
-  } = useBookshelfStore(state => ({
+  } = useBookshelfStore((state) => ({
     activeShelfId: state.activeShelfId,
     activeShelf: state.shelves[state.activeShelfId] as ShelfData,
     shelfStyling: state.shelfStyling,

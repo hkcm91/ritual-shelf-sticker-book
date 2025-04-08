@@ -23,7 +23,10 @@ export function useTouchGestures(
     isZooming: false,
   });
   
-  const { zoomLevel, setZoomLevel } = useBookshelfStore();
+  // Directly destructure from the hook
+  const adjustZoomLevel = useBookshelfStore(state => state.adjustZoomLevel);
+  const zoomLevel = useBookshelfStore(state => state.zoomLevel);
+  const setZoomLevel = useBookshelfStore(state => state.setZoomLevel);
 
   // Handle pinch to zoom on mobile
   const handleTouchStart = useCallback((e: TouchEvent) => {
@@ -81,15 +84,23 @@ export function useTouchGestures(
       // Calculate delta from start position
       const scrollViewport = getScrollViewport();
       if (scrollViewport) {
+        // Update inertia reference for smooth scrolling
+        const lastX = e.touches[0].clientX;
+        const lastY = e.touches[0].clientY;
+        inertiaRef.current = {
+          x: e.touches[0].clientX - lastX,
+          y: e.touches[0].clientY - lastY
+        };
+        
         // Update last position for next move
         setLastPoint({ x, y });
         
         // Get scroll container and apply scroll
-        scrollViewport.scrollLeft = scrollPositionRef.current.x + (x - e.touches[0].clientX);
-        scrollViewport.scrollTop = scrollPositionRef.current.y + (y - e.touches[0].clientY);
+        scrollViewport.scrollLeft = scrollPositionRef.current.x - (x - e.touches[0].clientX);
+        scrollViewport.scrollTop = scrollPositionRef.current.y - (y - e.touches[0].clientY);
       }
     }
-  }, [getScrollViewport, scrollPositionRef, setLastPoint, setZoomLevel, touchState]);
+  }, [getScrollViewport, inertiaRef, scrollPositionRef, setLastPoint, setZoomLevel, touchState]);
 
   const handleTouchEnd = useCallback(() => {
     setTouchState({

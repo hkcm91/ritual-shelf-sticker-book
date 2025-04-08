@@ -30,14 +30,16 @@ export function useGestureHandlers(
     inertiaRef,
     applyInertia,
     cleanupAnimations,
-    getScrollElement: getScrollViewport
+    getScrollElement
   } = useDragGestures({
     scrollElementRef: scrollAreaRef,
-    onDragStateChange: setIsDragging
+    scrollElementSelector: '.scroll-area-viewport',
+    onDragStateChange: setIsDragging,
+    excludeSelector: 'button, a, input, [role="button"], .book-cover, .book'
   });
   
   // Set up scroll gestures
-  const { handleWheel } = useScrollGestures(scrollAreaRef);
+  const { handleWheel, getScrollViewport } = useScrollGestures(scrollAreaRef);
   
   // Set isDragging state for UI feedback
   const updateDraggingState = (dragging: boolean) => {
@@ -57,7 +59,7 @@ export function useGestureHandlers(
   } = useTouchGestures(
     scrollAreaRef,
     updateDraggingState,
-    getScrollViewport,
+    getScrollViewport || getScrollElement,
     inertiaRef,
     applyInertia,
     setStartPoint,

@@ -1,16 +1,23 @@
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import { useDragAndDrop } from './useDragAndDrop';
 import { useFileHandler } from './useFileHandler';
 import { useStickerPositioning } from './stickers/useStickerPositioning';
 
-type UseBookSlotProps = {
+export interface UseBookSlotProps {
   position: number;
   slotType: "book" | "sticker";
-};
+  onFileSelect?: (file: File) => void;
+  onBookDelete?: (bookId: string) => void;
+}
 
-export const useBookSlot = ({ position, slotType }: UseBookSlotProps) => {
+export const useBookSlot = ({ 
+  position, 
+  slotType,
+  onFileSelect,
+  onBookDelete
+}: UseBookSlotProps) => {
   const { activeShelfId, books, deleteBook } = useBookshelfStore();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isAltDrag, setIsAltDrag] = useState(false);
@@ -23,7 +30,8 @@ export const useBookSlot = ({ position, slotType }: UseBookSlotProps) => {
   // Use the file handler hook
   const { fileInputRef, handleFileChange, handleClick } = useFileHandler({
     position,
-    slotType
+    slotType,
+    onFileSelect
   });
   
   // Use the sticker positioning hook
@@ -31,7 +39,6 @@ export const useBookSlot = ({ position, slotType }: UseBookSlotProps) => {
     scale,
     position2D,
     rotation,
-    setPosition2D,
     handleRotate,
     handleScaleChange,
     handleResetTransform,
@@ -60,12 +67,16 @@ export const useBookSlot = ({ position, slotType }: UseBookSlotProps) => {
   });
   
   // Handle delete sticker
-  const handleDeleteSticker = () => {
+  const handleDeleteSticker = useCallback(() => {
     if (book) {
-      deleteBook(book.id);
+      if (onBookDelete) {
+        onBookDelete(book.id);
+      } else {
+        deleteBook(book.id);
+      }
       setShowDeleteDialog(false);
     }
-  };
+  }, [book, deleteBook, onBookDelete]);
 
   return {
     book,
@@ -94,3 +105,5 @@ export const useBookSlot = ({ position, slotType }: UseBookSlotProps) => {
     setIsAltDrag
   };
 };
+
+export default useBookSlot;

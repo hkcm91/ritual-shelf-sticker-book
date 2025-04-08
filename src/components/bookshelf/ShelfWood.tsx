@@ -1,12 +1,14 @@
 
 import React from 'react';
 
-interface ShelfWoodProps {
+export interface ShelfWoodProps {
   thickness: number;
   color: string;
   opacity: number;
   textureUrl: string;
   useRealisticStyle: boolean;
+  className?: string;
+  zIndex?: number;
 }
 
 const ShelfWood: React.FC<ShelfWoodProps> = ({
@@ -14,18 +16,28 @@ const ShelfWood: React.FC<ShelfWoodProps> = ({
   color,
   opacity,
   textureUrl,
-  useRealisticStyle
+  useRealisticStyle,
+  className = '',
+  zIndex = 5
 }) => {
+  const boxShadow = useRealisticStyle 
+    ? '0 6px 10px rgba(0,0,0,0.4)' 
+    : '0px 4px 6px -2px rgba(0,0,0,0.3)';
+    
   return (
     <div 
-      className="wood-shelf" 
+      className={`wood-shelf ${className}`} 
       style={{
         height: `${thickness}px`,
         backgroundImage: `url(${textureUrl})`,
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
         backgroundColor: color,
         opacity,
-        boxShadow: useRealisticStyle ? '0 6px 10px rgba(0,0,0,0.4)' : '0px 4px 6px -2px rgba(0,0,0,0.3)',
-        zIndex: 5
+        boxShadow,
+        zIndex,
+        position: 'relative',
+        width: '100%'
       }} 
     />
   );

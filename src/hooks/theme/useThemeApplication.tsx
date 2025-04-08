@@ -1,5 +1,5 @@
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 import themes from '@/themes';
 import { toast } from 'sonner';
@@ -13,6 +13,8 @@ import {
  */
 export function useThemeApplication() {
   const { activeTheme, page, container, shelfStyling, header } = useBookshelfStore();
+  const [isApplying, setIsApplying] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
   // Apply theme whenever activeTheme changes or any of the theme settings change
   const applyTheme = useCallback(() => {
@@ -20,6 +22,9 @@ export function useThemeApplication() {
       console.warn('No active theme set, using default');
       return;
     }
+    
+    setIsApplying(true);
+    setError(null);
     
     try {
       console.log('Applying theme:', activeTheme);
@@ -43,6 +48,7 @@ export function useThemeApplication() {
       console.log('Theme applied successfully');
     } catch (error) {
       console.error('Error applying theme:', error);
+      setError(error instanceof Error ? error : new Error('Unknown error applying theme'));
       toast.error('Error applying theme, using default');
       
       // Fallback to default theme
@@ -51,6 +57,8 @@ export function useThemeApplication() {
       } catch (fallbackError) {
         console.error('Error applying fallback theme:', fallbackError);
       }
+    } finally {
+      setIsApplying(false);
     }
   }, [activeTheme, page, container, shelfStyling, header]);
 
@@ -59,5 +67,12 @@ export function useThemeApplication() {
     applyTheme();
   }, [applyTheme]);
 
-  return { applyTheme };
+  return { 
+    applyTheme,
+    isApplying,
+    error,
+    activeTheme
+  };
 }
+
+export default useThemeApplication;

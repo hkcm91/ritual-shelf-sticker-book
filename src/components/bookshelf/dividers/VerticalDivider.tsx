@@ -1,16 +1,17 @@
 
 import React from 'react';
 
-type VerticalDividerProps = {
+export interface VerticalDividerProps {
   thickness: number;
-  height: number;
+  height: number | string;
   color: string;
   opacity: number;
   textureUrl: string;
   className?: string;
   isSide?: boolean;
   side?: 'left' | 'right';
-};
+  zIndex?: number;
+}
 
 const VerticalDivider: React.FC<VerticalDividerProps> = ({
   thickness,
@@ -20,7 +21,8 @@ const VerticalDivider: React.FC<VerticalDividerProps> = ({
   textureUrl,
   className = '',
   isSide = false,
-  side
+  side,
+  zIndex = 5
 }) => {
   const sideClass = isSide ? `shelf-side-${side}` : '';
   
@@ -29,12 +31,16 @@ const VerticalDivider: React.FC<VerticalDividerProps> = ({
       className={`vertical-shelf-divider ${sideClass} ${className}`} 
       style={{
         width: `${thickness}px`,
-        height: `${height}px`,
+        height: typeof height === 'number' ? `${height}px` : height,
         backgroundColor: color,
         backgroundImage: `url(${textureUrl})`,
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
         opacity,
         flexShrink: 0,
-        alignSelf: 'stretch'
+        alignSelf: 'stretch',
+        position: 'relative',
+        zIndex
       }} 
     />
   );

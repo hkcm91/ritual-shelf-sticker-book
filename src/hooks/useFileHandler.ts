@@ -1,188 +1,256 @@
 
-import { useRef } from 'react';
+import { useRef, useCallback } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import { toast } from 'sonner';
 import { compressImage } from '../utils/imageUtils';
 
-type UseFileHandlerProps = {
+export interface UseFileHandlerProps {
   position: number;
   slotType?: "book" | "sticker";
-};
+  onFileSelect?: (file: File) => void;
+  acceptedFileTypes?: string[];
+  maxFileSize?: number;
+  compressionSettings?: {
+    quality: number;
+    maxWidth: number;
+    maxHeight: number;
+    sizeThreshold: number;  // Size in KB to trigger compression
+  };
+}
 
-export const useFileHandler = ({ position, slotType = "book" }: UseFileHandlerProps) => {
+export interface FileHandlerResult {
+  fileInputRef: React.RefObject<HTMLInputElement>;
+  handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
+  handleClick: () => void;
+  clearFileInput: () => void;
+}
+
+export const useFileHandler = ({
+  position,
+  slotType = "book",
+  onFileSelect,
+  acceptedFileTypes = [],
+  maxFileSize = 5 * 1024 * 1024,  // 5MB default
+  compressionSettings = {
+    quality: 0.7,
+    maxWidth: 600,
+    maxHeight: 900,
+    sizeThreshold: 200  // 200KB
+  }
+}: UseFileHandlerProps): FileHandlerResult => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { activeShelfId, addBook, openModal } = useBookshelfStore();
   
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const clearFileInput = useCallback(() => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  }, []);
+  
+  const validateFileType = useCallback((file: File): boolean => {
+    if (acceptedFileTypes.length === 0) {
+      // Default validations based on slot type
+      if (slotType === "book") {
+        return file.type.startsWith('image/');
+      } else if (slotType === "sticker") {
+        return file.type.startsWith('image/') || 
+               file.type === 'application/json' || 
+               file.name.endsWith('.json');
+      }
+      return true;
+    }
+    
+    // Custom validation based on provided acceptedFileTypes
+    return acceptedFileTypes.some(type => {
+      if (type.includes('*')) {
+        // Handle wildcards like 'image/*'
+        const prefix = type.split('/')[0];
+        return file.type.startsWith(`${prefix}/`);
+      }
+      return file.type === type || (type === '.json' && file.name.endsWith('.json'));
+    });
+  }, [acceptedFileTypes, slotType]);
+  
+  const validateFileSize = useCallback((file: File): boolean => {
+    return file.size <= maxFileSize;
+  }, [maxFileSize]);
+  
+  const handleLottieFile = useCallback(async (file: File) => {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          if (typeof event.target?.result === 'string') {
+            const jsonContent = event.target.result;
+            
+            // Check if it's valid JSON and a Lottie file
+            try {
+              const lottieData = JSON.parse(jsonContent);
+              if (lottieData && (lottieData.v !== undefined || lottieData.animations)) {
+                resolve(jsonContent);
+              } else {
+                reject(new Error('Invalid Lottie animation format'));
+              }
+            } catch (e) {
+              reject(new Error('Failed to parse JSON file'));
+            }
+          } else {
+            reject(new Error('Failed to read file'));
+          }
+        } catch (err) {
+          reject(err);
+        }
+      };
+      reader.onerror = () => reject(new Error('Error reading file'));
+      reader.readAsText(file);
+    });
+  }, []);
+  
+  const handleImageFile = useCallback(async (file: File) => {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        try {
+          if (typeof event.target?.result === 'string') {
+            let imageData = event.target.result;
+            
+            // Only compress if over threshold size
+            if (file.size > compressionSettings.sizeThreshold * 1024) {
+              try {
+                imageData = await compressImage(imageData, {
+                  quality: compressionSettings.quality,
+                  maxWidth: compressionSettings.maxWidth,
+                  maxHeight: compressionSettings.maxHeight
+                });
+                console.log(`Image compressed successfully for ${slotType}`);
+              } catch (err) {
+                console.warn(`Failed to compress ${slotType} image:`, err);
+                // Continue with original image
+              }
+            }
+            
+            resolve(imageData);
+          } else {
+            reject(new Error('Failed to read file'));
+          }
+        } catch (err) {
+          reject(err);
+        }
+      };
+      reader.onerror = () => reject(new Error('Error reading file'));
+      reader.readAsDataURL(file);
+    });
+  }, [compressionSettings, slotType]);
+
+  const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     
     console.log(`Handling file: ${file.name}, type: ${file.type}, size: ${file.size}`);
     
-    // For book type, only allow images
-    if (slotType === "book") {
-      if (!file.type.startsWith('image/')) {
-        toast.error('Only image files are supported for books');
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
+    // Call external onFileSelect handler if provided
+    if (onFileSelect) {
+      onFileSelect(file);
+    }
+    
+    // Validate file type
+    if (!validateFileType(file)) {
+      let supportedTypes = '';
+      if (slotType === "book") {
+        supportedTypes = 'image files';
+      } else if (slotType === "sticker") {
+        supportedTypes = 'image files or Lottie JSON files';
+      } else {
+        supportedTypes = acceptedFileTypes.join(', ');
+      }
+      
+      toast.error(`Unsupported file type. Please use ${supportedTypes}`);
+      clearFileInput();
+      return;
+    }
+    
+    // Validate file size
+    if (!validateFileSize(file)) {
+      const maxSizeMB = maxFileSize / (1024 * 1024);
+      toast.error(`File is too large. Maximum size is ${maxSizeMB}MB`);
+      clearFileInput();
+      return;
+    }
+    
+    try {
+      let fileContent: string;
+      let isSticker = slotType === "sticker";
+      
+      // Process file based on type
+      if (file.type.startsWith('image/')) {
+        fileContent = await handleImageFile(file);
+      } else if (file.type === 'application/json' || file.name.endsWith('.json')) {
+        if (slotType !== "sticker") {
+          toast.error('JSON files are only supported for stickers');
+          clearFileInput();
+          return;
         }
+        fileContent = await handleLottieFile(file);
+        isSticker = true;
+      } else {
+        toast.error('Unsupported file type');
+        clearFileInput();
         return;
       }
       
-      const reader = new FileReader();
-      reader.onload = async (event) => {
-        if (typeof event.target?.result === 'string') {
-          try {
-            // Compress the image before adding
-            let imageData = event.target.result;
-            
-            // Only compress if over 200KB
-            if (file.size > 200 * 1024) {
-              try {
-                imageData = await compressImage(imageData, {
-                  quality: 0.7,
-                  maxWidth: 600,
-                  maxHeight: 900
-                });
-                console.log("Book cover compressed successfully");
-              } catch (err) {
-                console.warn('Failed to compress book cover:', err);
-                // Continue with original image
-              }
-            }
-            
-            const newBookId = addBook({
-              title: '',
-              author: '',
-              coverURL: imageData,
-              progress: 0,
-              rating: 0,
-              position,
-              shelfId: activeShelfId,
-              isSticker: false
-            });
-            
-            if (newBookId) {
-              // Open modal for book editing
-              openModal(newBookId);
-            } else {
-              toast.error('Failed to add book');
-            }
-          } catch (error) {
-            console.error('Error adding book:', error);
-            toast.error('Failed to save to localStorage. Try using smaller images or clearing some space.');
-          }
+      // Add book or sticker to the store
+      const newBookId = addBook({
+        title: isSticker ? file.name.replace(/\.[^/.]+$/, "") : '',
+        author: isSticker ? 'Sticker' : '',
+        coverURL: fileContent,
+        progress: 0,
+        rating: 0,
+        position,
+        shelfId: activeShelfId,
+        isSticker
+      });
+      
+      if (newBookId) {
+        if (isSticker) {
+          toast.success('Sticker added successfully');
+        } else {
+          // Open modal for book editing
+          openModal(newBookId);
         }
-      };
-      reader.readAsDataURL(file);
-    } 
-    // For sticker type, allow images and Lottie JSON
-    else if (slotType === "sticker") {
-      if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = async (event) => {
-          if (typeof event.target?.result === 'string') {
-            try {
-              let imageData = event.target.result;
-              
-              // Try to compress sticker images for better storage efficiency
-              if (file.size > 100 * 1024) { // If over 100KB
-                try {
-                  imageData = await compressImage(imageData, {
-                    quality: 0.6,
-                    maxWidth: 400,
-                    maxHeight: 400
-                  });
-                  console.log("Sticker image compressed successfully");
-                } catch (err) {
-                  console.warn('Failed to compress sticker image:', err);
-                  // Continue with original image if compression fails
-                }
-              }
-              
-              const newBookId = addBook({
-                title: file.name.replace(/\.[^/.]+$/, ""),
-                author: 'Sticker',
-                coverURL: imageData,
-                progress: 0,
-                rating: 0,
-                position,
-                shelfId: activeShelfId,
-                isSticker: true
-              });
-              
-              if (newBookId) {
-                toast.success('Sticker added successfully');
-              } else {
-                toast.error('Failed to add sticker');
-              }
-            } catch (error) {
-              console.error('Error adding sticker:', error);
-              toast.error('Failed to save to localStorage. Try using smaller images or clearing some space.');
-            }
-          }
-        };
-        reader.readAsDataURL(file);
-      } else if (file.type === 'application/json' || file.name.endsWith('.json')) {
-        // Handle Lottie JSON files
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          try {
-            if (typeof event.target?.result === 'string') {
-              const jsonContent = event.target.result;
-              
-              // Check if it's valid JSON and a Lottie file
-              try {
-                const lottieData = JSON.parse(jsonContent);
-                if (lottieData && (lottieData.v !== undefined || lottieData.animations)) {
-                  const newBookId = addBook({
-                    title: file.name.replace('.json', ''),
-                    author: 'Lottie Animation',
-                    coverURL: jsonContent,
-                    progress: 0,
-                    rating: 0,
-                    position,
-                    shelfId: activeShelfId,
-                    isSticker: true
-                  });
-                  
-                  if (newBookId) {
-                    toast.success('Lottie animation added successfully');
-                  } else {
-                    toast.error('Failed to add animation');
-                  }
-                } else {
-                  toast.error('Invalid Lottie animation format');
-                }
-              } catch (e) {
-                console.error('Failed to parse JSON:', e);
-                toast.error('Failed to parse JSON file');
-              }
-            }
-          } catch (err) {
-            console.error('Error processing Lottie file:', err);
-            toast.error('Error processing Lottie file');
-          }
-        };
-        reader.readAsText(file);
       } else {
-        toast.error('Unsupported file type. Please use images or Lottie JSON files.');
+        toast.error(`Failed to add ${isSticker ? 'sticker' : 'book'}`);
       }
+    } catch (error) {
+      console.error(`Error adding ${slotType}:`, error);
+      toast.error('Failed to save to localStorage. Try using smaller files or clearing some space.');
+    } finally {
+      clearFileInput();
     }
-    
-    // Reset file input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
+  }, [
+    slotType, 
+    onFileSelect, 
+    validateFileType, 
+    validateFileSize, 
+    handleImageFile, 
+    handleLottieFile, 
+    clearFileInput, 
+    addBook, 
+    activeShelfId, 
+    openModal, 
+    acceptedFileTypes, 
+    position
+  ]);
 
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     fileInputRef.current?.click();
-  };
+  }, []);
 
   return {
     fileInputRef,
     handleFileChange,
-    handleClick
+    handleClick,
+    clearFileInput
   };
 };
+
+export default useFileHandler;

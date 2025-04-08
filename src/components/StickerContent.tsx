@@ -6,7 +6,7 @@ import ImageSticker from './stickers/ImageSticker';
 import StickerErrorState from './stickers/StickerErrorState';
 import AltKeyHelper from './stickers/AltKeyHelper';
 
-type StickerContentProps = {
+export interface StickerContentProps {
   book: any;
   scale: number;
   position2D: { x: number, y: number };
@@ -14,7 +14,8 @@ type StickerContentProps = {
   zIndex?: number;
   handleStickerMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
   isAltDrag?: boolean;
-};
+  className?: string;
+}
 
 // Using forwardRef to properly handle refs from PopoverTrigger
 const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
@@ -24,7 +25,8 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
   rotation,
   zIndex = 1,
   handleStickerMouseDown,
-  isAltDrag = false
+  isAltDrag = false,
+  className = ''
 }, ref) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = useState({ width: 150, height: 220 });
@@ -96,7 +98,7 @@ const StickerContent = forwardRef<HTMLDivElement, StickerContentProps>(({
           }
           containerRef.current = node;
         }}
-        className="w-full h-full cursor-move relative"
+        className={`w-full h-full cursor-move relative ${className}`}
         onMouseDown={handleStickerMouseDown}
         style={stickerStyle}
       >

@@ -1,29 +1,90 @@
-import { useState, useEffect } from 'react';
-import { useBookshelfStore } from '../store/bookshelfStore';
 
-type UseStickerDragProps = {
+import { useState, useEffect, useCallback, RefObject } from 'react';
+
+export interface UseStickerDragProps {
   position: number;
-  book: any;
+  bookId?: string;
   initialPosition: { x: number, y: number };
   setPosition2D: (value: { x: number, y: number }) => void;
-  slotDimensions: { width: number, height: number };
-};
+  containerRef?: RefObject<HTMLDivElement>;
+  defaultContainerSize?: { width: number, height: number };
+  onDragStart?: () => void;
+  onDragEnd?: (position: { x: number, y: number }) => void;
+  clampPosition?: (x: number, y: number, boundaries: any) => { x: number, y: number };
+}
+
+export interface StickerDragState {
+  isDragging: boolean;
+  dragStart: { x: number, y: number };
+  isAltDrag: boolean;
+  containerSize: { width: number, height: number };
+}
 
 export const useStickerDrag = ({
   position,
-  book,
+  bookId,
   initialPosition,
   setPosition2D,
-  slotDimensions
+  containerRef,
+  defaultContainerSize = { width: 150, height: 220 },
+  onDragStart,
+  onDragEnd,
+  clampPosition: customClampPosition
 }: UseStickerDragProps) => {
-  const { updateBook } = useBookshelfStore();
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [dragStart, setDragStart] = useState<{ x: number, y: number }>({ x: 0, y: 0 });
   const [isAltDrag, setIsAltDrag] = useState<boolean>(false);
+  const [containerSize, setContainerSize] = useState(defaultContainerSize);
+
+  // Update container size when ref changes or on window resize
+  useEffect(() => {
+    if (!containerRef?.current) return;
+    
+    const updateContainerSize = () => {
+      const { width, height } = containerRef.current?.getBoundingClientRect() || defaultContainerSize;
+      setContainerSize({ width, height });
+    };
+    
+    updateContainerSize();
+    
+    window.addEventListener('resize', updateContainerSize);
+    return () => window.removeEventListener('resize', updateContainerSize);
+  }, [containerRef, defaultContainerSize]);
+
+  // Default clamp position function
+  const defaultClampPosition = useCallback((newX: number, newY: number, isAlt: boolean) => {
+    // Calculate standard boundaries
+    const stickerScale = 1; // You can make this dynamic if needed
+    const stickerWidth = containerSize.width * 0.8 * stickerScale;
+    const stickerHeight = containerSize.height * 0.8 * stickerScale;
+    
+    let maxX = containerSize.width/2 - stickerWidth/4;
+    let maxY = containerSize.height/2 - stickerHeight/4;
+    let minX = -maxX;
+    let minY = -maxY;
+    
+    // If Alt key is pressed, extend boundaries
+    if (isAlt) {
+      const extensionFactor = 0.2;
+      maxX += containerSize.width * extensionFactor;
+      maxY += containerSize.height * extensionFactor;
+      minX -= containerSize.width * extensionFactor;
+      minY -= containerSize.height * extensionFactor;
+    }
+    
+    // Clamp position within boundaries
+    return {
+      x: Math.max(minX, Math.min(maxX, newX)),
+      y: Math.max(minY, Math.min(maxY, newY))
+    };
+  }, [containerSize]);
+  
+  // Use custom clamp function if provided, otherwise use default
+  const clampPosition = customClampPosition || defaultClampPosition;
 
   // Handle mouse down to start dragging
-  const handleStickerMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!book?.isSticker) return;
+  const handleStickerMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!bookId) return;
     
     e.stopPropagation();
     e.preventDefault();
@@ -36,36 +97,11 @@ export const useStickerDrag = ({
       x: e.clientX,
       y: e.clientY
     });
-  };
-
-  // Calculate clamped position based on boundaries
-  const calculateClampedPosition = (newX: number, newY: number, isAlt: boolean) => {
-    // Calculate sticker's effective dimensions (with scale)
-    const stickerScale = book.scale || 1;
-    const stickerWidth = slotDimensions.width * 0.8 * stickerScale;
-    const stickerHeight = slotDimensions.height * 0.8 * stickerScale;
     
-    // Calculate standard boundaries to keep sticker visible within the slot
-    let maxX = slotDimensions.width/2 - stickerWidth/4;
-    let maxY = slotDimensions.height/2 - stickerHeight/4;
-    let minX = -maxX;
-    let minY = -maxY;
-    
-    // If Alt key is pressed, extend boundaries by 20%
-    if (isAlt) {
-      const extensionFactor = 0.2; // 20% extension
-      maxX += slotDimensions.width * extensionFactor;
-      maxY += slotDimensions.height * extensionFactor;
-      minX -= slotDimensions.width * extensionFactor;
-      minY -= slotDimensions.height * extensionFactor;
+    if (onDragStart) {
+      onDragStart();
     }
-    
-    // Clamp the position within boundaries
-    return {
-      x: Math.max(minX, Math.min(maxX, newX)),
-      y: Math.max(minY, Math.min(maxY, newY))
-    };
-  };
+  }, [bookId, onDragStart]);
 
   // Effect for mouse move and up events
   useEffect(() => {
@@ -81,10 +117,11 @@ export const useStickerDrag = ({
       const newY = initialPosition.y + deltaY;
       
       // Check if Alt key state has changed during drag
-      setIsAltDrag(e.altKey);
+      const currentAltState = e.altKey;
+      setIsAltDrag(currentAltState);
       
       // Get clamped position
-      const clampedPos = calculateClampedPosition(newX, newY, e.altKey);
+      const clampedPos = clampPosition(newX, newY, currentAltState);
       
       setPosition2D(clampedPos);
     };
@@ -92,10 +129,15 @@ export const useStickerDrag = ({
     const handleMouseUp = (e: MouseEvent) => {
       setIsDragging(false);
       
-      // Save the final position if needed
-      if (book) {
-        // This would be handled by the useTransformControls hook
-        // You could optionally call updateBook here to update position data in the store
+      if (onDragEnd) {
+        // Calculate final position
+        const deltaX = e.clientX - dragStart.x;
+        const deltaY = e.clientY - dragStart.y;
+        const finalX = initialPosition.x + deltaX;
+        const finalY = initialPosition.y + deltaY;
+        const clampedPos = clampPosition(finalX, finalY, e.altKey);
+        
+        onDragEnd(clampedPos);
       }
     };
     
@@ -106,14 +148,46 @@ export const useStickerDrag = ({
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDragging, dragStart, initialPosition, book, setPosition2D, isAltDrag]);
+  }, [isDragging, dragStart, initialPosition, clampPosition, setPosition2D, onDragEnd]);
+
+  // Listen for Alt key press/release
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Alt') {
+        setIsAltDrag(true);
+      }
+    };
+    
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === 'Alt') {
+        setIsAltDrag(false);
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
 
   return {
+    // State
     isDragging,
-    setIsDragging,
     dragStart,
-    setDragStart,
     isAltDrag,
+    containerSize,
+    
+    // Setters
+    setIsDragging,
+    setDragStart,
+    setIsAltDrag,
+    
+    // Handlers
     handleStickerMouseDown
   };
 };
+
+export default useStickerDrag;

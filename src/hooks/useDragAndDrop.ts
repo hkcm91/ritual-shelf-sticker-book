@@ -1,22 +1,41 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import { toast } from 'sonner';
 import { useStickerDrag } from './useStickerDrag';
 
-type UseDragAndDropProps = {
+export interface UseDragAndDropProps {
   position: number;
   setPosition2D: (value: { x: number, y: number }) => void;
   book: any;
   slotType?: "book" | "sticker";
-};
+  onDrop?: (file: File) => void;
+  onBookDrop?: (bookId: string, position: number) => void;
+  acceptedFileTypes?: string[];
+}
+
+export interface DragAndDropResult {
+  handleStickerMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
+  handleStickerMouseMove: (e: React.MouseEvent<HTMLDivElement>) => void;
+  handleStickerMouseUp: () => void;
+  handleDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
+  handleDrop: (e: React.DragEvent<HTMLDivElement>) => void;
+  isDragging: boolean;
+  setIsDragging: (value: boolean) => void;
+  dragStart: { x: number, y: number };
+  setDragStart: (value: { x: number, y: number }) => void;
+  isAltDrag?: boolean;
+}
 
 export const useDragAndDrop = ({
   position,
   setPosition2D,
   book,
-  slotType = "book"
-}: UseDragAndDropProps) => {
+  slotType = "book",
+  onDrop,
+  onBookDrop,
+  acceptedFileTypes = []
+}: UseDragAndDropProps): DragAndDropResult => {
   const { activeShelfId, updateBook, getDraggedBook, addBook, openModal } = useBookshelfStore();
   const [slotDimensions, setSlotDimensions] = useState({ width: 150, height: 220 });
   const [initialPosition, setInitialPosition] = useState({ x: 0, y: 0 });
@@ -27,13 +46,14 @@ export const useDragAndDrop = ({
     setIsDragging,
     dragStart, 
     setDragStart,
-    handleStickerMouseDown 
+    handleStickerMouseDown,
+    isAltDrag 
   } = useStickerDrag({
     position,
-    book,
+    bookId: book?.id,
     initialPosition,
     setPosition2D,
-    slotDimensions
+    defaultContainerSize: slotDimensions
   });
   
   // Update slot dimensions when window resizes
@@ -65,23 +85,47 @@ export const useDragAndDrop = ({
   }, [isDragging]);
   
   // Helper function for sticker mouse move
-  const handleStickerMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleStickerMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     // This is now handled in the useStickerDrag hook
-  };
+  }, []);
   
   // Helper function for sticker mouse up
-  const handleStickerMouseUp = () => {
+  const handleStickerMouseUp = useCallback(() => {
     // This is now handled in the useStickerDrag hook
-  };
+  }, []);
+  
+  // Validate file types
+  const validateFileType = useCallback((file: File): boolean => {
+    // No restrictions
+    if (acceptedFileTypes.length === 0) {
+      if (slotType === "book") {
+        return file.type.startsWith('image/');
+      } else if (slotType === "sticker") {
+        return file.type.startsWith('image/') || 
+               file.type === 'application/json' || 
+               file.name.endsWith('.json');
+      }
+      return true;
+    }
+    
+    // Custom validation
+    return acceptedFileTypes.some(type => {
+      if (type.includes('*')) {
+        const prefix = type.split('/')[0];
+        return file.type.startsWith(`${prefix}/`);
+      }
+      return file.type === type || (type === '.json' && file.name.endsWith('.json'));
+    });
+  }, [acceptedFileTypes, slotType]);
   
   // Handle drag over to allow drop
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
-  };
+  }, []);
   
   // Handle drop to place a book into this slot
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     
     const draggedBook = getDraggedBook();
@@ -90,6 +134,23 @@ export const useDragAndDrop = ({
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
       
+      // Validate file type
+      if (!validateFileType(file)) {
+        let supportedTypes = acceptedFileTypes.length > 0 
+          ? acceptedFileTypes.join(', ') 
+          : (slotType === "book" ? 'image files' : 'image or JSON files');
+        
+        toast.error(`Only ${supportedTypes} are supported for ${slotType}s`);
+        return;
+      }
+      
+      // Pass to custom drop handler if provided
+      if (onDrop) {
+        onDrop(file);
+        return;
+      }
+      
+      // Default handling of dropped files
       if (file.type.startsWith('image/')) {
         const reader = new FileReader();
         reader.onload = (event) => {
@@ -146,26 +207,39 @@ export const useDragAndDrop = ({
         };
         reader.readAsText(file);
         return;
-      } else if (slotType === "book" && !file.type.startsWith('image/')) {
-        toast.error('Only image files are supported for books');
-        return;
-      } else if (slotType === "sticker" && !file.type.startsWith('image/') && file.type !== 'application/json') {
-        toast.error('Only image or Lottie JSON files are supported for stickers');
-        return;
       }
     }
     
     // If there's no file being dropped, check for book drag
     if (!draggedBook || book) return; // Only allow dropping onto empty slots
     
-    // Update the draggedBook with the new position
+    // Custom book drop handler
+    if (onBookDrop) {
+      onBookDrop(draggedBook.id, position);
+      return;
+    }
+    
+    // Default handling of dropped books
     updateBook(draggedBook.id, {
       position: position,
       shelfId: activeShelfId
     });
     
     toast.success('Book moved successfully');
-  };
+  }, [
+    getDraggedBook, 
+    book, 
+    validateFileType, 
+    onDrop, 
+    onBookDrop, 
+    slotType, 
+    addBook, 
+    position, 
+    activeShelfId, 
+    openModal, 
+    updateBook,
+    acceptedFileTypes
+  ]);
 
   return {
     handleStickerMouseDown,
@@ -176,6 +250,9 @@ export const useDragAndDrop = ({
     isDragging,
     setIsDragging,
     dragStart,
-    setDragStart
+    setDragStart,
+    isAltDrag
   };
 };
+
+export default useDragAndDrop;

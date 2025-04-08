@@ -6,10 +6,19 @@ import { applyHeaderTheme } from './applyHeaderTheme';
 import { Theme } from '@/themes/types';
 import { toast } from 'sonner';
 
-export const ThemeVariablesApplier: React.FC<{
+export interface ThemeApplierProps {
   theme: Theme;
   children?: React.ReactNode;
-}> = ({ theme, children }) => {
+  onSuccess?: () => void;
+  onError?: (error: Error) => void;
+}
+
+export const ThemeVariablesApplier: React.FC<ThemeApplierProps> = ({ 
+  theme, 
+  children,
+  onSuccess,
+  onError
+}) => {
   const applyTheme = useCallback(() => {
     try {
       // Apply CSS variables
@@ -24,11 +33,21 @@ export const ThemeVariablesApplier: React.FC<{
       if (theme.header) {
         applyHeaderTheme(theme.header);
       }
+      
+      // Call success callback if provided
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (error) {
       console.error('Error applying theme:', error);
       toast.error('Error applying theme');
+      
+      // Call error callback if provided
+      if (onError && error instanceof Error) {
+        onError(error);
+      }
     }
-  }, [theme]);
+  }, [theme, onSuccess, onError]);
 
   // Apply theme when component mounts or theme changes
   React.useEffect(() => {
@@ -37,3 +56,5 @@ export const ThemeVariablesApplier: React.FC<{
 
   return <>{children}</>;
 };
+
+export default ThemeVariablesApplier;

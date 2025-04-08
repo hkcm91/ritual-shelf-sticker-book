@@ -1,20 +1,24 @@
 
 import React from 'react';
 
-type HorizontalDividerProps = {
+export interface HorizontalDividerProps {
   thickness: number;
   color: string;
   opacity: number;
   textureUrl: string;
   className?: string;
-};
+  width?: string | number;
+  zIndex?: number;
+}
 
 const HorizontalDivider: React.FC<HorizontalDividerProps> = ({
   thickness,
   color,
   opacity,
   textureUrl,
-  className = ''
+  className = '',
+  width = '100%',
+  zIndex = 5
 }) => {
   return (
     <div 
@@ -23,10 +27,12 @@ const HorizontalDivider: React.FC<HorizontalDividerProps> = ({
         height: `${thickness}px`,
         backgroundColor: color,
         backgroundImage: `url(${textureUrl})`,
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
         opacity,
-        width: '100%',
+        width: typeof width === 'number' ? `${width}px` : width,
         position: 'relative',
-        zIndex: 5
+        zIndex
       }} 
     />
   );

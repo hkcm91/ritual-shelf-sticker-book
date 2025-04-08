@@ -72,6 +72,62 @@ A fully interactive virtual bookshelf application that lets you organize your bo
 - Choose between local and cloud storage (when available)
 - Reset shelf data or all application data as needed
 
+## Debugging Guide
+
+### Common Issues and Solutions
+
+#### Zoom Controls Not Working
+- Check if `zoomSlice.ts` is properly integrated in the bookshelf store
+- Verify that the ZoomControls component is rendering properly
+- Check CSS classes for proper styling of zoom controls
+
+#### Missing Book Slots
+- Inspect the ShelfRow component in the browser dev tools
+- Verify row and column configuration in the active shelf settings
+- Check console logs for any errors in rendering grid components
+
+#### Empty Slots Not Displaying Controls
+- Review the EmptySlot component implementation
+- Verify CSS classes and styling for slot controls
+- Check z-index values for overlapping elements that might hide controls
+
+#### Drag and Drop Issues
+- Inspect the useDragAndDrop hook implementation
+- Check event handlers in BookSlot and related components
+- Verify proper event propagation and default prevention
+
+### Using Browser DevTools
+1. Open browser developer tools (F12 or Ctrl+Shift+I)
+2. Check the console tab for error messages
+3. Use the Elements tab to inspect component structure
+4. Use the Network tab to check for failed resource loading
+5. Set breakpoints in the Sources tab to debug JavaScript execution
+
+### Adding Console Logs
+Add strategic console logs with descriptive prefixes:
+```jsx
+// Component render logs
+console.log("[ComponentName] Rendering with props:", props);
+
+// Function call logs
+console.log("[FunctionName] Called with args:", args);
+
+// State change logs
+console.log("[StateName] Changed from", prevState, "to", newState);
+```
+
+## Development Notes
+
+### Core Components
+- **DO NOT MODIFY** the core zoom functionality in `zoomSlice.ts` as it's essential for the bookshelf interface
+- **DO NOT MODIFY** drag and drop hooks without thorough testing to ensure compatibility
+- **DO NOT MODIFY** the bookshelf grid layout rendering without consideration for all shelf configurations
+
+### State Management Guidelines
+- Keep Zustand slices small and focused on specific functionality
+- Use selector functions to access only needed state portions
+- Update state immutably to ensure proper re-renders
+
 ## Getting Started
 
 ```sh

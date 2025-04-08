@@ -45,6 +45,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     handleFileChange,
     handleClick,
     handleDragOver,
+    handleDragLeave,
     handleDrop,
     handleStickerMouseDown,
     handleStickerMouseMove,
@@ -125,6 +126,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
           transition-colors duration-200 cursor-pointer`}
         data-position={position}
         onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onMouseMove={handleStickerMouseMove}
         onMouseUp={handleStickerMouseUp}

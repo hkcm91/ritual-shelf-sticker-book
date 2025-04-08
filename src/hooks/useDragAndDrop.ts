@@ -37,7 +37,10 @@ export const useDragAndDrop = ({
     
     console.log("[useDragAndDrop] Moving book:", bookId, "to position:", position);
     // Use updateBook from the store to change the position
-    updateBook(bookId, { position });
+    updateBook(bookId, { 
+      position,
+      shelfId: activeShelfId
+    });
   }, [activeShelfId, updateBook]);
   
   // Handle mouse down for sticker dragging
@@ -77,25 +80,50 @@ export const useDragAndDrop = ({
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
+    e.currentTarget.classList.add('drag-over');
+  }, []);
+  
+  // Handle drag leave events to remove visual indicators
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.currentTarget.classList.remove('drag-over');
   }, []);
   
   // Handle drop events for books
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
     
     const droppedBookId = e.dataTransfer.getData('text/plain');
     console.log("[useDragAndDrop] Dropping book:", droppedBookId, "at position:", position);
     
     if (droppedBookId && position !== undefined) {
-      moveBook(droppedBookId, position);
+      // Check if there's already a book at this position
+      const existingBook = Object.values(books).find(
+        b => b.position === position && b.shelfId === activeShelfId && !b.isSticker
+      );
+      
+      if (existingBook && existingBook.id !== droppedBookId) {
+        console.log("[useDragAndDrop] Position already occupied by:", existingBook.id);
+        // If occupied, swap positions
+        const draggedBook = books[droppedBookId];
+        if (draggedBook) {
+          console.log("[useDragAndDrop] Swapping positions");
+          updateBook(existingBook.id, { position: draggedBook.position });
+          moveBook(droppedBookId, position);
+        }
+      } else {
+        // If empty, just move the book
+        moveBook(droppedBookId, position);
+      }
     }
-  }, [position, moveBook]);
+  }, [position, moveBook, books, activeShelfId, updateBook]);
   
   return {
     handleStickerMouseDown,
     handleStickerMouseMove,
     handleStickerMouseUp,
     handleDragOver,
+    handleDragLeave,
     handleDrop,
     isDragging,
     setIsDragging,

@@ -13,15 +13,23 @@ const Book: React.FC<BookProps> = ({ data }) => {
   if (data.hidden || data.isSticker) return null;
   
   const handleDragStart = (e: React.DragEvent) => {
+    console.log("[Book] Drag started for book:", data.id);
     e.dataTransfer.setData('text/plain', data.id);
     e.dataTransfer.effectAllowed = 'move';
+    
+    // Set a dragging image (optional)
+    if (e.target instanceof HTMLElement) {
+      const rect = e.target.getBoundingClientRect();
+      e.dataTransfer.setDragImage(e.target, rect.width / 2, rect.height / 2);
+    }
+    
+    // Set the dragged book in the store
     setDraggedBook(data.id);
-    console.log("[Book] Drag started for book:", data.id);
   };
   
   const handleDragEnd = () => {
-    setDraggedBook(null);
     console.log("[Book] Drag ended");
+    setDraggedBook(null);
   };
   
   const handleClick = (e: React.MouseEvent) => {
@@ -38,7 +46,7 @@ const Book: React.FC<BookProps> = ({ data }) => {
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'
       }}
-      draggable
+      draggable="true"
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onClick={handleClick}

@@ -24,6 +24,8 @@ export const useBookSlot = ({
   
   // Get the book at this position and shelf
   const book = Object.values(books).find(
+    book => book.position === position && book.shelfId === activeShelfId && !book.isSticker
+  ) || Object.values(books).find(
     book => book.position === position && book.shelfId === activeShelfId
   );
   
@@ -55,6 +57,7 @@ export const useBookSlot = ({
     handleStickerMouseMove,
     handleStickerMouseUp,
     handleDragOver,
+    handleDragLeave,
     handleDrop,
     isDragging,
     setIsDragging,
@@ -109,6 +112,7 @@ export const useBookSlot = ({
     handleFileChange,
     handleClick,
     handleDragOver,
+    handleDragLeave,
     handleDrop,
     handleStickerMouseDown,
     handleStickerMouseMove,

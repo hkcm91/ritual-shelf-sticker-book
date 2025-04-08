@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import { BookData, SlotType } from '../store/types';

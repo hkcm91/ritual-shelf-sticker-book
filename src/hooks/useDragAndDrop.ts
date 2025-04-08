@@ -3,8 +3,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { useStickerDrag } from './stickers/useStickerDrag';
 import { useFileDropHandler } from './useFileDropHandler';
 import { useBookDragHandler } from './useBookDragHandler';
-import { useDragGestures } from './gestures/useDragGestures';
-import { useBookshelfStore } from '../store/bookshelfStore';
 
 export interface UseDragAndDropProps {
   position: number;
@@ -40,10 +38,6 @@ export const useDragAndDrop = ({
 }: UseDragAndDropProps): DragAndDropResult => {
   const [slotDimensions, setSlotDimensions] = useState({ width: 150, height: 220 });
   const [initialPosition, setInitialPosition] = useState({ x: 0, y: 0 });
-  const { setDraggedBook } = useBookshelfStore();
-  
-  // Create a ref for the slot element
-  const slotRef = { current: null } as React.RefObject<HTMLElement>;
   
   // Use specialized hooks
   const { handleFileDrop } = useFileDropHandler({
@@ -59,42 +53,12 @@ export const useDragAndDrop = ({
     onBookDrop
   });
   
-  // Use the drag gestures hook for book dragging
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  
-  // Set up drag gestures for book dragging
-  const bookDragHandlers = useDragGestures({
-    scrollElementRef: slotRef,
-    enableDragDrop: true,
-    onDragStateChange: setIsDragging,
-    excludeSelector: '.sticker, button, a, input, [role="button"]',
-    onDragStart: (e) => {
-      if (book) {
-        // Set the dragged book in the store
-        setDraggedBook(book.id);
-        
-        // Visual feedback for dragging
-        const target = e.target as HTMLElement;
-        const bookElement = target.closest('.book');
-        if (bookElement) {
-          bookElement.classList.add('being-dragged');
-        }
-      }
-    },
-    onDrop: () => {
-      // Clear the dragged book
-      setDraggedBook(null);
-      
-      // Remove visual feedback
-      document.querySelectorAll('.being-dragged').forEach(el => {
-        el.classList.remove('being-dragged');
-      });
-    }
-  });
-  
-  // Use the sticker drag hook for sticker positioning
+  // Use the sticker drag hook
   const { 
+    isDragging, 
+    setIsDragging,
+    dragStart, 
+    setDragStart,
     handleStickerMouseDown,
     isAltDrag 
   } = useStickerDrag({
@@ -113,9 +77,6 @@ export const useDragAndDrop = ({
       if (slot) {
         const { width, height } = slot.getBoundingClientRect();
         setSlotDimensions({ width, height });
-        
-        // Update the slot ref
-        slotRef.current = slot as HTMLElement;
       } else {
         setSlotDimensions({ width: 150, height: 220 });
       }
@@ -157,36 +118,17 @@ export const useDragAndDrop = ({
     handleBookDrop();
   }, [handleFileDrop, handleBookDrop]);
   
-  // Helper functions for mouse movement
+  // Helper functions for sticker mouse movement (placeholder functions since actual logic is in useStickerDrag)
   const handleStickerMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     // This is now handled in the useStickerDrag hook
-    // For books, we call the book drag handler
-    if (book && !book.isSticker) {
-      bookDragHandlers.handleMouseMove(e.nativeEvent);
-    }
-  }, [book, bookDragHandlers]);
+  }, []);
   
   const handleStickerMouseUp = useCallback(() => {
     // This is now handled in the useStickerDrag hook
-    // For books, we call the book drag handler
-    if (book && !book.isSticker) {
-      bookDragHandlers.handleMouseUp();
-    }
-  }, [book, bookDragHandlers]);
-
-  // Override handleStickerMouseDown for books
-  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (book && !book.isSticker) {
-      // Use book drag handlers for books
-      bookDragHandlers.handleMouseDown(e.nativeEvent);
-    } else if (book && book.isSticker) {
-      // Use sticker drag for stickers
-      handleStickerMouseDown(e);
-    }
-  }, [book, bookDragHandlers, handleStickerMouseDown]);
+  }, []);
 
   return {
-    handleStickerMouseDown: handleMouseDown,
+    handleStickerMouseDown,
     handleStickerMouseMove,
     handleStickerMouseUp,
     handleDragOver,

@@ -42,24 +42,6 @@ export const createUISlice: StateCreator<
   },
   
   setDraggedBook: (bookId) => {
-    console.log("[UISlice] Setting dragged book:", bookId);
-    
-    // Apply dragging class to book element if needed
-    if (bookId) {
-      // Use timeout to ensure DOM is updated
-      setTimeout(() => {
-        const bookElement = document.querySelector(`[data-book-id="${bookId}"]`);
-        if (bookElement) {
-          bookElement.classList.add('being-dragged');
-        }
-      }, 0);
-    } else {
-      // Remove dragging class from all books
-      document.querySelectorAll('.being-dragged').forEach(el => {
-        el.classList.remove('being-dragged');
-      });
-    }
-    
     set({ draggedBook: bookId });
   },
   

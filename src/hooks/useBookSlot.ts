@@ -1,70 +1,47 @@
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
-import { useTransformControls } from './useTransformControls';
 import { useDragAndDrop } from './useDragAndDrop';
 import { useFileHandler } from './useFileHandler';
-import { toast } from 'sonner';
+import { useStickerPositioning } from './stickers/useStickerPositioning';
 
 type UseBookSlotProps = {
   position: number;
-  slotType?: "book" | "sticker";
+  slotType: "book" | "sticker";
 };
 
-export const useBookSlot = ({ position, slotType = "book" }: UseBookSlotProps) => {
-  const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
-  const [isAltKeyPressed, setIsAltKeyPressed] = useState<boolean>(false);
-  const { books, activeShelfId, deleteBook } = useBookshelfStore();
-  const deleteInProgress = useRef(false);
+export const useBookSlot = ({ position, slotType }: UseBookSlotProps) => {
+  const { activeShelfId, books, deleteBook } = useBookshelfStore();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isAltDrag, setIsAltDrag] = useState(false);
   
-  // Get the book from the store
+  // Get the book at this position and shelf
   const book = Object.values(books).find(
-    (book) => book.shelfId === activeShelfId && book.position === position
+    book => book.position === position && book.shelfId === activeShelfId
   );
   
-  // Use the transform controls hook
+  // Use the file handler hook
+  const { fileInputRef, handleFileChange, handleClick } = useFileHandler({
+    position,
+    slotType
+  });
+  
+  // Use the sticker positioning hook
   const {
     scale,
     position2D,
-    setPosition2D,
     rotation,
+    setPosition2D,
     handleRotate,
     handleScaleChange,
     handleResetTransform,
-    clearTransformData
-  } = useTransformControls({ activeShelfId, position });
+    clampPosition
+  } = useStickerPositioning({
+    position,
+    bookId: book?.id
+  });
   
-  // Use the file handler hook
-  const {
-    fileInputRef,
-    handleFileChange,
-    handleClick: handleFileClick
-  } = useFileHandler({ position, slotType });
-  
-  // Listen for Alt key press/release
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Alt') {
-        setIsAltKeyPressed(true);
-      }
-    };
-    
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === 'Alt') {
-        setIsAltKeyPressed(false);
-      }
-    };
-    
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-    
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, []);
-  
-  // Use the drag and drop hook
+  // Use drag and drop hook
   const {
     handleStickerMouseDown,
     handleStickerMouseMove,
@@ -82,34 +59,11 @@ export const useBookSlot = ({ position, slotType = "book" }: UseBookSlotProps) =
     slotType
   });
   
-  // Handle deletion with safety checks
+  // Handle delete sticker
   const handleDeleteSticker = () => {
-    if (!book || deleteInProgress.current) return;
-    
-    try {
-      // Prevent multiple deletes
-      deleteInProgress.current = true;
-      
-      // Small timeout to ensure state updates have completed
-      setTimeout(() => {
-        deleteBook(book.id);
-        clearTransformData();
-        setShowDeleteDialog(false);
-        toast.success('Item removed');
-        deleteInProgress.current = false;
-      }, 10);
-    } catch (error) {
-      console.error("Error deleting book:", error);
-      deleteInProgress.current = false;
-      toast.error("Failed to delete. Please try again.");
+    if (book) {
+      deleteBook(book.id);
       setShowDeleteDialog(false);
-    }
-  };
-
-  // Handle click to either open the file input or do nothing if there's a book
-  const handleClick = () => {
-    if (!book) {
-      handleFileClick();
     }
   };
 
@@ -119,7 +73,6 @@ export const useBookSlot = ({ position, slotType = "book" }: UseBookSlotProps) =
     scale,
     position2D,
     rotation,
-    isDragging,
     showDeleteDialog,
     setShowDeleteDialog,
     handleFileChange,
@@ -133,6 +86,11 @@ export const useBookSlot = ({ position, slotType = "book" }: UseBookSlotProps) =
     handleScaleChange,
     handleResetTransform,
     handleDeleteSticker,
-    isAltDrag: isDragging && isAltKeyPressed
+    isDragging,
+    setIsDragging,
+    dragStart,
+    setDragStart,
+    isAltDrag,
+    setIsAltDrag
   };
 };

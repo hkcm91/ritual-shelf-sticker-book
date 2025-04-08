@@ -6,21 +6,17 @@ import BookSearchDrawer from '../BookSearchDrawer';
 import { useIsMobile } from '@/hooks/use-mobile';
 import HeaderAuthButton from '../Header';
 import SettingsDrawer from '../settings/SettingsDrawer';
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
+import { Button } from '@/components/ui/button';
 import { useBookshelfStore } from "@/store/bookshelfStore";
 import { toast } from 'sonner';
 import { CreateLibraryDialog } from '../libraries/CreateLibraryDialog';
+import { PopupWindow } from '@/components/ui/popup-window';
 
 const Header: React.FC = () => {
   const isMobile = useIsMobile();
   const [scrolled, setScrolled] = useState(false);
   const [isCreateLibraryOpen, setIsCreateLibraryOpen] = useState(false);
+  const [isLibraryMenuOpen, setIsLibraryMenuOpen] = useState(false);
   
   // Add scroll detection for shadow effect
   useEffect(() => {
@@ -47,63 +43,14 @@ const Header: React.FC = () => {
         <BookSearchDrawer />
         
         {!isMobile && (
-          <NavigationMenu>
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger 
-                  className="dropdown-trigger navigation-menu-item flex items-center gap-1.5 h-9 px-4 text-[color:var(--header-text-color,white)] hover:text-amber-200 group"
-                >
-                  <Book className="h-4 w-4 group-hover:text-amber-300 transition-colors" />
-                  <span>Widget Libraries</span>
-                </NavigationMenuTrigger>
-                <NavigationMenuContent className="z-[1000]">
-                  <div className="popover-dropdown w-[320px]">
-                    <div className="dropdown-content">
-                      <div className="flex justify-between items-center mb-3">
-                        <h3 className="dropdown-header">Library Types</h3>
-                        <button 
-                          onClick={() => setIsCreateLibraryOpen(true)}
-                          className="flex items-center gap-1.5 text-amber-300 hover:text-amber-200 text-sm transition-colors group"
-                        >
-                          <FolderPlus className="h-3.5 w-3.5 group-hover:animate-pulse" />
-                          <span>New Library</span>
-                        </button>
-                      </div>
-                      
-                      <div className="space-y-1">
-                        <LibraryMenuItem 
-                          icon={<Book className="h-4 w-4" />}
-                          title="Book Library"
-                          submenuItems={[
-                            { title: "Main Library", path: "/" }
-                          ]}
-                        />
-                        
-                        <LibraryMenuItem 
-                          icon={<NotebookPen className="h-4 w-4" />}
-                          title="Notebook Library"
-                          submenuItems={[
-                            { title: "Sticker Book", path: "/widgets" }
-                          ]}
-                        />
-                        
-                        {/* Placeholder for future library types */}
-                        <div className="dropdown-item opacity-50 cursor-not-allowed">
-                          <Utensils className="h-4 w-4" />
-                          <span>Recipe Library (Coming Soon)</span>
-                        </div>
-                        
-                        <div className="dropdown-item opacity-50 cursor-not-allowed">
-                          <Music className="h-4 w-4" />
-                          <span>Music Library (Coming Soon)</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
+          <Button 
+            variant="ghost" 
+            className="dropdown-trigger navigation-menu-item flex items-center gap-1.5 h-9 px-4 text-[color:var(--header-text-color,white)] hover:text-amber-200 group"
+            onClick={() => setIsLibraryMenuOpen(true)}
+          >
+            <Book className="h-4 w-4 group-hover:text-amber-300 transition-colors" />
+            <span>Widget Libraries</span>
+          </Button>
         )}
       </div>
       
@@ -124,59 +71,92 @@ const Header: React.FC = () => {
         <HeaderAuthButton />
       </div>
 
+      {/* Library Menu Popup */}
+      <PopupWindow
+        isOpen={isLibraryMenuOpen}
+        onClose={() => setIsLibraryMenuOpen(false)}
+        title={
+          <>
+            <Book className="h-5 w-5 text-amber-300" />
+            <span>Widget Libraries</span>
+          </>
+        }
+        size="md"
+      >
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h3 className="popup-section-title">Available Libraries</h3>
+            <button 
+              onClick={() => {
+                setIsLibraryMenuOpen(false);
+                setIsCreateLibraryOpen(true);
+              }}
+              className="flex items-center gap-1.5 text-amber-300 hover:text-amber-200 text-sm transition-colors group"
+            >
+              <FolderPlus className="h-3.5 w-3.5 group-hover:animate-pulse" />
+              <span>New Library</span>
+            </button>
+          </div>
+          
+          <div className="popup-section">
+            <h3 className="font-medium text-amber-200/90 mb-2">Book Libraries</h3>
+            <Link to="/" className="popup-item" onClick={() => setIsLibraryMenuOpen(false)}>
+              <div className="popup-item-icon">
+                <Book className="h-4 w-4" />
+              </div>
+              <div>
+                <div className="font-medium">Main Library</div>
+                <div className="text-xs text-amber-100/60">Your reading collection</div>
+              </div>
+            </Link>
+          </div>
+          
+          <div className="popup-section">
+            <h3 className="font-medium text-amber-200/90 mb-2">Notebook Libraries</h3>
+            <Link to="/widgets" className="popup-item" onClick={() => setIsLibraryMenuOpen(false)}>
+              <div className="popup-item-icon">
+                <NotebookPen className="h-4 w-4" />
+              </div>
+              <div>
+                <div className="font-medium">Sticker Book</div>
+                <div className="text-xs text-amber-100/60">Creative stickers and notes</div>
+              </div>
+            </Link>
+          </div>
+          
+          <div className="popup-section">
+            <h3 className="font-medium text-amber-200/90 mb-2">Coming Soon</h3>
+            <div className="space-y-3">
+              <div className="popup-item opacity-60 cursor-not-allowed">
+                <div className="popup-item-icon">
+                  <Utensils className="h-4 w-4" />
+                </div>
+                <div>
+                  <div className="font-medium">Recipe Library</div>
+                  <div className="text-xs text-amber-100/60">Your cooking collection</div>
+                </div>
+              </div>
+              
+              <div className="popup-item opacity-60 cursor-not-allowed">
+                <div className="popup-item-icon">
+                  <Music className="h-4 w-4" />
+                </div>
+                <div>
+                  <div className="font-medium">Music Library</div>
+                  <div className="text-xs text-amber-100/60">Your audio collection</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </PopupWindow>
+
       {/* Create Library Dialog */}
       <CreateLibraryDialog 
         open={isCreateLibraryOpen}
         onOpenChange={setIsCreateLibraryOpen}
       />
     </header>
-  );
-};
-
-// Library menu item component with submenu
-interface SubmenuItem {
-  title: string;
-  path: string;
-}
-
-interface LibraryMenuItemProps {
-  icon: React.ReactNode;
-  title: string;
-  submenuItems: SubmenuItem[];
-}
-
-const LibraryMenuItem: React.FC<LibraryMenuItemProps> = ({ icon, title, submenuItems }) => {
-  return (
-    <NavigationMenu>
-      <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger 
-            className="dropdown-trigger w-full dropdown-item group"
-          >
-            {icon}
-            <span>{title}</span>
-          </NavigationMenuTrigger>
-          <NavigationMenuContent className="z-[1000]">
-            <div className="popover-dropdown w-[280px]">
-              <div className="dropdown-content">
-                <h3 className="dropdown-header">{title}s</h3>
-                <div className="space-y-1 mt-2">
-                  {submenuItems.map((item, index) => (
-                    <Link 
-                      key={index}
-                      to={item.path} 
-                      className="dropdown-item block"
-                    >
-                      <span>{item.title}</span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-      </NavigationMenuList>
-    </NavigationMenu>
   );
 };
 

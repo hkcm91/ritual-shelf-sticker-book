@@ -1,19 +1,12 @@
 
 import React, { useState } from 'react';
-import { Book, NotebookPen, Utensils, Music } from 'lucide-react';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogDescription,
-  DialogFooter
-} from '@/components/ui/dialog';
+import { Book, NotebookPen, Utensils, Music, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { useBookshelfStore } from '@/store/bookshelfStore';
+import { PopupWindow } from '@/components/ui/popup-window';
 
 interface CreateLibraryDialogProps {
   open: boolean;
@@ -106,76 +99,86 @@ export const CreateLibraryDialog: React.FC<CreateLibraryDialogProps> = ({
     }
   };
 
+  const footerContent = (
+    <>
+      <Button 
+        type="button" 
+        variant="outline" 
+        onClick={() => onOpenChange(false)}
+        className="border-amber-700/30 text-amber-200 hover:bg-amber-950/30"
+      >
+        Cancel
+      </Button>
+      <Button 
+        type="button" 
+        onClick={handleCreateLibrary}
+        className="bg-gradient-to-b from-amber-700 to-amber-800 text-amber-100 hover:from-amber-600 hover:to-amber-700"
+        disabled={!libraryName.trim() || !selectedType}
+      >
+        Create Library
+      </Button>
+    </>
+  );
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] collections-dropdown border-amber-500/20">
-        <DialogHeader>
-          <DialogTitle className="text-amber-300/90">Create New Library</DialogTitle>
-          <DialogDescription className="text-amber-100/70">
-            Create a new collection to organize your items.
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="py-4 space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="library-name" className="text-amber-200">Library Name</Label>
-            <Input 
-              id="library-name" 
-              value={libraryName} 
-              onChange={(e) => setLibraryName(e.target.value)} 
-              placeholder="My Library"
-              className="border-amber-700/30 bg-amber-950/20 text-amber-100"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label className="text-amber-200">Library Type</Label>
-            <div className="grid grid-cols-2 gap-3 mt-1">
-              {libraryTypes.map((type) => (
-                <div 
-                  key={type.id}
-                  onClick={() => handleTypeSelection(type.id)}
-                  className={`
-                    flex flex-col items-center gap-2 p-3 rounded-md border transition-all cursor-pointer
-                    ${type.available ? 'hover:bg-amber-800/30' : 'opacity-60 cursor-not-allowed'}
-                    ${selectedType === type.id 
-                      ? 'bg-amber-800/40 border-amber-500/40' 
-                      : 'border-amber-700/20 bg-amber-950/10'
-                    }
-                  `}
-                >
-                  <div className={`text-${selectedType === type.id ? 'amber-300' : 'amber-100'}`}>
-                    {type.icon}
-                  </div>
-                  <span className="text-sm">{type.name}</span>
-                  {!type.available && (
-                    <span className="text-xs text-amber-500/70">Coming Soon</span>
-                  )}
-                </div>
-              ))}
+    <PopupWindow
+      isOpen={open}
+      onClose={() => onOpenChange(false)}
+      title={
+        <>
+          <Book className="h-5 w-5 text-amber-300" />
+          <span>Create New Library</span>
+        </>
+      }
+      footer={footerContent}
+      size="md"
+    >
+      <div className="space-y-6">
+        <div className="popup-section">
+          <h3 className="popup-section-title">Basic Details</h3>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="library-name" className="text-amber-200">Library Name</Label>
+              <Input 
+                id="library-name" 
+                value={libraryName} 
+                onChange={(e) => setLibraryName(e.target.value)} 
+                placeholder="My Library"
+                className="border-amber-700/30 bg-amber-950/20 text-amber-100"
+              />
             </div>
           </div>
         </div>
 
-        <DialogFooter>
-          <Button 
-            type="button" 
-            variant="outline" 
-            onClick={() => onOpenChange(false)}
-            className="border-amber-700/30 text-amber-200 hover:bg-amber-950/30"
-          >
-            Cancel
-          </Button>
-          <Button 
-            type="button" 
-            onClick={handleCreateLibrary}
-            className="bg-gradient-to-b from-amber-700 to-amber-800 text-amber-100 hover:from-amber-600 hover:to-amber-700"
-            disabled={!libraryName.trim() || !selectedType}
-          >
-            Create Library
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        <div className="popup-section">
+          <h3 className="popup-section-title">Library Type</h3>
+          <div className="grid grid-cols-2 gap-3 mt-2">
+            {libraryTypes.map((type) => (
+              <div 
+                key={type.id}
+                onClick={() => handleTypeSelection(type.id)}
+                className={`
+                  flex flex-col items-center gap-2 p-4 rounded-lg border transition-all cursor-pointer
+                  ${type.available ? 'hover:bg-amber-800/30' : 'opacity-60 cursor-not-allowed'}
+                  ${selectedType === type.id 
+                    ? 'bg-amber-800/40 border-amber-500/40' 
+                    : 'border-amber-700/20 bg-amber-950/10'
+                  }
+                `}
+              >
+                <div className={`text-${selectedType === type.id ? 'amber-300' : 'amber-100'} p-3 rounded-full
+                  ${selectedType === type.id ? 'bg-amber-900/50' : 'bg-amber-950/30'} border border-amber-700/30`}>
+                  {type.icon}
+                </div>
+                <span className="text-sm font-medium">{type.name}</span>
+                {!type.available && (
+                  <span className="text-xs text-amber-500/70">Coming Soon</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </PopupWindow>
   );
 };

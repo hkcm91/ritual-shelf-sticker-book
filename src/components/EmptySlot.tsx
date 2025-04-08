@@ -34,11 +34,6 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent event bubbling
     
-    if (onClick) {
-      onClick();
-      return;
-    }
-    
     if (slotType === "book") {
       // For book slots, open the modal directly
       const newBookId = addBook({
@@ -122,13 +117,13 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
         className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer"
         onClick={handleClick}
       >
-        <Plus className="w-8 h-8 text-gray-400" />
-        <span className="text-sm text-gray-400 mt-2">
+        <Plus className="w-6 h-6 text-gray-300/50" />
+        <span className="text-xs text-gray-300/50 mt-1">
           {slotType === "book" ? "Add Book" : "Add Sticker"}
         </span>
         
         {slotType === "sticker" && (
-          <span className="text-xs text-gray-400/70 mt-1">
+          <span className="text-xs text-gray-300/30 mt-1">
             (Alt+Click for URL)
           </span>
         )}

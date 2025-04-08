@@ -1,5 +1,5 @@
 
-import { useEffect, useCallback, useState, useRef } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 import themes from '@/themes';
 import { toast } from 'sonner';
@@ -12,43 +12,12 @@ import {
  * Hook to apply the active theme to the DOM
  */
 export function useThemeApplication() {
-  const activeTheme = useBookshelfStore(state => state.activeTheme);
-  const page = useBookshelfStore(state => state.page);
-  const container = useBookshelfStore(state => state.container);
-  const shelfStyling = useBookshelfStore(state => state.shelfStyling);
-  const header = useBookshelfStore(state => state.header);
-  
+  const { activeTheme, page, container, shelfStyling, header } = useBookshelfStore();
   const [isApplying, setIsApplying] = useState(false);
   const [error, setError] = useState<Error | null>(null);
-  
-  // Use a ref to track if we've already applied the theme
-  const appliedThemeRef = useRef<string | null>(null);
-  const lastPropsRef = useRef({ 
-    activeTheme, 
-    page, 
-    container, 
-    shelfStyling, 
-    header
-  });
 
   // Apply theme whenever activeTheme changes or any of the theme settings change
   const applyTheme = useCallback(() => {
-    // Skip if already applying
-    if (isApplying) return;
-    
-    // Skip if theme and props haven't changed
-    const lastProps = lastPropsRef.current;
-    const propsUnchanged = 
-      lastProps.activeTheme === activeTheme &&
-      lastProps.page === page &&
-      lastProps.container === container &&
-      lastProps.shelfStyling === shelfStyling &&
-      lastProps.header === header;
-      
-    if (propsUnchanged && appliedThemeRef.current === activeTheme) {
-      return;
-    }
-    
     if (!activeTheme) {
       console.warn('No active theme set, using default');
       return;
@@ -76,12 +45,6 @@ export function useThemeApplication() {
         applyPredefinedTheme(defaultTheme);
       }
       
-      // Mark the theme as applied
-      appliedThemeRef.current = activeTheme;
-      
-      // Update last props ref
-      lastPropsRef.current = { activeTheme, page, container, shelfStyling, header };
-      
       console.log('Theme applied successfully');
     } catch (error) {
       console.error('Error applying theme:', error);
@@ -91,16 +54,15 @@ export function useThemeApplication() {
       // Fallback to default theme
       try {
         applyPredefinedTheme(themes.default);
-        appliedThemeRef.current = 'default';
       } catch (fallbackError) {
         console.error('Error applying fallback theme:', fallbackError);
       }
     } finally {
       setIsApplying(false);
     }
-  }, [activeTheme, page, container, shelfStyling, header, isApplying]);
+  }, [activeTheme, page, container, shelfStyling, header]);
 
-  // Apply theme once on initial render and when theme-related props change
+  // Apply theme once when component mounts and when dependencies change
   useEffect(() => {
     applyTheme();
   }, [applyTheme]);

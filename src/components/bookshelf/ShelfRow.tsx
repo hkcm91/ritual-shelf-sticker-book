@@ -1,5 +1,5 @@
 
-import React, { memo } from 'react';
+import React from 'react';
 import BookSlot from '../BookSlot';
 import { useBookshelfStore } from '../../store/bookshelfStore';
 import { ShelfData } from '../../store/types';
@@ -17,23 +17,23 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
   rowIndex,
   columns
 }) => {
-  // Get state from bookshelf store with stable object reference
-  const activeShelfId = useBookshelfStore(state => state.activeShelfId);
-  const shelves = useBookshelfStore(state => state.shelves);
-  const shelfStyling = useBookshelfStore(state => state.shelfStyling);
-  const activeTheme = useBookshelfStore(state => state.activeTheme);
+  const {
+    activeShelfId,
+    shelves: shelvesData,
+    shelfStyling,
+    activeTheme
+  } = useBookshelfStore();
   
-  // Derive activeShelf from state
-  const activeShelf = activeShelfId ? shelves[activeShelfId] as ShelfData : null;
-  
+  const shelf = shelvesData[activeShelfId] as ShelfData;
+
   // Determine if we should use realistic shelf styling
   const useRealisticStyle = activeTheme === 'default' || activeTheme === 'custom';
 
   // Get shelf texture or use default
-  const shelfTexture = activeShelf?.textureImage || (useRealisticStyle ? '/lovable-uploads/7a437784-0910-4719-b52b-6564c3004ebe.png' : '/textures/default/wood.jpg');
+  const shelfTexture = shelf?.textureImage || (useRealisticStyle ? '/lovable-uploads/7a437784-0910-4719-b52b-6564c3004ebe.png' : '/textures/default/wood.jpg');
 
-  // Generate slots for this row - memoize the rendering logic
-  const renderSlots = React.useMemo(() => {
+  // Generate slots for this row
+  const renderSlots = () => {
     const slots = [];
 
     // Access dividers from the customization state
@@ -120,8 +120,8 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
     );
     
     return slots;
-  }, [rowIndex, columns, shelfStyling, shelfTexture]);
-
+  };
+  
   return (
     <div 
       className={`shelf-row flex flex-col w-full relative ${useRealisticStyle ? 'realistic-shelf' : ''}`}
@@ -141,20 +141,17 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
       />
         
       {/* Render books and dividers */}
-      {renderSlots}
+      {renderSlots()}
         
       {/* Add horizontal divider if needed and it's not the last row */}
-      {shelfStyling?.dividers?.enabled && 
-       (shelfStyling.dividers.orientation === 'horizontal' || shelfStyling.dividers.orientation === 'both') && 
-       rowIndex < (activeShelf?.rows || 1) - 1 && 
-       (rowIndex + 1) % (shelfStyling.dividers.booksPerRow || 1) === 0 && (
+      {shelfStyling?.dividers?.enabled && (shelfStyling.dividers.orientation === 'horizontal' || shelfStyling.dividers.orientation === 'both') && rowIndex < shelf?.rows - 1 && (rowIndex + 1) % (shelfStyling.dividers.booksPerRow || 1) === 0 && 
         <HorizontalDivider 
           thickness={shelfStyling.dividers.thickness}
           color={shelfStyling.dividers.color}
           opacity={shelfStyling.dividers.opacity}
           textureUrl={shelfTexture}
         />
-      )}
+      }
         
       {/* Shelf wood */}
       <ShelfWood 
@@ -168,5 +165,4 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
   );
 };
 
-// Wrap in memo to prevent unnecessary re-renders
-export default memo(ShelfRow);
+export default ShelfRow;

@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useBookshelfStore, initializeDefaultShelf } from '../store/bookshelfStore';
 import BookshelfGrid from '../components/BookshelfGrid';
 import BookModal from '../components/BookModal';
@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import Header from '../components/layout/Header';
 import ShelfDialogs from '../components/shelf/ShelfDialogs';
 import { ShelfData } from '../store/types';
+import ZoomControls from '@/components/ZoomControls';
 
 const Index = () => {
   const { shelves, activeShelfId, loadCustomization } = useBookshelfStore();
@@ -14,11 +15,11 @@ const Index = () => {
   const [newShelfName, setNewShelfName] = useState("");
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [renameValue, setRenameValue] = useState("");
-  const isInitializedRef = useRef(false);
+  const [isInitialized, setIsInitialized] = useState(false);
   
   // Initialize the store and load customization only once
   useEffect(() => {
-    if (!isInitializedRef.current) {
+    if (!isInitialized) {
       console.log("[Index] Initializing default shelf");
       const shelfId = initializeDefaultShelf();
       
@@ -34,9 +35,9 @@ const Index = () => {
         });
       }
       
-      isInitializedRef.current = true;
+      setIsInitialized(true);
     }
-  }, [loadCustomization]);
+  }, [isInitialized, loadCustomization]);
 
   const shelvesData = shelves as Record<string, ShelfData>;
   const currentShelf = activeShelfId ? shelvesData[activeShelfId] : null;
@@ -56,9 +57,12 @@ const Index = () => {
     >
       <Header />
       
-      <div className="flex-grow w-full overflow-hidden">
+      <div className="flex-grow w-full overflow-auto">
         <BookshelfGrid />
       </div>
+      
+      {/* Zoom Controls */}
+      <ZoomControls />
       
       <BookModal />
       

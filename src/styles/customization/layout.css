@@ -10,7 +10,6 @@ body {
   min-height: 100vh;
   transition: background 0.3s ease;
   color: var(--page-text-color, #333);
-  overflow: hidden; /* Prevent scrolling on body */
 }
 
 .dark body {
@@ -31,7 +30,7 @@ body {
   transition: background-color 0.3s ease, border 0.3s ease, opacity 0.3s ease;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   overflow: hidden; /* Ensure dividers don't extend beyond container */
-  margin-top: 0; /* Remove space between header and bookshelf */
+  margin-top: 2rem; /* Add space between header and bookshelf */
 }
 
 .bookshelf-wrapper {
@@ -40,7 +39,7 @@ body {
   overflow: auto; /* Allow scrolling in all directions */
   scroll-behavior: smooth; /* Smooth scrolling */
   -webkit-overflow-scrolling: touch; /* Better touch scrolling */
-  padding: 0; /* Remove padding to eliminate gap */
+  padding: 2rem;
 }
 
 /* Make sure the grid container adapts to available space */

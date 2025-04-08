@@ -7,34 +7,10 @@
   display: flex;
   gap: 8px;
   z-index: 20;
-  background-color: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(4px);
+  background-color: white;
   border-radius: 8px;
   padding: 4px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  transition: opacity 0.3s ease;
-}
-
-/* Fade zoom controls when inactive */
-.zoom-controls:not(:hover) {
-  opacity: 0.8;
-}
-
-.zoom-controls:hover {
-  opacity: 1;
-}
-
-/* Mobile-specific controls */
-.zoom-controls.mobile {
-  bottom: 8px;
-  right: 8px;
-  padding: 2px;
-  gap: 4px;
-}
-
-/* Pinch zoom gestures */
-.bookshelf-container {
-  touch-action: manipulation; /* Enable pinch zoom on mobile */
 }
 
 /* Wheel scrolling improvements */
@@ -45,7 +21,7 @@
 
 .bookshelf-wrapper::-webkit-scrollbar {
   width: 8px;
-  height: 8px; /* Important for horizontal scrollbar */
+  height: 8px;
 }
 
 .bookshelf-wrapper::-webkit-scrollbar-track {
@@ -56,71 +32,4 @@
   background-color: var(--container-bg);
   border-radius: 4px;
   border: 2px solid transparent;
-}
-
-/* Improve cursor and dragging experience */
-.bookshelf-container {
-  transition: transform 0.2s cubic-bezier(0.25, 0.1, 0.25, 1.0); /* Smoother zoom transition */
-}
-
-/* Add keyboard shortcut helpers */
-.scroll-hint {
-  position: fixed;
-  bottom: 60px;
-  right: 16px;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 12px;
-  pointer-events: none;
-  opacity: 0;
-  transform: translateY(10px);
-  transition: opacity 0.3s, transform 0.3s;
-}
-
-.bookshelf-wrapper:hover .scroll-hint {
-  animation: fade-in-tip 3s forwards;
-  animation-delay: 1s;
-}
-
-.bookshelf-wrapper:hover .alt-hint {
-  animation-delay: 1.5s;
-}
-
-.bookshelf-wrapper:hover .shift-hint {
-  animation-delay: 2s;
-}
-
-/* Add touch indicator for mobile users */
-@media (max-width: 768px) {
-  .bookshelf-container::after {
-    content: '';
-    position: absolute;
-    bottom: 50px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 40px;
-    height: 40px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgba(0,0,0,0.3)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2v20M2 12h20'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
-    opacity: 0.5;
-    pointer-events: none;
-    animation: pulse 2s infinite;
-  }
-}
-
-@keyframes pulse {
-  0% { opacity: 0.2; transform: translateX(-50%) scale(0.8); }
-  50% { opacity: 0.5; transform: translateX(-50%) scale(1); }
-  100% { opacity: 0.2; transform: translateX(-50%) scale(0.8); }
-}
-
-@keyframes fade-in-tip {
-  0% { opacity: 0; transform: translateY(10px); }
-  20% { opacity: 1; transform: translateY(0); }
-  80% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(-5px); }
 }

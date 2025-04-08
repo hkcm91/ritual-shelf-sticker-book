@@ -1,5 +1,4 @@
 
-// This file is kept but simplified as we've moved to CSS transform-based zooming
 import { StateCreator } from 'zustand';
 import { BookshelfState } from '../bookshelfStore';
 

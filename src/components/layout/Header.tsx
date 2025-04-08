@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState, memo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BookOpen } from 'lucide-react';
 import ShelfSelector from './ShelfSelector';
 import { useBookshelfStore } from '@/store/bookshelfStore';
@@ -29,6 +29,8 @@ const Header: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  console.log("Header rendering");
+  
   return (
     <header 
       className={`px-4 sm:px-6 py-3 flex justify-between items-center sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'scrolled' : ''}`}
@@ -54,7 +56,7 @@ const Header: React.FC = () => {
                   <span>Collections</span>
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <div className="p-4 w-[320px] rounded-md collections-dropdown bg-amber-950/95 backdrop-blur-md border border-amber-600/30">
+                  <div className="p-4 w-[320px] rounded-md collections-dropdown">
                     <ShelfSelector />
                   </div>
                 </NavigationMenuContent>
@@ -74,5 +76,4 @@ const Header: React.FC = () => {
   );
 };
 
-// Memoize to prevent unnecessary re-renders
-export default memo(Header);
+export default Header;

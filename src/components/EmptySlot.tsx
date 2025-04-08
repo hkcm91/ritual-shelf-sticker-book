@@ -4,6 +4,7 @@ import { PlusCircle, Book, Music, Utensils, BookMarked } from 'lucide-react';
 import { SlotType } from '@/store/types';
 import RecipeModal from './recipe/RecipeModal';
 import { useBookshelfStore } from '@/store/bookshelfStore';
+import { BookModal } from './index';
 
 interface EmptySlotProps {
   fileInputRef: React.RefObject<HTMLInputElement>;
@@ -21,7 +22,7 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
   position
 }) => {
   const [isRecipeModalOpen, setIsRecipeModalOpen] = useState(false);
-  const { activeShelfId } = useBookshelfStore();
+  const { activeShelfId, openModal } = useBookshelfStore();
   
   const getSlotIcon = () => {
     switch (slotType) {
@@ -44,6 +45,9 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
     // For recipe slots, open the recipe modal instead of the file input
     if (slotType === 'recipe' && activeShelfId) {
       setIsRecipeModalOpen(true);
+    } else if (slotType === 'book' && activeShelfId) {
+      // For book slots, open the book modal with null ID to create a new book
+      openModal(null);
     } else {
       onClick();
     }

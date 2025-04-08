@@ -7,7 +7,7 @@ import BookModalTabs from './book-modal/BookModalTabs';
 import BookModalFooter from './book-modal/BookModalFooter';
 
 const BookModal: React.FC = () => {
-  const { isModalOpen, activeBookId, books, closeModal, updateBook, deleteBook } = useBookshelfStore();
+  const { isModalOpen, activeBookId, books, closeModal, updateBook, deleteBook, addBook } = useBookshelfStore();
   
   const [bookData, setBookData] = useState({
     title: '',
@@ -91,6 +91,20 @@ const BookModal: React.FC = () => {
   const handleSave = () => {
     if (activeBookId) {
       updateBook(activeBookId, bookData);
+    } else {
+      // For new books, add them to the store
+      const { activeShelfId, findEmptyPosition } = useBookshelfStore.getState();
+      if (activeShelfId) {
+        const position = findEmptyPosition(activeShelfId);
+        if (position >= 0) {
+          addBook({
+            ...bookData,
+            position,
+            shelfId: activeShelfId,
+            isSticker: false
+          });
+        }
+      }
     }
     closeModal();
   };
@@ -164,6 +178,7 @@ const BookModal: React.FC = () => {
           handleSave={handleSave}
           handleDelete={handleDelete}
           closeModal={closeModal}
+          isNewBook={!activeBookId}
         />
       </DialogContent>
     </Dialog>

@@ -8,7 +8,7 @@ export interface UISlice {
   zoomLevel: number;
   isBookSearchOpen: boolean;
   isCustomizationModalOpen: boolean;
-  openModal: (bookId: string) => void;
+  openModal: (bookId: string | null) => void;
   closeModal: () => void;
   setDraggedBook: (bookId: string | null) => void;
   getDraggedBook: () => any | null; // Using 'any' here since it references the BookData type from another slice

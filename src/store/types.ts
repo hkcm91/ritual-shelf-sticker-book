@@ -1,4 +1,3 @@
-
 export interface BookData {
   id: string;
   title: string;
@@ -14,7 +13,6 @@ export interface BookData {
   date?: string;
   color?: string;
   zIndex?: number;
-  // Add missing properties that are causing TypeScript errors
   hidden?: boolean;
   originalPosition?: number;
   progress?: number;
@@ -30,6 +28,7 @@ export interface ShelfData {
   name: string;
   rows: number;
   columns: number;
+  type?: 'book' | 'notebook' | 'recipe' | 'music';
   backgroundImage?: string;
   textureImage?: string;
   backgroundColor?: string;

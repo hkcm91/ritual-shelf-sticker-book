@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { Book, NotebookPen, Utensils, Music } from 'lucide-react';
+import { Book, NotebookPen, Utensils, Music, FolderPlus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import BookSearchDrawer from '../BookSearchDrawer';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -13,10 +13,14 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+import { useBookshelfStore } from "@/store/bookshelfStore";
+import { toast } from 'sonner';
+import { CreateLibraryDialog } from '../libraries/CreateLibraryDialog';
 
 const Header: React.FC = () => {
   const isMobile = useIsMobile();
   const [scrolled, setScrolled] = useState(false);
+  const [isCreateLibraryOpen, setIsCreateLibraryOpen] = useState(false);
   
   // Add scroll detection for shadow effect
   useEffect(() => {
@@ -27,8 +31,6 @@ const Header: React.FC = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  console.log("Header rendering");
   
   return (
     <header 
@@ -55,53 +57,34 @@ const Header: React.FC = () => {
                   <span>Widget Libraries</span>
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <div className="p-4 w-[300px] rounded-md collections-dropdown">
-                    <h3 className="text-amber-300/90 font-semibold mb-3 collections-title">Library Types</h3>
+                  <div className="p-4 w-[320px] rounded-md collections-dropdown">
+                    <div className="flex justify-between items-center mb-3">
+                      <h3 className="text-amber-300/90 font-semibold collections-title">Library Types</h3>
+                      <button 
+                        onClick={() => setIsCreateLibraryOpen(true)}
+                        className="flex items-center gap-1.5 text-amber-300 hover:text-amber-200 text-sm transition-colors"
+                      >
+                        <FolderPlus className="h-3.5 w-3.5" />
+                        <span>New Library</span>
+                      </button>
+                    </div>
                     
                     <div className="space-y-2">
-                      <NavigationMenu>
-                        <NavigationMenuList>
-                          <NavigationMenuItem>
-                            <NavigationMenuTrigger className="w-full flex items-center gap-2 hover:bg-amber-800/30 px-3 py-2 rounded-md cursor-pointer text-amber-100">
-                              <Book className="h-4 w-4" />
-                              <span>Book Library</span>
-                            </NavigationMenuTrigger>
-                            <NavigationMenuContent>
-                              <div className="p-4 w-[300px] rounded-md collections-dropdown">
-                                <h3 className="text-amber-300/90 font-semibold mb-3 collections-title">Book Libraries</h3>
-                                <div className="space-y-2">
-                                  <Link to="/" className="flex items-center gap-2 hover:bg-amber-800/30 px-3 py-2 rounded-md cursor-pointer text-amber-100">
-                                    <span>Main Library</span>
-                                  </Link>
-                                  {/* More libraries would go here */}
-                                </div>
-                              </div>
-                            </NavigationMenuContent>
-                          </NavigationMenuItem>
-                        </NavigationMenuList>
-                      </NavigationMenu>
+                      <LibraryMenuItem 
+                        icon={<Book className="h-4 w-4" />}
+                        title="Book Library"
+                        submenuItems={[
+                          { title: "Main Library", path: "/" }
+                        ]}
+                      />
                       
-                      <NavigationMenu>
-                        <NavigationMenuList>
-                          <NavigationMenuItem>
-                            <NavigationMenuTrigger className="w-full flex items-center gap-2 hover:bg-amber-800/30 px-3 py-2 rounded-md cursor-pointer text-amber-100">
-                              <NotebookPen className="h-4 w-4" />
-                              <span>Notebook Library</span>
-                            </NavigationMenuTrigger>
-                            <NavigationMenuContent>
-                              <div className="p-4 w-[300px] rounded-md collections-dropdown">
-                                <h3 className="text-amber-300/90 font-semibold mb-3 collections-title">Notebook Libraries</h3>
-                                <div className="space-y-2">
-                                  <Link to="/widgets" className="flex items-center gap-2 hover:bg-amber-800/30 px-3 py-2 rounded-md cursor-pointer text-amber-100">
-                                    <span>Sticker Book</span>
-                                  </Link>
-                                  {/* More libraries would go here */}
-                                </div>
-                              </div>
-                            </NavigationMenuContent>
-                          </NavigationMenuItem>
-                        </NavigationMenuList>
-                      </NavigationMenu>
+                      <LibraryMenuItem 
+                        icon={<NotebookPen className="h-4 w-4" />}
+                        title="Notebook Library"
+                        submenuItems={[
+                          { title: "Sticker Book", path: "/widgets" }
+                        ]}
+                      />
                       
                       {/* Placeholder for future library types */}
                       <div className="flex items-center gap-2 text-amber-100/50 px-3 py-2 rounded-md">
@@ -138,7 +121,58 @@ const Header: React.FC = () => {
         
         <HeaderAuthButton />
       </div>
+
+      {/* Create Library Dialog */}
+      <CreateLibraryDialog 
+        open={isCreateLibraryOpen}
+        onOpenChange={setIsCreateLibraryOpen}
+      />
     </header>
+  );
+};
+
+// Library menu item component with submenu
+interface SubmenuItem {
+  title: string;
+  path: string;
+}
+
+interface LibraryMenuItemProps {
+  icon: React.ReactNode;
+  title: string;
+  submenuItems: SubmenuItem[];
+}
+
+const LibraryMenuItem: React.FC<LibraryMenuItemProps> = ({ icon, title, submenuItems }) => {
+  return (
+    <NavigationMenu>
+      <NavigationMenuList>
+        <NavigationMenuItem>
+          <NavigationMenuTrigger 
+            className="w-full flex items-center gap-2 hover:bg-amber-800/30 px-3 py-2 rounded-md cursor-pointer text-amber-100"
+          >
+            {icon}
+            <span>{title}</span>
+          </NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <div className="p-4 w-[280px] rounded-md collections-dropdown">
+              <h3 className="text-amber-300/90 font-semibold mb-3 collections-title">{title}s</h3>
+              <div className="space-y-2">
+                {submenuItems.map((item, index) => (
+                  <Link 
+                    key={index}
+                    to={item.path} 
+                    className="flex items-center gap-2 hover:bg-amber-800/30 px-3 py-2 rounded-md cursor-pointer text-amber-100"
+                  >
+                    <span>{item.title}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
+      </NavigationMenuList>
+    </NavigationMenu>
   );
 };
 

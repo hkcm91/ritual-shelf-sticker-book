@@ -2,18 +2,20 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useBookshelfStore } from '@/store/bookshelfStore';
-import { ZoomIn, ZoomOut, Minimize } from 'lucide-react';
+import { ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const ZoomControls: React.FC = () => {
   const { zoomLevel, adjustZoomLevel, setZoomLevel } = useBookshelfStore();
+  const isMobile = useIsMobile();
   
   const handleZoomIn = () => adjustZoomLevel(0.1);
   const handleZoomOut = () => adjustZoomLevel(-0.1);
   const handleReset = () => setZoomLevel(1);
   
   return (
-    <div className="zoom-controls">
+    <div className={`zoom-controls ${isMobile ? 'mobile' : ''}`}>
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -37,9 +39,12 @@ const ZoomControls: React.FC = () => {
               variant="ghost" 
               size="icon" 
               onClick={handleReset}
-              className="bg-white/90 hover:bg-white text-gray-700"
+              className="bg-white/90 hover:bg-white text-gray-700 flex items-center gap-1"
             >
-              <Minimize className="h-4 w-4" />
+              <RotateCcw className="h-4 w-4" />
+              <span className={`${isMobile ? 'hidden' : 'hidden sm:inline-block text-xs'}`}>
+                {Math.round(zoomLevel * 100)}%
+              </span>
             </Button>
           </TooltipTrigger>
           <TooltipContent>

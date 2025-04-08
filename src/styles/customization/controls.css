@@ -7,10 +7,24 @@
   display: flex;
   gap: 8px;
   z-index: 20;
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
   border-radius: 8px;
   padding: 4px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Mobile-specific controls */
+.zoom-controls.mobile {
+  bottom: 8px;
+  right: 8px;
+  padding: 2px;
+  gap: 4px;
+}
+
+/* Pinch zoom gestures */
+.bookshelf-container {
+  touch-action: manipulation; /* Enable pinch zoom on mobile */
 }
 
 /* Wheel scrolling improvements */
@@ -32,4 +46,30 @@
   background-color: var(--container-bg);
   border-radius: 4px;
   border: 2px solid transparent;
+}
+
+/* Add touch indicator for mobile users */
+@media (max-width: 768px) {
+  .bookshelf-container::after {
+    content: '';
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 40px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgba(0,0,0,0.3)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2v20M2 12h20'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    opacity: 0.5;
+    pointer-events: none;
+    animation: pulse 2s infinite;
+  }
+}
+
+@keyframes pulse {
+  0% { opacity: 0.2; transform: translateX(-50%) scale(0.8); }
+  50% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+  100% { opacity: 0.2; transform: translateX(-50%) scale(0.8); }
 }

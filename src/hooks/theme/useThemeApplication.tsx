@@ -23,11 +23,29 @@ export function useThemeApplication() {
   
   // Use a ref to track if we've already applied the theme
   const appliedThemeRef = useRef<string | null>(null);
+  const lastPropsRef = useRef({ 
+    activeTheme, 
+    page, 
+    container, 
+    shelfStyling, 
+    header
+  });
 
   // Apply theme whenever activeTheme changes or any of the theme settings change
   const applyTheme = useCallback(() => {
-    // Skip if already applying or if theme hasn't changed
-    if (isApplying || appliedThemeRef.current === activeTheme) {
+    // Skip if already applying
+    if (isApplying) return;
+    
+    // Skip if theme and props haven't changed
+    const lastProps = lastPropsRef.current;
+    const propsUnchanged = 
+      lastProps.activeTheme === activeTheme &&
+      lastProps.page === page &&
+      lastProps.container === container &&
+      lastProps.shelfStyling === shelfStyling &&
+      lastProps.header === header;
+      
+    if (propsUnchanged && appliedThemeRef.current === activeTheme) {
       return;
     }
     
@@ -60,6 +78,10 @@ export function useThemeApplication() {
       
       // Mark the theme as applied
       appliedThemeRef.current = activeTheme;
+      
+      // Update last props ref
+      lastPropsRef.current = { activeTheme, page, container, shelfStyling, header };
+      
       console.log('Theme applied successfully');
     } catch (error) {
       console.error('Error applying theme:', error);
@@ -78,7 +100,7 @@ export function useThemeApplication() {
     }
   }, [activeTheme, page, container, shelfStyling, header, isApplying]);
 
-  // Apply theme once on initial render
+  // Apply theme once on initial render and when theme-related props change
   useEffect(() => {
     applyTheme();
   }, [applyTheme]);

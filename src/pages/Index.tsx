@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useBookshelfStore, initializeDefaultShelf } from '../store/bookshelfStore';
 import BookshelfGrid from '../components/BookshelfGrid';
 import BookModal from '../components/BookModal';
@@ -15,11 +15,11 @@ const Index = () => {
   const [newShelfName, setNewShelfName] = useState("");
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [renameValue, setRenameValue] = useState("");
-  const [isInitialized, setIsInitialized] = useState(false);
+  const isInitializedRef = useRef(false);
   
   // Initialize the store and load customization only once
   useEffect(() => {
-    if (!isInitialized) {
+    if (!isInitializedRef.current) {
       console.log("[Index] Initializing default shelf");
       const shelfId = initializeDefaultShelf();
       
@@ -35,9 +35,9 @@ const Index = () => {
         });
       }
       
-      setIsInitialized(true);
+      isInitializedRef.current = true;
     }
-  }, [isInitialized, loadCustomization]);
+  }, [loadCustomization]);
 
   const shelvesData = shelves as Record<string, ShelfData>;
   const currentShelf = activeShelfId ? shelvesData[activeShelfId] : null;
@@ -57,7 +57,7 @@ const Index = () => {
     >
       <Header />
       
-      <div className="flex-grow w-full overflow-auto">
+      <div className="flex-grow w-full overflow-hidden">
         <BookshelfGrid />
       </div>
       

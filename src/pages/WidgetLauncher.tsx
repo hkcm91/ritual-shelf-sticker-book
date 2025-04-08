@@ -35,7 +35,7 @@ const libraryTypes = [
     icon: <Utensils className="h-6 w-6" />,
     bgClass: "bg-rose-50",
     borderClass: "border-rose-200",
-    available: false,
+    available: true,
     type: "recipe"
   },
   {

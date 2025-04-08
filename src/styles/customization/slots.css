@@ -113,3 +113,18 @@
 .book-slot[data-slot-type="sticker"] .add-book-button {
   color: var(--slot-sticker-color, var(--slot-add-button-color));
 }
+
+/* Recipe slot specific styling */
+.book-slot[data-slot-type="recipe"] {
+  background-color: rgba(253, 240, 221, 0.04);
+}
+
+.book-slot[data-slot-type="recipe"] .add-book-button {
+  background-color: rgba(255, 237, 213, 0.9);
+}
+
+.book-slot[data-slot-type="recipe"] .add-book-button:hover {
+  background-color: rgba(255, 237, 213, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 8px rgba(255, 150, 50, 0.3);
+}
+

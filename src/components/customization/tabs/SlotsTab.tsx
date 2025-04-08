@@ -81,6 +81,52 @@ const SlotsTab: React.FC = () => {
           </div>
         </div>
       </div>
+      
+      <div className="rounded-md border p-4 space-y-4">
+        <h3 className="font-medium text-lg">Slot Type Colors</h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label>Book Slot Icon Color</Label>
+            <ColorPicker 
+              color={slots.bookSlotColor} 
+              onChange={(color) => updateSlotSetting('bookSlotColor', color)} 
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label>Notebook Slot Icon Color</Label>
+            <ColorPicker 
+              color={slots.notebookSlotColor} 
+              onChange={(color) => updateSlotSetting('notebookSlotColor', color)} 
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label>Recipe Slot Icon Color</Label>
+            <ColorPicker 
+              color={slots.recipeSlotColor} 
+              onChange={(color) => updateSlotSetting('recipeSlotColor', color)} 
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label>Music Slot Icon Color</Label>
+            <ColorPicker 
+              color={slots.musicSlotColor} 
+              onChange={(color) => updateSlotSetting('musicSlotColor', color)} 
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label>Sticker Icon Color</Label>
+            <ColorPicker 
+              color={slots.stickerSlotColor} 
+              onChange={(color) => updateSlotSetting('stickerSlotColor', color)} 
+            />
+          </div>
+        </div>
+      </div>
     </>
   );
 };

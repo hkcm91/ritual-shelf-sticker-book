@@ -7,6 +7,11 @@ export interface SlotStyle {
   toggleActiveColor: string;
   toggleBorderColor: string;
   emptyHoverBg: string;
+  bookSlotColor?: string;
+  notebookSlotColor?: string;
+  recipeSlotColor?: string;
+  musicSlotColor?: string;
+  stickerSlotColor?: string;
 }
 
 export interface HeaderStyle {
@@ -17,12 +22,15 @@ export interface HeaderStyle {
 
 export interface ElementStyleActions {
   updateSlotSetting: (
-    property: keyof SlotStyle,
+    property: 'addButtonBg' | 'addButtonColor' | 'addButtonHoverBg' | 
+              'toggleInactiveColor' | 'toggleActiveColor' | 'toggleBorderColor' | 
+              'emptyHoverBg' | 'bookSlotColor' | 'notebookSlotColor' | 
+              'recipeSlotColor' | 'musicSlotColor' | 'stickerSlotColor',
     value: string
   ) => void;
   
   updateHeaderSetting: (
-    property: keyof HeaderStyle,
+    property: 'background' | 'backgroundImage' | 'textColor',
     value: string
   ) => void;
 }

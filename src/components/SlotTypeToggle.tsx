@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Circle } from 'lucide-react';
 import { SlotType } from '@/store/types';
@@ -31,20 +32,28 @@ const SlotTypeToggle: React.FC<SlotTypeToggleProps> = ({
   return (
     <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-background/30 backdrop-blur-sm rounded-full p-0.5 z-10 opacity-40 hover:opacity-90 transition-opacity">
       <div className="flex items-center space-x-1">
-        {/* We'll only show toggles for compatible slot types */}
-        {/* For now, we'll keep showing just book and sticker for all libraries to maintain current UI */}
-        <button
-          type="button"
-          onClick={() => handleTypeToggle('book')}
-          className={`rounded-full transition-all duration-200 ${slotType === 'book' ? 'scale-110' : 'scale-100'}`}
-          aria-label="Book"
-        >
-          <div className={`h-2 w-2 rounded-full transition-all duration-200 ${
-            slotType === 'book' 
-              ? 'bg-amber-400/90 shadow-[0_0_6px_rgba(251,191,36,0.7)]' 
-              : 'bg-gray-400/40'
-          }`} />
-        </button>
+        {/* Show the main content type toggle based on library type */}
+        {allowedSlotTypes.map(type => {
+          if (type === 'sticker') return null; // Skip sticker here, we'll add it separately below
+          
+          return (
+            <button
+              key={type}
+              type="button"
+              onClick={() => handleTypeToggle(type)}
+              className={`rounded-full transition-all duration-200 ${slotType === type ? 'scale-110' : 'scale-100'}`}
+              aria-label={type.charAt(0).toUpperCase() + type.slice(1)}
+            >
+              <div className={`h-2 w-2 rounded-full transition-all duration-200 ${
+                slotType === type
+                  ? 'bg-amber-400/90 shadow-[0_0_6px_rgba(251,191,36,0.7)]' 
+                  : 'bg-gray-400/40'
+              }`} />
+            </button>
+          );
+        })}
+        
+        {/* Always show sticker option since it's universal */}
         <button
           type="button"
           onClick={() => handleTypeToggle('sticker')}

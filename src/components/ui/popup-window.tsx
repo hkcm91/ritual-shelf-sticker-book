@@ -16,6 +16,8 @@ interface PopupWindowProps {
   closeOnEscape?: boolean;
   closeOnOutsideClick?: boolean;
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  position?: 'center' | 'top' | 'bottom';
+  maxHeight?: string;
 }
 
 const sizeClasses = {
@@ -38,6 +40,8 @@ export function PopupWindow({
   closeOnEscape = true,
   closeOnOutsideClick = true,
   size = 'full',
+  position = 'center',
+  maxHeight,
 }: PopupWindowProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   
@@ -61,6 +65,34 @@ export function PopupWindow({
     }
   };
   
+  const getPositionClasses = () => {
+    switch (position) {
+      case 'top':
+        return {
+          initial: { opacity: 0, y: -20, scale: 0.96 },
+          animate: { opacity: 1, y: 0, scale: 1 },
+          exit: { opacity: 0, y: -20, scale: 0.96 },
+          containerClass: 'items-start pt-16'
+        };
+      case 'bottom':
+        return {
+          initial: { opacity: 0, y: 20, scale: 0.96 },
+          animate: { opacity: 1, y: 0, scale: 1 },
+          exit: { opacity: 0, y: 20, scale: 0.96 },
+          containerClass: 'items-end pb-16'
+        };
+      default: // center
+        return {
+          initial: { opacity: 0, y: 10, scale: 0.96 },
+          animate: { opacity: 1, y: 0, scale: 1 },
+          exit: { opacity: 0, y: 10, scale: 0.96 },
+          containerClass: 'items-center'
+        };
+    }
+  };
+  
+  const positionClasses = getPositionClasses();
+  
   if (!isOpen) return null;
   
   return (
@@ -68,7 +100,7 @@ export function PopupWindow({
       {isOpen && (
         <motion.div
           ref={overlayRef}
-          className="popup-overlay"
+          className={`popup-overlay flex justify-center ${positionClasses.containerClass}`}
           onClick={handleOverlayClick}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -77,9 +109,9 @@ export function PopupWindow({
         >
           <motion.div
             className={cn(`popup-window ${sizeClasses[size]}`, className)}
-            initial={{ opacity: 0, y: 10, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.96 }}
+            initial={positionClasses.initial}
+            animate={positionClasses.animate}
+            exit={positionClasses.exit}
             transition={{ 
               type: "spring", 
               damping: 20, 
@@ -100,7 +132,10 @@ export function PopupWindow({
               )}
             </div>
             
-            <div className={cn("popup-content", contentClassName)}>
+            <div 
+              className={cn("popup-content", contentClassName)}
+              style={{ maxHeight: maxHeight }}
+            >
               {children}
             </div>
             

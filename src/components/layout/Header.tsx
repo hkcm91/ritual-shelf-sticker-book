@@ -52,22 +52,56 @@ const Header: React.FC = () => {
                   className="navigation-menu-item flex items-center gap-1.5 h-9 px-4 text-[color:var(--header-text-color,white)] hover:text-amber-200"
                 >
                   <Book className="h-4 w-4" />
-                  <span>Libraries</span>
+                  <span>Widget Libraries</span>
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className="p-4 w-[300px] rounded-md collections-dropdown">
                     <h3 className="text-amber-300/90 font-semibold mb-3 collections-title">Library Types</h3>
                     
                     <div className="space-y-2">
-                      <Link to="/" className="flex items-center gap-2 hover:bg-amber-800/30 px-3 py-2 rounded-md cursor-pointer text-amber-100">
-                        <Book className="h-4 w-4" />
-                        <span>Book Library</span>
-                      </Link>
+                      <NavigationMenu>
+                        <NavigationMenuList>
+                          <NavigationMenuItem>
+                            <NavigationMenuTrigger className="w-full flex items-center gap-2 hover:bg-amber-800/30 px-3 py-2 rounded-md cursor-pointer text-amber-100">
+                              <Book className="h-4 w-4" />
+                              <span>Book Library</span>
+                            </NavigationMenuTrigger>
+                            <NavigationMenuContent>
+                              <div className="p-4 w-[300px] rounded-md collections-dropdown">
+                                <h3 className="text-amber-300/90 font-semibold mb-3 collections-title">Book Libraries</h3>
+                                <div className="space-y-2">
+                                  <Link to="/" className="flex items-center gap-2 hover:bg-amber-800/30 px-3 py-2 rounded-md cursor-pointer text-amber-100">
+                                    <span>Main Library</span>
+                                  </Link>
+                                  {/* More libraries would go here */}
+                                </div>
+                              </div>
+                            </NavigationMenuContent>
+                          </NavigationMenuItem>
+                        </NavigationMenuList>
+                      </NavigationMenu>
                       
-                      <Link to="/widgets" className="flex items-center gap-2 hover:bg-amber-800/30 px-3 py-2 rounded-md cursor-pointer text-amber-100">
-                        <NotebookPen className="h-4 w-4" />
-                        <span>Widget Launcher</span>
-                      </Link>
+                      <NavigationMenu>
+                        <NavigationMenuList>
+                          <NavigationMenuItem>
+                            <NavigationMenuTrigger className="w-full flex items-center gap-2 hover:bg-amber-800/30 px-3 py-2 rounded-md cursor-pointer text-amber-100">
+                              <NotebookPen className="h-4 w-4" />
+                              <span>Notebook Library</span>
+                            </NavigationMenuTrigger>
+                            <NavigationMenuContent>
+                              <div className="p-4 w-[300px] rounded-md collections-dropdown">
+                                <h3 className="text-amber-300/90 font-semibold mb-3 collections-title">Notebook Libraries</h3>
+                                <div className="space-y-2">
+                                  <Link to="/widgets" className="flex items-center gap-2 hover:bg-amber-800/30 px-3 py-2 rounded-md cursor-pointer text-amber-100">
+                                    <span>Sticker Book</span>
+                                  </Link>
+                                  {/* More libraries would go here */}
+                                </div>
+                              </div>
+                            </NavigationMenuContent>
+                          </NavigationMenuItem>
+                        </NavigationMenuList>
+                      </NavigationMenu>
                       
                       {/* Placeholder for future library types */}
                       <div className="flex items-center gap-2 text-amber-100/50 px-3 py-2 rounded-md">
@@ -95,7 +129,7 @@ const Header: React.FC = () => {
             className="game-btn text-sm flex items-center gap-1.5 h-9 px-4 from-amber-900/40 to-amber-950/40 text-amber-100 border-amber-600/20"
           >
             <NotebookPen className="h-4 w-4" />
-            <span>Widget Launcher</span>
+            <span>Sticker Book</span>
           </button>
         </Link>
         

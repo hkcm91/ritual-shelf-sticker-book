@@ -1,14 +1,13 @@
 
 # Virtual Bookshelf App
 
-A fully interactive virtual bookshelf application that lets you organize your books, add notes, track reading progress, and customize your shelves. Now featuring a Widget Launcher for different types of collections.
+A fully interactive virtual bookshelf application that lets you organize your books, add notes, track reading progress, and customize your shelves. Now featuring a Widget Libraries section with different types of collections.
 
 ## Features
 
 ### Library Types
 - **Book Library**: Track and organize your book collection
-- **Widget Launcher**: Access specialized sticker books for different content types
-- **Notebook Library** (Coming Soon): Store and organize your notes and journals
+- **Notebook Library**: Store and organize your notes and journals
 - **Recipe Library** (Coming Soon): Collect recipes from online and family traditions
 - **Music Library** (Coming Soon): Track your favorite songs and playlists
 
@@ -59,8 +58,8 @@ A fully interactive virtual bookshelf application that lets you organize your bo
 3. Fill in book details in the modal that appears
 4. Track your reading progress using the progress slider
 
-### Using the Widget Launcher
-1. Click on the "Widget Launcher" button in the header
+### Using the Sticker Book
+1. Click on the "Sticker Book" button in the header
 2. Select the type of library you want to work with
 3. Each library type has specialized features for its content
 
@@ -109,7 +108,7 @@ A fully interactive virtual bookshelf application that lets you organize your bo
 - Check event handlers in BookSlot and related components
 - Verify proper event propagation and default prevention
 
-#### Widget Launcher Navigation Issues
+#### Widget Libraries Navigation Issues
 - Check the router configuration in main.tsx
 - Verify that the Link components have correct paths
 - Inspect NavigationMenu styling in the header component

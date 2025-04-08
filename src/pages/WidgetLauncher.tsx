@@ -19,9 +19,9 @@ const WidgetLauncher: React.FC = () => {
       <Header />
       
       <div className="flex-grow w-full overflow-auto p-8">
-        <h1 className="text-3xl font-bold mb-6">Widget Launcher Sticker Book</h1>
+        <h1 className="text-3xl font-bold mb-6">Widget Library Sticker Book</h1>
         <p className="text-lg mb-4">
-          This page will contain a launcher for different types of widget sticker books.
+          This page will contain different types of widget sticker books for organizing your collections.
         </p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">

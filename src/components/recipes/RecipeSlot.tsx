@@ -16,7 +16,6 @@ type RecipeSlotProps = {
 const RecipeSlot: React.FC<RecipeSlotProps> = ({ position }) => {
   const [slotType, setSlotType] = useState<"book" | "sticker" | "recipe">("recipe");
   const { activeTheme } = useBookshelfStore();
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   
   const {
     book: recipe,
@@ -35,6 +34,8 @@ const RecipeSlot: React.FC<RecipeSlotProps> = ({ position }) => {
     handleScaleChange,
     handleResetTransform,
     handleDeleteSticker,
+    showDeleteDialog,
+    setShowDeleteDialog,
     isAltDrag
   } = useBookSlot({ 
     position, 
@@ -71,6 +72,10 @@ const RecipeSlot: React.FC<RecipeSlotProps> = ({ position }) => {
               </PopoverTrigger>
               <SlotControls 
                 onShowDeleteDialog={() => setShowDeleteDialog(true)}
+                scale={scale}
+                onScaleChange={handleScaleChange}
+                onRotate={handleRotate}
+                onResetTransform={handleResetTransform}
               />
             </Popover>
           </ContextMenuWrapper>

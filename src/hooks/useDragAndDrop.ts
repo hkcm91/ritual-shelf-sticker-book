@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { useStickerDrag } from './stickers/useStickerDrag';
 import { useFileDropHandler } from './useFileDropHandler';
@@ -8,7 +7,7 @@ export interface UseDragAndDropProps {
   position: number;
   setPosition2D: (value: { x: number, y: number }) => void;
   book: any;
-  slotType?: "book" | "sticker";
+  slotType?: "book" | "sticker" | "recipe";
   onDrop?: (file: File) => void;
   onBookDrop?: (bookId: string, position: number) => void;
   acceptedFileTypes?: string[];

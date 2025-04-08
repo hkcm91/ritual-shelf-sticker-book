@@ -7,7 +7,7 @@ import { useStickerPositioning } from './stickers/useStickerPositioning';
 
 export interface UseBookSlotProps {
   position: number;
-  slotType: "book" | "sticker";
+  slotType: "book" | "sticker" | "recipe";
   onFileSelect?: (file: File) => void;
   onBookDelete?: (bookId: string) => void;
 }

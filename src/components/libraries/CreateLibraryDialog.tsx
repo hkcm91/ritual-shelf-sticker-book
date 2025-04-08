@@ -47,7 +47,7 @@ export const CreateLibraryDialog: React.FC<CreateLibraryDialogProps> = ({
       id: 'recipe',
       name: 'Recipe Library',
       icon: <Utensils className="h-5 w-5" />,
-      available: false
+      available: true  // Changed from false to true to enable recipe libraries
     },
     {
       id: 'music',

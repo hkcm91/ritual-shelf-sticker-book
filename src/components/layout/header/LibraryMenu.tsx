@@ -138,6 +138,36 @@ const LibraryMenu: React.FC<LibraryMenuProps> = ({ isOpen, onClose }) => {
             </div>
           )}
           
+          {/* Recipe Libraries */}
+          {groupedLibraries['recipe'] && groupedLibraries['recipe'].length > 0 && (
+            <div className="popup-section">
+              <h3 className="font-medium text-rose-200/90 mb-2 flex items-center gap-1.5">
+                <Utensils className="h-4 w-4" />
+                <span>Recipe Libraries</span>
+                <span className="ml-1 text-xs bg-rose-900/30 text-rose-200/70 px-1.5 py-0.5 rounded-full">
+                  {groupedLibraries['recipe'].length}
+                </span>
+              </h3>
+              <div className="space-y-1">
+                {groupedLibraries['recipe'].map((library) => (
+                  <Link 
+                    key={library.id} 
+                    to={`/library/${library.id}`} 
+                    className="popup-item py-2 border-rose-700/30 hover:bg-rose-800/20" 
+                    onClick={onClose}
+                  >
+                    <div className="popup-item-icon bg-rose-950/50 border-rose-700/30 text-rose-300">
+                      <Utensils className="h-4 w-4" />
+                    </div>
+                    <div className="truncate max-w-[200px]">
+                      <div className="font-medium">{library.name}</div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+          
           <div className="popup-section">
             <h3 className="font-medium text-amber-200/90 mb-2">Quick Actions</h3>
             <div className="space-y-1">

@@ -33,7 +33,8 @@ export function useGestureHandlers(
     getScrollElement: getScrollViewport
   } = useDragGestures({
     scrollElementRef: scrollAreaRef,
-    onDragStateChange: setIsDragging
+    onDragStateChange: setIsDragging,
+    enableDragDrop: false // Important - this is for panning, not drag and drop
   });
   
   // Set up scroll gestures

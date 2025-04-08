@@ -38,6 +38,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     handleScaleChange,
     handleResetTransform,
     handleDeleteSticker,
+    isDragging,
     isAltDrag
   } = useBookSlot({ position, slotType });
 
@@ -94,7 +95,14 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
         </ContextMenuWrapper>
       );
     } else {
-      return <Book data={book} />;
+      return (
+        <div 
+          className="book-wrapper"
+          onMouseDown={handleStickerMouseDown}
+        >
+          <Book data={book} />
+        </div>
+      );
     }
   };
   
@@ -104,6 +112,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
         className={`book-slot relative h-[220px] w-[150px] mx-1 rounded-sm
           ${!book ? 'hover:bg-gray-50/10' : 'hover:border hover:border-primary/30'}
           ${useRealisticStyle ? 'realistic-book-slot' : ''}
+          ${isDragging ? 'is-dragging' : ''}
           transition-colors duration-200 cursor-pointer`}
         data-position={position}
         onDragOver={handleDragOver}

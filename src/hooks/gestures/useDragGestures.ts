@@ -18,6 +18,10 @@ export interface DragHandlers {
   applyInertia: () => void;
   cleanupAnimations: () => void;
   getScrollElement: () => HTMLElement | undefined;
+  
+  // Add data transfer properties for drag and drop
+  setDragData?: (data: string) => void;
+  getDragData?: () => string | null;
 }
 
 export interface DragGesturesOptions {
@@ -54,6 +58,21 @@ export interface DragGesturesOptions {
    * Default is 'button, a, input, [role="button"]'
    */
   excludeSelector?: string;
+  
+  /**
+   * Enable drag and drop functionality
+   */
+  enableDragDrop?: boolean;
+  
+  /**
+   * Function called when item is dragged
+   */
+  onDragStart?: (e: MouseEvent) => void;
+  
+  /**
+   * Function called when item is dropped
+   */
+  onDrop?: () => void;
 }
 
 /**
@@ -66,7 +85,10 @@ export function useDragGestures({
   onDragStateChange,
   onScroll,
   dragHandleSelector,
-  excludeSelector = 'button, a, input, [role="button"]'
+  excludeSelector = 'button, a, input, [role="button"]',
+  enableDragDrop = false,
+  onDragStart,
+  onDrop
 }: DragGesturesOptions): DragHandlers {
   // For drag-to-pan functionality
   const isDraggingRef = useRef(false);
@@ -75,6 +97,9 @@ export function useDragGestures({
   const scrollPositionRef = useRef({ x: 0, y: 0 });
   const inertiaRef = useRef({ x: 0, y: 0 });
   const rafRef = useRef<number | null>(null);
+  
+  // For drag and drop functionality
+  const dragDataRef = useRef<string | null>(null);
 
   // Find the scrollable element
   const getScrollElement = useCallback(() => {
@@ -94,6 +119,16 @@ export function useDragGestures({
       onDragStateChange(dragging);
     }
   }, [onDragStateChange]);
+  
+  // Set drag data for drag and drop operations
+  const setDragData = useCallback((data: string) => {
+    dragDataRef.current = data;
+  }, []);
+  
+  // Get drag data for drop operations
+  const getDragData = useCallback(() => {
+    return dragDataRef.current;
+  }, []);
   
   // Smoothly apply inertia after dragging
   const applyInertia = useCallback(() => {
@@ -153,6 +188,11 @@ export function useDragGestures({
       };
     }
     
+    // Call the onDragStart callback if provided
+    if (enableDragDrop && onDragStart) {
+      onDragStart(e);
+    }
+    
     // Cancel any ongoing inertia
     if (rafRef.current) {
       cancelAnimationFrame(rafRef.current);
@@ -161,7 +201,7 @@ export function useDragGestures({
     
     // Prevent browser's default drag behavior
     e.preventDefault();
-  }, [updateDraggingState, getScrollElement, dragHandleSelector, excludeSelector]);
+  }, [updateDraggingState, getScrollElement, dragHandleSelector, excludeSelector, enableDragDrop, onDragStart]);
 
   // Handle mouse move for dragging
   const handleMouseMove = useCallback((e: MouseEvent) => {
@@ -183,20 +223,23 @@ export function useDragGestures({
     // Update last position for next move
     setLastPoint({ x, y });
     
-    // Apply scrolling
-    const scrollElement = getScrollElement();
-    if (scrollElement) {
-      if (onScroll) {
-        onScroll(deltaX, deltaY);
-      } else {
-        scrollElement.scrollLeft = scrollPositionRef.current.x + deltaX;
-        scrollElement.scrollTop = scrollPositionRef.current.y + deltaY;
+    // If drag and drop is enabled, we don't scroll
+    if (!enableDragDrop) {
+      // Apply scrolling
+      const scrollElement = getScrollElement();
+      if (scrollElement) {
+        if (onScroll) {
+          onScroll(deltaX, deltaY);
+        } else {
+          scrollElement.scrollLeft = scrollPositionRef.current.x + deltaX;
+          scrollElement.scrollTop = scrollPositionRef.current.y + deltaY;
+        }
       }
     }
     
     // Prevent text selection during drag
     e.preventDefault();
-  }, [startPoint, getScrollElement, onScroll]);
+  }, [startPoint, lastPoint, getScrollElement, onScroll, enableDragDrop]);
 
   // Handle mouse up to end dragging
   const handleMouseUp = useCallback(() => {
@@ -204,11 +247,21 @@ export function useDragGestures({
     
     updateDraggingState(false);
     
-    // Start inertia effect if the velocity is significant
-    if (Math.abs(inertiaRef.current.x) > 1 || Math.abs(inertiaRef.current.y) > 1) {
-      rafRef.current = requestAnimationFrame(applyInertia);
+    // Call onDrop if drag and drop is enabled
+    if (enableDragDrop && onDrop) {
+      onDrop();
+    } else {
+      // Start inertia effect if the velocity is significant
+      if (Math.abs(inertiaRef.current.x) > 1 || Math.abs(inertiaRef.current.y) > 1) {
+        rafRef.current = requestAnimationFrame(applyInertia);
+      }
     }
-  }, [updateDraggingState, applyInertia]);
+    
+    // Clear drag data
+    if (enableDragDrop) {
+      dragDataRef.current = null;
+    }
+  }, [updateDraggingState, applyInertia, enableDragDrop, onDrop]);
 
   // Clean up any animations
   const cleanupAnimations = useCallback(() => {
@@ -226,6 +279,8 @@ export function useDragGestures({
     inertiaRef,
     applyInertia,
     cleanupAnimations,
-    getScrollElement
+    getScrollElement,
+    // Only include drag and drop methods if enabled
+    ...(enableDragDrop ? { setDragData, getDragData } : {})
   };
 }

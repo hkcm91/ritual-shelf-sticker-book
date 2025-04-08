@@ -7,7 +7,6 @@ import VerticalDivider from './dividers/VerticalDivider';
 import HorizontalDivider from './dividers/HorizontalDivider';
 import ShelfWood from './ShelfWood';
 import BookshelfBackPanel from './BookshelfBackPanel';
-import { shallow } from 'zustand/shallow';
 
 type ShelfRowProps = {
   rowIndex: number;
@@ -24,12 +23,12 @@ const ShelfRow: React.FC<ShelfRowProps> = ({
     activeShelf,
     shelfStyling,
     activeTheme
-  } = useBookshelfStore((state: any) => ({
+  } = useBookshelfStore((state) => ({
     activeShelfId: state.activeShelfId,
     activeShelf: state.shelves[state.activeShelfId] as ShelfData,
     shelfStyling: state.shelfStyling,
     activeTheme: state.activeTheme
-  }), shallow);
+  }));
   
   // Determine if we should use realistic shelf styling
   const useRealisticStyle = activeTheme === 'default' || activeTheme === 'custom';

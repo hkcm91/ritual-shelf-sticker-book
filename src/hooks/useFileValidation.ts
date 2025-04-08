@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { toast } from 'sonner';
 
 export interface UseFileValidationProps {
-  slotType?: "book" | "sticker";
+  slotType?: "book" | "sticker" | "recipe";
   acceptedFileTypes?: string[];
   maxFileSize?: number;
 }
@@ -17,7 +17,7 @@ export const useFileValidation = ({
   const validateFileType = useCallback((file: File): boolean => {
     if (acceptedFileTypes.length === 0) {
       // Default validations based on slot type
-      if (slotType === "book") {
+      if (slotType === "book" || slotType === "recipe") {
         return file.type.startsWith('image/');
       } else if (slotType === "sticker") {
         return file.type.startsWith('image/') || 
@@ -47,7 +47,7 @@ export const useFileValidation = ({
       return acceptedFileTypes.join(', ');
     }
     
-    if (slotType === "book") {
+    if (slotType === "book" || slotType === "recipe") {
       return 'image files';
     } else if (slotType === "sticker") {
       return 'image files or Lottie JSON files';

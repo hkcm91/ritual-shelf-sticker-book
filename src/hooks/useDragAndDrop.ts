@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { useStickerDrag } from './stickers/useStickerDrag';
 import { useFileDropHandler } from './useFileDropHandler';
@@ -57,7 +58,9 @@ export const useDragAndDrop = ({
     dragStart, 
     setDragStart,
     handleStickerMouseDown,
-    isAltDrag 
+    isAltDrag,
+    handleMouseMove,
+    handleMouseUp
   } = useStickerDrag({
     position,
     bookId: book?.id,
@@ -108,11 +111,18 @@ export const useDragAndDrop = ({
     handleBookDrop();
   }, [handleFileDrop, handleBookDrop]);
   
+  // Use the mouse move/up handlers from useStickerDrag
   const handleStickerMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-  }, []);
+    if (handleMouseMove) {
+      handleMouseMove(e);
+    }
+  }, [handleMouseMove]);
   
   const handleStickerMouseUp = useCallback(() => {
-  }, []);
+    if (handleMouseUp) {
+      handleMouseUp();
+    }
+  }, [handleMouseUp]);
 
   return {
     handleStickerMouseDown,

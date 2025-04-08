@@ -36,7 +36,8 @@ export const useFileHandler = ({
           if (result) {
             // Create book or sticker based on the slot type
             const isSticker = slotType === 'sticker';
-            createBookOrSticker(result, file.name, isSticker);
+            const isRecipe = slotType === 'recipe';
+            createBookOrSticker(result, file.name, isSticker, isRecipe);
           }
         };
         reader.readAsDataURL(file);

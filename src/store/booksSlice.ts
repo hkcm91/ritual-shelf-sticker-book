@@ -1,3 +1,4 @@
+
 import { StateCreator } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'sonner';
@@ -40,6 +41,7 @@ export const createBooksSlice: StateCreator<
       
       // Determine if this is a book cover that needs compression
       const needsCompression = !bookData.isSticker && 
+        !bookData.isRecipe && 
         typeof bookData.coverURL === 'string' && 
         bookData.coverURL.startsWith('data:image/');
       

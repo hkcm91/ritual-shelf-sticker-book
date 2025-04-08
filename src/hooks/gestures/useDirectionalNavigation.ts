@@ -13,7 +13,7 @@ interface NavigationOptions {
 export function useDirectionalNavigation(options: NavigationOptions = {}) {
   const { maxHistoryLength = 50 } = options;
   
-  const [navigationState, useState] = useState<NavigationState>({
+  const [navigationState, setNavigationState] = useState<NavigationState>({
     history: [{ x: 0, y: 0, scale: 1 }], // Start with default position
     currentIndex: 0
   });
@@ -24,7 +24,7 @@ export function useDirectionalNavigation(options: NavigationOptions = {}) {
   
   // Add a new position to history
   const addToHistory = useCallback((position: { x: number; y: number; scale: number }) => {
-    useState(prev => {
+    setNavigationState(prev => {
       // Don't add if position is the same as current
       const currentPos = prev.history[prev.currentIndex];
       if (
@@ -52,7 +52,7 @@ export function useDirectionalNavigation(options: NavigationOptions = {}) {
   const goBack = useCallback(() => {
     if (!canGoBack) return false;
     
-    useState(prev => ({
+    setNavigationState(prev => ({
       ...prev,
       currentIndex: prev.currentIndex - 1
     }));
@@ -64,7 +64,7 @@ export function useDirectionalNavigation(options: NavigationOptions = {}) {
   const goForward = useCallback(() => {
     if (!canGoForward) return false;
     
-    useState(prev => ({
+    setNavigationState(prev => ({
       ...prev,
       currentIndex: prev.currentIndex + 1
     }));

@@ -1,11 +1,11 @@
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useZoomPan } from '@/hooks/gestures/useZoomPan';
-import { useDirectionalNavigation } from '@/hooks/gestures/useDirectionalNavigation';
 import '@/styles/gestures/zoom-pan.css';
 import { Button } from '@/components/ui/button';
 import { ZoomIn, ZoomOut, RotateCcw, ArrowLeft, ArrowRight } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { toast } from 'sonner';
 
 interface ZoomPanContainerProps {
   children: React.ReactNode;
@@ -23,6 +23,10 @@ const ZoomPanContainer: React.FC<ZoomPanContainerProps> = ({
   showControls = true,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [historyPositions, setHistoryPositions] = useState<Array<{x: number, y: number, scale: number}>>([
+    {x: 0, y: 0, scale: 1}
+  ]);
+  const [currentPositionIndex, setCurrentPositionIndex] = useState(0);
   
   // Initialize zoom and pan functionality
   const { scale, translateX, translateY, resetTransform, setTransform } = useZoomPan(containerRef, {
@@ -31,24 +35,30 @@ const ZoomPanContainer: React.FC<ZoomPanContainerProps> = ({
     transformOrigin: 'top left',
   });
   
-  // Initialize navigation history
-  const { 
-    addToHistory, 
-    goBack, 
-    goForward, 
-    getCurrentPosition,
-    canGoBack,
-    canGoForward
-  } = useDirectionalNavigation();
-  
-  // Record position changes to history
+  // Add position to history when it changes significantly
   useEffect(() => {
     const timer = setTimeout(() => {
-      addToHistory({ x: translateX, y: translateY, scale });
-    }, 500); // Debounce to avoid too many history entries
+      const newPosition = {x: translateX, y: translateY, scale};
+      const currentPosition = historyPositions[currentPositionIndex];
+      
+      // Only add if position changed significantly
+      if (
+        Math.abs(currentPosition.x - newPosition.x) > 5 || 
+        Math.abs(currentPosition.y - newPosition.y) > 5 || 
+        Math.abs(currentPosition.scale - newPosition.scale) > 0.05
+      ) {
+        // Remove any forward history and add new position
+        setHistoryPositions(prev => [
+          ...prev.slice(0, currentPositionIndex + 1),
+          newPosition
+        ].slice(-50)); // Limit history length
+        
+        setCurrentPositionIndex(prev => prev + 1);
+      }
+    }, 500); // Debounce
     
     return () => clearTimeout(timer);
-  }, [addToHistory, scale, translateX, translateY]);
+  }, [translateX, translateY, scale, currentPositionIndex, historyPositions]);
   
   const handleZoomIn = () => {
     setTransform({ scale: scale + 0.1 });
@@ -59,20 +69,30 @@ const ZoomPanContainer: React.FC<ZoomPanContainerProps> = ({
   };
   
   const handleGoBack = () => {
-    if (canGoBack) {
-      goBack();
-      const position = getCurrentPosition();
+    if (currentPositionIndex > 0) {
+      const newIndex = currentPositionIndex - 1;
+      setCurrentPositionIndex(newIndex);
+      const position = historyPositions[newIndex];
       setTransform(position);
+      return true;
     }
+    return false;
   };
   
   const handleGoForward = () => {
-    if (canGoForward) {
-      goForward();
-      const position = getCurrentPosition();
+    if (currentPositionIndex < historyPositions.length - 1) {
+      const newIndex = currentPositionIndex + 1;
+      setCurrentPositionIndex(newIndex);
+      const position = historyPositions[newIndex];
       setTransform(position);
+      return true;
     }
+    return false;
   };
+  
+  // Determine if back/forward buttons should be enabled
+  const canGoBack = currentPositionIndex > 0;
+  const canGoForward = currentPositionIndex < historyPositions.length - 1;
   
   return (
     <div className="relative w-full h-full">

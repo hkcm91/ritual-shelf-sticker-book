@@ -2,8 +2,6 @@
 import { useCallback, useState } from 'react';
 
 interface NavigationState {
-  canGoBack: boolean;
-  canGoForward: boolean;
   history: { x: number; y: number; scale: number }[];
   currentIndex: number;
 }
@@ -15,16 +13,18 @@ interface NavigationOptions {
 export function useDirectionalNavigation(options: NavigationOptions = {}) {
   const { maxHistoryLength = 50 } = options;
   
-  const [navigationState, setNavigationState] = useState<NavigationState>({
-    canGoBack: false,
-    canGoForward: false,
+  const [navigationState, useState] = useState<NavigationState>({
     history: [{ x: 0, y: 0, scale: 1 }], // Start with default position
     currentIndex: 0
   });
   
+  // Flag to track if we can go back or forward
+  const canGoBack = navigationState.currentIndex > 0;
+  const canGoForward = navigationState.currentIndex < navigationState.history.length - 1;
+  
   // Add a new position to history
   const addToHistory = useCallback((position: { x: number; y: number; scale: number }) => {
-    setNavigationState(prev => {
+    useState(prev => {
       // Don't add if position is the same as current
       const currentPos = prev.history[prev.currentIndex];
       if (
@@ -43,46 +43,34 @@ export function useDirectionalNavigation(options: NavigationOptions = {}) {
       
       return {
         history: newHistory,
-        currentIndex: newHistory.length - 1,
-        canGoBack: newHistory.length > 1,
-        canGoForward: false
+        currentIndex: newHistory.length - 1
       };
     });
   }, [maxHistoryLength]);
   
   // Go back in history
   const goBack = useCallback(() => {
-    setNavigationState(prev => {
-      if (!prev.canGoBack) return prev;
-      
-      const newIndex = prev.currentIndex - 1;
-      return {
-        ...prev,
-        currentIndex: newIndex,
-        canGoBack: newIndex > 0,
-        canGoForward: true
-      };
-    });
+    if (!canGoBack) return false;
+    
+    useState(prev => ({
+      ...prev,
+      currentIndex: prev.currentIndex - 1
+    }));
     
     return true;
-  }, []);
+  }, [canGoBack]);
   
   // Go forward in history
   const goForward = useCallback(() => {
-    setNavigationState(prev => {
-      if (!prev.canGoForward) return prev;
-      
-      const newIndex = prev.currentIndex + 1;
-      return {
-        ...prev,
-        currentIndex: newIndex,
-        canGoBack: true,
-        canGoForward: newIndex < prev.history.length - 1
-      };
-    });
+    if (!canGoForward) return false;
+    
+    useState(prev => ({
+      ...prev,
+      currentIndex: prev.currentIndex + 1
+    }));
     
     return true;
-  }, []);
+  }, [canGoForward]);
   
   // Get current position
   const getCurrentPosition = useCallback(() => {
@@ -94,7 +82,7 @@ export function useDirectionalNavigation(options: NavigationOptions = {}) {
     goBack,
     goForward,
     getCurrentPosition,
-    canGoBack: navigationState.canGoBack,
-    canGoForward: navigationState.canGoForward
+    canGoBack,
+    canGoForward
   };
 }

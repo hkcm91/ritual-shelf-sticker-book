@@ -37,11 +37,18 @@ const BookshelfGrid: React.FC = () => {
   // Get the current shelf data to access rows and columns
   const currentShelf = activeShelfId ? shelves[activeShelfId] : null;
   
+  // Default values if currentShelf is null
   const columnsPerRow = currentShelf?.columns || 4;
   const rowsPerShelf = currentShelf?.rows || 2;
   
   // Generate rows for the grid
   const renderShelfRows = React.useMemo(() => {
+    if (!currentShelf) {
+      console.warn("No active shelf found, using default values");
+    }
+    
+    console.log(`Rendering shelf with ${rowsPerShelf} rows and ${columnsPerRow} columns`);
+    
     const rows = [];
     for (let i = 0; i < rowsPerShelf; i++) {
       rows.push(
@@ -53,7 +60,7 @@ const BookshelfGrid: React.FC = () => {
       );
     }
     return rows;
-  }, [rowsPerShelf, columnsPerRow]);
+  }, [rowsPerShelf, columnsPerRow, currentShelf]);
   
   return (
     <div className="relative w-full h-full bookshelf-wrapper">

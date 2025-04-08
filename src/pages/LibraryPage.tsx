@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../components/layout/Header';
@@ -8,7 +7,7 @@ import { toast } from 'sonner';
 import BookshelfGrid from '@/components/bookshelf/BookshelfGrid';
 import ZoomControls from '@/components/ZoomControls';
 import { LibraryHeader } from '@/components/library';
-import BookModal from '@/components/BookModal';
+import BookModal from '@/components/book-modal';
 
 const LibraryPage: React.FC = () => {
   const { libraryId } = useParams<{ libraryId: string }>();
@@ -54,7 +53,6 @@ const LibraryPage: React.FC = () => {
       
       <ZoomControls />
       
-      {/* Add BookModal component */}
       <BookModal />
     </div>
   );

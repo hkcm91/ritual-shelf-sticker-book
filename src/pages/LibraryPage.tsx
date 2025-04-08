@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../components/layout/Header';
@@ -6,15 +7,12 @@ import { ShelfData } from '@/store/types';
 import { toast } from 'sonner';
 import BookshelfGrid from '@/components/bookshelf/BookshelfGrid';
 import ZoomControls from '@/components/ZoomControls';
-import { LibraryHeader, LibraryDeleteDialog, LibrarySettingsDialog } from '@/components/library';
+import { LibraryHeader } from '@/components/library';
 
 const LibraryPage: React.FC = () => {
   const { libraryId } = useParams<{ libraryId: string }>();
   const navigate = useNavigate();
-  const { shelves, activeShelfId, switchShelf, deleteShelf, updateShelf } = useBookshelfStore();
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false);
-  const [libraryName, setLibraryName] = useState('');
+  const { shelves, activeShelfId, switchShelf } = useBookshelfStore();
   
   const shelvesData = shelves as Record<string, ShelfData>;
   const currentLibrary = libraryId ? shelvesData[libraryId] : null;
@@ -28,43 +26,6 @@ const LibraryPage: React.FC = () => {
     }
   }, [libraryId, shelvesData, activeShelfId, switchShelf, navigate]);
   
-  useEffect(() => {
-    if (currentLibrary) {
-      setLibraryName(currentLibrary.name);
-    }
-  }, [currentLibrary]);
-  
-  const handleDeleteLibrary = () => {
-    if (libraryId) {
-      deleteShelf(libraryId);
-      setIsDeleteDialogOpen(false);
-      navigate('/widgets');
-      toast.success('Library deleted successfully');
-    }
-  };
-  
-  const handleUpdateSettings = () => {
-    if (libraryId && libraryName.trim()) {
-      updateShelf(libraryId, { name: libraryName });
-      setIsSettingsDialogOpen(false);
-      toast.success('Library settings updated');
-    } else {
-      toast.error('Library name cannot be empty');
-    }
-  };
-  
-  const handleRowsChange = (rows: number) => {
-    if (libraryId) {
-      updateShelf(libraryId, { rows });
-    }
-  };
-  
-  const handleColumnsChange = (columns: number) => {
-    if (libraryId) {
-      updateShelf(libraryId, { columns });
-    }
-  };
-
   return (
     <div 
       className="min-h-screen flex flex-col"
@@ -82,8 +43,6 @@ const LibraryPage: React.FC = () => {
         {currentLibrary && (
           <LibraryHeader 
             currentLibrary={currentLibrary}
-            onSettingsOpen={() => setIsSettingsDialogOpen(true)}
-            onDeleteOpen={() => setIsDeleteDialogOpen(true)}
           />
         )}
       </Header>
@@ -93,24 +52,6 @@ const LibraryPage: React.FC = () => {
       </div>
       
       <ZoomControls />
-      
-      <LibraryDeleteDialog
-        isOpen={isDeleteDialogOpen}
-        onClose={() => setIsDeleteDialogOpen(false)}
-        currentLibrary={currentLibrary}
-        onDelete={handleDeleteLibrary}
-      />
-      
-      <LibrarySettingsDialog
-        isOpen={isSettingsDialogOpen}
-        onClose={() => setIsSettingsDialogOpen(false)}
-        currentLibrary={currentLibrary}
-        libraryName={libraryName}
-        setLibraryName={setLibraryName}
-        onSave={handleUpdateSettings}
-        onRowsChange={handleRowsChange}
-        onColumnsChange={handleColumnsChange}
-      />
     </div>
   );
 };

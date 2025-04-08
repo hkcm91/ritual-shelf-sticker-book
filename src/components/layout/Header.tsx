@@ -1,13 +1,11 @@
 
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Home, Library } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useLocation } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useBookshelfStore } from "@/store/bookshelfStore";
 import BookSearchDrawer from '../BookSearchDrawer';
 import HeaderAuthButton from '../Header';
-import SettingsDrawer from '../settings/SettingsDrawer';
+import UnifiedSettingsDrawer from '../settings/UnifiedSettingsDrawer';
 import LibraryMenu from './header/LibraryMenu';
 import NavigationButtons from './header/NavigationButtons';
 import WidgetLauncherButton from './header/WidgetLauncherButton';
@@ -62,8 +60,8 @@ const Header: React.FC<React.PropsWithChildren> = ({ children }) => {
         {/* Widget Launcher Button (only on non-library pages) */}
         {!isLibraryPage && <WidgetLauncherButton />}
         
-        {/* Settings Drawer */}
-        <SettingsDrawer />
+        {/* Unified Settings Drawer */}
+        <UnifiedSettingsDrawer />
         
         <HeaderAuthButton />
       </div>

@@ -1,19 +1,14 @@
 
 import React from 'react';
 import { ShelfData } from '@/store/types';
-import { Settings, Trash2, Book, NotebookPen, Utensils, Music } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Book, NotebookPen, Utensils, Music } from 'lucide-react';
 
 interface LibraryHeaderProps {
   currentLibrary: ShelfData | null;
-  onSettingsOpen: () => void;
-  onDeleteOpen: () => void;
 }
 
 export const LibraryHeader: React.FC<LibraryHeaderProps> = ({
-  currentLibrary,
-  onSettingsOpen,
-  onDeleteOpen
+  currentLibrary
 }) => {
   const libraryTypeIcon = () => {
     if (!currentLibrary) return <Book className="h-5 w-5" />;
@@ -40,37 +35,13 @@ export const LibraryHeader: React.FC<LibraryHeaderProps> = ({
   };
 
   return (
-    <div className="flex items-center gap-4">
-      <div className="flex items-center gap-2">
-        <div className="p-1.5 rounded-full bg-white/20 shadow-inner">
-          {libraryTypeIcon()}
-        </div>
-        <h1 className={`text-lg font-medium ${getTextColor()}`}>
-          {currentLibrary?.name || 'Library Collection'}
-        </h1>
+    <div className="flex items-center gap-2">
+      <div className="p-1.5 rounded-full bg-white/20 shadow-inner">
+        {libraryTypeIcon()}
       </div>
-      
-      <div className="flex items-center gap-2">
-        <Button
-          variant="ghost"
-          size="icon"
-          className={`${getTextColor()} hover:bg-white/10 rounded-full transition-all duration-300`}
-          onClick={onSettingsOpen}
-          title="Library Settings"
-        >
-          <Settings className="h-4 w-4" />
-        </Button>
-        
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-red-300 hover:bg-red-950/30 hover:text-red-200 rounded-full transition-all duration-300"
-          onClick={onDeleteOpen}
-          title="Delete Library"
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
-      </div>
+      <h1 className={`text-lg font-medium ${getTextColor()}`}>
+        {currentLibrary?.name || 'Library Collection'}
+      </h1>
     </div>
   );
 };

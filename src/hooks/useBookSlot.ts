@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import { useDragAndDrop } from './useDragAndDrop';
@@ -87,6 +88,9 @@ export const useBookSlot = ({
       // For book slots, open the book modal with null ID to create a new book
       console.log("[useBookSlot] Opening book modal");
       openModal(null);
+    } else if (slotType === 'recipe') {
+      // Recipe slots are handled directly in EmptySlot component
+      console.log("[useBookSlot] Recipe slots are handled in EmptySlot");
     } else {
       // For other slot types, trigger file input
       console.log("[useBookSlot] Triggering file input click");

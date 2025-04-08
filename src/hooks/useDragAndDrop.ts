@@ -31,14 +31,16 @@ export const useDragAndDrop = ({
   const [dragStart, setDragStart] = useState<Point | null>(null);
   const [isAltDrag, setIsAltDrag] = useState(false);
   
-  // Implement moveBook locally since it doesn't exist in the store
+  // Move a book to a new position
   const moveBook = useCallback((bookId: string, position: number) => {
     if (!activeShelfId) return;
     
-    // We'll use updateBook from the store to achieve the same functionality
+    console.log("[useDragAndDrop] Moving book:", bookId, "to position:", position);
+    // Use updateBook from the store to change the position
     updateBook(bookId, { position });
   }, [activeShelfId, updateBook]);
   
+  // Handle mouse down for sticker dragging
   const handleStickerMouseDown = useCallback((e: React.MouseEvent) => {
     if (!book?.isSticker) return;
     
@@ -54,6 +56,7 @@ export const useDragAndDrop = ({
     e.stopPropagation();
   }, [book]);
   
+  // Handle mouse move for sticker dragging
   const handleStickerMouseMove = useCallback((e: React.MouseEvent) => {
     if (!isDragging || !dragStart || !book?.isSticker || !setPosition2D) return;
     
@@ -64,6 +67,7 @@ export const useDragAndDrop = ({
     e.stopPropagation();
   }, [isDragging, dragStart, book, setPosition2D]);
   
+  // Handle mouse up to end sticker dragging
   const handleStickerMouseUp = useCallback(() => {
     setIsDragging(false);
     setDragStart(null);
@@ -75,10 +79,12 @@ export const useDragAndDrop = ({
     e.dataTransfer.dropEffect = 'move';
   }, []);
   
-  // Handle drop events
+  // Handle drop events for books
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
+    
     const droppedBookId = e.dataTransfer.getData('text/plain');
+    console.log("[useDragAndDrop] Dropping book:", droppedBookId, "at position:", position);
     
     if (droppedBookId && position !== undefined) {
       moveBook(droppedBookId, position);

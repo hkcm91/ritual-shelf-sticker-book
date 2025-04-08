@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Book from './Book';
 import { Popover, PopoverTrigger } from '@/components/ui/popover';
@@ -112,6 +113,8 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
       return <Book data={book} />;
     }
   };
+  
+  console.log("[BookSlot] Rendering slot at position:", position, "with book:", book?.id || "none");
   
   return (
     <>

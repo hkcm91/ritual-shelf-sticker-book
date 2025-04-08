@@ -13,13 +13,15 @@ const Book: React.FC<BookProps> = ({ data }) => {
   if (data.hidden || data.isSticker) return null;
   
   const handleDragStart = (e: React.DragEvent) => {
-    e.dataTransfer.setData('bookId', data.id);
+    e.dataTransfer.setData('text/plain', data.id);
     e.dataTransfer.effectAllowed = 'move';
     setDraggedBook(data.id);
+    console.log("[Book] Drag started for book:", data.id);
   };
   
   const handleDragEnd = () => {
     setDraggedBook(null);
+    console.log("[Book] Drag ended");
   };
   
   const handleClick = (e: React.MouseEvent) => {

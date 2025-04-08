@@ -35,7 +35,7 @@
 
 .bookshelf-wrapper::-webkit-scrollbar {
   width: 8px;
-  height: 8px;
+  height: 8px; /* Important for horizontal scrollbar */
 }
 
 .bookshelf-wrapper::-webkit-scrollbar-track {
@@ -46,6 +46,34 @@
   background-color: var(--container-bg);
   border-radius: 4px;
   border: 2px solid transparent;
+}
+
+/* Improve cursor and dragging experience */
+.bookshelf-container {
+  cursor: grab; /* Show grab cursor by default */
+}
+
+.bookshelf-container:active {
+  cursor: grabbing; /* Change to grabbing cursor when active */
+}
+
+/* Add scrolling help indicators */
+.bookshelf-wrapper:hover::before {
+  content: 'Shift+Scroll for Horizontal Panning';
+  position: fixed;
+  bottom: 85px;
+  right: 16px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s, transform 0.3s;
+  animation: fade-in-tip 1s forwards;
+  animation-delay: 0.5s;
 }
 
 /* Add touch indicator for mobile users */

@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ShelfRow from './ShelfRow';
 import { useBookshelfStore } from '../../store/bookshelfStore';
 import { useThemeApplication } from '@/hooks/theme/useThemeApplication';
@@ -13,6 +13,9 @@ const BookshelfGrid: React.FC = () => {
   const initializeDefaultShelf = useBookshelfStore(state => state.initializeDefaultShelf);
   const zoomLevel = useBookshelfStore(state => state.zoomLevel);
   
+  // State to track if currently dragging
+  const [isDragging, setIsDragging] = useState(false);
+  
   // Reference to track if initialization has occurred
   const initializedRef = useRef(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -22,7 +25,21 @@ const BookshelfGrid: React.FC = () => {
   useThemeApplication();
   
   // Set up gesture handlers
-  useGestureHandlers(containerRef);
+  const gestureHandlers = useGestureHandlers(containerRef);
+  
+  // Track dragging state for cursor style
+  useEffect(() => {
+    const handleMouseDown = () => setIsDragging(true);
+    const handleMouseUp = () => setIsDragging(false);
+    
+    document.addEventListener('mousedown', handleMouseDown);
+    document.addEventListener('mouseup', handleMouseUp);
+    
+    return () => {
+      document.removeEventListener('mousedown', handleMouseDown);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, []);
   
   // Ensure we have a default shelf - only run once on mount
   useEffect(() => {
@@ -70,7 +87,8 @@ const BookshelfGrid: React.FC = () => {
           transformOrigin: 'top center',
           transition: 'transform 0.2s ease-out',
           width: `${isMobile ? 100 : 95}%`,
-          margin: '0 auto'
+          margin: '0 auto',
+          cursor: isDragging ? 'grabbing' : 'grab'
         }}
       >
         <div className="bookshelf-rows relative z-10">

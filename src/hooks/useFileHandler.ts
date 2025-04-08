@@ -2,7 +2,8 @@
 import { useRef, useCallback } from 'react';
 import { useBookshelfStore } from '../store/bookshelfStore';
 import { toast } from 'sonner';
-import { compressImage } from '../utils/imageUtils';
+import { useFileCompression } from './useFileCompression';
+import { useLottieFileHandler } from './useLottieFileHandler';
 
 export interface UseFileHandlerProps {
   position: number;
@@ -41,6 +42,12 @@ export const useFileHandler = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { activeShelfId, addBook, openModal } = useBookshelfStore();
   
+  // Use specialized hooks
+  const { compressImageFile } = useFileCompression({ compressionSettings });
+  const { processLottieFile } = useLottieFileHandler({
+    onError: (error) => toast.error(error.message)
+  });
+  
   const clearFileInput = useCallback(() => {
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -75,60 +82,13 @@ export const useFileHandler = ({
     return file.size <= maxFileSize;
   }, [maxFileSize]);
   
-  const handleLottieFile = useCallback(async (file: File) => {
-    return new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        try {
-          if (typeof event.target?.result === 'string') {
-            const jsonContent = event.target.result;
-            
-            // Check if it's valid JSON and a Lottie file
-            try {
-              const lottieData = JSON.parse(jsonContent);
-              if (lottieData && (lottieData.v !== undefined || lottieData.animations)) {
-                resolve(jsonContent);
-              } else {
-                reject(new Error('Invalid Lottie animation format'));
-              }
-            } catch (e) {
-              reject(new Error('Failed to parse JSON file'));
-            }
-          } else {
-            reject(new Error('Failed to read file'));
-          }
-        } catch (err) {
-          reject(err);
-        }
-      };
-      reader.onerror = () => reject(new Error('Error reading file'));
-      reader.readAsText(file);
-    });
-  }, []);
-  
-  const handleImageFile = useCallback(async (file: File) => {
-    return new Promise<string>((resolve, reject) => {
+  const handleImageFile = useCallback(async (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = async (event) => {
         try {
           if (typeof event.target?.result === 'string') {
-            let imageData = event.target.result;
-            
-            // Only compress if over threshold size
-            if (file.size > compressionSettings.sizeThreshold * 1024) {
-              try {
-                imageData = await compressImage(imageData, {
-                  quality: compressionSettings.quality,
-                  maxWidth: compressionSettings.maxWidth,
-                  maxHeight: compressionSettings.maxHeight
-                });
-                console.log(`Image compressed successfully for ${slotType}`);
-              } catch (err) {
-                console.warn(`Failed to compress ${slotType} image:`, err);
-                // Continue with original image
-              }
-            }
-            
+            const imageData = await compressImageFile(file, event.target.result);
             resolve(imageData);
           } else {
             reject(new Error('Failed to read file'));
@@ -140,7 +100,7 @@ export const useFileHandler = ({
       reader.onerror = () => reject(new Error('Error reading file'));
       reader.readAsDataURL(file);
     });
-  }, [compressionSettings, slotType]);
+  }, [compressImageFile]);
 
   const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -190,7 +150,7 @@ export const useFileHandler = ({
           clearFileInput();
           return;
         }
-        fileContent = await handleLottieFile(file);
+        fileContent = await processLottieFile(file);
         isSticker = true;
       } else {
         toast.error('Unsupported file type');
@@ -222,7 +182,7 @@ export const useFileHandler = ({
       }
     } catch (error) {
       console.error(`Error adding ${slotType}:`, error);
-      toast.error('Failed to save to localStorage. Try using smaller files or clearing some space.');
+      toast.error('Failed to save file. Please try again with a different file.');
     } finally {
       clearFileInput();
     }
@@ -232,7 +192,7 @@ export const useFileHandler = ({
     validateFileType, 
     validateFileSize, 
     handleImageFile, 
-    handleLottieFile, 
+    processLottieFile, 
     clearFileInput, 
     addBook, 
     activeShelfId, 

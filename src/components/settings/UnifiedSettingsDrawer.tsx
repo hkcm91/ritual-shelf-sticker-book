@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/tooltip";
 import SettingsDrawerContent from './SettingsDrawerContent';
 import LibrarySettingsTab from './tabs/LibrarySettingsTab';
+import AppearanceTab from './AppearanceTab';
 
 interface UnifiedSettingsDrawerProps {
   onLibrarySettingsOpen?: () => void;

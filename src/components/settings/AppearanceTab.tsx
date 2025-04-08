@@ -1,0 +1,31 @@
+
+import React from 'react';
+import ThemeSelector from './ThemeSelector';
+import { Card, CardContent } from "@/components/ui/card";
+import { Palette } from 'lucide-react';
+
+interface AppearanceTabProps {
+  onCloseDrawer: () => void;
+}
+
+const AppearanceTab: React.FC<AppearanceTabProps> = ({ onCloseDrawer }) => {
+  return (
+    <div className="space-y-6">
+      <Card className="bg-amber-950/20 border border-amber-700/30">
+        <CardContent className="pt-6">
+          <h3 className="text-lg font-semibold text-amber-300 mb-4 flex items-center gap-2">
+            <Palette className="h-4 w-4" />
+            Themes
+          </h3>
+          <ThemeSelector />
+        </CardContent>
+      </Card>
+      
+      <div className="text-sm text-amber-200/70 p-3 bg-amber-900/20 rounded-lg border border-amber-800/20">
+        Select from our curated collection of themes to transform your bookshelf's appearance.
+      </div>
+    </div>
+  );
+};
+
+export default AppearanceTab;

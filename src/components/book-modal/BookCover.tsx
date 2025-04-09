@@ -28,12 +28,23 @@ const BookCover: React.FC<BookCoverProps> = ({
         onCoverChange(processedImageUrl);
       } catch (error) {
         console.error("Error processing book cover:", error);
+      } finally {
+        // Clear the input to allow selecting the same file again
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
       }
     }
   };
   
-  const handleUploadClick = () => {
-    fileInputRef.current?.click();
+  const handleUploadClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Use setTimeout to avoid issues with event propagation
+    setTimeout(() => {
+      fileInputRef.current?.click();
+    }, 0);
   };
   
   return (

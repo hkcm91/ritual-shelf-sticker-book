@@ -1,7 +1,7 @@
 
 import { useState, useCallback } from 'react';
 import { useBookshelfStore } from '../../store/bookshelfStore';
-import { Point } from '../useDragAndDrop';
+import { Point } from '../dragdrop';
 
 export interface UseBookDragStateProps {
   bookId?: string;
@@ -27,9 +27,16 @@ const useBookDragState = ({ bookId }: UseBookDragStateProps) => {
         y: e.clientY
       });
     }
+    
+    // Prevent default to allow drag
+    e.preventDefault();
   }, [setDraggedBook]);
   
-  const endDrag = useCallback(() => {
+  const endDrag = useCallback((e?: React.DragEvent | React.MouseEvent) => {
+    if (e && 'preventDefault' in e) {
+      e.preventDefault();
+    }
+    
     setDraggedBook(null);
     setIsDragging(false);
     setDragStart(null);

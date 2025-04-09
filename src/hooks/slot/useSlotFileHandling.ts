@@ -8,21 +8,27 @@ interface UseSlotFileHandlingProps {
 
 const useSlotFileHandling = ({ onFileSelect }: UseSlotFileHandlingProps) => {
   // Set up file input handling
-  const { fileInputRef, handleClick: triggerFileInput } = useFileInput({
+  const { fileInputRef, handleClick: triggerFileInput, clearFileInput } = useFileInput({
     onFileSelect
   });
   
-  // Optional file change handler
+  // Handle the file change event
   const handleFileChange = useCallback((file: File) => {
+    console.log("[useSlotFileHandling] File selected:", file.name);
+    
     if (onFileSelect) {
       onFileSelect(file);
     }
-  }, [onFileSelect]);
+    
+    // Clear the input to allow selecting the same file again
+    clearFileInput();
+  }, [onFileSelect, clearFileInput]);
   
   return {
     fileInputRef,
     handleFileChange,
-    triggerFileInput
+    triggerFileInput,
+    clearFileInput
   };
 };
 

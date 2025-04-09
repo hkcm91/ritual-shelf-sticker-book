@@ -47,6 +47,10 @@ const FileInputField: React.FC<FileInputFieldProps> = ({
             toast.error('Image may be too large. Try using a URL instead.');
           } finally {
             if (setIsLoading) setIsLoading(false);
+            // Clear the input to allow selecting the same file again
+            if (fileInputRef.current) {
+              fileInputRef.current.value = '';
+            }
           }
         }
       };
@@ -54,15 +58,31 @@ const FileInputField: React.FC<FileInputFieldProps> = ({
       reader.onerror = () => {
         toast.error('Failed to read the file');
         if (setIsLoading) setIsLoading(false);
+        // Clear the input to allow selecting the same file again
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
       };
       
       reader.readAsDataURL(file);
     } else {
       toast.error('Only image files are supported');
+      // Clear the input to allow selecting the same file again
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
+  };
+
+  const handleUploadClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("Triggering file input click");
     
-    // Reset the input
-    e.target.value = '';
+    // Use setTimeout to avoid issues with event propagation
+    setTimeout(() => {
+      fileInputRef.current?.click();
+    }, 0);
   };
 
   return (
@@ -78,7 +98,7 @@ const FileInputField: React.FC<FileInputFieldProps> = ({
         <Button
           type="button"
           variant="outline"
-          onClick={() => fileInputRef.current?.click()}
+          onClick={handleUploadClick}
           className="flex-1"
           disabled={isLoading}
         >

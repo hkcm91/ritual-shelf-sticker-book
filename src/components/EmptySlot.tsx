@@ -4,6 +4,7 @@ import { PlusCircle, Book, Music, Utensils, BookMarked } from 'lucide-react';
 import { SlotType } from '@/store/types';
 import RecipeModal from './recipe/RecipeModal';
 import { useBookshelfStore } from '@/store/bookshelfStore';
+import { useDropTarget } from '@/hooks/dragdrop';
 
 interface EmptySlotProps {
   fileInputRef: React.RefObject<HTMLInputElement>;
@@ -23,6 +24,13 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
   const [isRecipeModalOpen, setIsRecipeModalOpen] = useState(false);
   const { activeShelfId, openModal } = useBookshelfStore();
   
+  // Set up drop handling for files
+  const { handleDragOver, handleDragLeave, handleDrop } = useDropTarget({
+    onDrop: (id, data) => {
+      // This handles dropping books, file drops are handled below
+    }
+  });
+  
   const getSlotIcon = () => {
     switch (slotType) {
       case 'book':
@@ -40,7 +48,9 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
     }
   };
 
-  const handleClick = () => {
+  const handleSlotClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     console.log("[EmptySlot] Slot clicked with type:", slotType);
     
     // For recipe slots, open the recipe modal instead of the file input
@@ -56,12 +66,30 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
       onClick();
     }
   };
+  
+  // Handle file drop directly
+  const handleFileDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("[EmptySlot] File dropped");
+    
+    // Remove visual indicator
+    e.currentTarget.classList.remove('drag-over');
+    
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const file = e.dataTransfer.files[0];
+      onFileSelect(file);
+    }
+  };
 
   return (
     <>
       <div 
         className="empty flex items-center justify-center h-full w-full cursor-pointer rounded-sm"
-        onClick={handleClick}
+        onClick={handleSlotClick}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleFileDrop}
         data-position={position}
         data-slot-type={slotType}
       >

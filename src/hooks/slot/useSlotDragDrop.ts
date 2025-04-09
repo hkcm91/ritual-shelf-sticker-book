@@ -15,18 +15,48 @@ const useSlotDragDrop = ({ position, activeShelfId }: UseSlotDragDropProps) => {
   // Handle dragging events
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     e.dataTransfer.dropEffect = 'move';
     setIsDragOver(true);
+    
+    // Visually highlight the drop target
+    if (e.currentTarget) {
+      e.currentTarget.classList.add('drag-over');
+    }
   }, []);
   
-  const handleDragLeave = useCallback(() => {
+  const handleDragEnter = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(true);
+    
+    // Visually highlight the drop target
+    if (e.currentTarget) {
+      e.currentTarget.classList.add('drag-over');
+    }
+  }, []);
+  
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
     setIsDragOver(false);
+    
+    // Remove visual highlight
+    if (e.currentTarget) {
+      e.currentTarget.classList.remove('drag-over');
+    }
   }, []);
   
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     setIsDragOver(false);
     
+    // Remove visual highlight
+    if (e.currentTarget) {
+      e.currentTarget.classList.remove('drag-over');
+    }
+    
+    // Check if there's any data available
     const droppedBookId = e.dataTransfer.getData('text/plain');
     console.log("[useSlotDragDrop] Dropping book:", droppedBookId, "at position:", position);
     
@@ -54,6 +84,12 @@ const useSlotDragDrop = ({ position, activeShelfId }: UseSlotDragDropProps) => {
       
       // Clear dragged book
       setDraggedBook(null);
+    } else {
+      // Handle file drops
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        console.log("[useSlotDragDrop] File dropped");
+        // File dropping is handled separately in components
+      }
     }
   }, [position, books, activeShelfId, updateBook, setDraggedBook]);
   
@@ -61,6 +97,7 @@ const useSlotDragDrop = ({ position, activeShelfId }: UseSlotDragDropProps) => {
     isDragOver,
     setIsDragOver,
     handleDragOver,
+    handleDragEnter,
     handleDragLeave,
     handleDrop
   };

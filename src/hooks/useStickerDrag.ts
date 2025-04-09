@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useCallback, RefObject } from 'react';
-import { Position2D } from './transform/types';
+import type { Position2D } from './transform/types';
 
 export interface UseStickerDragProps {
   position: number;

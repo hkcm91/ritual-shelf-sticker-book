@@ -1,6 +1,7 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
-import { TransformState, TransformControlsProps, Position2D } from './transform/types';
+import type { TransformState, TransformControlsProps, Position2D } from './transform/types';
 import useTransformStorage from './transform/useTransformStorage';
 import usePositionUtilities from './transform/usePositionUtilities';
 

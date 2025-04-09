@@ -1,9 +1,7 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { useBookshelfStore } from '../../store/bookshelfStore';
 import { toast } from 'sonner';
-
-export type Position2D = { x: number, y: number };
+import type { Position2D } from '../transform/types';
 
 interface UseStickerPositioningProps {
   position: number;
@@ -27,7 +25,6 @@ export const useStickerPositioning = ({
   const [position2D, setPosition2D] = useState<Position2D>(initialPosition);
   const [rotation, setRotation] = useState<number>(initialRotation);
   
-  // Load stored transform values
   useEffect(() => {
     const loadTransform = () => {
       const savedScale = localStorage.getItem(`slot-${activeShelfId}-${position}-scale`);
@@ -53,7 +50,6 @@ export const useStickerPositioning = ({
     loadTransform();
   }, [activeShelfId, position]);
   
-  // Persist transform values
   useEffect(() => {
     const saveTransform = () => {
       localStorage.setItem(`slot-${activeShelfId}-${position}-scale`, scale.toString());
@@ -65,7 +61,6 @@ export const useStickerPositioning = ({
     saveTransform();
   }, [scale, position2D, rotation, activeShelfId, position]);
   
-  // Calculate boundaries for sticker positioning
   const calculateBoundaries = useCallback((isAltKey: boolean = false) => {
     const stickerScale = scale || 1;
     const stickerWidth = slotDimensions.width * 0.8 * stickerScale;
@@ -76,7 +71,6 @@ export const useStickerPositioning = ({
     let minX = -maxX;
     let minY = -maxY;
     
-    // If Alt key is pressed, extend boundaries
     if (isAltKey) {
       const extensionFactor = 0.2;
       maxX += slotDimensions.width * extensionFactor;
@@ -88,7 +82,6 @@ export const useStickerPositioning = ({
     return { minX, maxX, minY, maxY };
   }, [scale, slotDimensions]);
   
-  // Clamp position to boundaries
   const clampPosition = useCallback((pos: Position2D, isAltKey: boolean = false) => {
     const { minX, maxX, minY, maxY } = calculateBoundaries(isAltKey);
     return {
@@ -97,20 +90,17 @@ export const useStickerPositioning = ({
     };
   }, [calculateBoundaries]);
   
-  // Rotate sticker
   const handleRotate = useCallback((direction: 'cw' | 'ccw') => {
-    const rotationAmount = 15; // degrees
+    const rotationAmount = 15;
     setRotation(prev => direction === 'cw' ? prev + rotationAmount : prev - rotationAmount);
   }, []);
   
-  // Scale sticker
   const handleScaleChange = useCallback((newScale: number) => {
     if (newScale > 0 && newScale <= 3) {
       setScale(newScale);
     }
   }, []);
   
-  // Reset transform
   const handleResetTransform = useCallback(() => {
     setScale(1);
     setPosition2D({ x: 0, y: 0 });
@@ -118,7 +108,6 @@ export const useStickerPositioning = ({
     toast.success('Position, rotation, and scale reset');
   }, []);
   
-  // Clear transform data
   const clearTransformData = useCallback(() => {
     localStorage.removeItem(`slot-${activeShelfId}-${position}-scale`);
     localStorage.removeItem(`slot-${activeShelfId}-${position}-position-x`);
@@ -126,7 +115,6 @@ export const useStickerPositioning = ({
     localStorage.removeItem(`slot-${activeShelfId}-${position}-rotation`);
   }, [activeShelfId, position]);
   
-  // Apply transform to book in store
   const applyTransformToBook = useCallback(() => {
     if (bookId) {
       updateBook(bookId, {

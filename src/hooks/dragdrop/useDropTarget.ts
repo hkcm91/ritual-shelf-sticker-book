@@ -1,10 +1,11 @@
 
 import { useCallback, useState, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
+import { SlotType } from '@/store/types';
 
 export interface UseDropTargetProps {
   position: number;
-  slotType: string;
+  slotType: SlotType;
   onDrop?: (id: string, data: any) => void;
   onDragOver?: (e: React.DragEvent) => void;
   onDragLeave?: (e: React.DragEvent) => void;

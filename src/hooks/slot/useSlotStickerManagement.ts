@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { useBookshelfStore, BookData } from '../../store/bookshelfStore';
 import useTransformControls from '../useTransformControls';
 import useStickerDrag from '../useStickerDrag';
+import { toast } from 'sonner';
 
 interface UseSlotStickerManagementProps {
   book?: BookData;
@@ -93,8 +94,5 @@ const useSlotStickerManagement = ({
     handleStickerMouseUp
   };
 };
-
-// Import toast at the top
-import { toast } from 'sonner';
 
 export default useSlotStickerManagement;

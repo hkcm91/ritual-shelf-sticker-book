@@ -27,17 +27,30 @@ const SlotContainer: React.FC<SlotContainerProps> = ({
   const handleDragOverSafe = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    // Add a visual indicator class
+    if (e.currentTarget && e.currentTarget.classList) {
+      e.currentTarget.classList.add('drag-over');
+    }
     handleDragOver(e);
   };
 
   const handleDragLeaveSafe = (e: React.DragEvent) => {
     e.preventDefault();
+    e.stopPropagation();
+    // Remove visual indicator class
+    if (e.currentTarget && e.currentTarget.classList) {
+      e.currentTarget.classList.remove('drag-over');
+    }
     handleDragLeave(e);
   };
 
   const handleDropSafe = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    // Remove visual indicator class
+    if (e.currentTarget && e.currentTarget.classList) {
+      e.currentTarget.classList.remove('drag-over');
+    }
     handleDrop(e);
   };
 

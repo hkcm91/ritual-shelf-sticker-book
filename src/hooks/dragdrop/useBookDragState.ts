@@ -2,6 +2,7 @@
 import { useState, useCallback } from 'react';
 import { useBookshelfStore } from '../../store/bookshelfStore';
 import { Point } from '../dragdrop';
+import { toast } from 'sonner';
 
 export interface UseBookDragStateProps {
   bookId?: string;
@@ -15,6 +16,7 @@ const useBookDragState = ({ bookId }: UseBookDragStateProps) => {
   const startDrag = useCallback((e: React.DragEvent | React.MouseEvent, id: string) => {
     // First, prevent default behavior to ensure we control the drag
     e.preventDefault();
+    e.stopPropagation();
     
     if ('dataTransfer' in e) {
       try {
@@ -24,11 +26,14 @@ const useBookDragState = ({ bookId }: UseBookDragStateProps) => {
         
         // For better visual feedback
         if (e.currentTarget instanceof HTMLElement) {
+          e.currentTarget.classList.add('dragging');
           const rect = e.currentTarget.getBoundingClientRect();
           e.dataTransfer.setDragImage(e.currentTarget, rect.width / 2, rect.height / 2);
         }
       } catch (error) {
         console.error("[useBookDragState] Error setting dataTransfer:", error);
+        toast.error("Error starting drag operation");
+        return; // Don't proceed if we can't set up drag properly
       }
     }
     
@@ -43,12 +48,19 @@ const useBookDragState = ({ bookId }: UseBookDragStateProps) => {
         y: e.clientY
       });
     }
+    
+    console.log("[useBookDragState] Drag started for book:", id);
   }, [setDraggedBook]);
   
   const endDrag = useCallback((e?: React.DragEvent | React.MouseEvent) => {
     if (e && 'preventDefault' in e) {
       e.preventDefault();
       e.stopPropagation();
+      
+      // Remove visual feedback
+      if (e.currentTarget instanceof HTMLElement) {
+        e.currentTarget.classList.remove('dragging');
+      }
     }
     
     // Reset drag state

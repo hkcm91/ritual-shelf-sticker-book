@@ -9,7 +9,7 @@ interface UseSlotDragDropProps {
 }
 
 const useSlotDragDrop = ({ position, activeShelfId }: UseSlotDragDropProps) => {
-  const { books, updateBook, setDraggedBook } = useBookshelfStore();
+  const { books, updateBook, setDraggedBook, getDraggedBook } = useBookshelfStore();
   const [isDragOver, setIsDragOver] = useState(false);
   
   // Handle dragging events
@@ -20,7 +20,7 @@ const useSlotDragDrop = ({ position, activeShelfId }: UseSlotDragDropProps) => {
     setIsDragOver(true);
     
     // Visually highlight the drop target
-    if (e.currentTarget) {
+    if (e.currentTarget && e.currentTarget.classList) {
       e.currentTarget.classList.add('drag-over');
     }
   }, []);
@@ -31,17 +31,18 @@ const useSlotDragDrop = ({ position, activeShelfId }: UseSlotDragDropProps) => {
     setIsDragOver(true);
     
     // Visually highlight the drop target
-    if (e.currentTarget) {
+    if (e.currentTarget && e.currentTarget.classList) {
       e.currentTarget.classList.add('drag-over');
     }
   }, []);
   
   const handleDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     setIsDragOver(false);
     
     // Remove visual highlight
-    if (e.currentTarget) {
+    if (e.currentTarget && e.currentTarget.classList) {
       e.currentTarget.classList.remove('drag-over');
     }
   }, []);
@@ -52,11 +53,17 @@ const useSlotDragDrop = ({ position, activeShelfId }: UseSlotDragDropProps) => {
     setIsDragOver(false);
     
     // Remove visual highlight
-    if (e.currentTarget) {
+    if (e.currentTarget && e.currentTarget.classList) {
       e.currentTarget.classList.remove('drag-over');
     }
     
-    // Check if there's any data available
+    // Check for file drops
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      console.log("[useSlotDragDrop] File dropped, handling in component");
+      return; // File handling should be done in the component
+    }
+    
+    // Check if there's any book data available
     try {
       const droppedBookId = e.dataTransfer.getData('text/plain');
       console.log("[useSlotDragDrop] Dropping book:", droppedBookId, "at position:", position);
@@ -85,12 +92,6 @@ const useSlotDragDrop = ({ position, activeShelfId }: UseSlotDragDropProps) => {
         
         // Clear dragged book
         setDraggedBook(null);
-      } else {
-        // Handle file drops
-        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-          console.log("[useSlotDragDrop] File dropped");
-          // File dropping is handled separately in components
-        }
       }
     } catch (error) {
       console.error("[useSlotDragDrop] Error in handleDrop:", error);

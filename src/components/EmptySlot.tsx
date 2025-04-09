@@ -4,7 +4,6 @@ import { PlusCircle, Book, Music, Utensils, BookMarked } from 'lucide-react';
 import { SlotType } from '@/store/types';
 import RecipeModal from './recipe/RecipeModal';
 import { useBookshelfStore } from '@/store/bookshelfStore';
-import { useDropTarget } from '@/hooks/dragdrop';
 
 interface EmptySlotProps {
   fileInputRef: React.RefObject<HTMLInputElement>;
@@ -23,9 +22,6 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
 }) => {
   const [isRecipeModalOpen, setIsRecipeModalOpen] = useState(false);
   const { activeShelfId, openModal } = useBookshelfStore();
-  
-  // Set up drop handling for files
-  const { handleDragOver, handleDragLeave } = useDropTarget({});
   
   const getSlotIcon = () => {
     switch (slotType) {
@@ -63,6 +59,26 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
     }
   };
   
+  // Handle drag events directly in EmptySlot with proper preventDefaults
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    e.dataTransfer.dropEffect = 'copy';
+    // Add visual indicator
+    if (e.currentTarget && e.currentTarget.classList) {
+      e.currentTarget.classList.add('drag-over');
+    }
+  };
+  
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Remove visual indicator
+    if (e.currentTarget && e.currentTarget.classList) {
+      e.currentTarget.classList.remove('drag-over');
+    }
+  };
+  
   // Handle file drop directly
   const handleFileDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -74,10 +90,23 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
       e.currentTarget.classList.remove('drag-over');
     }
     
+    // First check for files
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
       console.log("[EmptySlot] Processing dropped file:", file.name);
       onFileSelect(file);
+      return;
+    }
+    
+    // Then check for dragged book data
+    try {
+      const droppedId = e.dataTransfer.getData('text/plain');
+      if (droppedId) {
+        console.log("[EmptySlot] Book data dropped:", droppedId);
+        // This will be handled by the parent's drop handler
+      }
+    } catch (error) {
+      console.error("[EmptySlot] Error processing drop:", error);
     }
   };
 

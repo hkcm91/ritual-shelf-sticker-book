@@ -19,6 +19,9 @@ const useDropTarget = ({
   const handleDragOver = useCallback((e: React.DragEvent) => {
     // Always prevent default to enable drop
     e.preventDefault();
+    e.stopPropagation();
+    
+    // Set the drop effect
     e.dataTransfer.dropEffect = 'move';
     
     // Add visual indicator class
@@ -35,6 +38,7 @@ const useDropTarget = ({
   // Handle drag enter events
   const handleDragEnter = useCallback((e: React.DragEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     
     // Add visual indicator class
     if (e.currentTarget && e.currentTarget.classList) {
@@ -50,6 +54,7 @@ const useDropTarget = ({
   // Handle drag leave events to remove visual indicators
   const handleDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     
     // Remove visual indicator class
     if (e.currentTarget && e.currentTarget.classList) {
@@ -90,12 +95,11 @@ const useDropTarget = ({
         
         onDrop(droppedItemId, jsonData);
         toast.success('Item dropped successfully');
+      } else if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        // Files handling is done separately in component-specific handlers
+        console.log("[useDropTarget] Files detected in drop event");
       } else {
-        // Check if we have files instead
-        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-          console.log("[useDropTarget] Files detected in drop event");
-          // File drops are handled separately in component-specific handlers
-        }
+        console.log("[useDropTarget] No valid data found in drop");
       }
     } catch (error) {
       console.error("[useDropTarget] Error handling drop:", error);

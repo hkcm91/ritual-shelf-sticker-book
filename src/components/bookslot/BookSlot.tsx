@@ -4,18 +4,18 @@ import Book from '../Book';
 import DeleteDialog from '../DeleteDialog';
 import EmptySlot from '../EmptySlot';
 import SlotTypeToggle from '../SlotTypeToggle';
-import { useBookSlot } from '../../hooks/useBookSlot';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 import StickerSlotContent from './StickerSlotContent';
 import SlotContainer from './SlotContainer';
 import useSlotType from './useSlotType';
+import { useBookSlot } from '@/hooks/useBookSlot';
 
 type BookSlotProps = {
   position: number;
 };
 
 const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
-  const { activeTheme } = useBookshelfStore();
+  const { activeTheme, activeShelfId } = useBookshelfStore();
   const { slotType, handleTypeToggle } = useSlotType();
   
   // Use the book slot hook with all its properties
@@ -57,7 +57,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     slotType,
     onFileSelect: (file) => {
       console.log("[BookSlot] File selected:", file.name);
-      // File handler logic here if needed
+      // File handler logic is in the useBookSlot hook
     }
   });
 
@@ -70,6 +70,11 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   
   // Check if we should use realistic styling
   const useRealisticStyle = activeTheme === 'default' || activeTheme === 'custom';
+  
+  if (!activeShelfId) {
+    console.warn("[BookSlot] No active shelf ID found");
+    return null;
+  }
   
   return (
     <>

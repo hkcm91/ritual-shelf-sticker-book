@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { useBookshelfStore, BookData } from '../store/bookshelfStore';
+import { toast } from 'sonner';
 
 type BookProps = {
   data: BookData;
@@ -31,10 +32,16 @@ const Book: React.FC<BookProps> = ({ data }) => {
       setDraggedBook(data.id);
       setIsDragging(true);
       
+      // Add visual feedback
+      if (e.currentTarget.classList) {
+        e.currentTarget.classList.add('dragging');
+      }
+      
       // Make sure events bubble properly
       e.stopPropagation();
     } catch (error) {
       console.error("[Book] Error in drag start:", error);
+      toast.error("Failed to start dragging");
     }
   };
   
@@ -45,6 +52,11 @@ const Book: React.FC<BookProps> = ({ data }) => {
       // Cleanup
       setDraggedBook(null);
       setIsDragging(false);
+      
+      // Remove visual feedback
+      if (e.currentTarget.classList) {
+        e.currentTarget.classList.remove('dragging');
+      }
       
       e.preventDefault();
       e.stopPropagation();

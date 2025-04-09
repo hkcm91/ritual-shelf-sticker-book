@@ -1,6 +1,7 @@
 
 import { useCallback } from 'react';
 import useFileInput from '../useFileInput';
+import { toast } from 'sonner';
 
 interface UseSlotFileHandlingProps {
   onFileSelect?: (file: File) => void;
@@ -9,7 +10,19 @@ interface UseSlotFileHandlingProps {
 const useSlotFileHandling = ({ onFileSelect }: UseSlotFileHandlingProps) => {
   // Set up file input handling with safeguards
   const { fileInputRef, handleClick: fileInputTrigger, handleFileChange: fileInputChange, clearFileInput } = useFileInput({
-    onFileSelect
+    onFileSelect: (file) => {
+      console.log("[useSlotFileHandling] File selected:", file.name);
+      if (onFileSelect) {
+        try {
+          onFileSelect(file);
+        } catch (error) {
+          console.error("[useSlotFileHandling] Error handling file:", error);
+          toast.error("Failed to process file");
+        }
+      }
+      // Always clear the input to allow selecting the same file again
+      clearFileInput();
+    }
   });
   
   // Safely trigger file input with extra logging
@@ -25,8 +38,10 @@ const useSlotFileHandling = ({ onFileSelect }: UseSlotFileHandlingProps) => {
     if (onFileSelect) {
       try {
         onFileSelect(file);
+        toast.success(`File "${file.name}" selected`);
       } catch (error) {
         console.error("[useSlotFileHandling] Error handling file:", error);
+        toast.error("Error processing file");
       }
     }
     

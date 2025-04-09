@@ -36,10 +36,12 @@ export const useFileInput = ({
   // Handle file change event from input
   const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    console.log("[useFileInput] File selected:", file?.name);
     
     if (file && onFileSelect) {
+      console.log("[useFileInput] File selected:", file.name);
       onFileSelect(file);
+    } else {
+      console.log("[useFileInput] No file selected or no handler provided");
     }
     
     // Clear the input to allow selecting the same file again

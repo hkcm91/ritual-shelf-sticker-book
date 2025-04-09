@@ -10,6 +10,7 @@ const BookshelfGrid: React.FC = () => {
     shelfStyling,
     activeTheme,
     shelves,
+    container,
     initializeDefaultShelf
   } = useBookshelfStore();
   
@@ -50,13 +51,30 @@ const BookshelfGrid: React.FC = () => {
   // Determine if we should use realistic shelf styling
   const useRealisticStyle = activeTheme === 'default' || activeTheme === 'custom';
 
+  // Separate border styles
+  const borderWidth = container?.borderWidth || 0;
+  const hasBorder = borderWidth > 0;
+
   return (
-    <div 
-      className="bookshelf-container relative mt-0"
-      /* All styles now controlled by CSS variables in layout.css */
-    >
-      <div className="bookshelf-rows relative z-10">
-        {renderShelfRows()}
+    <div className="bookshelf-wrapper-with-border relative">
+      {hasBorder && (
+        <div 
+          className="absolute inset-0 z-0 pointer-events-none" 
+          style={{
+            borderWidth: `${borderWidth}px`,
+            borderStyle: container?.borderStyle || 'solid',
+            borderColor: container?.borderColor || 'transparent',
+            borderRadius: `${container?.borderRadius || 0}px`,
+          }}
+        />
+      )}
+      <div 
+        className="bookshelf-container relative mt-0 z-10"
+        /* All styles now controlled by CSS variables in layout.css except border, which is moved to a separate element */
+      >
+        <div className="bookshelf-rows relative z-10">
+          {renderShelfRows()}
+        </div>
       </div>
     </div>
   );

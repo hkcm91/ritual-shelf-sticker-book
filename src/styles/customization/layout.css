@@ -22,15 +22,20 @@ body {
   background-size: cover;
   background-position: center;
   opacity: var(--container-opacity);
-  border-width: var(--container-border-width);
-  border-style: var(--container-border-style);
-  border-color: var(--container-border-color);
-  border-radius: var(--container-border-radius);
+  /* Border properties removed from here */
   padding: var(--container-padding);
-  transition: background-color 0.3s ease, border 0.3s ease, opacity 0.3s ease;
+  transition: background-color 0.3s ease, opacity 0.3s ease;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   overflow: hidden; /* Ensure dividers don't extend beyond container */
   margin-top: 0; /* Remove top margin to eliminate gap */
+  border-radius: var(--container-border-radius); /* Keep border-radius for content area */
+}
+
+/* New wrapper to contain both the border and the container */
+.bookshelf-wrapper-with-border {
+  position: relative;
+  margin: 0;
+  padding: 0;
 }
 
 .bookshelf-wrapper {

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Book from '../Book';
 import DeleteDialog from '../DeleteDialog';
 import EmptySlot from '../EmptySlot';
@@ -17,6 +17,15 @@ type BookSlotProps = {
 const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   const { activeTheme, activeShelfId } = useBookshelfStore();
   const { slotType, handleTypeToggle } = useSlotType();
+  
+  // Log component lifecycle
+  useEffect(() => {
+    console.log(`[BookSlot] Rendering slot at position ${position} with type ${slotType}`);
+    
+    return () => {
+      console.log(`[BookSlot] Unmounting slot at position ${position}`);
+    };
+  }, [position, slotType]);
   
   // Use the book slot hook with all its properties
   const {
@@ -56,14 +65,15 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
     position, 
     slotType,
     onFileSelect: (file) => {
-      console.log("[BookSlot] File selected:", file.name);
-      // File handler logic is in the useBookSlot hook
+      console.log(`[BookSlot] File selected for position ${position}, type ${slotType}: ${file.name}`);
+      handleFileChange(file);
     }
   });
 
   // Special handler for the empty slot click, separate from toggle clicks
   const handleEmptySlotClick = () => {
     if (!book) {
+      console.log(`[BookSlot] Empty slot clicked at position ${position}`);
       handleClick();
     }
   };
@@ -72,7 +82,7 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   const useRealisticStyle = activeTheme === 'default' || activeTheme === 'custom';
   
   if (!activeShelfId) {
-    console.warn("[BookSlot] No active shelf ID found");
+    console.warn(`[BookSlot] No active shelf ID found for position ${position}`);
     return null;
   }
   

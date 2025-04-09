@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { PlusCircle, Book, Music, Utensils, BookMarked } from 'lucide-react';
 import { SlotType } from '@/store/types';
 import RecipeModal from './recipe/RecipeModal';
@@ -22,6 +22,16 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
 }) => {
   const [isRecipeModalOpen, setIsRecipeModalOpen] = React.useState(false);
   const { activeShelfId, openModal } = useBookshelfStore();
+  const slotRef = useRef<HTMLDivElement>(null);
+  
+  // Log when this component renders
+  useEffect(() => {
+    console.log(`[EmptySlot] Rendering empty slot at position ${position} with type ${slotType}`);
+    
+    return () => {
+      console.log(`[EmptySlot] Unmounting empty slot at position ${position}`);
+    };
+  }, [position, slotType]);
   
   const getSlotIcon = () => {
     switch (slotType) {
@@ -43,16 +53,16 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
   const handleSlotClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log("[EmptySlot] Slot clicked with type:", slotType);
+    console.log(`[EmptySlot] Slot clicked with type: ${slotType} at position ${position}`);
     
     if (slotType === 'recipe' && activeShelfId) {
-      console.log("[EmptySlot] Opening recipe modal");
+      console.log(`[EmptySlot] Opening recipe modal for position ${position}`);
       setIsRecipeModalOpen(true);
     } else if (slotType === 'book' && activeShelfId) {
-      console.log("[EmptySlot] Opening book modal for new book");
+      console.log(`[EmptySlot] Opening book modal for new book at position ${position}`);
       openModal(null);
     } else {
-      console.log("[EmptySlot] Triggering file input");
+      console.log(`[EmptySlot] Triggering file input for ${slotType} at position ${position}`);
       onClick();
     }
   };
@@ -60,11 +70,24 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
   const handleFileDrop = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log("[EmptySlot] File dropped for", slotType);
+    console.log(`[EmptySlot] File dropped for ${slotType} at position ${position}`);
     
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
-      console.log("[EmptySlot] Processing dropped file:", file.name);
+      console.log(`[EmptySlot] Processing dropped file: ${file.name}, type: ${file.type}, size: ${file.size}`);
+      
+      // Validate file type based on slot type
+      const isImage = file.type.startsWith('image/');
+      const isJson = file.type === 'application/json' || file.name.endsWith('.json');
+      
+      if (slotType === 'sticker' && !isImage && !isJson) {
+        console.error(`[EmptySlot] Invalid file type for sticker: ${file.type}`);
+        return;
+      } else if (slotType !== 'sticker' && !isImage) {
+        console.error(`[EmptySlot] Invalid file type for ${slotType}: ${file.type}`);
+        return;
+      }
+      
       onFileSelect(file);
     }
   };
@@ -78,6 +101,7 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
   return (
     <>
       <div 
+        ref={slotRef}
         className={`empty flex items-center justify-center h-full w-full cursor-pointer rounded-sm empty-slot-${slotType}`}
         onClick={handleSlotClick}
         onDrop={handleFileDrop}
@@ -96,8 +120,10 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
           onChange={(e) => {
             const file = e.target.files?.[0];
             if (file) {
-              console.log(`[EmptySlot] File selected from input for ${slotType}:`, file.name);
+              console.log(`[EmptySlot] File selected from input for ${slotType} at position ${position}:`, file.name);
               onFileSelect(file);
+            } else {
+              console.log(`[EmptySlot] File selection cancelled or no file selected`);
             }
           }}
         />

@@ -15,23 +15,17 @@ const useSlotFileHandling = ({
   slotType = 'book',
   position = -1
 }: UseSlotFileHandlingProps) => {
-  // Configure accept types based on slot type
-  const acceptType = slotType === 'sticker' 
-    ? "image/*, .json" 
-    : "image/*";
+  // Set accept type based on slot type
+  const acceptType = "image/*";
   
   const { fileInputRef, handleClick, handleFileChange: fileInputChange, clearFileInput } = useFileInput({
     onFileSelect: (file) => {
       console.log(`[useSlotFileHandling] File selected for ${slotType} at position ${position}:`, file.name, "type:", file.type);
       
-      // Validate file type based on slot type
+      // Validate file type
       const isImage = file.type.startsWith('image/');
-      const isJson = file.type === 'application/json' || file.name.endsWith('.json');
       
-      if (slotType === 'sticker' && !isImage && !isJson) {
-        toast.error("Only image or JSON files are allowed for stickers");
-        return;
-      } else if (slotType !== 'sticker' && !isImage) {
+      if (!isImage) {
         toast.error(`Only image files are allowed for ${slotType}s`);
         return;
       }

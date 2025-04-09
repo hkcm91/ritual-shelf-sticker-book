@@ -4,10 +4,9 @@ import { useBookshelfStore } from '../store/bookshelfStore';
 import { SlotType } from '@/store/types';
 import { toast } from 'sonner';
 import useFileInput from './useFileInput';
-import useTransformControls from './useTransformControls';
-import useSlotDragDrop from './slot/useSlotDragDrop';
 import useSlotFileHandling from './slot/useSlotFileHandling';
 import useSlotStickerManagement from './slot/useSlotStickerManagement';
+import useSlotDragDrop from './slot/useSlotDragDrop';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface UseBookSlotProps {

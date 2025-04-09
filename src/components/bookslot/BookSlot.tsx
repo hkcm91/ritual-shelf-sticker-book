@@ -3,12 +3,11 @@ import React, { useEffect } from 'react';
 import Book from '../Book';
 import DeleteDialog from '../DeleteDialog';
 import EmptySlot from '../EmptySlot';
-import SlotTypeToggle from '../SlotTypeToggle';
 import { useBookshelfStore } from '@/store/bookshelfStore';
 import StickerSlotContent from './StickerSlotContent';
 import SlotContainer from './SlotContainer';
-import useSlotType from './useSlotType';
 import { useBookSlot } from '@/hooks/useBookSlot';
+import { SlotType } from '@/store/types';
 
 type BookSlotProps = {
   position: number;
@@ -16,7 +15,8 @@ type BookSlotProps = {
 
 const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
   const { activeTheme, activeShelfId } = useBookshelfStore();
-  const { slotType, handleTypeToggle } = useSlotType();
+  // Use fixed slot type
+  const slotType: SlotType = "book";
   
   // Log component lifecycle
   useEffect(() => {
@@ -98,13 +98,6 @@ const BookSlot: React.FC<BookSlotProps> = ({ position }) => {
         handleDrop={handleDrop}
       >
         {renderSlotContent()}
-        
-        {/* Only show toggle group when slot is empty */}
-        <SlotTypeToggle 
-          slotType={slotType} 
-          handleTypeToggle={handleTypeToggle}
-          isVisible={!book} 
-        />
       </SlotContainer>
       
       {/* Delete Confirmation Dialog */}

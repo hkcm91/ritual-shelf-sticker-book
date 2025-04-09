@@ -60,7 +60,7 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
   const handleFileDrop = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log("[EmptySlot] File dropped");
+    console.log("[EmptySlot] File dropped for", slotType);
     
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
@@ -69,10 +69,16 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
     }
   };
 
+  // Determine the correct accept attribute based on slot type
+  const getAcceptAttribute = () => {
+    if (slotType === 'sticker') return "image/*, .json";
+    return "image/*";
+  };
+
   return (
     <>
       <div 
-        className="empty flex items-center justify-center h-full w-full cursor-pointer rounded-sm"
+        className={`empty flex items-center justify-center h-full w-full cursor-pointer rounded-sm empty-slot-${slotType}`}
         onClick={handleSlotClick}
         onDrop={handleFileDrop}
         onDragOver={(e) => {
@@ -86,17 +92,17 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
           type="file"
           ref={fileInputRef}
           className="hidden"
-          accept={slotType === 'sticker' ? "image/*, .json" : "image/*"}
+          accept={getAcceptAttribute()}
           onChange={(e) => {
             const file = e.target.files?.[0];
             if (file) {
-              console.log("[EmptySlot] File selected from input:", file.name);
+              console.log(`[EmptySlot] File selected from input for ${slotType}:`, file.name);
               onFileSelect(file);
             }
           }}
         />
         <button 
-          className="add-book-button flex items-center justify-center p-2.5 rounded-full bg-gray-100 hover:bg-gray-200"
+          className={`add-book-button flex items-center justify-center p-2.5 rounded-full bg-gray-100 hover:bg-gray-200 add-button-${slotType}`}
           type="button"
           aria-label={`Add ${slotType}`}
         >

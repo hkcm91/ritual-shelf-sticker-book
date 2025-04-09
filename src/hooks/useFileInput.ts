@@ -12,21 +12,26 @@ export const useFileInput = ({
 }: UseFileInputProps = {}) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  // Simple function to trigger file input click
+  // Trigger file input click with proper events handling
   const handleClick = useCallback(() => {
     console.log("[useFileInput] Triggering file input click");
     if (fileInputRef.current) {
-      fileInputRef.current.click();
+      // Use setTimeout to ensure the click event is processed after current event loop
+      setTimeout(() => {
+        fileInputRef.current?.click();
+      }, 0);
     }
   }, []);
   
-  // Simple handler for file change events
+  // File change handler with improved error handling
   const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     
     if (file && onFileSelect) {
       console.log("[useFileInput] File selected:", file.name);
       onFileSelect(file);
+    } else if (!file) {
+      console.log("[useFileInput] No file selected");
     }
     
     // Clear the input to allow selecting the same file again

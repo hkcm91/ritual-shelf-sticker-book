@@ -1,5 +1,5 @@
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useBookshelfStore } from '../../store/bookshelfStore';
 import { Point } from '../dragdrop';
 import { toast } from 'sonner';
@@ -13,10 +13,24 @@ const useBookDragState = ({ bookId }: UseBookDragStateProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState<Point | null>(null);
   
+  // Clean up drag state if hook unmounts while dragging
+  useEffect(() => {
+    return () => {
+      if (isDragging) {
+        setDraggedBook(null);
+      }
+    };
+  }, [isDragging, setDraggedBook]);
+  
   const startDrag = useCallback((e: React.DragEvent, id: string) => {
     console.log("[useBookDragState] Starting drag for book:", id);
     
     try {
+      // Ensure the dataTransfer is properly set
+      if (!e.dataTransfer) {
+        throw new Error("DataTransfer not available");
+      }
+      
       e.dataTransfer.setData('text/plain', id);
       e.dataTransfer.effectAllowed = 'move';
       
@@ -31,6 +45,7 @@ const useBookDragState = ({ bookId }: UseBookDragStateProps) => {
       }
     } catch (error) {
       console.error("[useBookDragState] Error setting drag data:", error);
+      toast.error("Failed to start dragging");
     }
   }, [setDraggedBook]);
   

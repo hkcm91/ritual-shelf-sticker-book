@@ -1,5 +1,5 @@
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useBookshelfStore } from '../../store/bookshelfStore';
 import { toast } from 'sonner';
 
@@ -12,11 +12,29 @@ const useSlotDragDrop = ({ position, activeShelfId }: UseSlotDragDropProps) => {
   const { books, updateBook, setDraggedBook } = useBookshelfStore();
   const [isDragOver, setIsDragging] = useState(false);
   
+  // Reset drag state if component unmounts while dragging over
+  useEffect(() => {
+    return () => {
+      if (isDragOver) {
+        setIsDragging(false);
+      }
+    };
+  }, [isDragOver]);
+  
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsDragging(true);
-  }, []);
+    
+    // Set dragover state to provide visual feedback
+    if (!isDragOver) {
+      setIsDragging(true);
+    }
+    
+    // Set the drop effect
+    if (e.dataTransfer) {
+      e.dataTransfer.dropEffect = 'move';
+    }
+  }, [isDragOver]);
   
   const handleDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -62,6 +80,7 @@ const useSlotDragDrop = ({ position, activeShelfId }: UseSlotDragDropProps) => {
         toast.success("Book moved successfully");
       }
       
+      // Ensure dragged book state is cleared
       setDraggedBook(null);
     } catch (error) {
       console.error("[useSlotDragDrop] Error in handleDrop:", error);

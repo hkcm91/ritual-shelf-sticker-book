@@ -1,5 +1,5 @@
 
-import { useCallback } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
 export interface UseDropTargetProps {
@@ -13,10 +13,28 @@ const useDropTarget = ({
   onDragOver,
   onDragLeave
 }: UseDropTargetProps = {}) => {
+  const [isDragOver, setIsDragOver] = useState(false);
+  
+  // Clean up drag state if hook unmounts while dragging over
+  useEffect(() => {
+    return () => {
+      if (isDragOver) {
+        setIsDragOver(false);
+      }
+    };
+  }, [isDragOver]);
+  
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    e.dataTransfer.dropEffect = 'move';
+    
+    // Ensure dragEffect is set properly
+    if (e.dataTransfer) {
+      e.dataTransfer.dropEffect = 'move';
+    }
+    
+    // Set drag over state for visual feedback
+    setIsDragOver(true);
     
     if (onDragOver) {
       onDragOver(e);
@@ -27,6 +45,8 @@ const useDropTarget = ({
     e.preventDefault();
     e.stopPropagation();
     
+    setIsDragOver(false);
+    
     if (onDragLeave) {
       onDragLeave(e);
     }
@@ -35,6 +55,8 @@ const useDropTarget = ({
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    setIsDragOver(false);
     
     try {
       // Check for file drop first
@@ -57,6 +79,7 @@ const useDropTarget = ({
   }, [onDrop]);
   
   return {
+    isDragOver,
     handleDragOver,
     handleDragLeave,
     handleDrop

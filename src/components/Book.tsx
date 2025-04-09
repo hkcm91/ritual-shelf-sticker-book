@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useBookshelfStore, BookData } from '../store/bookshelfStore';
 import { toast } from 'sonner';
 
@@ -10,6 +10,16 @@ type BookProps = {
 const Book: React.FC<BookProps> = ({ data }) => {
   const { openModal, setDraggedBook } = useBookshelfStore();
   const [isDragging, setIsDragging] = useState(false);
+  
+  // Clean up drag state if component unmounts while dragging
+  useEffect(() => {
+    return () => {
+      if (isDragging) {
+        setDraggedBook(null);
+        setIsDragging(false);
+      }
+    };
+  }, [isDragging, setDraggedBook]);
   
   if (!data || data.hidden || data.isSticker) return null;
   
@@ -29,6 +39,7 @@ const Book: React.FC<BookProps> = ({ data }) => {
       e.currentTarget.classList.add('dragging');
     } catch (error) {
       console.error("[Book] Error in drag start:", error);
+      toast.error("Failed to start dragging");
     }
   };
   

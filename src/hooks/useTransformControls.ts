@@ -1,11 +1,10 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { TransformState, TransformControlsProps, Position2D } from './transform/types';
 import useTransformStorage from './transform/useTransformStorage';
 import usePositionUtilities from './transform/usePositionUtilities';
 
-export { TransformState, TransformControlsProps, Position2D };
+export type { TransformState, TransformControlsProps, Position2D };
 
 export const useTransformControls = ({
   activeShelfId,
@@ -30,7 +29,6 @@ export const useTransformControls = ({
   
   const { clampPosition } = usePositionUtilities();
   
-  // Load saved transform data
   useEffect(() => {
     const savedData = loadTransformData();
     if (savedData.scale !== null) {
@@ -46,17 +44,14 @@ export const useTransformControls = ({
     }
   }, [activeShelfId, position, loadTransformData]);
   
-  // Save transform data when they change
   useEffect(() => {
     saveTransformData({ scale, position2D, rotation });
     
-    // Call the callback if provided
     if (onTransformChange) {
       onTransformChange({ scale, position2D, rotation });
     }
   }, [scale, position2D, rotation, saveTransformData, onTransformChange]);
   
-  // Handle rotation
   const handleRotate = useCallback((direction: 'cw' | 'ccw') => {
     const rotationAmount = 15; // degrees
     setRotation(prev => {
@@ -65,7 +60,6 @@ export const useTransformControls = ({
     });
   }, []);
   
-  // Handle scale change
   const handleScaleChange = useCallback((newScale: number) => {
     if (newScale >= min && newScale <= max) {
       setScale(newScale);
@@ -76,7 +70,6 @@ export const useTransformControls = ({
     }
   }, [min, max]);
   
-  // Reset transform
   const handleResetTransform = useCallback(() => {
     setScale(initialScale);
     setPosition2D(initialPosition);
@@ -85,21 +78,18 @@ export const useTransformControls = ({
   }, [initialScale, initialPosition, initialRotation]);
 
   return {
-    // State
     scale,
     position2D,
     rotation,
     isDragging,
     dragStart,
     
-    // Setters
     setScale,
     setPosition2D,
     setRotation,
     setIsDragging,
     setDragStart,
     
-    // Handlers
     handleRotate,
     handleScaleChange,
     handleResetTransform,

@@ -8,44 +8,27 @@ interface UseSlotFileHandlingProps {
 }
 
 const useSlotFileHandling = ({ onFileSelect }: UseSlotFileHandlingProps) => {
-  // Set up file input handling with safeguards
-  const { fileInputRef, handleClick: fileInputTrigger, handleFileChange: fileInputChange, clearFileInput } = useFileInput({
+  const { fileInputRef, handleClick, handleFileChange: fileInputChange, clearFileInput } = useFileInput({
     onFileSelect: (file) => {
       console.log("[useSlotFileHandling] File selected:", file.name);
       if (onFileSelect) {
-        try {
-          onFileSelect(file);
-        } catch (error) {
-          console.error("[useSlotFileHandling] Error handling file:", error);
-          toast.error("Failed to process file");
-        }
+        onFileSelect(file);
       }
-      // Always clear the input to allow selecting the same file again
       clearFileInput();
     }
   });
   
-  // Safely trigger file input with extra logging
   const triggerFileInput = useCallback(() => {
-    console.log("[useSlotFileHandling] Triggering file input click");
-    fileInputTrigger();
-  }, [fileInputTrigger]);
+    console.log("[useSlotFileHandling] Triggering file input");
+    handleClick();
+  }, [handleClick]);
   
-  // Handle the file change event with additional safeguards
   const handleFileChange = useCallback((file: File) => {
-    console.log("[useSlotFileHandling] File selected:", file.name);
-    
+    console.log("[useSlotFileHandling] File change handler called");
     if (onFileSelect) {
-      try {
-        onFileSelect(file);
-        toast.success(`File "${file.name}" selected`);
-      } catch (error) {
-        console.error("[useSlotFileHandling] Error handling file:", error);
-        toast.error("Error processing file");
-      }
+      onFileSelect(file);
+      toast.success(`File "${file.name}" selected`);
     }
-    
-    // Clear the input to allow selecting the same file again
     clearFileInput();
   }, [onFileSelect, clearFileInput]);
   

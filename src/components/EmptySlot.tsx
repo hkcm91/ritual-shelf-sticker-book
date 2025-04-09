@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { PlusCircle, Book, Music, Utensils, BookMarked } from 'lucide-react';
 import { SlotType } from '@/store/types';
 import RecipeModal from './recipe/RecipeModal';
@@ -20,7 +20,7 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
   onClick,
   position
 }) => {
-  const [isRecipeModalOpen, setIsRecipeModalOpen] = useState(false);
+  const [isRecipeModalOpen, setIsRecipeModalOpen] = React.useState(false);
   const { activeShelfId, openModal } = useBookshelfStore();
   
   const getSlotIcon = () => {
@@ -45,68 +45,30 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
     e.stopPropagation();
     console.log("[EmptySlot] Slot clicked with type:", slotType);
     
-    // For recipe slots, open the recipe modal instead of the file input
     if (slotType === 'recipe' && activeShelfId) {
       console.log("[EmptySlot] Opening recipe modal");
       setIsRecipeModalOpen(true);
     } else if (slotType === 'book' && activeShelfId) {
-      // For book slots, open the book modal with null ID to create a new book
       console.log("[EmptySlot] Opening book modal for new book");
       openModal(null);
+    } else if (slotType === 'sticker') {
+      console.log("[EmptySlot] Triggering file input for sticker");
+      onClick();
     } else {
-      console.log("[EmptySlot] Triggering file input click");
+      console.log("[EmptySlot] Triggering file input");
       onClick();
     }
   };
-  
-  // Handle drag events directly in EmptySlot with proper preventDefaults
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    e.dataTransfer.dropEffect = 'copy';
-    // Add visual indicator
-    if (e.currentTarget && e.currentTarget.classList) {
-      e.currentTarget.classList.add('drag-over');
-    }
-  };
-  
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    // Remove visual indicator
-    if (e.currentTarget && e.currentTarget.classList) {
-      e.currentTarget.classList.remove('drag-over');
-    }
-  };
-  
-  // Handle file drop directly
+
   const handleFileDrop = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     console.log("[EmptySlot] File dropped");
     
-    // Remove visual indicator
-    if (e.currentTarget && e.currentTarget.classList) {
-      e.currentTarget.classList.remove('drag-over');
-    }
-    
-    // First check for files
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
       console.log("[EmptySlot] Processing dropped file:", file.name);
       onFileSelect(file);
-      return;
-    }
-    
-    // Then check for dragged book data
-    try {
-      const droppedId = e.dataTransfer.getData('text/plain');
-      if (droppedId) {
-        console.log("[EmptySlot] Book data dropped:", droppedId);
-        // This will be handled by the parent's drop handler
-      }
-    } catch (error) {
-      console.error("[EmptySlot] Error processing drop:", error);
     }
   };
 
@@ -115,9 +77,11 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
       <div 
         className="empty flex items-center justify-center h-full w-full cursor-pointer rounded-sm"
         onClick={handleSlotClick}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
         onDrop={handleFileDrop}
+        onDragOver={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
         data-position={position}
         data-slot-type={slotType}
       >
@@ -135,7 +99,7 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
           }}
         />
         <button 
-          className="add-book-button flex items-center justify-center p-2.5 rounded-full"
+          className="add-book-button flex items-center justify-center p-2.5 rounded-full bg-gray-100 hover:bg-gray-200"
           type="button"
           aria-label={`Add ${slotType}`}
         >
@@ -143,7 +107,6 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
         </button>
       </div>
       
-      {/* Recipe Modal */}
       {activeShelfId && (
         <RecipeModal
           isOpen={isRecipeModalOpen}

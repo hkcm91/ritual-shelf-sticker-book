@@ -9,90 +9,60 @@ interface UseSlotDragDropProps {
 }
 
 const useSlotDragDrop = ({ position, activeShelfId }: UseSlotDragDropProps) => {
-  const { books, updateBook, setDraggedBook, getDraggedBook } = useBookshelfStore();
-  const [isDragOver, setIsDragOver] = useState(false);
+  const { books, updateBook, setDraggedBook } = useBookshelfStore();
+  const [isDragOver, setIsDragging] = useState(false);
   
-  // Handle dragging events
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    e.dataTransfer.dropEffect = 'move';
-    setIsDragOver(true);
-    
-    // Visually highlight the drop target
-    if (e.currentTarget && e.currentTarget.classList) {
-      e.currentTarget.classList.add('drag-over');
-    }
-  }, []);
-  
-  const handleDragEnter = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragOver(true);
-    
-    // Visually highlight the drop target
-    if (e.currentTarget && e.currentTarget.classList) {
-      e.currentTarget.classList.add('drag-over');
-    }
+    setIsDragging(true);
   }, []);
   
   const handleDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsDragOver(false);
-    
-    // Remove visual highlight
-    if (e.currentTarget && e.currentTarget.classList) {
-      e.currentTarget.classList.remove('drag-over');
-    }
+    setIsDragging(false);
   }, []);
   
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsDragOver(false);
+    setIsDragging(false);
     
-    // Remove visual highlight
-    if (e.currentTarget && e.currentTarget.classList) {
-      e.currentTarget.classList.remove('drag-over');
-    }
-    
-    // Check for file drops
+    // Check for file drops first
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      console.log("[useSlotDragDrop] File dropped, handling in component");
-      return; // File handling should be done in the component
+      console.log("[useSlotDragDrop] File dropped - handling will be done in component");
+      return;
     }
     
-    // Check if there's any book data available
     try {
       const droppedBookId = e.dataTransfer.getData('text/plain');
-      console.log("[useSlotDragDrop] Dropping book:", droppedBookId, "at position:", position);
+      console.log("[useSlotDragDrop] Book dropped:", droppedBookId, "at position:", position);
       
-      if (droppedBookId && position !== undefined) {
-        // Check if there's already a book at this position
-        const existingBook = Object.values(books).find(
-          b => b.position === position && b.shelfId === activeShelfId && !b.isSticker
-        );
-        
-        if (existingBook && existingBook.id !== droppedBookId) {
-          console.log("[useSlotDragDrop] Position already occupied by:", existingBook.id);
-          // If occupied, swap positions
-          const draggedBook = books[droppedBookId];
-          if (draggedBook) {
-            console.log("[useSlotDragDrop] Swapping positions");
-            updateBook(existingBook.id, { position: draggedBook.position });
-            updateBook(droppedBookId, { position, shelfId: activeShelfId });
-            toast.success("Books swapped positions");
-          }
-        } else {
-          // If empty, just move the book
-          updateBook(droppedBookId, { position, shelfId: activeShelfId });
-          toast.success("Book moved successfully");
-        }
-        
-        // Clear dragged book
-        setDraggedBook(null);
+      if (!droppedBookId || position === undefined) {
+        return;
       }
+      
+      // Check if there's a book at this position
+      const existingBook = Object.values(books).find(
+        b => b.position === position && b.shelfId === activeShelfId && !b.isSticker
+      );
+      
+      if (existingBook && existingBook.id !== droppedBookId) {
+        // Swap positions
+        const draggedBook = books[droppedBookId];
+        if (draggedBook) {
+          updateBook(existingBook.id, { position: draggedBook.position });
+          updateBook(droppedBookId, { position, shelfId: activeShelfId });
+          toast.success("Books swapped positions");
+        }
+      } else {
+        // Move to empty slot
+        updateBook(droppedBookId, { position, shelfId: activeShelfId });
+        toast.success("Book moved successfully");
+      }
+      
+      setDraggedBook(null);
     } catch (error) {
       console.error("[useSlotDragDrop] Error in handleDrop:", error);
       toast.error("Failed to process dropped item");
@@ -101,9 +71,8 @@ const useSlotDragDrop = ({ position, activeShelfId }: UseSlotDragDropProps) => {
   
   return {
     isDragOver,
-    setIsDragOver,
+    setIsDragging,
     handleDragOver,
-    handleDragEnter,
     handleDragLeave,
     handleDrop
   };

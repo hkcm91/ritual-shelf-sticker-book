@@ -23,41 +23,28 @@ const SlotContainer: React.FC<SlotContainerProps> = ({
   handleDragLeave,
   handleDrop
 }) => {
-  // Create wrapped event handlers with proper preventDefault
   const handleDragOverSafe = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    // Add a visual indicator class
-    if (e.currentTarget && e.currentTarget.classList) {
-      e.currentTarget.classList.add('drag-over');
-    }
     handleDragOver(e);
   };
 
   const handleDragLeaveSafe = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    // Remove visual indicator class
-    if (e.currentTarget && e.currentTarget.classList) {
-      e.currentTarget.classList.remove('drag-over');
-    }
     handleDragLeave(e);
   };
 
   const handleDropSafe = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    // Remove visual indicator class
-    if (e.currentTarget && e.currentTarget.classList) {
-      e.currentTarget.classList.remove('drag-over');
-    }
     handleDrop(e);
   };
 
   return (
     <div 
       className={`book-slot relative h-[220px] w-[150px] mx-1 rounded-sm
-        ${isDragOver ? 'drag-over' : ''}
+        ${isDragOver ? 'bg-blue-100 border-2 border-blue-400' : ''}
         ${useRealisticStyle ? 'realistic-book-slot' : ''}
         transition-colors duration-200 cursor-pointer`}
       data-position={position}

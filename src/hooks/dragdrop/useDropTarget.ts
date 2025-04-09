@@ -18,8 +18,8 @@ const useDropTarget = ({
   onDragOver,
   onDragLeave,
   onFileDropped
-}: UseDropTargetProps = {}) => {
-  const [isDragOver, setIsDragOver] = useState(false);
+}: UseDropTargetProps) => {
+  const [isDragOver, setIsDragging] = useState(false);
   const dragOverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Clean up drag state if hook unmounts while dragging over
@@ -27,7 +27,7 @@ const useDropTarget = ({
     return () => {
       if (isDragOver) {
         console.log(`[useDropTarget] Cleaning up drag-over state on unmount for position ${position}`);
-        setIsDragOver(false);
+        setIsDragging(false);
       }
       
       if (dragOverTimeoutRef.current) {
@@ -57,7 +57,7 @@ const useDropTarget = ({
     console.log(`[useDropTarget] Drag over at position ${position}, slotType ${slotType}. Has files: ${hasFiles}, Has text: ${hasText}`);
     
     // Set drag over state for visual feedback
-    setIsDragOver(true);
+    setIsDragging(true);
     
     if (onDragOver) {
       onDragOver(e);
@@ -71,7 +71,7 @@ const useDropTarget = ({
     // Use a small timeout to prevent flashing when moving cursor within the element
     dragOverTimeoutRef.current = setTimeout(() => {
       console.log(`[useDropTarget] Drag leave at position ${position}`);
-      setIsDragOver(false);
+      setIsDragging(false);
       
       if (onDragLeave) {
         onDragLeave(e);
@@ -85,7 +85,7 @@ const useDropTarget = ({
     e.stopPropagation();
     
     console.log(`[useDropTarget] Drop event at position ${position}, slotType ${slotType}`);
-    setIsDragOver(false);
+    setIsDragging(false);
     
     if (dragOverTimeoutRef.current) {
       clearTimeout(dragOverTimeoutRef.current);

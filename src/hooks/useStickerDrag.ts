@@ -1,21 +1,22 @@
 
 import { useState, useEffect, useCallback, RefObject } from 'react';
+import { Position2D } from './transform/types';
 
 export interface UseStickerDragProps {
   position: number;
   bookId?: string;
-  initialPosition: { x: number, y: number };
-  setPosition2D: (value: { x: number, y: number }) => void;
+  initialPosition: Position2D;
+  setPosition2D: (value: Position2D) => void;
   containerRef?: RefObject<HTMLDivElement>;
   defaultContainerSize?: { width: number, height: number };
   onDragStart?: () => void;
-  onDragEnd?: (position: { x: number, y: number }) => void;
-  clampPosition?: (x: number, y: number, boundaries: any) => { x: number, y: number };
+  onDragEnd?: (position: Position2D) => void;
+  clampPosition?: (x: number, y: number, isAlt: boolean) => Position2D;
 }
 
 export interface StickerDragState {
   isDragging: boolean;
-  dragStart: { x: number, y: number };
+  dragStart: Position2D;
   isAltDrag: boolean;
   containerSize: { width: number, height: number };
 }
@@ -32,7 +33,7 @@ export const useStickerDrag = ({
   clampPosition: customClampPosition
 }: UseStickerDragProps) => {
   const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [dragStart, setDragStart] = useState<{ x: number, y: number }>({ x: 0, y: 0 });
+  const [dragStart, setDragStart] = useState<Position2D>({ x: 0, y: 0 });
   const [isAltDrag, setIsAltDrag] = useState<boolean>(false);
   const [containerSize, setContainerSize] = useState(defaultContainerSize);
 

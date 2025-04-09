@@ -1,23 +1,11 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
+import { TransformState, TransformControlsProps, Position2D } from './transform/types';
+import useTransformStorage from './transform/useTransformStorage';
+import usePositionUtilities from './transform/usePositionUtilities';
 
-export interface TransformState {
-  scale: number;
-  position2D: { x: number, y: number };
-  rotation: number;
-}
-
-export interface TransformControlsProps {
-  activeShelfId: string;
-  position: number;
-  initialScale?: number;
-  initialPosition?: { x: number, y: number };
-  initialRotation?: number;
-  onTransformChange?: (transform: TransformState) => void;
-  min?: number;
-  max?: number;
-}
+export { TransformState, TransformControlsProps, Position2D };
 
 export const useTransformControls = ({
   activeShelfId,
@@ -30,67 +18,43 @@ export const useTransformControls = ({
   max = 3
 }: TransformControlsProps) => {
   const [scale, setScale] = useState<number>(initialScale);
-  const [position2D, setPosition2D] = useState<{ x: number, y: number }>(initialPosition);
+  const [position2D, setPosition2D] = useState<Position2D>(initialPosition);
   const [rotation, setRotation] = useState<number>(initialRotation);
   const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [dragStart, setDragStart] = useState<{ x: number, y: number }>({ x: 0, y: 0 });
+  const [dragStart, setDragStart] = useState<Position2D>({ x: 0, y: 0 });
+  
+  const { loadTransformData, saveTransformData, clearTransformData } = useTransformStorage({ 
+    activeShelfId, 
+    position 
+  });
+  
+  const { clampPosition } = usePositionUtilities();
   
   // Load saved transform data
   useEffect(() => {
-    const loadTransform = () => {
-      const storageKey = `slot-${activeShelfId}-${position}`;
-      
-      // Try to load saved transform data from localStorage
-      try {
-        const savedScale = localStorage.getItem(`${storageKey}-scale`);
-        const savedPositionX = localStorage.getItem(`${storageKey}-position-x`);
-        const savedPositionY = localStorage.getItem(`${storageKey}-position-y`);
-        const savedRotation = localStorage.getItem(`${storageKey}-rotation`);
-        
-        if (savedScale) {
-          setScale(parseFloat(savedScale));
-        }
-        
-        if (savedPositionX && savedPositionY) {
-          setPosition2D({
-            x: parseFloat(savedPositionX),
-            y: parseFloat(savedPositionY)
-          });
-        }
-        
-        if (savedRotation) {
-          setRotation(parseFloat(savedRotation));
-        }
-      } catch (error) {
-        console.error('Error loading transform data from localStorage:', error);
-      }
-    };
+    const savedData = loadTransformData();
+    if (savedData.scale !== null) {
+      setScale(savedData.scale);
+    }
     
-    loadTransform();
-  }, [activeShelfId, position]);
+    if (savedData.position2D !== null) {
+      setPosition2D(savedData.position2D);
+    }
+    
+    if (savedData.rotation !== null) {
+      setRotation(savedData.rotation);
+    }
+  }, [activeShelfId, position, loadTransformData]);
   
   // Save transform data when they change
   useEffect(() => {
-    const saveTransform = () => {
-      const storageKey = `slot-${activeShelfId}-${position}`;
-      
-      try {
-        localStorage.setItem(`${storageKey}-scale`, scale.toString());
-        localStorage.setItem(`${storageKey}-position-x`, position2D.x.toString());
-        localStorage.setItem(`${storageKey}-position-y`, position2D.y.toString());
-        localStorage.setItem(`${storageKey}-rotation`, rotation.toString());
-        
-        // Call the callback if provided
-        if (onTransformChange) {
-          onTransformChange({ scale, position2D, rotation });
-        }
-      } catch (error) {
-        console.error('Error saving transform data to localStorage:', error);
-      }
-    };
+    saveTransformData({ scale, position2D, rotation });
     
-    saveTransform();
-  }, [scale, position2D, rotation, activeShelfId, position, onTransformChange]);
+    // Call the callback if provided
+    if (onTransformChange) {
+      onTransformChange({ scale, position2D, rotation });
+    }
+  }, [scale, position2D, rotation, saveTransformData, onTransformChange]);
   
   // Handle rotation
   const handleRotate = useCallback((direction: 'cw' | 'ccw') => {
@@ -119,33 +83,6 @@ export const useTransformControls = ({
     setRotation(initialRotation);
     toast.success('Position, rotation, and scale reset');
   }, [initialScale, initialPosition, initialRotation]);
-  
-  // Clear transform data
-  const clearTransformData = useCallback(() => {
-    const storageKey = `slot-${activeShelfId}-${position}`;
-    
-    try {
-      localStorage.removeItem(`${storageKey}-scale`);
-      localStorage.removeItem(`${storageKey}-position-x`);
-      localStorage.removeItem(`${storageKey}-position-y`);
-      localStorage.removeItem(`${storageKey}-rotation`);
-    } catch (error) {
-      console.error('Error clearing transform data from localStorage:', error);
-    }
-  }, [activeShelfId, position]);
-
-  // Helper to clamp position within boundaries
-  const clampPosition = useCallback((x: number, y: number, boundaries: { 
-    minX: number, 
-    maxX: number, 
-    minY: number, 
-    maxY: number 
-  }) => {
-    return {
-      x: Math.max(boundaries.minX, Math.min(boundaries.maxX, x)),
-      y: Math.max(boundaries.minY, Math.min(boundaries.maxY, y))
-    };
-  }, []);
 
   return {
     // State

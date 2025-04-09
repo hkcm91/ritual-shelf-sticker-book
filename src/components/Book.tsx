@@ -47,7 +47,13 @@ const Book: React.FC<BookProps> = ({ data }) => {
   
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    openModal(data.id);
+    e.preventDefault();
+    console.log("[Book] Book clicked:", data.id);
+    
+    // Add a slight delay to ensure click event is not conflicting with other events
+    setTimeout(() => {
+      openModal(data.id);
+    }, 50);
   };
   
   return (

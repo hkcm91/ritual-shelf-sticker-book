@@ -1,5 +1,6 @@
 
 import { useRef, useCallback } from 'react';
+import { toast } from 'sonner';
 
 export interface UseFileInputProps {
   onFileSelect?: (file: File) => void;
@@ -15,7 +16,10 @@ export const useFileInput = ({
   const handleClick = useCallback(() => {
     console.log("[useFileInput] Triggering file input click");
     if (fileInputRef.current) {
-      fileInputRef.current.click();
+      // Use a small timeout to avoid event propagation issues
+      setTimeout(() => {
+        fileInputRef.current?.click();
+      }, 50);
     }
   }, []);
   

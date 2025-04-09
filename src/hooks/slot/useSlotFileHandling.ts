@@ -13,6 +13,7 @@ const useSlotFileHandling = ({ onFileSelect }: UseSlotFileHandlingProps) => {
       console.log("[useSlotFileHandling] File selected:", file.name);
       if (onFileSelect) {
         onFileSelect(file);
+        toast.success(`File "${file.name}" selected`);
       }
       clearFileInput();
     }
@@ -24,13 +25,11 @@ const useSlotFileHandling = ({ onFileSelect }: UseSlotFileHandlingProps) => {
   }, [handleClick]);
   
   const handleFileChange = useCallback((file: File) => {
-    console.log("[useSlotFileHandling] File change handler called");
+    console.log("[useSlotFileHandling] File change handler called with file:", file.name);
     if (onFileSelect) {
       onFileSelect(file);
-      toast.success(`File "${file.name}" selected`);
     }
-    clearFileInput();
-  }, [onFileSelect, clearFileInput]);
+  }, [onFileSelect]);
   
   return {
     fileInputRef,

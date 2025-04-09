@@ -15,25 +15,34 @@ const useBookDragState = ({ bookId }: UseBookDragStateProps) => {
   
   const startDrag = useCallback((e: React.DragEvent, id: string) => {
     console.log("[useBookDragState] Starting drag for book:", id);
-    e.dataTransfer.setData('text/plain', id);
-    e.dataTransfer.effectAllowed = 'move';
     
-    setDraggedBook(id);
-    setIsDragging(true);
-    
-    if ('clientX' in e && 'clientY' in e) {
-      setDragStart({
-        x: e.clientX,
-        y: e.clientY
-      });
+    try {
+      e.dataTransfer.setData('text/plain', id);
+      e.dataTransfer.effectAllowed = 'move';
+      
+      setDraggedBook(id);
+      setIsDragging(true);
+      
+      if ('clientX' in e && 'clientY' in e) {
+        setDragStart({
+          x: e.clientX,
+          y: e.clientY
+        });
+      }
+    } catch (error) {
+      console.error("[useBookDragState] Error setting drag data:", error);
     }
   }, [setDraggedBook]);
   
   const endDrag = useCallback(() => {
     console.log("[useBookDragState] Drag ended");
-    setDraggedBook(null);
-    setIsDragging(false);
-    setDragStart(null);
+    
+    // Use a slight delay to ensure state is updated correctly
+    setTimeout(() => {
+      setDraggedBook(null);
+      setIsDragging(false);
+      setDragStart(null);
+    }, 50);
   }, [setDraggedBook]);
   
   return {

@@ -37,13 +37,18 @@ const useDropTarget = ({
     e.stopPropagation();
     
     try {
+      // Check for file drop first
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        console.log("[useDropTarget] Files detected in drop event:", e.dataTransfer.files[0].name);
+        return;
+      }
+      
+      // Handle book drop
       const droppedItemId = e.dataTransfer.getData('text/plain');
       console.log("[useDropTarget] Item dropped with ID:", droppedItemId);
       
       if (droppedItemId && onDrop) {
         onDrop(droppedItemId, null);
-      } else if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        console.log("[useDropTarget] Files detected in drop event");
       }
     } catch (error) {
       console.error("[useDropTarget] Error handling drop:", error);

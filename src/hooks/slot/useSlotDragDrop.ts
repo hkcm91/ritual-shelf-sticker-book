@@ -43,26 +43,30 @@ const useSlotDragDrop = ({ position, activeShelfId }: UseSlotDragDropProps) => {
         return;
       }
       
-      // Check if there's a book at this position
-      const existingBook = Object.values(books).find(
-        b => b.position === position && b.shelfId === activeShelfId && !b.isSticker
-      );
-      
-      if (existingBook && existingBook.id !== droppedBookId) {
-        // Swap positions
-        const draggedBook = books[droppedBookId];
-        if (draggedBook) {
-          updateBook(existingBook.id, { position: draggedBook.position });
+      // When using these functions from Zustand store, we need to wrap them in
+      // a timeout to avoid any potential React state update conflicts
+      setTimeout(() => {
+        // Check if there's a book at this position
+        const existingBook = Object.values(books).find(
+          b => b.position === position && b.shelfId === activeShelfId && !b.isSticker
+        );
+        
+        if (existingBook && existingBook.id !== droppedBookId) {
+          // Swap positions
+          const draggedBook = books[droppedBookId];
+          if (draggedBook) {
+            updateBook(existingBook.id, { position: draggedBook.position });
+            updateBook(droppedBookId, { position, shelfId: activeShelfId });
+            toast.success("Books swapped positions");
+          }
+        } else {
+          // Move to empty slot
           updateBook(droppedBookId, { position, shelfId: activeShelfId });
-          toast.success("Books swapped positions");
+          toast.success("Book moved successfully");
         }
-      } else {
-        // Move to empty slot
-        updateBook(droppedBookId, { position, shelfId: activeShelfId });
-        toast.success("Book moved successfully");
-      }
-      
-      setDraggedBook(null);
+        
+        setDraggedBook(null);
+      }, 50);
     } catch (error) {
       console.error("[useSlotDragDrop] Error in handleDrop:", error);
       toast.error("Failed to process dropped item");

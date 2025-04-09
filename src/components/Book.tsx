@@ -16,6 +16,8 @@ const Book: React.FC<BookProps> = ({ data }) => {
   const handleDragStart = (e: React.DragEvent) => {
     try {
       console.log("[Book] Drag started for book:", data.id);
+      
+      // Setup required data transfer
       e.dataTransfer.setData('text/plain', data.id);
       e.dataTransfer.effectAllowed = 'move';
       
@@ -28,16 +30,24 @@ const Book: React.FC<BookProps> = ({ data }) => {
       // Set the dragged book in the store
       setDraggedBook(data.id);
       setIsDragging(true);
+      
+      // Make sure events bubble properly
+      e.stopPropagation();
     } catch (error) {
       console.error("[Book] Error in drag start:", error);
     }
   };
   
-  const handleDragEnd = () => {
+  const handleDragEnd = (e: React.DragEvent) => {
     try {
       console.log("[Book] Drag ended");
+      
+      // Cleanup
       setDraggedBook(null);
       setIsDragging(false);
+      
+      e.preventDefault();
+      e.stopPropagation();
     } catch (error) {
       console.error("[Book] Error in drag end:", error);
     }

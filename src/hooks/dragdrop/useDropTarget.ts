@@ -22,7 +22,7 @@ const useDropTarget = ({
     e.dataTransfer.dropEffect = 'move';
     
     // Add visual indicator class
-    if (e.currentTarget.classList) {
+    if (e.currentTarget && e.currentTarget.classList) {
       e.currentTarget.classList.add('drag-over');
     }
     
@@ -37,7 +37,7 @@ const useDropTarget = ({
     e.preventDefault();
     
     // Add visual indicator class
-    if (e.currentTarget.classList) {
+    if (e.currentTarget && e.currentTarget.classList) {
       e.currentTarget.classList.add('drag-over');
     }
     
@@ -49,8 +49,10 @@ const useDropTarget = ({
   
   // Handle drag leave events to remove visual indicators
   const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    
     // Remove visual indicator class
-    if (e.currentTarget.classList) {
+    if (e.currentTarget && e.currentTarget.classList) {
       e.currentTarget.classList.remove('drag-over');
     }
     
@@ -66,12 +68,13 @@ const useDropTarget = ({
     e.stopPropagation();
     
     // Remove visual indicator class
-    if (e.currentTarget.classList) {
+    if (e.currentTarget && e.currentTarget.classList) {
       e.currentTarget.classList.remove('drag-over');
     }
     
     try {
       const droppedItemId = e.dataTransfer.getData('text/plain');
+      console.log("[useDropTarget] Item dropped with ID:", droppedItemId);
       
       if (droppedItemId && onDrop) {
         // Try to get JSON data if available
@@ -82,14 +85,20 @@ const useDropTarget = ({
             jsonData = JSON.parse(jsonStr);
           }
         } catch (err) {
-          console.error("Failed to parse JSON data:", err);
+          console.error("[useDropTarget] Failed to parse JSON data:", err);
         }
         
         onDrop(droppedItemId, jsonData);
         toast.success('Item dropped successfully');
+      } else {
+        // Check if we have files instead
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+          console.log("[useDropTarget] Files detected in drop event");
+          // File drops are handled separately in component-specific handlers
+        }
       }
     } catch (error) {
-      console.error("Error handling drop:", error);
+      console.error("[useDropTarget] Error handling drop:", error);
       toast.error('Failed to drop item');
     }
   }, [onDrop]);

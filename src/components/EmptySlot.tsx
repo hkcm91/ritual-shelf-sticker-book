@@ -25,11 +25,7 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
   const { activeShelfId, openModal } = useBookshelfStore();
   
   // Set up drop handling for files
-  const { handleDragOver, handleDragLeave, handleDrop } = useDropTarget({
-    onDrop: (id, data) => {
-      // This handles dropping books, file drops are handled below
-    }
-  });
+  const { handleDragOver, handleDragLeave } = useDropTarget({});
   
   const getSlotIcon = () => {
     switch (slotType) {
@@ -74,10 +70,13 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
     console.log("[EmptySlot] File dropped");
     
     // Remove visual indicator
-    e.currentTarget.classList.remove('drag-over');
+    if (e.currentTarget && e.currentTarget.classList) {
+      e.currentTarget.classList.remove('drag-over');
+    }
     
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
+      console.log("[EmptySlot] Processing dropped file:", file.name);
       onFileSelect(file);
     }
   };
@@ -101,6 +100,7 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
           onChange={(e) => {
             const file = e.target.files?.[0];
             if (file) {
+              console.log("[EmptySlot] File selected from input:", file.name);
               onFileSelect(file);
             }
           }}

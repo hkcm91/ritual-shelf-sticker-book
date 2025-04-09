@@ -17,10 +17,19 @@ export const useFileInput = ({
     console.log("[useFileInput] Triggering file input click");
     
     if (fileInputRef.current) {
-      // Use setTimeout to avoid issues with event propagation
-      setTimeout(() => {
-        fileInputRef.current?.click();
-      }, 0);
+      // Use a try/catch block to handle security errors that might occur
+      try {
+        // Use setTimeout to avoid issues with event propagation
+        setTimeout(() => {
+          if (fileInputRef.current) {
+            // Ensure the input is not disabled
+            fileInputRef.current.disabled = false;
+            fileInputRef.current.click();
+          }
+        }, 0);
+      } catch (error) {
+        console.error("[useFileInput] Error triggering file input:", error);
+      }
     }
   }, []);
   

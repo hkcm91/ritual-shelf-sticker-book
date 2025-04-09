@@ -57,39 +57,44 @@ const useSlotDragDrop = ({ position, activeShelfId }: UseSlotDragDropProps) => {
     }
     
     // Check if there's any data available
-    const droppedBookId = e.dataTransfer.getData('text/plain');
-    console.log("[useSlotDragDrop] Dropping book:", droppedBookId, "at position:", position);
-    
-    if (droppedBookId && position !== undefined) {
-      // Check if there's already a book at this position
-      const existingBook = Object.values(books).find(
-        b => b.position === position && b.shelfId === activeShelfId && !b.isSticker
-      );
+    try {
+      const droppedBookId = e.dataTransfer.getData('text/plain');
+      console.log("[useSlotDragDrop] Dropping book:", droppedBookId, "at position:", position);
       
-      if (existingBook && existingBook.id !== droppedBookId) {
-        console.log("[useSlotDragDrop] Position already occupied by:", existingBook.id);
-        // If occupied, swap positions
-        const draggedBook = books[droppedBookId];
-        if (draggedBook) {
-          console.log("[useSlotDragDrop] Swapping positions");
-          updateBook(existingBook.id, { position: draggedBook.position });
+      if (droppedBookId && position !== undefined) {
+        // Check if there's already a book at this position
+        const existingBook = Object.values(books).find(
+          b => b.position === position && b.shelfId === activeShelfId && !b.isSticker
+        );
+        
+        if (existingBook && existingBook.id !== droppedBookId) {
+          console.log("[useSlotDragDrop] Position already occupied by:", existingBook.id);
+          // If occupied, swap positions
+          const draggedBook = books[droppedBookId];
+          if (draggedBook) {
+            console.log("[useSlotDragDrop] Swapping positions");
+            updateBook(existingBook.id, { position: draggedBook.position });
+            updateBook(droppedBookId, { position, shelfId: activeShelfId });
+            toast.success("Books swapped positions");
+          }
+        } else {
+          // If empty, just move the book
           updateBook(droppedBookId, { position, shelfId: activeShelfId });
-          toast.success("Books swapped positions");
+          toast.success("Book moved successfully");
         }
+        
+        // Clear dragged book
+        setDraggedBook(null);
       } else {
-        // If empty, just move the book
-        updateBook(droppedBookId, { position, shelfId: activeShelfId });
-        toast.success("Book moved successfully");
+        // Handle file drops
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+          console.log("[useSlotDragDrop] File dropped");
+          // File dropping is handled separately in components
+        }
       }
-      
-      // Clear dragged book
-      setDraggedBook(null);
-    } else {
-      // Handle file drops
-      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        console.log("[useSlotDragDrop] File dropped");
-        // File dropping is handled separately in components
-      }
+    } catch (error) {
+      console.error("[useSlotDragDrop] Error in handleDrop:", error);
+      toast.error("Failed to process dropped item");
     }
   }, [position, books, activeShelfId, updateBook, setDraggedBook]);
   

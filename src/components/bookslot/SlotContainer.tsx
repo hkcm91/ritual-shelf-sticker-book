@@ -23,24 +23,6 @@ const SlotContainer: React.FC<SlotContainerProps> = ({
   handleDragLeave,
   handleDrop
 }) => {
-  const handleDragOverSafe = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    handleDragOver(e);
-  };
-
-  const handleDragLeaveSafe = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    handleDragLeave(e);
-  };
-
-  const handleDropSafe = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    handleDrop(e);
-  };
-
   return (
     <div 
       className={`book-slot relative h-[220px] w-[150px] mx-1 rounded-sm
@@ -49,9 +31,9 @@ const SlotContainer: React.FC<SlotContainerProps> = ({
         transition-colors duration-200 cursor-pointer`}
       data-position={position}
       data-slot-type={slotType}
-      onDragOver={handleDragOverSafe}
-      onDragLeave={handleDragLeaveSafe}
-      onDrop={handleDropSafe}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
       style={{
         boxShadow: useRealisticStyle ? 'inset 0 0 20px rgba(0,0,0,0.1)' : 'none'
       }}

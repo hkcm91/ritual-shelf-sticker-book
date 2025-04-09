@@ -8,14 +8,13 @@ interface UseSlotFileHandlingProps {
 }
 
 const useSlotFileHandling = ({ onFileSelect }: UseSlotFileHandlingProps) => {
-  const { fileInputRef, handleClick, handleFileChange: fileInputChange, clearFileInput } = useFileInput({
+  const { fileInputRef, handleClick, handleFileChange: fileInputChange } = useFileInput({
     onFileSelect: (file) => {
       console.log("[useSlotFileHandling] File selected:", file.name);
       if (onFileSelect) {
         onFileSelect(file);
         toast.success(`File "${file.name}" selected`);
       }
-      clearFileInput();
     }
   });
   
@@ -34,8 +33,7 @@ const useSlotFileHandling = ({ onFileSelect }: UseSlotFileHandlingProps) => {
   return {
     fileInputRef,
     handleFileChange,
-    triggerFileInput,
-    clearFileInput
+    triggerFileInput
   };
 };
 

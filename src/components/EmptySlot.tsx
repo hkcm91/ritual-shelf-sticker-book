@@ -45,19 +45,16 @@ const EmptySlot: React.FC<EmptySlotProps> = ({
     e.stopPropagation();
     console.log("[EmptySlot] Slot clicked with type:", slotType);
     
-    // Create a 50ms delay to avoid issues with event propagation
-    setTimeout(() => {
-      if (slotType === 'recipe' && activeShelfId) {
-        console.log("[EmptySlot] Opening recipe modal");
-        setIsRecipeModalOpen(true);
-      } else if (slotType === 'book' && activeShelfId) {
-        console.log("[EmptySlot] Opening book modal for new book");
-        openModal(null);
-      } else {
-        console.log("[EmptySlot] Triggering file input");
-        onClick();
-      }
-    }, 50);
+    if (slotType === 'recipe' && activeShelfId) {
+      console.log("[EmptySlot] Opening recipe modal");
+      setIsRecipeModalOpen(true);
+    } else if (slotType === 'book' && activeShelfId) {
+      console.log("[EmptySlot] Opening book modal for new book");
+      openModal(null);
+    } else {
+      console.log("[EmptySlot] Triggering file input");
+      onClick();
+    }
   };
 
   const handleFileDrop = (e: React.DragEvent) => {

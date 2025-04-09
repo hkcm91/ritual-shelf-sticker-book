@@ -36,13 +36,9 @@ const useBookDragState = ({ bookId }: UseBookDragStateProps) => {
   
   const endDrag = useCallback(() => {
     console.log("[useBookDragState] Drag ended");
-    
-    // Use a slight delay to ensure state is updated correctly
-    setTimeout(() => {
-      setDraggedBook(null);
-      setIsDragging(false);
-      setDragStart(null);
-    }, 50);
+    setDraggedBook(null);
+    setIsDragging(false);
+    setDragStart(null);
   }, [setDraggedBook]);
   
   return {
